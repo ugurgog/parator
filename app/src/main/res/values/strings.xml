@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">vuk507</string>
+
+    <array name="tab_name">
+        <item>Keypad</item>
+        <item>Library</item>
+    </array>
+
+</resources>

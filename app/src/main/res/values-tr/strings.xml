@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">vuk507</string>
+
+    <array name="tab_name">
+        <item>Klavye</item>
+        <item>Kütüphane</item>
+    </array>
+
+</resources>
