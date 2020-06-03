@@ -2,20 +2,37 @@ package com.paypad.vuk507.charge;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.discount.DiscountFragment;
+import com.paypad.vuk507.product.ProductFragment;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 public class LibraryFragment extends BaseFragment {
 
-    View mView;
+    private View mView;
+
+    @BindView(R.id.searchEdittext)
+    EditText searchEdittext;
+    @BindView(R.id.addItemImgv)
+    ImageView addItemImgv;
+    @BindView(R.id.searchCancelImgv)
+    ImageView searchCancelImgv;
+
+    private Realm realm;
 
     public LibraryFragment() {
 
@@ -35,14 +52,43 @@ public class LibraryFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.fragment_library, container, false);
-        ButterKnife.bind(this, mView);
-        initVariables();
+        if (mView == null) {
+            mView = inflater.inflate(R.layout.fragment_library, container, false);
+            ButterKnife.bind(this, mView);
+            initVariables();
+            initListeners();
+        }
         return mView;
     }
 
-    private void initVariables() {
+    private void initListeners() {
+        addItemImgv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(getContext(), addItemImgv);
+                popupMenu.inflate(R.menu.menu_add_item);
 
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.createItem:
+                                mFragmentNavigation.pushFragment(new ProductFragment(null));
+                                break;
+                            case R.id.createDiscount:
+                                mFragmentNavigation.pushFragment(new DiscountFragment(null));
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+            }
+        });
+    }
+
+    private void initVariables() {
+        realm = Realm.getDefaultInstance();
     }
 
     @Override

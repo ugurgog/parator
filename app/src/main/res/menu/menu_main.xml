@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/checkout"
+            android:checkable="true"
+            android:icon="@drawable/ic_exit_to_app_white_24dp"
+            android:title="@string/checkout" />
+
+        <item
+            android:id="@+id/transactions"
+            android:checkable="true"
+            android:icon="@drawable/icon_transaction"
+            android:title="@string/transactions" />
+
+        <item
+            android:id="@+id/reports"
+            android:checkable="true"
+            android:icon="@drawable/report_icon"
+            android:title="@string/reports" />
+
+        <item
+            android:id="@+id/customers"
+            android:checkable="true"
+            android:icon="@drawable/customers_icon"
+            android:title="@string/customers"/>
+
+        <item
+            android:id="@+id/items"
+            android:checkable="true"
+            android:icon="@drawable/coffee_icon"
+            android:title="@string/items"/>
+
+        <item
+            android:id="@+id/settings"
+            android:checkable="true"
+            android:icon="@drawable/baseline_settings_white_24dp"
+            android:title="@string/settings"/>
+
+        <item
+            android:id="@+id/support"
+            android:checkable="true"
+            android:icon="@drawable/baseline_contact_support_white_24dp"
+            android:title="@string/support"/>
+
+    </group>
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/notifications"
+            android:checkable="true"
+            android:icon="@drawable/baseline_notifications_white_24dp"
+            android:title="@string/notifications" />
+
+    </group>
+
+</menu>

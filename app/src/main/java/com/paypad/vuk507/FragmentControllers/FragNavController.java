@@ -27,9 +27,9 @@ public class FragNavController {
     //Declare the constants  There is a maximum of 5 tabs, this is per Material Design's Bottom Navigation's design spec.
     public static final int NO_TAB = -1;
     public static final int TAB1 = 0;
-    public static final int TAB2 = 1;
+    //public static final int TAB2 = 1;
 
-    private static final int MAX_NUM_TABS = 2;
+    private static final int MAX_NUM_TABS = 1;
 
     // Extras used to store savedInstanceState
     private static final String EXTRA_TAG_COUNT = FragNavController.class.getName() + ":EXTRA_TAG_COUNT";
@@ -600,7 +600,7 @@ public class FragNavController {
     }
 
     public void setRootFragment(Stack<Fragment> stackFragment, int index) {
-        mFragmentStacks.set(TAB2, stackFragment);
+        mFragmentStacks.set(TAB1, stackFragment);
     }
 
     /**
@@ -910,9 +910,9 @@ public class FragNavController {
                 case TAB1:
                     switchTab(TAB1);
                     break;
-                case TAB2:
+                /*case TAB2:
                     switchTab(TAB2);
-                    break;
+                    break;*/
             }
 
             //Successfully restored state
@@ -930,7 +930,7 @@ public class FragNavController {
     }
 
     //Declare the TabIndex annotation
-    @IntDef({NO_TAB, TAB1, TAB2})
+    @IntDef({NO_TAB, TAB1})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabIndex {
     }

@@ -10,13 +10,17 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.numpad.NumPad;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.model.Dog;
 
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class KeypadFragment extends BaseFragment {
 
@@ -46,11 +50,13 @@ public class KeypadFragment extends BaseFragment {
         return mView;
     }
 
-
-
     private void initVariables() {
 
-        System.out.println();
+        //Realm realm = Realm.getDefaultInstance();
+
+        //final RealmResults<Dog> puppies = realm.where(Dog.class).lessThan("age", 2).findAll();
+        //puppies.size();
+
     }
 
     @Override

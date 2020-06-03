@@ -7,4 +7,68 @@
         <item>Kütüphane</item>
     </array>
 
+    <string name="keypad">Klavye</string>
+    <string name="library">Kütüphane</string>
+
+    <string name="no_sale">Satış Yok</string>
+    <string name="charge">Ücret</string>
+    <string name="search">Ara</string>
+    <string name="save">Kaydet</string>
+    <string name="edit_item">Ürün Güncelle</string>
+    <string name="edit_discount">Indirim Güncelle</string>
+    <string name="create_discount">Indirim Oluştur</string>
+    <string name="create_category">Kategori Oluştur</string>
+    <string name="edit_category">Kategori Güncelle</string>
+
+    <string name="cancel">İptal</string>
+    <string name="ok">Tamam</string>
+    <string name="yes">Evet</string>
+    <string name="no">Hayır</string>
+
+    <string name="there_is_no_search_result">Sonuç yok</string>
+
+    <string name="createItem">Ürün Tanımla</string>
+    <string name="createDiscount">Indirim Tanımla</string>
+
+    <string name="amount">Tutar</string>
+    <string name="discount_name">Indirim Adı</string>
+    <string name="discount_amount">Indirim Tutarı</string>
+    <string name="category_name">Kategori Adı</string>
+    <string name="categories">Kategoriler</string>
+
+    <!-- Login screen items -->
+    <string name="username">Kullanıcı Adı</string>
+    <string name="password">Şifre</string>
+    <string name="login">Giriş</string>
+    <string name="forget_password">Şifremi Unuttum</string>
+    <string name="create_account">Hesap Oluştur</string>
+    <string name="username_empty_error">Kullanıcı adı boş olamaz!</string>
+    <string name="email_empty_error">Email boş olamaz!</string>
+    <string name="email_invalid_error">Geçerli bir email adresi giriniz</string>
+    <string name="password_empty_error">Şifre boş olamaz!</string>
+    <string name="password_length_error">Şifre en az 6 karakter olmalıdır!</string>
+    <string name="logging_user">Giriş Yapılıyor...</string>
+    <string name="invalid_username_or_password">Hatalı kullanıcı adı veya şifre!</string>
+    <string name="register">Kaydol</string>
+    <string name="registering_user">Kullanıcı kaydediliyor...</string>
+    <string name="username_is_defined_before">Sistemde böyle bir kullanıcı adı mevcut. Lütfen farklı kullanıcı adı belirleyin</string>
+
+    <!-- Main menu items -->
+    <string name="checkout">Çıkış</string>
+    <string name="transactions">İşlemler</string>
+    <string name="reports">Raporlar</string>
+    <string name="customers">Müşteriler</string>
+    <string name="items">Ürünler</string>
+    <string name="settings">Ayarlar</string>
+    <string name="support">Destek</string>
+    <string name="notifications">Bildirimler</string>
+
+    <!-- App Messages -->
+    <string name="amount_can_not_be_empty">Tutar boş olamaz</string>
+    <string name="product_name_can_not_be_empty">Ürün adı boş olamaz</string>
+
+    <string name="discount_name_can_not_be_empty">Indirim adı boş olamaz</string>
+    <string name="discount_rate_amount_can_not_be_empty">Indirim tutarı veya indirim oranı dolu olmalıdır</string>
+
+    <string name="sure_to_delete_category">Kategoriyi silmek istediğinize emin misiniz?</string>
 </resources>

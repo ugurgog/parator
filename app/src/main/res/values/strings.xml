@@ -6,4 +6,70 @@
         <item>Library</item>
     </array>
 
+    <string name="keypad">Keypad</string>
+    <string name="library">Library</string>
+
+    <string name="no_sale">No Sale</string>
+    <string name="charge">Charge</string>
+    <string name="search">Search</string>
+    <string name="save">Save</string>
+    <string name="edit_item">Edit Item</string>
+    <string name="edit_discount">Edit Discount</string>
+    <string name="create_discount">Create Discount</string>
+    <string name="create_category">Create Category</string>
+    <string name="edit_category">Edit Category</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="there_is_no_search_result">There is no search result</string>
+
+    <string name="createItem">Create Item</string>
+    <string name="createDiscount">Create Discount</string>
+
+    <string name="amount">Amount</string>
+    <string name="discount_name">Discount Name</string>
+    <string name="discount_amount">Discount Amount</string>
+    <string name="category_name">Category Name</string>
+    <string name="categories">Categories</string>
+
+    <!-- Login screen items -->
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="create_account">Create Account</string>
+    <string name="username_empty_error">Username can not be empty!</string>
+    <string name="email_empty_error">Email can not be empty!</string>
+    <string name="email_invalid_error">Please type a valid email address!</string>
+    <string name="password_empty_error">Password can not be empty!</string>
+    <string name="password_length_error">Password length must be at least 6!</string>
+    <string name="logging_user">Logging User...</string>
+    <string name="invalid_username_or_password">Invalid username or password!</string>
+    <string name="register">Register</string>
+    <string name="registering_user">Registering User...</string>
+    <string name="username_is_defined_before">The system has such a username. Please set a different username.</string>
+
+
+    <!-- Main menu items -->
+    <string name="checkout">Checkout</string>
+    <string name="transactions">Transactions</string>
+    <string name="reports">Reports</string>
+    <string name="customers">Customers</string>
+    <string name="items">Items</string>
+    <string name="settings">Settings</string>
+    <string name="support">Support</string>
+    <string name="notifications">Notifications</string>
+
+    <!-- App Messages -->
+    <string name="amount_can_not_be_empty">Amount cannot be empty</string>
+    <string name="product_name_can_not_be_empty">Product name cannot be empty</string>
+
+    <string name="discount_name_can_not_be_empty">Discount name cannot be empty</string>
+    <string name="discount_rate_amount_can_not_be_empty">Discount amount or discount rate must be filled</string>
+
+    <string name="sure_to_delete_category">Are you sure you want to delete the category?</string>
+
 </resources>

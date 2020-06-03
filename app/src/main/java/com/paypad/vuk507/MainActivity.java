@@ -22,8 +22,10 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.FragmentControllers.FragNavController;
 import com.paypad.vuk507.FragmentControllers.FragNavTransactionOptions;
 import com.paypad.vuk507.FragmentControllers.FragmentHistory;
+import com.paypad.vuk507.charge.ChargeFragment;
 import com.paypad.vuk507.charge.KeypadFragment;
 import com.paypad.vuk507.charge.LibraryFragment;
+import com.paypad.vuk507.utils.MyMigration;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,6 +35,8 @@ import java.util.Objects;
 import java.util.Stack;
 
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 import static com.paypad.vuk507.FragmentControllers.FragNavController.TAB1;
 import static com.paypad.vuk507.constants.AnimationConstants.ANIMATE_DOWN_TO_UP;
@@ -46,43 +50,40 @@ public class MainActivity extends FragmentActivity implements
         FragNavController.TransactionListener,
         FragNavController.RootFragmentListener {
 
-    public static FrameLayout contentFrame;
+    private FrameLayout contentFrame;
 
-    public TabLayout bottomTabLayout;
-    public RelativeLayout screenShotMainLayout;
-    public Button screenShotCancelBtn;
-    public Button screenShotApproveBtn;
+    private TabLayout bottomTabLayout;
 
-    public LinearLayout tabMainLayout;
+    private LinearLayout tabMainLayout;
 
     private int selectedTabColor, unSelectedTabColor;
 
-    public String ANIMATION_TAG;
+    private String ANIMATION_TAG;
 
-    public FragNavTransactionOptions transactionOptions;
+    private FragNavTransactionOptions transactionOptions;
 
+    //public KeypadFragment keypadFragment;
+    //public LibraryFragment libraryFragment;
 
-    public KeypadFragment keypadFragment;
-    public LibraryFragment libraryFragment;
+    private ChargeFragment chargeFragment;
 
     private int[] mTabIconsSelected = {
-            R.mipmap.ic_keypad,
-            R.mipmap.ic_library};
+            R.drawable.ic_keyboard_black_24dp,
+            R.drawable.ic_library_books_black_24dp};
 
-    public String[] TABS;
+    private String[] TABS;
 
     private FragNavController mNavController;
 
     private FragmentHistory fragmentHistory;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        unSelectedTabColor = this.getResources().getColor(R.color.White, null);
-        selectedTabColor = this.getResources().getColor(R.color.DarkGray, null);
+        unSelectedTabColor = this.getResources().getColor(R.color.DarkGray, null);
+        selectedTabColor = this.getResources().getColor(R.color.Black, null);
 
         initValues();
 
@@ -90,11 +91,12 @@ public class MainActivity extends FragmentActivity implements
 
         mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.content_frame)
                 .transactionListener(this)
-                .rootFragmentListener(this, TABS.length)
+                //.rootFragmentListener(this, TABS.length)
+                .rootFragmentListener(this, 1)
                 .build();
 
         switchTab(0);
-        updateTabSelection(0);
+        //updateTabSelection(0);
 
         bottomTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -145,20 +147,16 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
-    public void clearStackGivenIndex(int index){
-        mNavController.clearStackWithGivenIndex(index);
-    }
-
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        //EventBus.getDefault().register(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        EventBus.getDefault().unregister(this);
+        //EventBus.getDefault().unregister(this);
     }
 
     /*@Subscribe(sticky = true)
@@ -172,7 +170,6 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     protected void onResume() {
-
         super.onResume();
     }
 
@@ -207,7 +204,7 @@ public class MainActivity extends FragmentActivity implements
 
     public void switchAndUpdateTabSelection(int position) {
         switchTab(position);
-        updateTabSelection(position);
+        //updateTabSelection(position);
     }
 
     private void setTransactionOption() {
@@ -248,20 +245,18 @@ public class MainActivity extends FragmentActivity implements
             transactionOptions = null;
     }
 
-    public void updateTabSelection(int currentTab) {
+    /*public void updateTabSelection(int currentTab) {
 
         for (int i = 0; i < TABS.length; i++) {
             TabLayout.Tab selectedTab = bottomTabLayout.getTabAt(i);
 
             if (currentTab != i) {
-                //selectedTab.getCustomView().setSelected(false);
                 Objects.requireNonNull(selectedTab.getIcon()).setColorFilter(unSelectedTabColor, PorterDuff.Mode.SRC_IN);
             } else {
-                //selectedTab.getCustomView().setSelected(true);
                 Objects.requireNonNull(selectedTab.getIcon()).setColorFilter(selectedTabColor, PorterDuff.Mode.SRC_IN);
             }
         }
-    }
+    }*/
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -299,11 +294,8 @@ public class MainActivity extends FragmentActivity implements
         switch (index) {
 
             case TAB1:
-                keypadFragment = new KeypadFragment();
-                return keypadFragment;
-            case FragNavController.TAB2:
-                libraryFragment = new LibraryFragment();
-                return libraryFragment;
+                chargeFragment = new ChargeFragment();
+                return chargeFragment;
 
         }
         throw new IllegalStateException("Need to send an index that we know");

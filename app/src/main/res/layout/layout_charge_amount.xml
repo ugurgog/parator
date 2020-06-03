@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_margin="10dp"
+    android:padding="10dp"
+    android:background="@color/DodgerBlue">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/White"
+        android:text="@string/charge"
+        android:textStyle="bold"
+        android:textSize="17sp"
+        android:layout_gravity="center">
+    </TextView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/currencySymbolTv"
+        android:textColor="@color/White"
+        android:text="TL"
+        android:layout_marginStart="10dp"
+        android:textStyle="bold|italic"
+        android:layout_gravity="center">
+    </TextView>
+
+    <TextView
+        android:id="@+id/amountTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/White"
+        android:layout_marginStart="10dp"
+        android:text="0,00"
+        android:textStyle="bold"
+        android:layout_gravity="center">
+    </TextView>
+
+
+
+</LinearLayout>

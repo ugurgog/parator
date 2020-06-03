@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/createItem"
+        android:orderInCategory="100"
+        android:title="@string/createItem"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/createDiscount"
+        android:orderInCategory="100"
+        android:title="@string/createDiscount"
+        app:showAsAction="never" />
+
+</menu>
+
