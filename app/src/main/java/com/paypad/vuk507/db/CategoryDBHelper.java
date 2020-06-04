@@ -12,9 +12,12 @@ import io.realm.RealmResults;
 
 public class CategoryDBHelper {
 
-    public static RealmResults<Category> getAllCategories(){
+    public static RealmResults<Category> getAllCategories(String username){
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<Category> categories = realm.where(Category.class).findAll();
+        RealmResults<Category> categories = realm.where(Category.class)
+                .equalTo("createUsername", username)
+                .findAll();
+        //realm.close();
         return categories;
     }
 
@@ -27,6 +30,7 @@ public class CategoryDBHelper {
             public void execute(Realm realm) {
                 Category category = results.get(id);
                 category.deleteFromRealm();
+                //realm.close();
             }
         });
     }
@@ -34,10 +38,11 @@ public class CategoryDBHelper {
     public static Category getCategory(int id){
         Realm realm = Realm.getDefaultInstance();
         Category category = realm.where(Category.class).equalTo("id", id).findFirst();
+        //realm.close();
         return category;
     }
 
-    public static void createCategory(String categoryName, CompleteCallback completeCallback) {
+    public static void createCategory(String categoryName, String username, CompleteCallback completeCallback) {
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction(){
 
@@ -67,6 +72,7 @@ public class CategoryDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Category cannot be updated!");
                 }
+                //realm.close();
                 completeCallback.onComplete(baseResponse);
             }
         });
@@ -91,6 +97,7 @@ public class CategoryDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Category cannot be updated!");
                 }
+                //realm.close();
                 completeCallback.onComplete(baseResponse);
             }
         });

@@ -37,10 +37,8 @@ public class InitialActivity extends AppCompatActivity {
 
         //CustomRealmHelper.deleteRealmDB();
 
-        String username = LoginUtils.getEncryptedSharedPreferences(InitialActivity.this)
-                .getString("username", "No username");
-        String password = LoginUtils.getEncryptedSharedPreferences(InitialActivity.this)
-                .getString("password", "No password");
+        String username = LoginUtils.getUsernameFromCache(InitialActivity.this);
+        String password = LoginUtils.getPasswordFromCache(InitialActivity.this);
 
         if(!username.isEmpty() && !password.isEmpty()){
             startLoginProcess(username, password);

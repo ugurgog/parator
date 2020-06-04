@@ -11,7 +11,7 @@ public class Category extends RealmObject {
     private long id;
     private String name;
     private Date createDate;
-    private String createUserId;
+    private String createUsername;
 
     public long getId() {
         return id;
@@ -37,11 +37,11 @@ public class Category extends RealmObject {
         this.createDate = createDate;
     }
 
-    public String getCreateUserId() {
-        return createUserId;
+    public String getCreateUsername() {
+        return createUsername;
     }
 
-    public void setCreateUserId(String createUserId) {
-        this.createUserId = createUserId;
+    public void setCreateUsername(String createUsername) {
+        this.createUsername = createUsername;
     }
 }

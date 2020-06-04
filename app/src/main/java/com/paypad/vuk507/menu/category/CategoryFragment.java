@@ -1,5 +1,6 @@
 package com.paypad.vuk507.menu.category;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -25,15 +26,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.City;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.NumberTextWatcher;
 import com.paypad.vuk507.utils.ShapeUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,6 +81,7 @@ public class CategoryFragment extends BaseFragment {
     private Realm realm;
 
     private RealmResults<Category> categories;
+    private User user;
 
     public CategoryFragment() {
 
@@ -84,6 +92,24 @@ public class CategoryFragment extends BaseFragment {
         super.onStart();
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(sticky = true)
+    public void accountHolderUserReceived(UserBus userBus){
+        user = userBus.getUser();
+        if(user == null)
+            user = UserDBHelper.getUserFromCache(getContext());
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,7 +163,7 @@ public class CategoryFragment extends BaseFragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
-        categories = CategoryDBHelper.getAllCategories();
+        categories = CategoryDBHelper.getAllCategories(user.getUsername());
 
         categoryListAdapter = new CategoryListAdapter(getContext(), categories, mFragmentNavigation);
         categoryRv.setAdapter(categoryListAdapter);

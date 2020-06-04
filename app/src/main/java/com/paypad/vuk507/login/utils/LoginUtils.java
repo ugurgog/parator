@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
 
+import com.paypad.vuk507.login.InitialActivity;
 import com.paypad.vuk507.login.utils.Validation;
 
 import java.io.IOException;
@@ -47,5 +48,15 @@ public class LoginUtils {
                 .remove("username")
                 .remove("password").commit();
         return commit;
+    }
+
+    public static String getUsernameFromCache(Context context){
+        return LoginUtils.getEncryptedSharedPreferences(context)
+                .getString("username", "No username");
+    }
+
+    public static String getPasswordFromCache(Context context){
+        return LoginUtils.getEncryptedSharedPreferences(context)
+                .getString("password", "No password");
     }
 }

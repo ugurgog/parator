@@ -1,5 +1,6 @@
 package com.paypad.vuk507.menu.category;
 
+import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -21,14 +22,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.model.BaseResponse;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Date;
 import java.util.Objects;
@@ -53,6 +60,7 @@ public class CategoryEditFragment extends BaseFragment {
     private Realm realm;
     private Category category;
     private ReturnCategoryCallback returnCategoryCallback;
+    private User user;
 
     public CategoryEditFragment(@Nullable Category category, ReturnCategoryCallback returnCategoryCallback) {
         this.category = category;
@@ -64,6 +72,24 @@ public class CategoryEditFragment extends BaseFragment {
         super.onStart();
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(sticky = true)
+    public void accountHolderUserReceived(UserBus userBus){
+        user = userBus.getUser();
+        if(user == null)
+            user = UserDBHelper.getUserFromCache(getContext());
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -149,7 +175,7 @@ public class CategoryEditFragment extends BaseFragment {
     private void updateCategory() {
 
         if(category.getId() == 0){
-            CategoryDBHelper.createCategory(categoryNameEt.getText().toString(), new CompleteCallback() {
+            CategoryDBHelper.createCategory(categoryNameEt.getText().toString(), user.getUsername(), new CompleteCallback() {
                 @Override
                 public void onComplete(BaseResponse baseResponse) {
                     CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
