@@ -14,6 +14,8 @@
     <color name="transparentBlack">#80000000</color>
     <color name="urgentColor">#FBD9D4</color>
 
+    <color name="keypad_item_color">@color/Black</color>
+
     <!--Indigo 500-->
     <!--Indigo 700-->
     <!--Pink 500-->

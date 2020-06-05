@@ -15,10 +15,12 @@
     <string name="search">Ara</string>
     <string name="save">Kaydet</string>
     <string name="edit_item">Ürün Güncelle</string>
-    <string name="edit_discount">Indirim Güncelle</string>
-    <string name="create_discount">Indirim Oluştur</string>
+    <string name="edit_discount">İndirim Güncelle</string>
+    <string name="create_discount">İndirim Oluştur</string>
     <string name="create_category">Kategori Oluştur</string>
     <string name="edit_category">Kategori Güncelle</string>
+    <string name="create_unit">Birim Oluştur</string>
+    <string name="edit_unit">Birim Güncelle</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
@@ -28,13 +30,16 @@
     <string name="there_is_no_search_result">Sonuç yok</string>
 
     <string name="createItem">Ürün Tanımla</string>
-    <string name="createDiscount">Indirim Tanımla</string>
+    <string name="createDiscount">İndirim Tanımla</string>
 
     <string name="amount">Tutar</string>
-    <string name="discount_name">Indirim Adı</string>
-    <string name="discount_amount">Indirim Tutarı</string>
+    <string name="discount_name">İndirim Adı</string>
+    <string name="discount_amount">İndirim Tutarı</string>
     <string name="category_name">Kategori Adı</string>
     <string name="categories">Kategoriler</string>
+    <string name="discounts">İndirimler</string>
+    <string name="unit_name">Birim Adı</string>
+    <string name="units">Birimler</string>
 
     <!-- Login screen items -->
     <string name="username">Kullanıcı Adı</string>
@@ -67,8 +72,9 @@
     <string name="amount_can_not_be_empty">Tutar boş olamaz</string>
     <string name="product_name_can_not_be_empty">Ürün adı boş olamaz</string>
 
-    <string name="discount_name_can_not_be_empty">Indirim adı boş olamaz</string>
-    <string name="discount_rate_amount_can_not_be_empty">Indirim tutarı veya indirim oranı dolu olmalıdır</string>
+    <string name="discount_name_can_not_be_empty">İndirim adı boş olamaz</string>
+    <string name="discount_rate_amount_can_not_be_empty">İndirim tutarı veya indirim oranı dolu olmalıdır</string>
 
     <string name="sure_to_delete_category">Kategoriyi silmek istediğinize emin misiniz?</string>
+    <string name="sure_to_delete_discount">İndirimi silmek istediğinize emin misiniz?</string>
 </resources>

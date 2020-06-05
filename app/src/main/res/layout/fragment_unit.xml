@@ -4,17 +4,18 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/productMainll">
+    android:id="@+id/unitMainll">
 
     <include layout="@layout/toolbar_including_back_view"/>
 
     <include layout="@layout/library_search_layout" />
 
+
     <Button
-        android:id="@+id/createDiscountBtn"
+        android:id="@+id/createUnitBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/create_discount"
+        android:text="@string/create_unit"
         android:textAllCaps="false"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp">
@@ -36,7 +37,7 @@
             android:layout_marginBottom="10dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/discountRv"
+            android:id="@+id/unitRv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="10dp">

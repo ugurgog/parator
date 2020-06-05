@@ -1,5 +1,8 @@
-package com.paypad.vuk507.discount;
+package com.paypad.vuk507.menu.discount;
 
+
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,15 +23,25 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.bumptech.glide.Glide;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.db.DiscountDBHelper;
+import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
+import com.paypad.vuk507.model.BaseResponse;
+import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.NumberTextWatcher;
 import com.paypad.vuk507.utils.ShapeUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,7 +49,7 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
-public class DiscountFragment extends BaseFragment {
+public class DiscountEditFragment extends BaseFragment {
 
     private View mView;
 
@@ -62,11 +75,17 @@ public class DiscountFragment extends BaseFragment {
 
     private Realm realm;
     private Discount discount;
+    private User user;
+    private ReturnDiscountCallback returnDiscountCallback;
 
-    private RealmResults<Discount> discounts;
+    private boolean discountNameFilled = false;
+    private boolean amountFilled = false;
+    private boolean rateFilled = false;
+    private boolean firstOpen = false;
 
-    public DiscountFragment(@Nullable Discount discount) {
+    public DiscountEditFragment(@Nullable Discount discount, ReturnDiscountCallback returnDiscountCallback) {
         this.discount = discount;
+        this.returnDiscountCallback = returnDiscountCallback;
     }
 
     @Override
@@ -85,7 +104,7 @@ public class DiscountFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
             Objects.requireNonNull(getActivity()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-            mView = inflater.inflate(R.layout.fragment_discount, container, false);
+            mView = inflater.inflate(R.layout.fragment_discount_edit, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -96,6 +115,25 @@ public class DiscountFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(sticky = true)
+    public void accountHolderUserReceived(UserBus userBus){
+        user = userBus.getUser();
+        if(user == null)
+            user = UserDBHelper.getUserFromCache(getContext());
     }
 
     private void initListeners() {
@@ -126,7 +164,7 @@ public class DiscountFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                reviseAmountViews(s);
+                reviseAmountViews((s != null && !s.toString().isEmpty()) ? s.toString() : "");
             }
         });
 
@@ -143,7 +181,7 @@ public class DiscountFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                reviseDiscountRateView(s);
+                reviseDiscountRateView((s != null && !s.toString().isEmpty()) ? s.toString() : "");
             }
         });
 
@@ -160,25 +198,58 @@ public class DiscountFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                reviseDiscountRateView(s);
+                reviseDiscountRateView((s != null && !s.toString().isEmpty()) ? s.toString() : "");
+            }
+        });
+
+        discountNameEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable != null && !editable.toString().isEmpty()) {
+                    discountNameFilled = true;
+                } else {
+                    discountNameFilled = false;
+                }
+                checkSaveButtonEnability();
             }
         });
     }
 
-    private void reviseDiscountRateView(Editable text){
-        if (text != null && !text.toString().isEmpty()) {
+    public void checkSaveButtonEnability(){
+        if(discountNameFilled && (rateFilled || amountFilled) && !firstOpen)
+            CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
+        else
+            CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+    }
+
+    private void reviseDiscountRateView(String text){
+        if (!text.isEmpty()) {
+            amountFilled = true;
             discountRateEt.setEnabled(false);
             discountRateEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.LemonChiffon, null),
                     getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
         } else {
+            amountFilled = false;
             discountRateEt.setEnabled(true);
             discountRateEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                     getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
         }
+        checkSaveButtonEnability();
     }
 
-    private void reviseAmountViews(Editable text){
-        if (text != null && !text.toString().isEmpty()) {
+    private void reviseAmountViews(String text){
+        if (!text.isEmpty()) {
+            rateFilled = true;
             amountEt.setEnabled(false);
             amountEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.LemonChiffon, null),
                     getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
@@ -186,6 +257,7 @@ public class DiscountFragment extends BaseFragment {
             doitAmountEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.LemonChiffon, null),
                     getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
         } else {
+            rateFilled = false;
             amountEt.setEnabled(true);
             amountEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                     getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
@@ -193,6 +265,7 @@ public class DiscountFragment extends BaseFragment {
             doitAmountEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                     getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
         }
+        checkSaveButtonEnability();
     }
 
     private void checkValidProduct() {
@@ -215,50 +288,58 @@ public class DiscountFragment extends BaseFragment {
     }
 
     private void updateDiscount() {
-        realm.executeTransaction(new Realm.Transaction(){
 
+        boolean inserted = false;
+        realm.beginTransaction();
+
+        if(discount.getId() == 0){
+            discount.setCreateDate(new Date());
+            discount.setId(DiscountDBHelper.getCurrentPrimaryKeyId());
+            inserted = true;
+        }
+
+        Discount tempDiscount = realm.copyToRealm(discount);
+
+        String amountStr = amountEt.getText().toString()
+                .concat(".")
+                .concat(!doitAmountEt.getText().toString().isEmpty() ? doitAmountEt.getText().toString() : "00");
+        double amount = Double.valueOf(amountStr);
+
+        int rate = (discountRateEt.getText() != null && !discountRateEt.getText().toString().isEmpty()) ?
+                Integer.parseInt(discountRateEt.getText().toString()) : 0;
+
+        tempDiscount.setAmount(amount);
+        tempDiscount.setName(discountNameEt.getText().toString());
+        tempDiscount.setRate(rate);
+        tempDiscount.setCreateUsername(user.getUsername());
+
+        //if(tempDiscount.getId() == 0)
+        //    tempDiscount.setCreateDate(new Date());
+        realm.commitTransaction();
+
+        boolean finalInserted = inserted;
+        DiscountDBHelper.createOrUpdateDiscount(tempDiscount, new CompleteCallback() {
             @Override
-            public void execute(Realm realm) {
+            public void onComplete(BaseResponse baseResponse) {
+                CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
+                if(baseResponse.isSuccess()){
+                    returnDiscountCallback.OnReturn((Discount) baseResponse.getObject());
+                    clearItems();
 
-                try{
-                    Number currentIdNum = realm.where(Discount.class).max("id");
-                    int nextId;
-                    if(currentIdNum == null) {
-                        nextId = 1;
-                    } else {
-                        nextId = currentIdNum.intValue() + 1;
+                    if(!finalInserted){
+                        Objects.requireNonNull(getActivity()).onBackPressed();
                     }
-
-                    String amountStr = amountEt.getText().toString()
-                            .concat(".")
-                            .concat(!doitAmountEt.getText().toString().isEmpty() ? doitAmountEt.getText().toString() : "00");
-                    double amount = Double.valueOf(amountStr);
-
-                    int rate = (discountRateEt.getText() != null && !discountRateEt.getText().toString().isEmpty()) ?
-                            Integer.parseInt(discountRateEt.getText().toString()) : 0;
-
-                    discount.setId(nextId);
-                    discount.setAmount(amount);
-                    discount.setName(discountNameEt.getText().toString());
-                    discount.setCreateDate(new Date());
-                    discount.setRate(rate);
-
-                    realm.insertOrUpdate(discount);
-                }catch (Exception e){
-                    CommonUtils.showToastShort(getActivity(), "Discount cannot be updated!");
-                    return;
                 }
-
-                CommonUtils.showToastShort(getActivity(), "Discount is saved/updated!");
-                clearViews();
             }
         });
     }
 
-    private void clearViews() {
+    private void clearItems() {
         setShapes();
         setEnabilityOfViews(true);
         clearViewsText();
+        discount = new Discount();
+        CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
     }
 
     private void clearViewsText() {
@@ -271,17 +352,47 @@ public class DiscountFragment extends BaseFragment {
     private void initVariables() {
         setShapes();
         Glide.with(Objects.requireNonNull(getActivity())).load(R.drawable.icon_discount).into(discountImgv);
+        checkSaveButtonEnability();
 
         realm = Realm.getDefaultInstance();
         if(discount == null) {
             toolbarTitleTv.setText(getActivity().getResources().getString(R.string.create_discount));
             discount = new Discount();
-        }else
+        }else {
             toolbarTitleTv.setText(getActivity().getResources().getString(R.string.edit_discount));
+            fillDiscountFields();
+        }
+    }
 
+    private void fillDiscountFields() {
+        discountNameEt.setText(discount.getName());
+        discountNameFilled = true;
+        firstOpen = true;
 
-        discounts = realm.where(Discount.class).findAllAsync();
-        discounts.addChangeListener(realmChangeListener);
+        if(discount.getRate() != 0){
+            discountRateEt.setText(String.valueOf(discount.getRate()));
+            reviseAmountViews(discountRateEt.getText().toString());
+            rateFilled = true;
+        }
+
+        if(discount.getAmount() != 0){
+            String amountStr = String.valueOf(discount.getAmount());
+            String[] parts = amountStr.split(Pattern.quote("."));
+
+            if(Double.parseDouble(parts[0]) != 0){
+                amountEt.setText(parts[0]);
+                reviseDiscountRateView(amountEt.getText().toString());
+            }
+
+            if(Double.parseDouble(parts[1]) != 0){
+                doitAmountEt.setText(parts[1]);
+                reviseDiscountRateView(doitAmountEt.getText().toString());
+            }
+
+            amountFilled = true;
+        }
+
+        firstOpen = false;
     }
 
     private void setEnabilityOfViews(boolean enability){
@@ -304,10 +415,6 @@ public class DiscountFragment extends BaseFragment {
                 getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
     }
 
-
-    private RealmChangeListener<RealmResults<Discount>> realmChangeListener = (discounts1) -> {
-        System.out.println(discounts1.toString());
-    };
 
 
 }

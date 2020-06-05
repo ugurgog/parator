@@ -21,16 +21,22 @@ public class CategoryDBHelper {
         return categories;
     }
 
-    public static void deleteCategory(int id){
+    public static void deleteCategory(long id, CompleteCallback completeCallback){
         Realm realm = Realm.getDefaultInstance();
-        final RealmResults<Category> results = realm.where(Category.class).findAll();
-
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Category category = results.get(id);
-                category.deleteFromRealm();
-                //realm.close();
+                BaseResponse baseResponse = new BaseResponse();
+                baseResponse.setSuccess(true);
+                try{
+                    Category category = realm.where(Category.class).equalTo("id", id).findFirst();
+                    category.deleteFromRealm();
+                    baseResponse.setMessage("Category deleted successfully");
+                }catch (Exception e){
+                    baseResponse.setSuccess(false);
+                    baseResponse.setMessage("Category cannot be deleted");
+                }
+                completeCallback.onComplete(baseResponse);
             }
         });
     }
@@ -63,6 +69,7 @@ public class CategoryDBHelper {
                     Category category = new Category();
                     category.setId(nextId);
                     category.setName(categoryName);
+                    category.setCreateUsername(username);
 
                     realm.insertOrUpdate(category);
 

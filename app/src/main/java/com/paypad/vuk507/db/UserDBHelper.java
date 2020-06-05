@@ -40,7 +40,7 @@ public class UserDBHelper {
 
     public static void createUser(String username, String password, boolean isLoggedIn, CompleteCallback completeCallback) {
 
-        User user = new User();
+        /*User user = new User();
         user.setCreateDate(new Date());
         user.setUsername(username);
         user.setPassword(password);
@@ -49,9 +49,9 @@ public class UserDBHelper {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         User realmUser = realm.copyToRealm(user);
-        realm.commitTransaction();
+        realm.commitTransaction();*/
 
-        /*
+
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction(){
 
@@ -75,12 +75,12 @@ public class UserDBHelper {
                     baseResponse.setMessage("User is saved/updated!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
-                    baseResponse.setMessage("User cannot be updated!");
+                    baseResponse.setMessage("User cannot be saved!");
                 }
                 //realm.close();
                 completeCallback.onComplete(baseResponse);
             }
-        });*/
+        });
     }
 
     public static void updateUserLoggedInStatus(String username, boolean loggedIn, CompleteCallback completeCallback){

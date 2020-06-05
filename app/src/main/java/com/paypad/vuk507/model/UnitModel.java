@@ -5,13 +5,11 @@ import java.util.Date;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Discount extends RealmObject {
+public class UnitModel extends RealmObject {
 
     @PrimaryKey
     private long id;
     private String name;
-    private int rate;
-    private double amount;
     private Date createDate;
     private String createUsername;
 
@@ -31,14 +29,6 @@ public class Discount extends RealmObject {
         this.name = name;
     }
 
-    public int getRate() {
-        return rate;
-    }
-
-    public void setRate(int rate) {
-        this.rate = rate;
-    }
-
     public Date getCreateDate() {
         return createDate;
     }
@@ -53,13 +43,5 @@ public class Discount extends RealmObject {
 
     public void setCreateUsername(String createUsername) {
         this.createUsername = createUsername;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
     }
 }

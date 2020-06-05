@@ -25,7 +25,6 @@ import com.paypad.vuk507.MainActivity;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.adapter.ChargePagerAdapter;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.discount.DiscountFragment;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.login.InitialActivity;

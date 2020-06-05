@@ -18,6 +18,8 @@
     <string name="create_discount">Create Discount</string>
     <string name="create_category">Create Category</string>
     <string name="edit_category">Edit Category</string>
+    <string name="create_unit">Create Unit</string>
+    <string name="edit_unit">Edit Unit</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -29,11 +31,15 @@
     <string name="createItem">Create Item</string>
     <string name="createDiscount">Create Discount</string>
 
+
     <string name="amount">Amount</string>
     <string name="discount_name">Discount Name</string>
     <string name="discount_amount">Discount Amount</string>
     <string name="category_name">Category Name</string>
     <string name="categories">Categories</string>
+    <string name="discounts">Discounts</string>
+    <string name="unit_name">Unit Name</string>
+    <string name="units">Units</string>
 
     <!-- Login screen items -->
     <string name="username">Username</string>
@@ -71,5 +77,6 @@
     <string name="discount_rate_amount_can_not_be_empty">Discount amount or discount rate must be filled</string>
 
     <string name="sure_to_delete_category">Are you sure you want to delete the category?</string>
+    <string name="sure_to_delete_discount">Are you sure you want to delete the discount?</string>
 
 </resources>

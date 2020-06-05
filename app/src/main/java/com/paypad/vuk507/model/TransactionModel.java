@@ -23,4 +23,6 @@ public class TransactionModel extends RealmObject {
     private String createUsername;
     private boolean paymentStatus;
 
+
+
 }

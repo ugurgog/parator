@@ -1,8 +1,6 @@
-package com.paypad.vuk507.menu.category;
+package com.paypad.vuk507.menu.unit;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,51 +11,46 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.menu.category.CategoryEditFragment;
+import com.paypad.vuk507.menu.category.CategoryListAdapter;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
+import com.paypad.vuk507.menu.unit.interfaces.ReturnUnitCallback;
 import com.paypad.vuk507.model.Category;
-import com.paypad.vuk507.model.City;
-import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.NumberTextWatcher;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class CategoryFragment extends BaseFragment {
+public class UnitFragment extends BaseFragment {
 
     private View mView;
 
@@ -73,21 +66,21 @@ public class CategoryFragment extends BaseFragment {
     ImageView searchCancelImgv;
     @BindView(R.id.searchResultTv)
     TextView searchResultTv;
-    @BindView(R.id.createCategoryBtn)
-    Button createCategoryBtn;
+    @BindView(R.id.createUnitBtn)
+    Button createUnitBtn;
 
-    @BindView(R.id.categoryRv)
-    RecyclerView categoryRv;
+    @BindView(R.id.unitRv)
+    RecyclerView unitRv;
 
-    private CategoryListAdapter categoryListAdapter;
+    private UnitListAdapter unitListAdapter;
 
     private Realm realm;
 
-    private RealmResults<Category> categories;
-    private List<Category> categoryList;
+    private RealmResults<UnitModel> unitModels;
+    private List<UnitModel> unitModelList;
     private User user;
 
-    public CategoryFragment() {
+    public UnitFragment() {
 
     }
 
@@ -124,7 +117,7 @@ public class CategoryFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
-            mView = inflater.inflate(R.layout.fragment_category, container, false);
+            mView = inflater.inflate(R.layout.fragment_unit, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -145,26 +138,13 @@ public class CategoryFragment extends BaseFragment {
             }
         });
 
-        createCategoryBtn.setOnClickListener(new View.OnClickListener() {
+        createUnitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new CategoryEditFragment(null, new ReturnCategoryCallback() {
+                mFragmentNavigation.pushFragment(new UnitEditFragment(null, new ReturnUnitCallback() {
                     @Override
-                    public void OnReturn(Category category) {
-                        //categoryListAdapter.addCategory(category);
-
-                        //categoryList.add(category);
-                        //categoryListAdapter.notifyDataSetChanged();
-
-                        //categories = CategoryDBHelper.getAllCategories(user.getUsername());
-                        //categoryList = new ArrayList(categories);
-
-
-                        //categoryList.add(category);
+                    public void OnReturn(UnitModel unitModel) {
                         updateAdapterWithCurrentList();
-
-
-                        //categoryListAdapter.notifyDataSetChanged();
                     }
                 }));
             }
@@ -203,39 +183,39 @@ public class CategoryFragment extends BaseFragment {
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        toolbarTitleTv.setText(getContext().getResources().getString(R.string.categories));
+        toolbarTitleTv.setText(getContext().getResources().getString(R.string.units));
         addItemImgv.setVisibility(View.GONE);
         setShapes();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
-        categoryRv.setLayoutManager(linearLayoutManager);
-        categoryRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
+        unitRv.setLayoutManager(linearLayoutManager);
+        unitRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
 
     }
 
     public void updateAdapterWithCurrentList(){
-        categories = CategoryDBHelper.getAllCategories(user.getUsername());
-        categoryList = new ArrayList(categories);
-        categoryListAdapter = new CategoryListAdapter(getContext(), categoryList, mFragmentNavigation, new ReturnCategoryCallback() {
+        unitModels = UnitDBHelper.getAllUnits(user.getUsername());
+        unitModelList = new ArrayList(unitModels);
+        unitListAdapter = new UnitListAdapter(getContext(), unitModelList, mFragmentNavigation, new ReturnUnitCallback() {
             @Override
-            public void OnReturn(Category category) {
+            public void OnReturn(UnitModel unitModel) {
                 updateAdapterWithCurrentList();
             }
         });
-        categoryRv.setAdapter(categoryListAdapter);
+        unitRv.setAdapter(unitListAdapter);
     }
 
     private void setShapes() {
-        createCategoryBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
+        createUnitBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                 getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
     }
 
     public void updateAdapter(String searchText) {
-        if (searchText != null && categoryListAdapter != null) {
-            categoryListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+        if (searchText != null && unitListAdapter != null) {
+            unitListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
                     if (size == 0)

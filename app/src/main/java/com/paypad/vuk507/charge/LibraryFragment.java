@@ -14,7 +14,9 @@ import androidx.annotation.Nullable;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.discount.DiscountFragment;
+import com.paypad.vuk507.menu.discount.DiscountEditFragment;
+import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
+import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.product.ProductFragment;
 
 import butterknife.BindView;
@@ -76,7 +78,12 @@ public class LibraryFragment extends BaseFragment {
                                 mFragmentNavigation.pushFragment(new ProductFragment(null));
                                 break;
                             case R.id.createDiscount:
-                                mFragmentNavigation.pushFragment(new DiscountFragment(null));
+                                mFragmentNavigation.pushFragment(new DiscountEditFragment(null, new ReturnDiscountCallback() {
+                                    @Override
+                                    public void OnReturn(Discount discount) {
+
+                                    }
+                                }));
                                 break;
                         }
                         return false;

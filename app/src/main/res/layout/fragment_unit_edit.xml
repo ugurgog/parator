@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/unitMainll">
+
+    <include layout="@layout/toolbar_item_update"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:background="@color/fab_color_shadow" />
+
+        <EditText
+            android:id="@+id/unitNameEt"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/discount_edittext_height_size"
+            android:background="@color/transparent"
+            android:drawablePadding="20dp"
+            android:hint="@string/unit_name"
+            android:inputType="text"
+            android:paddingLeft="8dp"
+            android:textColor="@color/Black"
+            android:textColorHint="@color/DarkGray"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

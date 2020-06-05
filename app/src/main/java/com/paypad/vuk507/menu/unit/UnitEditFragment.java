@@ -1,34 +1,34 @@
-package com.paypad.vuk507.menu.category;
+package com.paypad.vuk507.menu.unit;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.db.DiscountDBHelper;
+import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
+import com.paypad.vuk507.menu.unit.interfaces.ReturnUnitCallback;
 import com.paypad.vuk507.model.BaseResponse;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -44,12 +44,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 
-public class CategoryEditFragment extends BaseFragment {
+public class UnitEditFragment extends BaseFragment {
 
     private View mView;
 
-    @BindView(R.id.categoryNameEt)
-    EditText categoryNameEt;
+    @BindView(R.id.unitNameEt)
+    EditText unitNameEt;
     @BindView(R.id.cancelImgv)
     ClickableImageView cancelImgv;
     @BindView(R.id.toolbarTitleTv)
@@ -58,13 +58,13 @@ public class CategoryEditFragment extends BaseFragment {
     Button saveBtn;
 
     private Realm realm;
-    private Category category;
-    private ReturnCategoryCallback returnCategoryCallback;
+    private UnitModel unitModel;
+    private ReturnUnitCallback returnUnitCallback;
     private User user;
 
-    public CategoryEditFragment(@Nullable Category category, ReturnCategoryCallback returnCategoryCallback) {
-        this.category = category;
-        this.returnCategoryCallback = returnCategoryCallback;
+    public UnitEditFragment(@Nullable UnitModel unitModel, ReturnUnitCallback returnUnitCallback) {
+        this.unitModel = unitModel;
+        this.returnUnitCallback = returnUnitCallback;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class CategoryEditFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
-            mView = inflater.inflate(R.layout.fragment_category_edit, container, false);
+            mView = inflater.inflate(R.layout.fragment_unit_edit, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -121,7 +121,7 @@ public class CategoryEditFragment extends BaseFragment {
             }
         });
 
-        categoryNameEt.addTextChangedListener(new TextWatcher() {
+        unitNameEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -155,56 +155,62 @@ public class CategoryEditFragment extends BaseFragment {
         setShapes();
         CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
 
-        if(category == null){
-            category = new Category();
-            toolbarTitleTv.setText(getContext().getResources().getString(R.string.create_category));
+        if(unitModel == null){
+            unitModel = new UnitModel();
+            toolbarTitleTv.setText(getContext().getResources().getString(R.string.create_unit));
         }else
-            categoryNameEt.setText(category.getName());
-            toolbarTitleTv.setText(getContext().getResources().getString(R.string.edit_category));
+            unitNameEt.setText(unitModel.getName());
+        toolbarTitleTv.setText(getContext().getResources().getString(R.string.edit_unit));
     }
 
     private void setShapes() {
-        categoryNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
+        unitNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                 getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
     }
 
     private void checkValidCategory() {
-        updateCategory();
+        updateUnit();
     }
 
-    private void updateCategory() {
+    private void updateUnit() {
 
-        if(category.getId() == 0){
-            CategoryDBHelper.createCategory(categoryNameEt.getText().toString(), user.getUsername(), new CompleteCallback() {
-                @Override
-                public void onComplete(BaseResponse baseResponse) {
-                    CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
-                    if(baseResponse.isSuccess()){
-                        returnCategoryCallback.OnReturn((Category) baseResponse.getObject());
-                        clearViews();
-                    }
+        boolean inserted = false;
+        realm.beginTransaction();
 
-                }
-            });
-        }else {
-            CategoryDBHelper.updateCategory(category, categoryNameEt.getText().toString(), new CompleteCallback() {
-                @Override
-                public void onComplete(BaseResponse baseResponse) {
-                    CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
-                    if(baseResponse.isSuccess()){
-                        returnCategoryCallback.OnReturn((Category) baseResponse.getObject());
-                        clearViews();
+        if(unitModel.getId() == 0){
+            unitModel.setCreateDate(new Date());
+            unitModel.setId(UnitDBHelper.getCurrentPrimaryKeyId());
+            inserted = true;
+        }
+
+        UnitModel tempUnit = realm.copyToRealm(unitModel);
+
+        tempUnit.setName(unitNameEt.getText().toString());
+        tempUnit.setCreateUsername(user.getUsername());
+
+        realm.commitTransaction();
+
+        boolean finalInserted = inserted;
+        UnitDBHelper.createOrUpdateUnit(tempUnit, new CompleteCallback() {
+            @Override
+            public void onComplete(BaseResponse baseResponse) {
+                CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
+                if(baseResponse.isSuccess()){
+                    returnUnitCallback.OnReturn((UnitModel) baseResponse.getObject());
+                    clearViews();
+
+                    if(!finalInserted){
                         Objects.requireNonNull(getActivity()).onBackPressed();
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     private void clearViews() {
-        categoryNameEt.setText("");
+        unitNameEt.setText("");
         CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
-        category = new Category();
+        unitModel = new UnitModel();
         CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
     }
 }

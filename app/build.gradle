@@ -60,7 +60,7 @@ dependencies {
 
 
     //Trial
-    implementation 'com.github.wRorsjakz:Android-NumPad:1.0.1'
+    //implementation 'com.github.wRorsjakz:Android-NumPad:1.0.1'
 
 
 }

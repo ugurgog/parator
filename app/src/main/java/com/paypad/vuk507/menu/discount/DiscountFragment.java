@@ -1,8 +1,7 @@
-package com.paypad.vuk507.menu.category;
+package com.paypad.vuk507.menu.discount;
+
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,51 +12,46 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.menu.category.CategoryEditFragment;
+import com.paypad.vuk507.menu.category.CategoryListAdapter;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
+import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Category;
-import com.paypad.vuk507.model.City;
 import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.NumberTextWatcher;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class CategoryFragment extends BaseFragment {
+public class DiscountFragment extends BaseFragment {
 
     private View mView;
 
@@ -73,21 +67,19 @@ public class CategoryFragment extends BaseFragment {
     ImageView searchCancelImgv;
     @BindView(R.id.searchResultTv)
     TextView searchResultTv;
-    @BindView(R.id.createCategoryBtn)
-    Button createCategoryBtn;
+    @BindView(R.id.createDiscountBtn)
+    Button createDiscountBtn;
 
-    @BindView(R.id.categoryRv)
-    RecyclerView categoryRv;
+    @BindView(R.id.discountRv)
+    RecyclerView discountRv;
 
-    private CategoryListAdapter categoryListAdapter;
-
-    private Realm realm;
-
-    private RealmResults<Category> categories;
-    private List<Category> categoryList;
     private User user;
+    private Realm realm;
+    private RealmResults<Discount> discounts;
+    private List<Discount> discountList;
+    private DiscountListAdapter discountListAdapter;
 
-    public CategoryFragment() {
+    public DiscountFragment() {
 
     }
 
@@ -124,7 +116,7 @@ public class CategoryFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
-            mView = inflater.inflate(R.layout.fragment_category, container, false);
+            mView = inflater.inflate(R.layout.fragment_discount, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -145,26 +137,18 @@ public class CategoryFragment extends BaseFragment {
             }
         });
 
-        createCategoryBtn.setOnClickListener(new View.OnClickListener() {
+        createDiscountBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new CategoryEditFragment(null, new ReturnCategoryCallback() {
+                mFragmentNavigation.pushFragment(new DiscountEditFragment(null, new ReturnDiscountCallback() {
                     @Override
-                    public void OnReturn(Category category) {
-                        //categoryListAdapter.addCategory(category);
-
-                        //categoryList.add(category);
-                        //categoryListAdapter.notifyDataSetChanged();
-
-                        //categories = CategoryDBHelper.getAllCategories(user.getUsername());
-                        //categoryList = new ArrayList(categories);
-
-
-                        //categoryList.add(category);
+                    public void OnReturn(Discount discount) {
+                        //discountListAdapter.addDiscount(discount);
                         updateAdapterWithCurrentList();
 
-
-                        //categoryListAdapter.notifyDataSetChanged();
+                        //discountList.add(discount);
+                        //discountListAdapter = new DiscountListAdapter(getContext(), discountList, mFragmentNavigation);
+                        //discountRv.setAdapter(discountListAdapter);
                     }
                 }));
             }
@@ -203,39 +187,38 @@ public class CategoryFragment extends BaseFragment {
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        toolbarTitleTv.setText(getContext().getResources().getString(R.string.categories));
+        toolbarTitleTv.setText(getContext().getResources().getString(R.string.discounts));
         addItemImgv.setVisibility(View.GONE);
         setShapes();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
-        categoryRv.setLayoutManager(linearLayoutManager);
-        categoryRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
+        discountRv.setLayoutManager(linearLayoutManager);
+        discountRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
-
     }
 
     public void updateAdapterWithCurrentList(){
-        categories = CategoryDBHelper.getAllCategories(user.getUsername());
-        categoryList = new ArrayList(categories);
-        categoryListAdapter = new CategoryListAdapter(getContext(), categoryList, mFragmentNavigation, new ReturnCategoryCallback() {
+        discounts = DiscountDBHelper.getAllDiscounts(user.getUsername());
+        discountList = new ArrayList(discounts);
+        discountListAdapter = new DiscountListAdapter(getContext(), discountList, mFragmentNavigation, new ReturnDiscountCallback() {
             @Override
-            public void OnReturn(Category category) {
+            public void OnReturn(Discount discount) {
                 updateAdapterWithCurrentList();
             }
         });
-        categoryRv.setAdapter(categoryListAdapter);
+        discountRv.setAdapter(discountListAdapter);
     }
 
     private void setShapes() {
-        createCategoryBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
+        createDiscountBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                 getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
     }
 
     public void updateAdapter(String searchText) {
-        if (searchText != null && categoryListAdapter != null) {
-            categoryListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+        if (searchText != null && discountListAdapter != null) {
+            discountListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
                     if (size == 0)

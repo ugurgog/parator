@@ -19,13 +19,13 @@ public class Vuk507Application extends Application {
         super.onCreate();
         Realm.init(this);
 
-        final RealmConfiguration config = new RealmConfiguration.Builder()
+        /*final RealmConfiguration config = new RealmConfiguration.Builder()
                 .name(REALM_DB_NAME)
                 .schemaVersion(REALM_SCHEMA_VERSION)
                 .migration(new RealmMigrations()).build();
 
         Realm.setDefaultConfiguration(config);
-        Realm.getInstance(config);
+        Realm.getInstance(config);*/
     }
 
 

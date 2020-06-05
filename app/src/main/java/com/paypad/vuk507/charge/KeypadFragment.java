@@ -10,11 +10,14 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.numpad.NumPad;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.keypad.KeyPad;
+import com.paypad.vuk507.keypad.KeyPadClick;
+import com.paypad.vuk507.keypad.keyPadClickListener;
 import com.paypad.vuk507.model.Dog;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -25,6 +28,8 @@ import io.realm.RealmResults;
 public class KeypadFragment extends BaseFragment {
 
     View mView;
+
+    private KeyPad keypad;
 
     public KeypadFragment() {
 
@@ -47,10 +52,12 @@ public class KeypadFragment extends BaseFragment {
         mView = inflater.inflate(R.layout.fragment_keypad, container, false);
         ButterKnife.bind(this, mView);
         initVariables();
+        initListeners();
         return mView;
     }
 
     private void initVariables() {
+        keypad = mView.findViewById(R.id.keypad);
 
         //Realm realm = Realm.getDefaultInstance();
 
@@ -58,6 +65,16 @@ public class KeypadFragment extends BaseFragment {
         //puppies.size();
 
     }
+
+    private void initListeners() {
+        keypad.setOnNumPadClickListener(new KeyPadClick(new keyPadClickListener() {
+            @Override
+            public void onKeypadClicked(ArrayList<Integer> nums) {
+
+            }
+        }));
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

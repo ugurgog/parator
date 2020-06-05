@@ -14,14 +14,13 @@ import android.widget.TableRow;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
-import com.example.numpad.NumPadClick;
 import com.paypad.vuk507.R;
 
 public class KeyPad extends TableLayout {
 
     private Button num1, num2, num3, num4, num5, num6, num7, num8, num9, num0, btnNumpadBack;
     private ImageButton btnNumpadAdd;
-    private NumPadClick listener;
+    private KeyPadClick listener;
     private TableLayout tableLayout;
 
     public KeyPad(Context context, AttributeSet attrs) {
@@ -29,7 +28,7 @@ public class KeyPad extends TableLayout {
         inflateNumpad(context);
     }
 
-    public void setOnNumPadClickListener(@NonNull NumPadClick listener) {
+    public void setOnNumPadClickListener(@NonNull KeyPadClick listener) {
         this.listener = listener;
         initialiseButtonListener();
     }

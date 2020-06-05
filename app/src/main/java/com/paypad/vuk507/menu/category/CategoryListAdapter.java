@@ -3,11 +3,14 @@ package com.paypad.vuk507.menu.category;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,9 +20,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.db.DiscountDBHelper;
+import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
+import com.paypad.vuk507.interfaces.ReturnObjectCallback;
+import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
+import com.paypad.vuk507.model.BaseResponse;
 import com.paypad.vuk507.model.Category;
+import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
 
 import java.util.ArrayList;
@@ -29,13 +39,19 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     private Context context;
     private List<Category> categories = new ArrayList<>();
+    private List<Category> orgCategories = new ArrayList<>();
+
     private BaseFragment.FragmentNavigation fragmentNavigation;
+    private ReturnCategoryCallback returnCategoryCallback;
 
     public CategoryListAdapter(Context context, List<Category> categories,
-                               BaseFragment.FragmentNavigation fragmentNavigation) {
+                               BaseFragment.FragmentNavigation fragmentNavigation,
+                               ReturnCategoryCallback returnCategoryCallback) {
         this.context = context;
         this.categories.addAll(categories);
+        this.orgCategories.addAll(categories);
         this.fragmentNavigation = fragmentNavigation;
+        this.returnCategoryCallback = returnCategoryCallback;
     }
 
     @Override
@@ -68,8 +84,17 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
                     fragmentNavigation.pushFragment(new CategoryEditFragment(category, new ReturnCategoryCallback() {
                         @Override
                         public void OnReturn(Category category) {
-                            categories.set(position, category);
-                            notifyItemChanged(position);
+
+                            if(category != null){
+                                categories.set(position, category);
+                                categoryChangedResult(position);
+                            }
+
+
+
+
+                            //notifyItemChanged(position);
+                            //notifyDataSetChanged();
                         }
                     }));
                 }
@@ -92,10 +117,31 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
                             .OnPositiveClicked(new CustomDialogListener() {
                                 @Override
                                 public void OnClick() {
-                                    CategoryDBHelper.deleteCategory(position);
-                                    categories.remove(position);
-                                    notifyItemRemoved(position);
-                                    notifyItemRangeChanged(position, getItemCount());
+                                    CategoryDBHelper.deleteCategory(category.getId(), new CompleteCallback() {
+                                        @Override
+                                        public void onComplete(BaseResponse baseResponse) {
+                                            CommonUtils.showToastShort(context, baseResponse.getMessage());
+                                            if(baseResponse.isSuccess()){
+
+
+
+
+                                                //categoryRemoveResult(position);
+                                                returnCategoryCallback.OnReturn((Category) baseResponse.getObject());
+
+                                                //categories.clear();
+                                                //categories.addAll(CategoryDBHelper.getAllCategories(LoginUtils.getUsernameFromCache(context)));
+                                                //notifyDataSetChanged();
+
+
+                                                //categories.remove(position);
+                                                //notifyItemRemoved(position);
+                                                //notifyItemRangeChanged(position, getItemCount());
+                                                //this.notifyDataSetChanged();
+                                            }
+                                        }
+                                    });
+
                                 }
                             })
                             .OnNegativeClicked(new CustomDialogListener() {
@@ -111,16 +157,36 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         public void setData(Category category, int position) {
             this.category = category;
             this.position = position;
-
             categoryTv.setText(category.getName());
+
+            Log.i("Info", "Category_position:" + position);
+            try{
+
+                Log.i("Info", "Category_name:" + category.getName());
+            }catch (Exception e){
+
+            }
         }
+    }
+
+    public void categoryRemoveResult(int position){
+        categories.remove(position);
+        //this.notifyItemRemoved(position);
+        //this.notifyItemRangeChanged(position, getItemCount());
+        this.notifyDataSetChanged();
+    }
+
+    public void categoryChangedResult(int position){
+        this.notifyItemChanged(position);
+        //notifyDataSetChanged();
     }
 
     public void addCategory(Category category){
         //TODO - categories listesi sorunlu bakacagiz
         if(categories != null && category != null){
             categories.add(category);
-            notifyItemInserted(categories.size() - 1);
+            //this.notifyItemInserted(categories.size() - 1);
+            this.notifyDataSetChanged();
         }
     }
 
@@ -132,8 +198,31 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     @Override
     public int getItemCount() {
-        int size;
-        size = categories.size();
-        return size;
+        if(categories != null)
+            return categories.size();
+        else
+            return 0;
+    }
+
+    public void updateAdapter(String searchText, ReturnSizeCallback returnSizeCallback) {
+        if (searchText.trim().isEmpty()){
+            categories = orgCategories;
+        } else {
+
+            List<Category> tempCategoryList = new ArrayList<>();
+            for (Category category : orgCategories) {
+                if (category.getName() != null &&
+                        category.getName().toLowerCase().contains(searchText.toLowerCase()))
+                    tempCategoryList.add(category);
+            }
+            categories = tempCategoryList;
+        }
+
+        this.notifyDataSetChanged();
+
+        if (categories != null)
+            returnSizeCallback.OnReturn(categories.size());
+        else
+            returnSizeCallback.OnReturn(0);
     }
 }

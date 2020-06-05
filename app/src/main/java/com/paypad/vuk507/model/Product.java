@@ -11,12 +11,12 @@ public class Product extends RealmObject {
     @PrimaryKey
     private long id;
     private String title;
-    private String category;
+    private int categoryId;
+    private int unitTypeId;
     private double amount;
-    private String unitType;
-    private double taxAmount;
+    private int taxRate;
     private Date createDate;
-    private String createUserId;
+    private String crateUsername;
 
     public long getId() {
         return id;
@@ -50,35 +50,35 @@ public class Product extends RealmObject {
         this.createDate = createDate;
     }
 
-    public String getCreateUserId() {
-        return createUserId;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setCreateUserId(String createUserId) {
-        this.createUserId = createUserId;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public String getCategory() {
-        return category;
+    public int getUnitTypeId() {
+        return unitTypeId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setUnitTypeId(int unitTypeId) {
+        this.unitTypeId = unitTypeId;
     }
 
-    public String getUnitType() {
-        return unitType;
+    public int getTaxRate() {
+        return taxRate;
     }
 
-    public void setUnitType(String unitType) {
-        this.unitType = unitType;
+    public void setTaxRate(int taxRate) {
+        this.taxRate = taxRate;
     }
 
-    public double getTaxAmount() {
-        return taxAmount;
+    public String getCrateUsername() {
+        return crateUsername;
     }
 
-    public void setTaxAmount(double taxAmount) {
-        this.taxAmount = taxAmount;
+    public void setCrateUsername(String crateUsername) {
+        this.crateUsername = crateUsername;
     }
 }
