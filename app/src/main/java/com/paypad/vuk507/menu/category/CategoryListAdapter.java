@@ -12,8 +12,10 @@ import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,6 +34,7 @@ import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +57,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         this.returnCategoryCallback = returnCategoryCallback;
     }
 
+    @NonNull
     @Override
     public CategoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
@@ -67,6 +71,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         CardView categoryItemCv;
         TextView categoryTv;
         ImageView deleteImgv;
+        RadioButton selectCategoryRb;
         Category category;
 
         int position;
@@ -77,6 +82,8 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
             categoryTv = view.findViewById(R.id.categoryTv);
             categoryItemCv = view.findViewById(R.id.categoryItemCv);
             deleteImgv = view.findViewById(R.id.deleteImgv);
+            selectCategoryRb = view.findViewById(R.id.selectCategoryRb);
+            selectCategoryRb.setVisibility(View.GONE);
 
             categoryItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -89,10 +96,6 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
                                 categories.set(position, category);
                                 categoryChangedResult(position);
                             }
-
-
-
-
                             //notifyItemChanged(position);
                             //notifyDataSetChanged();
                         }

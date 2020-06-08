@@ -24,8 +24,8 @@
         <EditText
             android:id="@+id/unitNameEt"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/discount_edittext_height_size"
-            android:background="@color/transparent"
+            android:layout_height="@dimen/custom_edittext_height_size"
+            android:background="@drawable/custom_edittext_bg"
             android:drawablePadding="20dp"
             android:hint="@string/unit_name"
             android:inputType="text"
@@ -33,6 +33,17 @@
             android:textColor="@color/Black"
             android:textColorHint="@color/DarkGray"
             android:layout_marginTop="10dp"/>
+
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/custom_button_length_size"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/custom_button_bg"
+            android:text="@string/delete_unit"
+            android:textColor="@color/DodgerBlue"
+            android:textAllCaps="false"/>
 
     </LinearLayout>
 

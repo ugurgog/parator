@@ -10,13 +10,13 @@ public class Product extends RealmObject {
 
     @PrimaryKey
     private long id;
-    private String title;
-    private int categoryId;
-    private int unitTypeId;
+    private String name;
+    private long categoryId;
+    private String unitType;
     private double amount;
-    private int taxRate;
+    private long taxId;
     private Date createDate;
-    private String crateUsername;
+    private String userUuid;
 
     public long getId() {
         return id;
@@ -26,12 +26,12 @@ public class Product extends RealmObject {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getAmount() {
@@ -50,35 +50,35 @@ public class Product extends RealmObject {
         this.createDate = createDate;
     }
 
-    public int getCategoryId() {
+    public long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(long categoryId) {
         this.categoryId = categoryId;
     }
 
-    public int getUnitTypeId() {
-        return unitTypeId;
+    public String getUnitType() {
+        return unitType;
     }
 
-    public void setUnitTypeId(int unitTypeId) {
-        this.unitTypeId = unitTypeId;
+    public void setUnitType(String unitType) {
+        this.unitType = unitType;
     }
 
-    public int getTaxRate() {
-        return taxRate;
+    public long getTaxId() {
+        return taxId;
     }
 
-    public void setTaxRate(int taxRate) {
-        this.taxRate = taxRate;
+    public void setTaxId(long taxId) {
+        this.taxId = taxId;
     }
 
-    public String getCrateUsername() {
-        return crateUsername;
+    public String getUserUuid() {
+        return userUuid;
     }
 
-    public void setCrateUsername(String crateUsername) {
-        this.crateUsername = crateUsername;
+    public void setUserUuid(String userUuid) {
+        this.userUuid = userUuid;
     }
 }

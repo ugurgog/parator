@@ -1,40 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/toolbar"
+
+<LinearLayout android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="?attr/colorPrimary"
-    android:gravity="center"
-    app:contentInsetLeft="0dp"
-    app:contentInsetStart="0dp"
-    app:elevation="@dimen/default_elevation"
-    app:layout_scrollFlags="scroll|enterAlways"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:gravity="center"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        app:elevation="@dimen/default_elevation"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <RelativeLayout
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <com.paypad.vuk507.utils.ClickableImage.ClickableImageView
                 android:id="@+id/backImgv"
                 android:layout_width="?attr/actionBarSize"
                 android:layout_height="?attr/actionBarSize"
-                android:padding="10dp"
+                android:padding="15dp"
                 android:src="@drawable/ic_arrow_back_gray_24dp"
+                android:tint="@color/Black"
                 android:visibility="visible" />
-
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/toolbarTitleTv"
@@ -42,12 +38,20 @@
                 android:layout_height="match_parent"
                 android:layout_weight="5"
                 android:fontFamily="@font/lato_family"
-                android:gravity="center"
+                android:gravity="left|center"
+                android:text="Categories"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/toolbarTextSize" />
 
+
         </LinearLayout>
 
-    </LinearLayout>
 
-</androidx.appcompat.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="@color/fab_color_shadow" />
+
+</LinearLayout>

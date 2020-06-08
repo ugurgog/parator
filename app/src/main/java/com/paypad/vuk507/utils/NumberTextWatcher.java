@@ -36,11 +36,13 @@ public class NumberTextWatcher implements TextWatcher {
             String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
             Number n = df.parse(v);
             int cp = et.getSelectionStart();
+
             if (hasFractionalPart) {
                 et.setText(df.format(n));
             } else {
                 et.setText(dfnd.format(n));
             }
+
             endlen = et.getText().length();
             int sel = (cp + (endlen - inilen));
             if (sel > 0 && sel <= et.getText().length()) {

@@ -196,7 +196,8 @@ public class LoginActivity extends AppCompatActivity
                 @Override
                 public void onComplete(BaseResponse baseResponse) {
                     if(baseResponse.isSuccess()){
-                        LoginUtils.applySharedPreferences(LoginActivity.this, username, userPassword);
+                        LoginUtils.applySharedPreferences(LoginActivity.this, user.getUsername(),
+                                user.getPassword(), user.getUuid());
                         startMainPage();
                     }
                 }

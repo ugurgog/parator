@@ -8,7 +8,8 @@ public enum ItemsEnum {
     CATEGORIES("Categories", "Kategoriler", 1),
     MODIFIERS("Modifiers", "Düzenleyiciler", 2),
     DISCOUNTS("Discounts", "İndirimler", 3),
-    UNITS("Units", "Birimler", 4);
+    UNITS("Units", "Birimler", 4),
+    TAXES("Taxes", "Vergiler", 5);
 
     private final String labelTr;
     private final String labelEn;

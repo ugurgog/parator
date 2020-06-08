@@ -9,6 +9,7 @@ import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.User;
 
 import java.util.Date;
+import java.util.UUID;
 
 import io.realm.Realm;
 
@@ -38,7 +39,8 @@ public class UserDBHelper {
         return getUserByUsername(username);
     }
 
-    public static void createUser(String username, String password, boolean isLoggedIn, CompleteCallback completeCallback) {
+    public static void createUser(String username, String password, String uuid,
+                                  boolean isLoggedIn, CompleteCallback completeCallback) {
 
         /*User user = new User();
         user.setCreateDate(new Date());
@@ -68,6 +70,7 @@ public class UserDBHelper {
                     user.setUsername(username);
                     user.setPassword(password);
                     user.setLoggedIn(isLoggedIn);
+                    user.setUuid(uuid);
 
                     //realm.insertOrUpdate(user);
 

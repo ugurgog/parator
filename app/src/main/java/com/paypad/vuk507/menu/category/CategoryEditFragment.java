@@ -164,8 +164,8 @@ public class CategoryEditFragment extends BaseFragment {
     }
 
     private void setShapes() {
-        categoryNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
+        //categoryNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
+        //        getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
     }
 
     private void checkValidCategory() {

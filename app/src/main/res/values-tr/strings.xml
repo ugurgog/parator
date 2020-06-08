@@ -21,6 +21,23 @@
     <string name="edit_category">Kategori Güncelle</string>
     <string name="create_unit">Birim Oluştur</string>
     <string name="edit_unit">Birim Güncelle</string>
+    <string name="delete_unit">Birimi Sil</string>
+    <string name="confirm_delete">Silmeyi Onayla</string>
+    <string name="delete_tax">Vergii Sil</string>
+    <string name="create_tax">Vergi Oluştur</string>
+    <string name="edit_tax">Vergi Güncelle</string>
+    <string name="add_options">Opsiyon Ekle</string>
+    <string name="add_options_desc">Varyasyonlar oluşturmak için bir öğeye özel bir seçenekler kümesi ekleyin. </string>
+    <string name="options">Opsiyonlar</string>
+    <string name="price_and_inventory">Fiyat ve envanter</string>
+    <string name="unit_type">Birim Tipi</string>
+    <string name="inventory_desc">Bu ürün için tam veya ondalık miktarları satmak arasında seçim yapın</string>
+    <string name="add_variation">Varyasyon Ekle</string>
+    <string name="description">Açıklama Girin</string>
+    <string name="select_unit">Birim Seçin</string>
+    <string name="select_tax">Vergi Seçin</string>
+    <string name="select_category">Kategori Seçin</string>
+    <string name="category">Kategori</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
@@ -40,6 +57,8 @@
     <string name="discounts">İndirimler</string>
     <string name="unit_name">Birim Adı</string>
     <string name="units">Birimler</string>
+    <string name="tax_name">Vergi Adı</string>
+    <string name="taxes">Vergiler</string>
 
     <!-- Login screen items -->
     <string name="username">Kullanıcı Adı</string>
@@ -57,6 +76,7 @@
     <string name="register">Kaydol</string>
     <string name="registering_user">Kullanıcı kaydediliyor...</string>
     <string name="username_is_defined_before">Sistemde böyle bir kullanıcı adı mevcut. Lütfen farklı kullanıcı adı belirleyin</string>
+    <string name="product_category_can_not_be_empty">Lütfen bir kategori seçiniz</string>
 
     <!-- Main menu items -->
     <string name="checkout">Çıkış</string>

@@ -138,37 +138,14 @@ public class CategoryFragment extends BaseFragment {
     }
 
     private void initListeners() {
-        backImgv.setOnClickListener(new View.OnClickListener() {
+        backImgv.setOnClickListener(view -> Objects.requireNonNull(getActivity()).onBackPressed());
+
+        createCategoryBtn.setOnClickListener(view -> mFragmentNavigation.pushFragment(new CategoryEditFragment(null, new ReturnCategoryCallback() {
             @Override
-            public void onClick(View view) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
+            public void OnReturn(Category category) {
+                updateAdapterWithCurrentList();
             }
-        });
-
-        createCategoryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new CategoryEditFragment(null, new ReturnCategoryCallback() {
-                    @Override
-                    public void OnReturn(Category category) {
-                        //categoryListAdapter.addCategory(category);
-
-                        //categoryList.add(category);
-                        //categoryListAdapter.notifyDataSetChanged();
-
-                        //categories = CategoryDBHelper.getAllCategories(user.getUsername());
-                        //categoryList = new ArrayList(categories);
-
-
-                        //categoryList.add(category);
-                        updateAdapterWithCurrentList();
-
-
-                        //categoryListAdapter.notifyDataSetChanged();
-                    }
-                }));
-            }
-        });
+        })));
 
         searchEdittext.addTextChangedListener(new TextWatcher() {
             @Override
@@ -191,21 +168,17 @@ public class CategoryFragment extends BaseFragment {
             }
         });
 
-        searchCancelImgv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchEdittext.setText("");
-                searchCancelImgv.setVisibility(View.GONE);
-                CommonUtils.showKeyboard(getContext(),false, searchEdittext);
-            }
+        searchCancelImgv.setOnClickListener(v -> {
+            searchEdittext.setText("");
+            searchCancelImgv.setVisibility(View.GONE);
+            CommonUtils.showKeyboard(getContext(),false, searchEdittext);
         });
     }
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        toolbarTitleTv.setText(getContext().getResources().getString(R.string.categories));
+        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.categories));
         addItemImgv.setVisibility(View.GONE);
-        setShapes();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -228,17 +201,12 @@ public class CategoryFragment extends BaseFragment {
         categoryRv.setAdapter(categoryListAdapter);
     }
 
-    private void setShapes() {
-        createCategoryBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-    }
-
     public void updateAdapter(String searchText) {
         if (searchText != null && categoryListAdapter != null) {
             categoryListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0)
+                    if (size == 0 && categoryList.size() > 0)
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
@@ -77,11 +78,12 @@ public class UnitListAdapter extends RecyclerView.Adapter<UnitListAdapter.UnitHo
                 public void onClick(View view) {
                     fragmentNavigation.pushFragment(new UnitEditFragment(unitModel, new ReturnUnitCallback() {
                         @Override
-                        public void OnReturn(UnitModel unitModel) {
-                            if(unitModel != null){
+                        public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
+                            returnUnitCallback.OnReturn(unitModel, processEnum);
+                            /*if(unitModel != null){
                                 unitModels.set(position, unitModel);
                                 unitChangedResult(position);
-                            }
+                            }*/
                         }
                     }));
                 }

@@ -24,6 +24,8 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemsEnum;
 import com.paypad.vuk507.menu.category.CategoryFragment;
 import com.paypad.vuk507.menu.discount.DiscountFragment;
+import com.paypad.vuk507.menu.tax.TaxEditFragment;
+import com.paypad.vuk507.menu.tax.TaxFragment;
 import com.paypad.vuk507.menu.unit.UnitFragment;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -117,6 +119,9 @@ public class ItemListFragment extends BaseFragment {
                 break;
             case 4:
                 mFragmentNavigation.pushFragment(new UnitFragment());
+                break;
+            case 5:
+                mFragmentNavigation.pushFragment(new TaxFragment());
                 break;
                 default:break;
         }

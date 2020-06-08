@@ -18,8 +18,8 @@ import com.paypad.vuk507.R;
 
 public class KeyPad extends TableLayout {
 
-    private Button num1, num2, num3, num4, num5, num6, num7, num8, num9, num0, btnNumpadBack;
-    private ImageButton btnNumpadAdd;
+    private Button num1, num2, num3, num4, num5, num6, num7, num8, num9, num0, btnNumpadBack, btnNumpadAdd;
+    //private ImageButton btnNumpadAdd;
     private KeyPadClick listener;
     private TableLayout tableLayout;
 

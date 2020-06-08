@@ -25,6 +25,7 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.category.CategoryEditFragment;
@@ -143,7 +144,7 @@ public class UnitFragment extends BaseFragment {
             public void onClick(View view) {
                 mFragmentNavigation.pushFragment(new UnitEditFragment(null, new ReturnUnitCallback() {
                     @Override
-                    public void OnReturn(UnitModel unitModel) {
+                    public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
                         updateAdapterWithCurrentList();
                     }
                 }));
@@ -193,15 +194,15 @@ public class UnitFragment extends BaseFragment {
         unitRv.setLayoutManager(linearLayoutManager);
         unitRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
-
     }
 
     public void updateAdapterWithCurrentList(){
+
         unitModels = UnitDBHelper.getAllUnits(user.getUsername());
         unitModelList = new ArrayList(unitModels);
         unitListAdapter = new UnitListAdapter(getContext(), unitModelList, mFragmentNavigation, new ReturnUnitCallback() {
             @Override
-            public void OnReturn(UnitModel unitModel) {
+            public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
                 updateAdapterWithCurrentList();
             }
         });
@@ -209,8 +210,8 @@ public class UnitFragment extends BaseFragment {
     }
 
     private void setShapes() {
-        createUnitBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
+        //createUnitBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
+        //        getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
     }
 
     public void updateAdapter(String searchText) {
@@ -218,7 +219,7 @@ public class UnitFragment extends BaseFragment {
             unitListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0)
+                    if (size == 0 && unitModelList.size() > 0)
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

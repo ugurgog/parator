@@ -61,8 +61,8 @@ public class DiscountEditFragment extends BaseFragment {
     Button saveBtn;
     @BindView(R.id.discountMainll)
     LinearLayout discountMainll;
-    @BindView(R.id.discountImgv)
-    ImageView discountImgv;
+    @BindView(R.id.editItemImgv)
+    ImageView editItemImgv;
     @BindView(R.id.discountNameEt)
     EditText discountNameEt;
     @BindView(R.id.discountRateEt)
@@ -351,7 +351,7 @@ public class DiscountEditFragment extends BaseFragment {
 
     private void initVariables() {
         setShapes();
-        Glide.with(Objects.requireNonNull(getActivity())).load(R.drawable.icon_discount).into(discountImgv);
+        Glide.with(Objects.requireNonNull(getActivity())).load(R.drawable.icon_discount).into(editItemImgv);
         checkSaveButtonEnability();
 
         realm = Realm.getDefaultInstance();

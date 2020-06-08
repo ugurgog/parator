@@ -29,6 +29,7 @@ import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import java.util.Objects;
+import java.util.UUID;
 
 
 public class RegisterActivity extends AppCompatActivity
@@ -40,9 +41,9 @@ public class RegisterActivity extends AppCompatActivity
     Button btnRegister;
 
     //Local
-    String userName;
-    String userPassword;
-    ProgressDialog progressDialog;
+    private String userName;
+    private String userPassword;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,14 +109,14 @@ public class RegisterActivity extends AppCompatActivity
         userPassword = passwordET.getText().toString();
 
         //validation controls
-        if (!checkValidation(userName, userPassword)) {
+        if (!checkValidation()) {
             return;
         }
 
-        createUser(userName, userPassword);
+        createUser();
     }
 
-    private boolean checkValidation(String userName, String password) {
+    private boolean checkValidation() {
 
         User user = UserDBHelper.getUserByUsername(userName);
 
@@ -134,7 +135,7 @@ public class RegisterActivity extends AppCompatActivity
         }
 
         //password validation
-        if (!Validation.getInstance().isValidPassword(this, password)) {
+        if (!Validation.getInstance().isValidPassword(this, userPassword)) {
             CommonUtils.showToastShort(RegisterActivity.this, Validation.getInstance().getErrorMessage());
             return false;
         }
@@ -142,15 +143,18 @@ public class RegisterActivity extends AppCompatActivity
         return true;
     }
 
-    private void createUser(final String userName, final String userPassword) {
+    private void createUser() {
 
-        UserDBHelper.createUser(userName, userPassword, true, new CompleteCallback() {
+        String uuid = UUID.randomUUID().toString();
+
+        UserDBHelper.createUser(userName, userPassword, uuid, true, new CompleteCallback() {
             @Override
             public void onComplete(BaseResponse baseResponse) {
 
                 progressDialog.dismiss();
                 if(baseResponse.isSuccess()){
-                    LoginUtils.applySharedPreferences(RegisterActivity.this, userName, userPassword);
+                    LoginUtils.applySharedPreferences(RegisterActivity.this,
+                            userName, userPassword, uuid);
 
                     Intent intent = new Intent(RegisterActivity.this, InitialActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -158,7 +162,6 @@ public class RegisterActivity extends AppCompatActivity
                 }else{
                     CommonUtils.showToastShort(RegisterActivity.this, baseResponse.getMessage());
                 }
-
             }
         });
     }

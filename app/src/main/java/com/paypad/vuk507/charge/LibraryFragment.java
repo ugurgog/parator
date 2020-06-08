@@ -16,8 +16,9 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.menu.discount.DiscountEditFragment;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
+import com.paypad.vuk507.menu.product.ProductEditFragment;
 import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.product.ProductFragment;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,7 +76,7 @@ public class LibraryFragment extends BaseFragment {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.createItem:
-                                mFragmentNavigation.pushFragment(new ProductFragment(null));
+                                mFragmentNavigation.pushFragment(new ProductEditFragment(null));
                                 break;
                             case R.id.createDiscount:
                                 mFragmentNavigation.pushFragment(new DiscountEditFragment(null, new ReturnDiscountCallback() {

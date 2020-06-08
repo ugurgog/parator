@@ -3,6 +3,7 @@ package com.paypad.vuk507.charge;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -20,10 +22,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.MainActivity;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.adapter.ChargePagerAdapter;
+import com.paypad.vuk507.adapter.ChargeViewPagerAdapter;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
@@ -48,8 +52,12 @@ public class ChargeFragment extends BaseFragment {
 
     View mView;
 
-    @BindView(R.id.ntb_horizontal)
-    NavigationTabBar navigationTabBar;
+    //@BindView(R.id.ntb_horizontal)
+    //NavigationTabBar navigationTabBar;
+
+    @BindView(R.id.tablayout)
+    TabLayout tablayout;
+
     @BindView(R.id.htab_viewpager)
     ViewPager htab_viewpager;
     @BindView(R.id.settingsImgv) 
@@ -66,8 +74,13 @@ public class ChargeFragment extends BaseFragment {
     private int selectedTabPosition = TAB_KEYPAD;
     private boolean mDrawerState;
 
-    private ChargePagerAdapter chargePagerAdapter;
+    //private ChargePagerAdapter chargePagerAdapter;
+    private ChargeViewPagerAdapter chargeViewPagerAdapter;
     private User user;
+
+    private int[] tabIcons = {
+            R.drawable.ic_keyboard_black_24dp,
+            R.drawable.ic_library_books_black_24dp};
 
     @Override
     public void onAttach(Context context) {
@@ -106,7 +119,7 @@ public class ChargeFragment extends BaseFragment {
     }
 
     private void initNavigationBar(){
-        final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
+        /*final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
         models.add(
                 new NavigationTabBar.Model.Builder(
                         getResources().getDrawable(R.drawable.ic_keyboard_black_24dp, null),
@@ -122,20 +135,66 @@ public class ChargeFragment extends BaseFragment {
                         .build()
         );
 
-        navigationTabBar.setModels(models);
+        navigationTabBar.setModels(models);*/
     }
 
     private void setUpPager() {
-        chargePagerAdapter = new ChargePagerAdapter(getFragmentManager(), 2);
+        setupViewPager();
+        tablayout.setupWithViewPager(htab_viewpager);
+        setupTabIcons();
+        setTabListener();
+
+        //chargePagerAdapter = new ChargePagerAdapter(getFragmentManager(), 2);
+        //htab_viewpager.setAdapter(chargePagerAdapter);
+
+
+
+        /*chargePagerAdapter = new ChargePagerAdapter(getFragmentManager(), 2);
         htab_viewpager.setAdapter(chargePagerAdapter);
         //htab_viewpager.setPageTransformer(true, new RotateUpTransformer());
         navigationTabBar.setViewPager(htab_viewpager, 0);
-        setTabListener();
+        setTabListener();*/
+    }
+
+    private void setupTabIcons() {
+        Objects.requireNonNull(tablayout.getTabAt(0)).setIcon(tabIcons[0]);
+        Objects.requireNonNull(tablayout.getTabAt(1)).setIcon(tabIcons[1]);
+
+        //tablayout.getTabAt(1).getIcon();
+
+        Objects.requireNonNull(Objects.requireNonNull(tablayout.getTabAt(1)).getIcon())
+                .setColorFilter(Objects.requireNonNull(getContext()).getResources().getColor(R.color.tab_unselected, null), PorterDuff.Mode.SRC_IN);
+    }
+
+    private void setupViewPager() {
+        chargeViewPagerAdapter = new ChargeViewPagerAdapter(getFragmentManager());
+        chargeViewPagerAdapter.addFrag(new KeypadFragment(), getContext().getResources().getString(R.string.keypad));
+        chargeViewPagerAdapter.addFrag(new LibraryFragment(), getContext().getResources().getString(R.string.library));
+        htab_viewpager.setAdapter(chargeViewPagerAdapter);
     }
 
     private void setTabListener() {
 
-        navigationTabBar.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Objects.requireNonNull(tab.getIcon())
+                        .setColorFilter(Objects.requireNonNull(getContext()).getResources().getColor(R.color.tab_selected, null), PorterDuff.Mode.SRC_IN);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                Objects.requireNonNull(tab.getIcon())
+                        .setColorFilter(Objects.requireNonNull(getContext()).getResources().getColor(R.color.tab_unselected, null), PorterDuff.Mode.SRC_IN);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        /*navigationTabBar.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
                 //viewPager.setCurrentItem(position);
@@ -151,7 +210,7 @@ public class ChargeFragment extends BaseFragment {
             public void onPageScrollStateChanged(final int state) {
 
             }
-        });
+        });*/
     }
 
     public int getSelectedTabPosition() {

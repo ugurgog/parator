@@ -17,23 +17,24 @@
     <EditText
         android:id="@+id/amountEt"
         android:layout_width="0dp"
-        android:layout_height="@dimen/amount_edittext_height_size"
+        android:layout_height="@dimen/custom_edittext_height_size"
         android:layout_weight="5"
         android:hint="0"
         android:inputType="number"
         android:paddingRight="5dp"
         android:textColor="@color/Black"
         android:textColorHint="@color/DarkGray"
-        android:background="@color/transparent"
+        android:background="@drawable/custom_edittext_bg"
         android:gravity="end|center"
-        android:layout_marginStart="20dp"/>
+        android:layout_marginStart="20dp"
+        />
 
     <EditText
         android:id="@+id/doitAmountEt"
         android:layout_width="0dp"
-        android:layout_height="@dimen/amount_edittext_height_size"
+        android:layout_height="@dimen/custom_edittext_height_size"
         android:layout_weight="2"
-        android:background="@color/transparent"
+        android:background="@drawable/custom_edittext_bg"
         android:drawablePadding="20dp"
         android:hint="00"
         android:inputType="number"

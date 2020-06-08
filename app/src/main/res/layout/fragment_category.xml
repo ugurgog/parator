@@ -18,7 +18,9 @@
         android:text="@string/create_category"
         android:textAllCaps="false"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp">
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/custom_button_bg"
+        android:textColor="@color/DodgerBlue">
     </Button>
 
     <LinearLayout

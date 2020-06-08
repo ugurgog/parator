@@ -2,17 +2,21 @@
 <resources>
     <dimen name="tabloyout_height_size">50dp</dimen>
     <dimen name="default_elevation">8dp</dimen>
-    <dimen name="toolbarTextSize">17sp</dimen>
-    <dimen name="keypad_btn_border_size">0.4dp</dimen>
-
+    <dimen name="toolbarTextSize">20sp</dimen>
+    <dimen name="keypad_btn_border_size">0.2dp</dimen>
+    <dimen name="keypad_btn_text_size">30dp</dimen>
 
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="product_edittext_height_size">50dp</dimen>
-    <dimen name="discount_edittext_height_size">50dp</dimen>
-    <dimen name="amount_edittext_height_size">50dp</dimen>
+    <dimen name="custom_edittext_height_size">50dp</dimen>
+    <dimen name="custom_button_length_size">50dp</dimen>
 
     <dimen name="category_list_item_height">40dp</dimen>
     <dimen name="tax_item_height_size">15sp</dimen>
+    <dimen name="custom_tv_size">17sp</dimen>
+    <dimen name="select_list_tv_size">13sp</dimen>
+
+    <dimen name="custom_description_tv_size">14sp</dimen>
+
 </resources>

@@ -36,17 +36,19 @@ public class LoginUtils {
         return sharedPreferences;
     }
 
-    public static void applySharedPreferences(Context context, String username, String password){
+    public static void applySharedPreferences(Context context, String username, String password, String uuid){
         getEncryptedSharedPreferences(context).edit()
                 .putString("username", username)
                 .putString("password", password)
+                .putString("uuid", uuid)
                 .apply();
     }
 
     public static boolean deleteSharedPreferences(Context context){
         boolean commit = getEncryptedSharedPreferences(context).edit()
                 .remove("username")
-                .remove("password").commit();
+                .remove("password")
+                .remove("uuid").commit();
         return commit;
     }
 

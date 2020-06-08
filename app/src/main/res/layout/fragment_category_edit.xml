@@ -24,8 +24,8 @@
         <EditText
             android:id="@+id/categoryNameEt"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/discount_edittext_height_size"
-            android:background="@color/transparent"
+            android:layout_height="@dimen/custom_edittext_height_size"
+            android:background="@drawable/custom_edittext_bg"
             android:drawablePadding="20dp"
             android:hint="@string/category_name"
             android:inputType="text"

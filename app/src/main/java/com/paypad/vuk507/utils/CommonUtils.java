@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -143,5 +144,27 @@ public class CommonUtils {
             editText.setFocusable(false);
             editText.setFocusableInTouchMode(true);
         }
+    }
+
+    public static void setBtnFirstCondition(Context context, Button button, String btnText){
+        //button.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.button_delete_back, null),
+        //        context.getResources().getColor(R.color.button_delete_border, null), GradientDrawable.RECTANGLE, 20, 2));
+
+        button.setBackground(context.getResources().getDrawable(R.drawable.custom_button_bg, null));
+
+        button.setTextColor(context.getResources().getColor(R.color.button_delete_writing, null));
+        button.setText(btnText);
+    }
+
+    public static void setBtnSecondCondition(Context context, Button button, String btnText){
+        //button.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.button_delete_confirm_back, null),
+        //        context.getResources().getColor(R.color.button_delete_confirm_border, null), GradientDrawable.RECTANGLE, 20, 2));
+
+
+        button.setBackground(context.getResources().getDrawable(R.drawable.custom_button_delete_bg, null));
+
+
+        button.setTextColor(context.getResources().getColor(R.color.button_delete_writing_confirm, null));
+        button.setText(btnText);
     }
 }

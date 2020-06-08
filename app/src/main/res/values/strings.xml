@@ -20,6 +20,23 @@
     <string name="edit_category">Edit Category</string>
     <string name="create_unit">Create Unit</string>
     <string name="edit_unit">Edit Unit</string>
+    <string name="delete_unit">Delete Unit</string>
+    <string name="confirm_delete">Confirm Delete</string>
+    <string name="delete_tax">Delete Tax</string>
+    <string name="create_tax">Create Tax</string>
+    <string name="edit_tax">Edit Tax</string>
+    <string name="add_options">Add Options</string>
+    <string name="add_options_desc">Add a custom set of options to an item to create variations. </string>
+    <string name="options">Options</string>
+    <string name="price_and_inventory">Price and inventory</string>
+    <string name="unit_type">Unit Type</string>
+    <string name="inventory_desc">Choose between selling whole or decimal quantities for this item</string>
+    <string name="add_variation">Add Variation</string>
+    <string name="description">Description</string>
+    <string name="select_unit">Select Unit</string>
+    <string name="select_tax">Select Tax</string>
+    <string name="select_category">Select Category</string>
+    <string name="category">Category</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -40,6 +57,8 @@
     <string name="discounts">Discounts</string>
     <string name="unit_name">Unit Name</string>
     <string name="units">Units</string>
+    <string name="tax_name">Tax Name</string>
+    <string name="taxes">Taxes</string>
 
     <!-- Login screen items -->
     <string name="username">Username</string>
@@ -57,7 +76,7 @@
     <string name="register">Register</string>
     <string name="registering_user">Registering User...</string>
     <string name="username_is_defined_before">The system has such a username. Please set a different username.</string>
-
+    <string name="product_category_can_not_be_empty">Please select a category</string>
 
     <!-- Main menu items -->
     <string name="checkout">Checkout</string>

@@ -33,4 +33,14 @@ public class ChargePagerAdapter extends FragmentPagerAdapter {
         return numOfTabs;
     }
 
+    @Override
+    public CharSequence getPageTitle(int position) {
+        switch (position) {
+            case 0:
+                return "First Tab";
+            case 1:
+            default:
+                return "Second Tab";
+        }
+    }
 }

@@ -21,6 +21,7 @@ import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
@@ -56,11 +57,14 @@ public class UnitEditFragment extends BaseFragment {
     AppCompatTextView toolbarTitleTv;
     @BindView(R.id.saveBtn)
     Button saveBtn;
+    @BindView(R.id.btnDelete)
+    Button btnDelete;
 
     private Realm realm;
     private UnitModel unitModel;
     private ReturnUnitCallback returnUnitCallback;
     private User user;
+    private int deleteButtonStatus = 1;
 
     public UnitEditFragment(@Nullable UnitModel unitModel, ReturnUnitCallback returnUnitCallback) {
         this.unitModel = unitModel;
@@ -148,6 +152,28 @@ public class UnitEditFragment extends BaseFragment {
                 checkValidCategory();
             }
         });
+
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(deleteButtonStatus == 1){
+                    deleteButtonStatus ++;
+                    CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
+                            getContext().getResources().getString(R.string.confirm_delete));
+                }else if(deleteButtonStatus == 2){
+                    UnitDBHelper.deleteUnit(unitModel.getId(), new CompleteCallback() {
+                        @Override
+                        public void onComplete(BaseResponse baseResponse) {
+                            CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
+                            if(baseResponse.isSuccess()){
+                                returnUnitCallback.OnReturn((UnitModel) baseResponse.getObject(), ItemProcessEnum.DELETED);
+                                Objects.requireNonNull(getActivity()).onBackPressed();
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void initVariables() {
@@ -157,6 +183,7 @@ public class UnitEditFragment extends BaseFragment {
 
         if(unitModel == null){
             unitModel = new UnitModel();
+            btnDelete.setEnabled(false);
             toolbarTitleTv.setText(getContext().getResources().getString(R.string.create_unit));
         }else
             unitNameEt.setText(unitModel.getName());
@@ -164,8 +191,9 @@ public class UnitEditFragment extends BaseFragment {
     }
 
     private void setShapes() {
-        unitNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
+        //unitNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
+        //        getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
+        CommonUtils.setBtnFirstCondition(getContext(), btnDelete, getContext().getResources().getString(R.string.delete_unit));
     }
 
     private void checkValidCategory() {
@@ -196,12 +224,17 @@ public class UnitEditFragment extends BaseFragment {
             public void onComplete(BaseResponse baseResponse) {
                 CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
                 if(baseResponse.isSuccess()){
-                    returnUnitCallback.OnReturn((UnitModel) baseResponse.getObject());
-                    clearViews();
+                    deleteButtonStatus = 1;
+                    CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
+                            getContext().getResources().getString(R.string.delete_unit));
+                    btnDelete.setEnabled(false);
 
-                    if(!finalInserted){
-                        Objects.requireNonNull(getActivity()).onBackPressed();
-                    }
+                    if(finalInserted)
+                        returnUnitCallback.OnReturn((UnitModel) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+                    else
+                        returnUnitCallback.OnReturn((UnitModel) baseResponse.getObject(), ItemProcessEnum.CHANGED);
+
+                    clearViews();
                 }
             }
         });
