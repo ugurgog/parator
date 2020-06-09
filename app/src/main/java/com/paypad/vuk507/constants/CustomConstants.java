@@ -8,4 +8,7 @@ public class CustomConstants {
 
     public static final String REALM_DB_NAME = "mydb.realm";
     public static final int REALM_SCHEMA_VERSION = 1;
+
+    public static final int TYPE_PRICE = 1;
+    public static final int TYPE_RATE = 2;
 }

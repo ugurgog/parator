@@ -19,28 +19,20 @@ import androidx.annotation.Nullable;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.ProductDBHelper;
-import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.menu.category.CategoryFragment;
 import com.paypad.vuk507.menu.category.CategorySelectFragment;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.menu.tax.TaxSelectFragment;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
-import com.paypad.vuk507.menu.unit.UnitEditFragment;
-import com.paypad.vuk507.menu.unit.interfaces.ReturnUnitCallback;
-import com.paypad.vuk507.model.BaseResponse;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
-import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.NumberTextWatcher;
-import com.paypad.vuk507.utils.NumberTextWatcher2;
+import com.paypad.vuk507.utils.NumberFormatWatcher;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -51,8 +43,8 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
+
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class ProductEditFragment extends BaseFragment {
 
@@ -137,7 +129,7 @@ public class ProductEditFragment extends BaseFragment {
     }
 
     private void initListeners() {
-        //amountEt.addTextChangedListener(new NumberTextWatcher2(amountEt));
+        amountEt.addTextChangedListener(new NumberFormatWatcher(amountEt, TYPE_PRICE));
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override

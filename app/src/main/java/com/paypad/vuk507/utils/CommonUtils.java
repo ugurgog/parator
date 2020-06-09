@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.enums.CurrencyEnum;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -166,5 +167,9 @@ public class CommonUtils {
 
         button.setTextColor(context.getResources().getColor(R.color.button_delete_writing_confirm, null));
         button.setText(btnText);
+    }
+
+    public static CurrencyEnum getCurrency(){
+        return CurrencyEnum.TL;
     }
 }
