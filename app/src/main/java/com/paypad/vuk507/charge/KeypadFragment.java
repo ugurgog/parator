@@ -1,11 +1,9 @@
 package com.paypad.vuk507.charge;
 
-import android.graphics.Matrix;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,15 +13,10 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.keypad.KeyPad;
 import com.paypad.vuk507.keypad.KeyPadClick;
 import com.paypad.vuk507.keypad.keyPadClickListener;
-import com.paypad.vuk507.model.Dog;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class KeypadFragment extends BaseFragment {
 

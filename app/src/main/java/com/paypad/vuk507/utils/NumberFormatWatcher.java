@@ -41,7 +41,7 @@ public class NumberFormatWatcher implements TextWatcher {
                 editText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(PRICE_MAX_LEN)});
                 editText.setHint("0.00 ".concat(CommonUtils.getCurrency().getSymbol()));
             }
-            
+
             String numberStr = s.toString()
                     .replaceAll("\\.", "")
                     .replaceAll(",", "");
@@ -59,7 +59,7 @@ public class NumberFormatWatcher implements TextWatcher {
                 editText.setText(decimalFormat.format(x));
             }
 
-            editText.setSelection(editText.getText().length() );
+            editText.setSelection(editText.getText().length());
 
         } catch (NumberFormatException | ParseException nfe) {
             //TODO - hata loglamasi yapilacak mi?

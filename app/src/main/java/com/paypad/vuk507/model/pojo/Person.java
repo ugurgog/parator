@@ -1,4 +1,6 @@
-package com.paypad.vuk507.model;
+package com.paypad.vuk507.model.pojo;
+
+import com.paypad.vuk507.model.pojo.Dog;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;

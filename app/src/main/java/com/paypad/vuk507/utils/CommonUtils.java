@@ -17,6 +17,7 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.CurrencyEnum;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,6 +27,7 @@ import java.util.TimeZone;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
 public class CommonUtils {
 
@@ -171,5 +173,25 @@ public class CommonUtils {
 
     public static CurrencyEnum getCurrency(){
         return CurrencyEnum.TL;
+    }
+
+    public static void setAmountToView(double amount, EditText editText, int inputType){
+        DecimalFormat decimalFormat = new DecimalFormat("###,##0.00");
+        Number x = null;
+        try {
+            x = decimalFormat.parse(String.valueOf(amount));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if(inputType == TYPE_RATE && amount > 100)
+            amount = 100;
+
+        if(amount == 0)
+            editText.setText("");
+        else{
+            editText.setText(decimalFormat.format(x));
+        }
+        editText.setSelection(editText.getText().length());
     }
 }

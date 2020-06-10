@@ -24,6 +24,7 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemsEnum;
 import com.paypad.vuk507.menu.category.CategoryFragment;
 import com.paypad.vuk507.menu.discount.DiscountFragment;
+import com.paypad.vuk507.menu.product.ProductFragment;
 import com.paypad.vuk507.menu.tax.TaxEditFragment;
 import com.paypad.vuk507.menu.tax.TaxFragment;
 import com.paypad.vuk507.menu.unit.UnitFragment;
@@ -106,7 +107,7 @@ public class ItemListFragment extends BaseFragment {
     private void jumpToRelatedFragmnet(int i) {
         switch (i){
             case 0:
-                //TODO - All items fragment
+                mFragmentNavigation.pushFragment(new ProductFragment());
                 break;
             case 1:
                 mFragmentNavigation.pushFragment(new CategoryFragment());

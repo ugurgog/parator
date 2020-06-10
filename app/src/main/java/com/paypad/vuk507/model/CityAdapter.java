@@ -23,6 +23,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.model.pojo.City;
 
 import java.util.Collections;
 import java.util.List;

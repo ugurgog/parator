@@ -2,7 +2,6 @@ package com.paypad.vuk507.menu.tax;
 
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,20 +20,17 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.TaxDBHelper;
-import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
-import com.paypad.vuk507.menu.unit.interfaces.ReturnUnitCallback;
-import com.paypad.vuk507.model.BaseResponse;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.TaxModel;
-import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.ShapeUtil;
+import com.paypad.vuk507.utils.NumberFormatWatcher;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -44,14 +42,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
+
 public class TaxEditFragment extends BaseFragment {
 
     private View mView;
 
     @BindView(R.id.taxNameEt)
     EditText taxNameEt;
-    @BindView(R.id.taxRateEt)
-    EditText taxRateEt;
+    @BindView(R.id.amountRateNameTv)
+    TextView amountRateNameTv;
     @BindView(R.id.cancelImgv)
     ClickableImageView cancelImgv;
     @BindView(R.id.toolbarTitleTv)
@@ -60,6 +61,10 @@ public class TaxEditFragment extends BaseFragment {
     Button saveBtn;
     @BindView(R.id.btnDelete)
     Button btnDelete;
+    @BindView(R.id.amountRateEt)
+    EditText amountRateEt;
+    @BindView(R.id.taxMainll)
+    LinearLayout taxMainll;
 
     private Realm realm;
     private TaxModel taxModel;
@@ -139,31 +144,16 @@ public class TaxEditFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                checkSaveBtnEnable();
+                //checkSaveBtnEnable();
             }
         });
 
-        taxRateEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                checkSaveBtnEnable();
-            }
-        });
+        amountRateEt.addTextChangedListener(new NumberFormatWatcher(amountRateEt, TYPE_RATE));
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkValidCategory();
+                checkValidTax();
             }
         });
 
@@ -190,44 +180,51 @@ public class TaxEditFragment extends BaseFragment {
         });
     }
 
-    private void checkSaveBtnEnable(){
+    /*private void checkSaveBtnEnable(){
         if(taxNameEt.getText() != null && !taxNameEt.getText().toString().isEmpty() &&
-                taxRateEt.getText() != null && !taxRateEt.getText().toString().isEmpty()){
+                amountRateEt.getText() != null && !amountRateEt.getText().toString().isEmpty()){
             CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
         }else
             CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
-    }
+    }*/
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        setShapes();
-        CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+        amountRateNameTv.setText(getContext().getResources().getString(R.string.tax_rate));
+        amountRateEt.setHint("0 %");
+        CommonUtils.setBtnFirstCondition(getContext(), btnDelete, getContext().getResources().getString(R.string.delete_tax));
+        //CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
 
         if(taxModel == null){
             taxModel = new TaxModel();
             btnDelete.setEnabled(false);
             toolbarTitleTv.setText(getContext().getResources().getString(R.string.create_tax));
         }else{
+            toolbarTitleTv.setText(getContext().getResources().getString(R.string.edit_tax));
             taxNameEt.setText(taxModel.getName());
-            taxRateEt.setText(String.valueOf(taxModel.getTaxRate()));
+            if(taxModel.getTaxRate() != 0){
+                CommonUtils.setAmountToView(taxModel.getTaxRate(), amountRateEt, TYPE_RATE);
+            }
+        }
+    }
+
+    private void checkValidTax() {
+        if(taxNameEt.getText() == null || taxNameEt.getText().toString().isEmpty()){
+            CommonUtils.snackbarDisplay(taxMainll,
+                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.tax_name_can_not_be_empty));
+            return;
         }
 
-        toolbarTitleTv.setText(getContext().getResources().getString(R.string.edit_tax));
+        if(amountRateEt.getText() == null || amountRateEt.getText().toString().isEmpty()){
+            CommonUtils.snackbarDisplay(taxMainll,
+                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.tax_rate_can_not_be_empty));
+            return;
+        }
+
+        updateTax();
     }
 
-    private void setShapes() {
-        /*taxNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-        taxRateEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));*/
-        CommonUtils.setBtnFirstCondition(getContext(), btnDelete, getContext().getResources().getString(R.string.delete_tax));
-    }
-
-    private void checkValidCategory() {
-        updateUnit();
-    }
-
-    private void updateUnit() {
+    private void updateTax() {
 
         boolean inserted = false;
         realm.beginTransaction();
@@ -241,7 +238,12 @@ public class TaxEditFragment extends BaseFragment {
         TaxModel tempTax = realm.copyToRealm(taxModel);
 
         tempTax.setName(taxNameEt.getText().toString());
-        tempTax.setTaxRate(Integer.parseInt(taxRateEt.getText().toString()));
+
+        if(amountRateEt.getText() != null && !amountRateEt.getText().toString().isEmpty()){
+            double amount = Double.valueOf(amountRateEt.getText().toString());
+            tempTax.setTaxRate(amount);
+        }
+
         tempTax.setCreateUsername(user.getUsername());
 
         realm.commitTransaction();
@@ -270,8 +272,8 @@ public class TaxEditFragment extends BaseFragment {
 
     private void clearViews() {
         taxNameEt.setText("");
-        taxRateEt.setText("");
-        CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+        amountRateEt.setText("");
+        //CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
         taxModel = new TaxModel();
         CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
     }

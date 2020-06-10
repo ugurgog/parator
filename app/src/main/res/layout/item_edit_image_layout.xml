@@ -8,48 +8,36 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:background="@drawable/keypad_button_border">
+        android:orientation="vertical">
 
         <RelativeLayout
+            android:id="@+id/imageRl"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:background="@color/Gray">
 
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="@dimen/product_imageview_default_size"
+                android:layout_height="@dimen/product_imageview_default_size"
                 android:id="@+id/editItemImgv"
-                android:visibility="gone"
                 android:layout_centerInParent="true"/>
 
             <TextView
-                android:id="@+id/editItemShortTv"
+                android:id="@+id/itemShortNameTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="2dp"
-                android:text="KE"
                 android:textColor="@color/White"
                 android:layout_centerInParent="true"
-                android:textSize="20sp"
+                android:textSize="@dimen/item_image_text_size"
                 android:textStyle="bold"
-                android:visibility="gone">
+                android:visibility="visible">
 
             </TextView>
 
         </RelativeLayout>
-
-        <TextView
-            android:id="@+id/editItemTv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/Black"
-            android:gravity="center"
-            android:padding="2dp">
-
-        </TextView>
 
     </LinearLayout>
 

@@ -20,12 +20,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
-import com.paypad.vuk507.MainActivity;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.login.utils.Validation;
-import com.paypad.vuk507.model.BaseResponse;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.login.utils.LoginUtils;

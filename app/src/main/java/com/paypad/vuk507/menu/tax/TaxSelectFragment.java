@@ -181,7 +181,6 @@ public class TaxSelectFragment extends BaseFragment {
         realm = Realm.getDefaultInstance();
         toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.taxes));
         addItemImgv.setVisibility(View.GONE);
-        setShapes();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -203,11 +202,6 @@ public class TaxSelectFragment extends BaseFragment {
             }
         });
         taxRv.setAdapter(taxSelectListAdapter);
-    }
-
-    private void setShapes() {
-        createTaxBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
     }
 
     public void updateAdapter(String searchText) {

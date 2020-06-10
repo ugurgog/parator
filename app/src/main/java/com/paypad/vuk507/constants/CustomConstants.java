@@ -11,4 +11,23 @@ public class CustomConstants {
 
     public static final int TYPE_PRICE = 1;
     public static final int TYPE_RATE = 2;
+
+    public static final String CAMERA_TEXT = "CAMERA";
+    public static final String GALLERY_TEXT = "GALLERY";
+    public static final String FROM_FILE_TEXT = "FROM_FILE";
+
+    //Photo Chosen items
+    public static final int CODE_GALLERY_POSITION = 0;
+    public static final int CODE_CAMERA_POSITION = 1;
+    public static final int CODE_SCREENSHOT_POSITION = 1;
+    public static final int CODE_PHOTO_REMOVE = 2;
+    public static final int CODE_VIDEO_REMOVE = 2;
+    public static final int CODE_PHOTO_EDIT = 3;
+    public static final int CODE_PLAY_VIDEO = 3;
+
+    public static final int MAX_IMAGE_SIZE_1MB =  1048576;
+    public static final int MAX_IMAGE_SIZE_1ANDHALFMB =  1572864;
+    public static final int MAX_IMAGE_SIZE_2ANDHALFMB =  2621440;
+    public static final int MAX_IMAGE_SIZE_5MB = 5242880;
+
 }

@@ -2,7 +2,6 @@ package com.paypad.vuk507.charge;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -11,22 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
-import com.paypad.vuk507.MainActivity;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.adapter.ChargePagerAdapter;
 import com.paypad.vuk507.adapter.ChargeViewPagerAdapter;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
@@ -34,19 +26,17 @@ import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.login.InitialActivity;
 import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.menu.item.ItemListFragment;
-import com.paypad.vuk507.model.BaseResponse;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import devlight.io.library.ntb.NavigationTabBar;
 
 public class ChargeFragment extends BaseFragment {
 

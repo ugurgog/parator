@@ -37,6 +37,7 @@
     <string name="select_tax">Select Tax</string>
     <string name="select_category">Select Category</string>
     <string name="category">Category</string>
+    <string name="delete_item">Delete Item</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -45,7 +46,7 @@
 
     <string name="there_is_no_search_result">There is no search result</string>
 
-    <string name="createItem">Create Item</string>
+    <string name="create_item">Create Item</string>
     <string name="createDiscount">Create Discount</string>
 
 
@@ -59,6 +60,9 @@
     <string name="units">Units</string>
     <string name="tax_name">Tax Name</string>
     <string name="taxes">Taxes</string>
+    <string name="price">Price</string>
+    <string name="variable">Variable</string>
+    <string name="tax_rate">Tax Rate</string>
 
     <!-- Login screen items -->
     <string name="username">Username</string>
@@ -94,8 +98,22 @@
 
     <string name="discount_name_can_not_be_empty">Discount name cannot be empty</string>
     <string name="discount_rate_amount_can_not_be_empty">Discount amount or discount rate must be filled</string>
+    <string name="product_unit_type_can_not_be_empty">Item unit type cannot be empty</string>
+    <string name="product_tax_can_not_be_empty">Item tax cannot be empty</string>
+    <string name="tax_name_can_not_be_empty">Tax name cannot be empty</string>
+    <string name="tax_rate_can_not_be_empty">Tax rate cannot be empty</string>
 
     <string name="sure_to_delete_category">Are you sure you want to delete the category?</string>
     <string name="sure_to_delete_discount">Are you sure you want to delete the discount?</string>
 
+    <string name="select_picture">Select Picture</string>
+    <string name="open_camera">Open Camera</string>
+    <string name="open_gallery">Open Gallery</string>
+    <string name="remove_photo">Remove photo</string>
+
+    <string name="error_upper">ERROR</string>
+    <string name="yes_upper">YES</string>
+    <string name="no_upper">NO</string>
+
+    <string name="device_has_no_camera">Device has no camera</string>
 </resources>

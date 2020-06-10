@@ -1,4 +1,4 @@
-package com.paypad.vuk507.model;
+package com.paypad.vuk507.model.pojo;
 
 import io.realm.RealmObject;
 

@@ -5,9 +5,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
+        android:id="@+id/amountRateNameTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/amount"
+        android:text="@string/price"
         android:gravity="bottom"
         android:layout_gravity="center"
         android:textSize="20sp">
@@ -15,7 +16,7 @@
     </TextView>
 
     <EditText
-        android:id="@+id/amountEt"
+        android:id="@+id/amountRateEt"
         android:layout_width="0dp"
         android:layout_height="@dimen/custom_edittext_height_size"
         android:layout_weight="5"
@@ -29,21 +30,5 @@
         android:gravity="end|center"
         android:layout_marginStart="20dp"
         />
-
-    <EditText
-        android:id="@+id/doitAmountEt"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/custom_edittext_height_size"
-        android:layout_weight="2"
-        android:background="@drawable/custom_edittext_bg"
-        android:drawablePadding="20dp"
-        android:hint="00"
-        android:inputType="number"
-        android:maxLength="2"
-        android:paddingLeft="8dp"
-        android:textColor="@color/Black"
-        android:textColorHint="@color/DarkGray"
-        android:layout_marginStart="10dp"
-        android:gravity="start|center"/>
 
 </LinearLayout>

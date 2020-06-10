@@ -1,11 +1,8 @@
 package com.paypad.vuk507.db;
 
 import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.BaseResponse;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Category;
-import com.paypad.vuk507.utils.CommonUtils;
-
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -41,7 +38,7 @@ public class CategoryDBHelper {
         });
     }
 
-    public static Category getCategory(int id){
+    public static Category getCategory(long id){
         Realm realm = Realm.getDefaultInstance();
         Category category = realm.where(Category.class).equalTo("id", id).findFirst();
         //realm.close();

@@ -1,12 +1,9 @@
 package com.paypad.vuk507.menu.discount;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,12 +26,13 @@ import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
-import com.paypad.vuk507.model.BaseResponse;
-import com.paypad.vuk507.model.Category;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.DataUtils;
+import com.paypad.vuk507.utils.NumberFormatWatcher;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -41,13 +40,13 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Date;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
+
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
 public class DiscountEditFragment extends BaseFragment {
 
@@ -65,23 +64,21 @@ public class DiscountEditFragment extends BaseFragment {
     ImageView editItemImgv;
     @BindView(R.id.discountNameEt)
     EditText discountNameEt;
-    @BindView(R.id.discountRateEt)
-    EditText discountRateEt;
 
-    @BindView(R.id.amountEt)
-    EditText amountEt;
-    @BindView(R.id.doitAmountEt)
-    EditText doitAmountEt;
+    @BindView(R.id.rateSymbolTv)
+    TextView rateSymbolTv;
+    @BindView(R.id.amountSymbolTv)
+    TextView amountSymbolTv;
+
+    @BindView(R.id.amountRateEt)
+    EditText amountRateEt;
 
     private Realm realm;
     private Discount discount;
     private User user;
     private ReturnDiscountCallback returnDiscountCallback;
-
-    private boolean discountNameFilled = false;
-    private boolean amountFilled = false;
-    private boolean rateFilled = false;
-    private boolean firstOpen = false;
+    private int selectionType = TYPE_RATE;
+    private NumberFormatWatcher numberFormatWatcher;
 
     public DiscountEditFragment(@Nullable Discount discount, ReturnDiscountCallback returnDiscountCallback) {
         this.discount = discount;
@@ -137,6 +134,24 @@ public class DiscountEditFragment extends BaseFragment {
     }
 
     private void initListeners() {
+        amountSymbolTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectionType = TYPE_PRICE;
+                amountRateEt.setText("");
+                shapeAmountRateSymbols();
+            }
+        });
+
+        rateSymbolTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectionType = TYPE_RATE;
+                amountRateEt.setText("");
+                shapeAmountRateSymbols();
+            }
+        });
+
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -150,122 +165,31 @@ public class DiscountEditFragment extends BaseFragment {
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
-
-        discountRateEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                reviseAmountViews((s != null && !s.toString().isEmpty()) ? s.toString() : "");
-            }
-        });
-
-        amountEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                reviseDiscountRateView((s != null && !s.toString().isEmpty()) ? s.toString() : "");
-            }
-        });
-
-        doitAmountEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                reviseDiscountRateView((s != null && !s.toString().isEmpty()) ? s.toString() : "");
-            }
-        });
-
-        discountNameEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable != null && !editable.toString().isEmpty()) {
-                    discountNameFilled = true;
-                } else {
-                    discountNameFilled = false;
-                }
-                checkSaveButtonEnability();
-            }
-        });
     }
 
-    public void checkSaveButtonEnability(){
-        if(discountNameFilled && (rateFilled || amountFilled) && !firstOpen)
-            CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
-        else
-            CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
-    }
-
-    private void reviseDiscountRateView(String text){
-        if (!text.isEmpty()) {
-            amountFilled = true;
-            discountRateEt.setEnabled(false);
-            discountRateEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.LemonChiffon, null),
-                    getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-        } else {
-            amountFilled = false;
-            discountRateEt.setEnabled(true);
-            discountRateEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                    getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
+    private void shapeAmountRateSymbols(){
+        if(selectionType == TYPE_RATE){
+            rateSymbolTv.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.custom_btn_bg_color, null),
+                    getResources().getColor(R.color.DarkGray, null), GradientDrawable.RECTANGLE, 0, 2));
+            amountSymbolTv.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
+                    getResources().getColor(R.color.DarkGray, null), GradientDrawable.RECTANGLE, 0, 2));
+            setNumberFormatWatcher(TYPE_RATE);
+            amountRateEt.setHint("0 %");
+        }else {
+            amountSymbolTv.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.custom_btn_bg_color, null),
+                    getResources().getColor(R.color.DarkGray, null), GradientDrawable.RECTANGLE, 0, 2));
+            rateSymbolTv.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
+                    getResources().getColor(R.color.DarkGray, null), GradientDrawable.RECTANGLE, 0, 2));
+            setNumberFormatWatcher(TYPE_PRICE);
+            amountRateEt.setHint("0.00 ".concat(CommonUtils.getCurrency().getSymbol()));
         }
-        checkSaveButtonEnability();
     }
 
-    private void reviseAmountViews(String text){
-        if (!text.isEmpty()) {
-            rateFilled = true;
-            amountEt.setEnabled(false);
-            amountEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.LemonChiffon, null),
-                    getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-            doitAmountEt.setEnabled(false);
-            doitAmountEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.LemonChiffon, null),
-                    getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-        } else {
-            rateFilled = false;
-            amountEt.setEnabled(true);
-            amountEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                    getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-            doitAmountEt.setEnabled(true);
-            doitAmountEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                    getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-        }
-        checkSaveButtonEnability();
+    private void setNumberFormatWatcher(int selectionType){
+        if(numberFormatWatcher != null)
+            amountRateEt.removeTextChangedListener(numberFormatWatcher);
+        numberFormatWatcher = new NumberFormatWatcher(amountRateEt, selectionType);
+        amountRateEt.addTextChangedListener(numberFormatWatcher);
     }
 
     private void checkValidProduct() {
@@ -275,12 +199,9 @@ public class DiscountEditFragment extends BaseFragment {
             return;
         }
 
-        if((discountRateEt.getText() == null || discountRateEt.getText().toString().isEmpty()) &&
-                (amountEt.getText() == null || amountEt.getText().toString().isEmpty()) &&
-                (doitAmountEt.getText() == null || doitAmountEt.getText().toString().isEmpty())){
+        if(amountRateEt.getText() == null || amountRateEt.getText().toString().isEmpty()){
             CommonUtils.snackbarDisplay(discountMainll,
-                    Objects.requireNonNull(getContext()),
-                    getContext().getResources().getString(R.string.discount_rate_amount_can_not_be_empty));
+                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.discount_rate_amount_can_not_be_empty));
             return;
         }
 
@@ -300,21 +221,19 @@ public class DiscountEditFragment extends BaseFragment {
 
         Discount tempDiscount = realm.copyToRealm(discount);
 
-        String amountStr = amountEt.getText().toString()
-                .concat(".")
-                .concat(!doitAmountEt.getText().toString().isEmpty() ? doitAmountEt.getText().toString() : "00");
-        double amount = Double.valueOf(amountStr);
+        double amountRateValue = DataUtils.getDoubleValueFromFormattedString(amountRateEt.getText().toString());
 
-        int rate = (discountRateEt.getText() != null && !discountRateEt.getText().toString().isEmpty()) ?
-                Integer.parseInt(discountRateEt.getText().toString()) : 0;
+        if(selectionType == TYPE_PRICE){
+            tempDiscount.setAmount(amountRateValue);
+            tempDiscount.setRate(0);
+        } else if(selectionType == TYPE_RATE){
+            tempDiscount.setRate(amountRateValue);
+            tempDiscount.setAmount(0);
+        }
 
-        tempDiscount.setAmount(amount);
         tempDiscount.setName(discountNameEt.getText().toString());
-        tempDiscount.setRate(rate);
         tempDiscount.setCreateUsername(user.getUsername());
 
-        //if(tempDiscount.getId() == 0)
-        //    tempDiscount.setCreateDate(new Date());
         realm.commitTransaction();
 
         boolean finalInserted = inserted;
@@ -335,8 +254,6 @@ public class DiscountEditFragment extends BaseFragment {
     }
 
     private void clearItems() {
-        setShapes();
-        setEnabilityOfViews(true);
         clearViewsText();
         discount = new Discount();
         CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
@@ -344,15 +261,13 @@ public class DiscountEditFragment extends BaseFragment {
 
     private void clearViewsText() {
         discountNameEt.setText("");
-        discountRateEt.setText("");
-        amountEt.setText("");
-        doitAmountEt.setText("");
+        amountRateEt.setText("");
     }
 
     private void initVariables() {
-        setShapes();
         Glide.with(Objects.requireNonNull(getActivity())).load(R.drawable.icon_discount).into(editItemImgv);
-        checkSaveButtonEnability();
+        amountSymbolTv.setText(CommonUtils.getCurrency().getSymbol());
+        numberFormatWatcher = new NumberFormatWatcher(amountRateEt, TYPE_RATE);
 
         realm = Realm.getDefaultInstance();
         if(discount == null) {
@@ -360,61 +275,21 @@ public class DiscountEditFragment extends BaseFragment {
             discount = new Discount();
         }else {
             toolbarTitleTv.setText(getActivity().getResources().getString(R.string.edit_discount));
-            fillDiscountFields();
         }
+        fillDiscountFields();
     }
 
     private void fillDiscountFields() {
         discountNameEt.setText(discount.getName());
-        discountNameFilled = true;
-        firstOpen = true;
 
-        if(discount.getRate() != 0){
-            discountRateEt.setText(String.valueOf(discount.getRate()));
-            reviseAmountViews(discountRateEt.getText().toString());
-            rateFilled = true;
+        if(discount.getAmount() > 0){
+            selectionType = TYPE_PRICE;
+            CommonUtils.setAmountToView(discount.getAmount(), amountRateEt, selectionType);
+        }else if(discount.getRate() > 0){
+            selectionType = TYPE_RATE;
+            CommonUtils.setAmountToView(discount.getRate(), amountRateEt, selectionType);
         }
 
-        if(discount.getAmount() != 0){
-            String amountStr = String.valueOf(discount.getAmount());
-            String[] parts = amountStr.split(Pattern.quote("."));
-
-            if(Double.parseDouble(parts[0]) != 0){
-                amountEt.setText(parts[0]);
-                reviseDiscountRateView(amountEt.getText().toString());
-            }
-
-            if(Double.parseDouble(parts[1]) != 0){
-                doitAmountEt.setText(parts[1]);
-                reviseDiscountRateView(doitAmountEt.getText().toString());
-            }
-
-            amountFilled = true;
-        }
-
-        firstOpen = false;
+        shapeAmountRateSymbols();
     }
-
-    private void setEnabilityOfViews(boolean enability){
-        discountRateEt.setEnabled(enability);
-        amountEt.setEnabled(enability);
-        doitAmountEt.setEnabled(enability);
-    }
-
-    private void setShapes() {
-        discountNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.transparent, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-
-        discountRateEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.transparent, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-
-        amountEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.transparent, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-
-        doitAmountEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.transparent, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-    }
-
-
-
 }

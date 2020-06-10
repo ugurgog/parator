@@ -1,7 +1,6 @@
 package com.paypad.vuk507.menu.unit;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,23 +16,17 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.db.CategoryDBHelper;
-import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.menu.unit.interfaces.ReturnUnitCallback;
-import com.paypad.vuk507.model.BaseResponse;
-import com.paypad.vuk507.model.Category;
-import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

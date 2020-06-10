@@ -13,23 +13,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.enums.CurrencyEnum;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.category.CategoryEditFragment;
-import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
-import com.paypad.vuk507.model.BaseResponse;
-import com.paypad.vuk507.model.Category;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
 
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapter.DiscountHolder> {
@@ -144,7 +139,7 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
         private String getRateOrAmountVal(Discount discount) {
             String rateOrAmounttr = "";
             if(discount.getRate() != 0){
-                rateOrAmounttr = "% ".concat(Integer.toString(discount.getRate()));
+                rateOrAmounttr = "% ".concat(Double.toString(discount.getRate()));
             }else if(discount.getAmount() != 0){
                 rateOrAmounttr = CurrencyEnum.TL.getSymbol().concat(" ").concat(String.valueOf(discount.getAmount()));
             }

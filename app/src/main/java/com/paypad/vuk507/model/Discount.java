@@ -10,7 +10,7 @@ public class Discount extends RealmObject {
     @PrimaryKey
     private long id;
     private String name;
-    private int rate;
+    private double rate;
     private double amount;
     private Date createDate;
     private String createUsername;
@@ -31,11 +31,11 @@ public class Discount extends RealmObject {
         this.name = name;
     }
 
-    public int getRate() {
+    public double getRate() {
         return rate;
     }
 
-    public void setRate(int rate) {
+    public void setRate(double rate) {
         this.rate = rate;
     }
 

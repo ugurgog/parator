@@ -189,7 +189,6 @@ public class DiscountFragment extends BaseFragment {
         realm = Realm.getDefaultInstance();
         toolbarTitleTv.setText(getContext().getResources().getString(R.string.discounts));
         addItemImgv.setVisibility(View.GONE);
-        setShapes();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -209,11 +208,6 @@ public class DiscountFragment extends BaseFragment {
             }
         });
         discountRv.setAdapter(discountListAdapter);
-    }
-
-    private void setShapes() {
-        createDiscountBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
     }
 
     public void updateAdapter(String searchText) {

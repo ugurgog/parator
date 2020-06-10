@@ -138,7 +138,8 @@
                     android:layout_height="50dp"
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:id="@+id/unitll">
 
                     <TextView
                         android:layout_width="0dp"
@@ -241,7 +242,7 @@
 
 
                 <EditText
-                    android:id="@+id/etOrigin"
+                    android:id="@+id/productDescriptionEt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="12dp"
@@ -253,6 +254,18 @@
                     android:textColor="#434343"
                     android:hint="@string/description"
                     android:textIsSelectable="true" />
+
+
+                <Button
+                    android:id="@+id/btnDelete"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/custom_button_length_size"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/delete_item"
+                    android:textColor="@color/DodgerBlue"
+                    android:textAllCaps="false"
+                    android:background="@drawable/custom_button_bg"/>
+
 
             </LinearLayout>
 

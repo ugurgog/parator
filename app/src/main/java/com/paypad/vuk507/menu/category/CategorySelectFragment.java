@@ -168,7 +168,6 @@ public class CategorySelectFragment extends BaseFragment {
         realm = Realm.getDefaultInstance();
         toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.categories));
         addItemImgv.setVisibility(View.GONE);
-        setShapes();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -189,11 +188,6 @@ public class CategorySelectFragment extends BaseFragment {
             }
         });
         categoryRv.setAdapter(categorySelectListAdapter);
-    }
-
-    private void setShapes() {
-        createCategoryBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
     }
 
     public void updateAdapter(String searchText) {

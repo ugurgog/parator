@@ -1,6 +1,5 @@
 package com.paypad.vuk507.login;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
@@ -9,7 +8,6 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -17,13 +15,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
-import com.paypad.vuk507.MainActivity;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.login.utils.Validation;
-import com.paypad.vuk507.model.BaseResponse;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ShapeUtil;

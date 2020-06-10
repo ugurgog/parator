@@ -2,9 +2,8 @@ package com.paypad.vuk507.db;
 
 
 import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.BaseResponse;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.TaxModel;
-import com.paypad.vuk507.model.UnitModel;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -39,7 +38,7 @@ public class TaxDBHelper {
         });
     }
 
-    public static TaxModel getTax(int id){
+    public static TaxModel getTax(long id){
         Realm realm = Realm.getDefaultInstance();
         TaxModel taxModel = realm.where(TaxModel.class).equalTo("id", id).findFirst();
         return taxModel;

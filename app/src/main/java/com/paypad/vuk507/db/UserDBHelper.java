@@ -4,12 +4,10 @@ import android.content.Context;
 
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.login.utils.LoginUtils;
-import com.paypad.vuk507.model.BaseResponse;
-import com.paypad.vuk507.model.Category;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
 
 import java.util.Date;
-import java.util.UUID;
 
 import io.realm.Realm;
 

@@ -15,6 +15,8 @@ public class Product extends RealmObject {
     private String unitType;
     private double amount;
     private long taxId;
+    private byte[] productImage;
+    private String description;
     private Date createDate;
     private String userUuid;
 
@@ -80,5 +82,21 @@ public class Product extends RealmObject {
 
     public void setUserUuid(String userUuid) {
         this.userUuid = userUuid;
+    }
+
+    public byte[] getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(byte[] productImage) {
+        this.productImage = productImage;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

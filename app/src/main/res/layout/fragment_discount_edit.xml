@@ -66,42 +66,17 @@
                     android:id="@+id/discountNameEt"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/custom_edittext_height_size"
-                    android:background="@color/transparent"
+                    android:background="@drawable/custom_edittext_bg"
                     android:drawablePadding="20dp"
                     android:hint="@string/discount_name"
                     android:inputType="text"
                     android:paddingLeft="8dp"
                     android:textColor="@color/Black"
                     android:textColorHint="@color/DarkGray"
-                    android:layout_marginTop="10dp"/>
+                    android:layout_marginTop="10dp"
+                    />
 
-                <!--EditText
-                    android:id="@+id/discountNameEt"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/discount_edittext_height_size"
-                    android:background="@color/transparent"
-                    android:drawablePadding="20dp"
-                    android:hint="@string/discount_name"
-                    android:inputType="text"
-                    android:paddingLeft="8dp"
-                    android:textColor="@color/Black"
-                    android:textColorHint="@color/DarkGray"
-                    android:layout_marginTop="10dp"/-->
-
-                <EditText
-                    android:id="@+id/discountRateEt"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_edittext_height_size"
-                    android:background="@color/transparent"
-                    android:drawablePadding="20dp"
-                    android:hint="%0"
-                    android:inputType="number"
-                    android:paddingLeft="8dp"
-                    android:textColor="@color/Black"
-                    android:textColorHint="@color/DarkGray"
-                    android:layout_marginTop="10dp"/>
-
-                <include layout="@layout/layout_amount"
+                <include layout="@layout/layout_rate_and_amount"
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>

@@ -49,19 +49,10 @@
             android:textColorHint="@color/DarkGray"
             android:layout_marginTop="10dp"/-->
 
-        <EditText
-            android:id="@+id/taxRateEt"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/custom_edittext_height_size"
-            android:background="@drawable/custom_edittext_bg"
-            android:drawablePadding="20dp"
-            android:hint="% 0"
-            android:inputType="number"
-            android:paddingLeft="8dp"
-            android:textColor="@color/Black"
-            android:textColorHint="@color/DarkGray"
+        <include layout="@layout/layout_amount"
             android:layout_marginTop="10dp"
-            />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
 
         <Button

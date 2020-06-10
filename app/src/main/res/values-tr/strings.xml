@@ -38,6 +38,7 @@
     <string name="select_tax">Vergi Seçin</string>
     <string name="select_category">Kategori Seçin</string>
     <string name="category">Kategori</string>
+    <string name="delete_item">Ürünu Sil</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
@@ -46,7 +47,7 @@
 
     <string name="there_is_no_search_result">Sonuç yok</string>
 
-    <string name="createItem">Ürün Tanımla</string>
+    <string name="create_item">Ürün Tanımla</string>
     <string name="createDiscount">İndirim Tanımla</string>
 
     <string name="amount">Tutar</string>
@@ -59,6 +60,9 @@
     <string name="units">Birimler</string>
     <string name="tax_name">Vergi Adı</string>
     <string name="taxes">Vergiler</string>
+    <string name="price">Ücret</string>
+    <string name="variable">Değişken Fiyat</string>
+    <string name="tax_rate">Vergi Oranı</string>
 
     <!-- Login screen items -->
     <string name="username">Kullanıcı Adı</string>
@@ -94,7 +98,22 @@
 
     <string name="discount_name_can_not_be_empty">İndirim adı boş olamaz</string>
     <string name="discount_rate_amount_can_not_be_empty">İndirim tutarı veya indirim oranı dolu olmalıdır</string>
+    <string name="product_unit_type_can_not_be_empty">Ürün birim tipi boş olamaz</string>
+    <string name="product_tax_can_not_be_empty">Ürün vergi alanı boş olamaz</string>
+    <string name="tax_name_can_not_be_empty">Vergi adı boş olamaz</string>
+    <string name="tax_rate_can_not_be_empty">Vergi oranı boş olamaz</string>
 
     <string name="sure_to_delete_category">Kategoriyi silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_discount">İndirimi silmek istediğinize emin misiniz?</string>
+
+    <string name="select_picture">Fotoğraf Seçin</string>
+    <string name="open_camera">Kamerayı Aç</string>
+    <string name="open_gallery">Galeriden Seç</string>
+    <string name="remove_photo">Fotoğrafı Kaldır</string>
+
+    <string name="error_upper">HATA</string>
+    <string name="yes_upper">EVET</string>
+    <string name="no_upper">HAYIR</string>
+
+    <string name="device_has_no_camera">Cihazda kamera yok</string>
 </resources>

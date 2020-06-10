@@ -16,7 +16,11 @@
     <dimen name="tax_item_height_size">15sp</dimen>
     <dimen name="custom_tv_size">17sp</dimen>
     <dimen name="select_list_tv_size">13sp</dimen>
+    <dimen name="item_image_text_size">20sp</dimen>
+    <dimen name="item_image_picture_size">60dp</dimen>
 
     <dimen name="custom_description_tv_size">14sp</dimen>
+
+    <dimen name="product_imageview_default_size">100dp</dimen>
 
 </resources>

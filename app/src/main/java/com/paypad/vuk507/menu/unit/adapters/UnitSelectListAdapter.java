@@ -1,13 +1,9 @@
-package com.paypad.vuk507.menu.unit;
+package com.paypad.vuk507.menu.unit.adapters;
 
-
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
@@ -15,24 +11,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.category.CategoryEditFragment;
-import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
+import com.paypad.vuk507.menu.unit.UnitEditFragment;
 import com.paypad.vuk507.menu.unit.interfaces.ReturnUnitCallback;
-import com.paypad.vuk507.model.BaseResponse;
-import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.UnitModel;
-import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.CustomDialogBox;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnitListAdapter extends RecyclerView.Adapter<UnitListAdapter.UnitHolder> {
+public class UnitSelectListAdapter extends RecyclerView.Adapter<UnitSelectListAdapter.UnitHolder> {
 
     private Context context;
     private List<UnitModel> unitModels = new ArrayList<>();
@@ -41,9 +29,9 @@ public class UnitListAdapter extends RecyclerView.Adapter<UnitListAdapter.UnitHo
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnUnitCallback returnUnitCallback;
 
-    public UnitListAdapter(Context context, List<UnitModel> unitModels,
-                               BaseFragment.FragmentNavigation fragmentNavigation,
-                               ReturnUnitCallback returnUnitCallback) {
+    public UnitSelectListAdapter(Context context, List<UnitModel> unitModels,
+                           BaseFragment.FragmentNavigation fragmentNavigation,
+                           ReturnUnitCallback returnUnitCallback) {
         this.context = context;
         this.unitModels.addAll(unitModels);
         this.orgUnitModels.addAll(unitModels);
@@ -76,16 +64,7 @@ public class UnitListAdapter extends RecyclerView.Adapter<UnitListAdapter.UnitHo
             unitItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fragmentNavigation.pushFragment(new UnitEditFragment(unitModel, new ReturnUnitCallback() {
-                        @Override
-                        public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
-                            returnUnitCallback.OnReturn(unitModel, processEnum);
-                            /*if(unitModel != null){
-                                unitModels.set(position, unitModel);
-                                unitChangedResult(position);
-                            }*/
-                        }
-                    }));
+                    returnUnitCallback.OnReturn(unitModel, ItemProcessEnum.SELECTED);
                 }
             });
         }

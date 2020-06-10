@@ -10,7 +10,7 @@ public class TaxModel extends RealmObject {
     @PrimaryKey
     private long id;
     private String name;
-    private int taxRate;
+    private double taxRate;
     private Date createDate;
     private String createUsername;
 
@@ -30,11 +30,11 @@ public class TaxModel extends RealmObject {
         this.name = name;
     }
 
-    public int getTaxRate() {
+    public double getTaxRate() {
         return taxRate;
     }
 
-    public void setTaxRate(int taxRate) {
+    public void setTaxRate(double taxRate) {
         this.taxRate = taxRate;
     }
 
