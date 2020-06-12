@@ -4,9 +4,6 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-import static com.paypad.vuk507.uiUtils.keypad.KeyPadLogic.returnInteger;
-import static com.paypad.vuk507.uiUtils.keypad.KeyPadLogic.returnList;
-
 public class KeyPadClick implements View.OnClickListener {
 
     private keyPadClickListener mListener;
@@ -19,8 +16,8 @@ public class KeyPadClick implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (view != null) {
-            int num = returnInteger(view);
-            numbers = returnList(num, numbers);
+            int num = KeyPadLogic.returnInteger(view);
+            numbers = KeyPadLogic.returnList(num, numbers);
             mListener.onKeypadClicked(numbers);
 
         } else {

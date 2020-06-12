@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/transparentBlack">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginTop="200dp"
-        android:layout_alignParentBottom="true"
         android:background="@drawable/custom_dynamic_struct_bg"
-        android:layout_marginBottom="5dp">
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
 
         <ImageButton
             android:layout_width="40dp"
@@ -27,14 +25,25 @@
 
         </ImageButton>
 
-        <androidx.recyclerview.widget.RecyclerView
+        <!--androidx.recyclerview.widget.RecyclerView
             android:id="@+id/structRv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_gravity="center">
 
-        </androidx.recyclerview.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView-->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/structRv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lineView" />
 
 
     </LinearLayout>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="40dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:layout_margin="2dp"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="2dp"
+    android:id="@+id/itemCv">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/custom_button_bg"
+        android:padding="3dp"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/itemNameTv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Muzlu Kek"
+            android:textColor="@color/Black"
+            android:textSize="@dimen/charge_tax_type_tv_size"
+            android:gravity="center">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/plusTv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="+"
+            android:textColor="@color/Gray"
+            android:gravity="center"
+            android:textSize="25dp">
+
+        </TextView>
+
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:id="@+id/deleteItemImgv"
+            android:src="@drawable/ic_close_gray_24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:tint="@color/White"
+            android:background="@drawable/circle_text_bg">
+
+        </ImageView>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
