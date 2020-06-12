@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Random;
 import java.util.TimeZone;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
@@ -200,5 +201,39 @@ public class CommonUtils {
             value = decimalFormat.format(x);
 
         return value;
+    }
+
+    public static int getDarkRandomColor(Context context) {
+
+        int[] colorList = {
+                R.color.style_color_primary,
+                R.color.style_color_accent,
+                R.color.fab_color_pressed,
+                R.color.blue_color_picker,
+                R.color.brown_color_picker,
+                R.color.green_color_picker,
+                R.color.orange_color_picker,
+                R.color.red_color_picker,
+                R.color.red_orange_color_picker,
+                R.color.violet_color_picker,
+                R.color.dot_dark_screen1,
+                R.color.dot_dark_screen2,
+                R.color.dot_dark_screen3,
+                R.color.dot_dark_screen4,
+                R.color.Fuchsia,
+                R.color.DarkRed,
+                R.color.Olive,
+                R.color.Purple,
+                R.color.gplus_color_1,
+                R.color.gplus_color_2,
+                R.color.gplus_color_3,
+                R.color.gplus_color_4,
+                R.color.MediumTurquoise,
+                R.color.RoyalBlue,
+                R.color.Green
+        };
+
+        Random rand = new Random();
+        return colorList[rand.nextInt(colorList.length)];
     }
 }

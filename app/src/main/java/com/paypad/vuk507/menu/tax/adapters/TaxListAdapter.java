@@ -1,4 +1,4 @@
-package com.paypad.vuk507.menu.tax;
+package com.paypad.vuk507.menu.tax.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,6 +14,7 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.menu.tax.TaxEditFragment;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.TaxModel;
 
@@ -29,7 +30,7 @@ public class TaxListAdapter extends RecyclerView.Adapter<TaxListAdapter.TaxHolde
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnTaxCallback returnTaxCallback;
 
-    TaxListAdapter(Context context, List<TaxModel> taxModels,
+    public TaxListAdapter(Context context, List<TaxModel> taxModels,
                    BaseFragment.FragmentNavigation fragmentNavigation,
                    ReturnTaxCallback returnTaxCallback) {
         this.context = context;

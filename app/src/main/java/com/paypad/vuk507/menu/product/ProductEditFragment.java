@@ -39,6 +39,7 @@ import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.ProductUnitTypeEnum;
+import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.PhotoChosenCallback;
@@ -418,6 +419,7 @@ public class ProductEditFragment extends BaseFragment {
 
         if(myTaxModel != null)
             tempProduct.setTaxId(myTaxModel.getId());
+            //tempProduct.setTaxId(myTaxModel.getId());
 
         if(myCategory != null)
             tempProduct.setCategoryId(myCategory.getId());
@@ -524,7 +526,17 @@ public class ProductEditFragment extends BaseFragment {
         }
 
         if(productXX.getTaxId() != 0){
-            myTaxModel = TaxDBHelper.getTax(productXX.getTaxId());
+
+            if(productXX.getTaxId() < 0){
+                myTaxModel = new TaxModel();
+                TaxRateEnum taxRateEnum = TaxRateEnum.getById(productXX.getTaxId());
+                myTaxModel.setId(taxRateEnum.getId());
+                myTaxModel.setTaxRate(taxRateEnum.getRateValue());
+                myTaxModel.setName(taxRateEnum.getLabel());
+            }else {
+                myTaxModel = TaxDBHelper.getTax(productXX.getTaxId());
+            }
+
             taxTypeTv.setText(myTaxModel.getName());
         }
 

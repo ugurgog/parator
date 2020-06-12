@@ -17,7 +17,6 @@ public class Customer extends RealmObject {
     private String city;
     private String address;
     private String postalCode;
-    private long[] groupId;
     private String company;
     private Date birthday;
     private String otherInformation;
@@ -94,14 +93,6 @@ public class Customer extends RealmObject {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
-    }
-
-    public long[] getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(long[] groupId) {
-        this.groupId = groupId;
     }
 
     public String getCompany() {

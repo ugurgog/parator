@@ -25,7 +25,7 @@
             android:layout_marginEnd="5dp"
             android:layout_weight="6">
 
-            <Spinner
+            <com.paypad.vuk507.uiUtils.NDSpinner
                 android:id="@+id/spinner"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -46,6 +46,29 @@
             android:layout_weight="1"/>
 
     </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/categoryNameTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:textSize="@dimen/custom_tv_size"
+        android:text="@string/create_discount"
+        android:textColor="@color/DodgerBlue"
+        android:textStyle="bold"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/itemExistInfoTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:textSize="@dimen/tax_item_height_size"
+        android:textColor="@color/Gray"
+        android:visibility="visible"/>
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/itemListRv"

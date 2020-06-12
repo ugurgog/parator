@@ -11,28 +11,35 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.uiUtils.NDSpinner;
+import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.ProductDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.ItemSpinnerEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.menu.category.CategoryEditFragment;
+import com.paypad.vuk507.menu.category.adapters.CategorySelectListAdapter;
+import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.menu.discount.DiscountEditFragment;
 import com.paypad.vuk507.menu.discount.adapters.DiscountListAdapter;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.menu.product.ProductEditFragment;
 import com.paypad.vuk507.menu.product.adapters.ProductListAdapter;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
+import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
@@ -63,11 +70,15 @@ public class LibraryFragment extends BaseFragment {
     ImageView searchCancelImgv;
 
     @BindView(R.id.spinner)
-    Spinner spinner;
+    NDSpinner spinner;
     @BindView(R.id.addItemBtn)
     Button addItemBtn;
     @BindView(R.id.itemListRv)
     RecyclerView itemListRv;
+    @BindView(R.id.categoryNameTv)
+    AppCompatTextView categoryNameTv;
+    @BindView(R.id.itemExistInfoTv)
+    AppCompatTextView itemExistInfoTv;
 
     private Realm realm;
     private ArrayAdapter<String> spinnerAdapter;
@@ -75,6 +86,7 @@ public class LibraryFragment extends BaseFragment {
 
     private ProductListAdapter productListAdapter;
     private DiscountListAdapter discountListAdapter;
+    private CategorySelectListAdapter categorySelectListAdapter;
 
     private User user;
 
@@ -100,7 +112,7 @@ public class LibraryFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_library, container, false);
             ButterKnife.bind(this, mView);
@@ -144,7 +156,7 @@ public class LibraryFragment extends BaseFragment {
                     mFragmentNavigation.pushFragment(new ProductEditFragment(null, new ReturnItemCallback() {
                         @Override
                         public void OnReturn(Product product, ItemProcessEnum processEnum) {
-                            setProductAdapter();
+                            setProductAdapter(0);
                         }
                     }));
                 }else if(selectedSpinner.getId() == ItemSpinnerEnum.DISCOUNTS.getId()){
@@ -152,6 +164,13 @@ public class LibraryFragment extends BaseFragment {
                         @Override
                         public void OnReturn(Discount discount) {
                             setDiscountAdapter();
+                        }
+                    }));
+                }else if(selectedSpinner.getId() == ItemSpinnerEnum.CATEGORIES.getId()){
+                    mFragmentNavigation.pushFragment(new CategoryEditFragment(null, new ReturnCategoryCallback() {
+                        @Override
+                        public void OnReturn(Category category) {
+                            setCategoryAdapter();
                         }
                     }));
                 }
@@ -197,8 +216,6 @@ public class LibraryFragment extends BaseFragment {
     private void setSpinnerAdapter() {
         List<String> spinnerList = getDefaultSpinnerList();
 
-
-
         spinnerAdapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_spinner_item, spinnerList);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
@@ -208,18 +225,24 @@ public class LibraryFragment extends BaseFragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedSpinner = ItemSpinnerEnum.getById(position);
 
-                Log.i("Info", "spinner_position:".concat(String.valueOf(position)).concat("  id:").concat(String.valueOf(id)));
-
-
-                if(selectedSpinner.getId() == ItemSpinnerEnum.DISCOUNTS.getId()){
-                    setDiscountAdapter();
-                }else if(selectedSpinner.getId() == ItemSpinnerEnum.PRODUCTS.getId()){
-                    setProductAdapter();
+                if(selectedSpinner != null){
+                    if(selectedSpinner.getId() == ItemSpinnerEnum.DISCOUNTS.getId()){
+                        categoryNameTv.setVisibility(View.GONE);
+                        setDiscountAdapter();
+                    }else if(selectedSpinner.getId() == ItemSpinnerEnum.PRODUCTS.getId()){
+                        categoryNameTv.setVisibility(View.GONE);
+                        setProductAdapter(0);
+                    }else if(selectedSpinner.getId() == ItemSpinnerEnum.CATEGORIES.getId()){
+                        categoryNameTv.setVisibility(View.GONE);
+                        setCategoryAdapter();
+                    }
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                Log.i("Info", "spinner_position:");
+
             }
         });
     }
@@ -245,9 +268,16 @@ public class LibraryFragment extends BaseFragment {
         itemListRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
     }
 
-    public void setDiscountAdapter(){
+    private void setDiscountAdapter(){
         RealmResults<Discount> discounts = DiscountDBHelper.getAllDiscounts(user.getUsername());
         List<Discount> discountList = new ArrayList(discounts);
+
+        if(discountList.size() == 0){
+            itemExistInfoTv.setVisibility(View.VISIBLE);
+            itemExistInfoTv.setText(getResources().getString(R.string.there_is_no_discount_defined));
+        }else
+            itemExistInfoTv.setVisibility(View.GONE);
+
         discountListAdapter = new DiscountListAdapter(getContext(), discountList, mFragmentNavigation, new ReturnDiscountCallback() {
             @Override
             public void OnReturn(Discount discount) {
@@ -257,18 +287,56 @@ public class LibraryFragment extends BaseFragment {
         itemListRv.setAdapter(discountListAdapter);
     }
 
-    public void setProductAdapter(){
-        RealmResults<Product> products = ProductDBHelper.getAllProducts(user.getUuid());
+    private void setProductAdapter(long categoryId){
+
+        RealmResults<Product> products;
+        if(categoryId == 0)
+            products = ProductDBHelper.getAllProducts(user.getUuid());
+        else
+            products = ProductDBHelper.getProductsByCategoryId(categoryId);
+
         List<Product> productList = new ArrayList(products);
+
+        if(productList.size() == 0){
+            itemExistInfoTv.setVisibility(View.VISIBLE);
+            if(categoryId > 0){
+                itemExistInfoTv.setText(getResources().getString(R.string.there_is_no_item_belongs_this_category));
+            }else
+                itemExistInfoTv.setText(getResources().getString(R.string.there_is_no_item_defined));
+        }else
+            itemExistInfoTv.setVisibility(View.GONE);
+
         productListAdapter = new ProductListAdapter(getContext(), productList, mFragmentNavigation, new ReturnItemCallback() {
             @Override
             public void OnReturn(Product product, ItemProcessEnum processEnum) {
-                setProductAdapter();
+                setProductAdapter(0);
             }
         });
         itemListRv.setAdapter(productListAdapter);
     }
 
+    private void setCategoryAdapter(){
+        categoryNameTv.setVisibility(View.GONE);
+        RealmResults<Category> categories = CategoryDBHelper.getAllCategories(user.getUsername());
+        List<Category> categoryList = new ArrayList(categories);
 
+        if(categoryList.size() == 0){
+            itemExistInfoTv.setVisibility(View.VISIBLE);
+            itemExistInfoTv.setText(getResources().getString(R.string.there_is_no_category_defined));
+        }else
+            itemExistInfoTv.setVisibility(View.GONE);
+
+        categorySelectListAdapter = new CategorySelectListAdapter(getContext(), categoryList, mFragmentNavigation, new ReturnCategoryCallback() {
+            @Override
+            public void OnReturn(Category category) {
+                categoryNameTv.setVisibility(View.VISIBLE);
+                categoryNameTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.category)
+                        .concat(" : ")
+                        .concat(category.getName()));
+                setProductAdapter(category.getId());
+            }
+        });
+        itemListRv.setAdapter(categorySelectListAdapter);
+    }
 
 }

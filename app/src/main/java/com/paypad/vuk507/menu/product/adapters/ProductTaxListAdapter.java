@@ -19,6 +19,7 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.product.ProductEditFragment;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
@@ -90,7 +91,18 @@ public class ProductTaxListAdapter extends RecyclerView.Adapter<ProductTaxListAd
 
         private void setProductTaxRate(){
             if(product.getTaxId() != 0){
-                TaxModel taxModel = TaxDBHelper.getTax(product.getTaxId());
+
+                TaxModel taxModel;
+                if(product.getTaxId() < 0){
+                    taxModel = new TaxModel();
+                    TaxRateEnum taxRateEnum = TaxRateEnum.getById(product.getTaxId());
+                    taxModel.setId(taxRateEnum.getId());
+                    taxModel.setTaxRate(taxRateEnum.getRateValue());
+                    taxModel.setName(taxRateEnum.getLabel());
+                }else {
+                    taxModel = TaxDBHelper.getTax(product.getTaxId());
+                }
+
                 taxRateTv.setText("% ".concat(CommonUtils.getDoubleStrValueForView(taxModel.getTaxRate(), TYPE_RATE)));
             }else
                 taxRateTv.setText("");

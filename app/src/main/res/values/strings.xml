@@ -102,6 +102,10 @@
     <string name="product_tax_can_not_be_empty">Item tax cannot be empty</string>
     <string name="tax_name_can_not_be_empty">Tax name cannot be empty</string>
     <string name="tax_rate_can_not_be_empty">Tax rate cannot be empty</string>
+    <string name="there_is_no_item_belongs_this_category">No products with this category were found</string>
+    <string name="there_is_no_category_defined">There is no category definition yet.</string>
+    <string name="there_is_no_item_defined">There is no product definition yet</string>
+    <string name="there_is_no_discount_defined">There is no discount definition yet</string>
 
     <string name="sure_to_delete_category">Are you sure you want to delete the category?</string>
     <string name="sure_to_delete_discount">Are you sure you want to delete the discount?</string>

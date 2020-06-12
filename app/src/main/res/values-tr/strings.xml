@@ -102,6 +102,10 @@
     <string name="product_tax_can_not_be_empty">Ürün vergi alanı boş olamaz</string>
     <string name="tax_name_can_not_be_empty">Vergi adı boş olamaz</string>
     <string name="tax_rate_can_not_be_empty">Vergi oranı boş olamaz</string>
+    <string name="there_is_no_item_belongs_this_category">Bu kategoriye sahip ürün bulunamadı</string>
+    <string name="there_is_no_category_defined">Henüz bir kategori tanımı bulunmuyor</string>
+    <string name="there_is_no_item_defined">Henüz bir ürün tanımı bulunmuyor</string>
+    <string name="there_is_no_discount_defined">Henüz bir indirim tanımı bulunmuyor</string>
 
     <string name="sure_to_delete_category">Kategoriyi silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_discount">İndirimi silmek istediğinize emin misiniz?</string>

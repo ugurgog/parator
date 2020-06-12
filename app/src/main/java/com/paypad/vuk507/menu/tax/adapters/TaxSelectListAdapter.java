@@ -1,4 +1,4 @@
-package com.paypad.vuk507.menu.tax;
+package com.paypad.vuk507.menu.tax.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -29,7 +29,7 @@ public class TaxSelectListAdapter extends RecyclerView.Adapter<TaxSelectListAdap
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnTaxCallback returnTaxCallback;
 
-    TaxSelectListAdapter(Context context, List<TaxModel> taxModels,
+    public TaxSelectListAdapter(Context context, List<TaxModel> taxModels,
                    BaseFragment.FragmentNavigation fragmentNavigation,
                    ReturnTaxCallback returnTaxCallback) {
         this.context = context;

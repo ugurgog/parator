@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,6 +68,7 @@ public class ChargeFragment extends BaseFragment {
 
     private ChargeViewPagerAdapter chargeViewPagerAdapter;
     private User user;
+    private KeypadFragment keypadFragment;
 
     private int[] tabIcons = {
             R.drawable.ic_keyboard_black_24dp,
@@ -94,6 +96,15 @@ public class ChargeFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(keypadFragment != null){
+            keypadFragment.setProductAdapter();
+        }
     }
 
     @Override
@@ -130,8 +141,9 @@ public class ChargeFragment extends BaseFragment {
     }
 
     private void setupViewPager() {
+        keypadFragment = new KeypadFragment();
         chargeViewPagerAdapter = new ChargeViewPagerAdapter(getFragmentManager());
-        chargeViewPagerAdapter.addFrag(new KeypadFragment(), getContext().getResources().getString(R.string.keypad));
+        chargeViewPagerAdapter.addFrag(keypadFragment, getContext().getResources().getString(R.string.keypad));
         chargeViewPagerAdapter.addFrag(new LibraryFragment(), getContext().getResources().getString(R.string.library));
         htab_viewpager.setAdapter(chargeViewPagerAdapter);
     }

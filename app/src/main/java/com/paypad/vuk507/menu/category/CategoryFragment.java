@@ -25,6 +25,7 @@ import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.menu.category.adapters.CategoryListAdapter;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.User;

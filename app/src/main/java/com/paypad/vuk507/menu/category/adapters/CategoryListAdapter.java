@@ -1,4 +1,4 @@
-package com.paypad.vuk507.menu.category;
+package com.paypad.vuk507.menu.category.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,6 +20,7 @@ import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.menu.category.CategoryEditFragment;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Category;
@@ -62,7 +63,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         CardView categoryItemCv;
         TextView categoryTv;
         ImageView deleteImgv;
-        RadioButton selectCategoryRb;
+        ImageView arrowImgv;
         Category category;
 
         int position;
@@ -73,8 +74,8 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
             categoryTv = view.findViewById(R.id.categoryTv);
             categoryItemCv = view.findViewById(R.id.categoryItemCv);
             deleteImgv = view.findViewById(R.id.deleteImgv);
-            selectCategoryRb = view.findViewById(R.id.selectCategoryRb);
-            selectCategoryRb.setVisibility(View.GONE);
+            arrowImgv = view.findViewById(R.id.arrowImgv);
+            arrowImgv.setVisibility(View.GONE);
 
             categoryItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -1,7 +1,6 @@
 package com.paypad.vuk507.menu.tax;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,14 +24,15 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.menu.tax.adapters.TaxSelectListAdapter;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -192,8 +192,12 @@ public class TaxSelectFragment extends BaseFragment {
 
     public void updateAdapterWithCurrentList(){
 
+        taxModelList = new ArrayList<>();
+        fillItems();
+
         taxModels = TaxDBHelper.getAllTaxes(user.getUsername());
-        taxModelList = new ArrayList(taxModels);
+        taxModelList.addAll( new ArrayList(taxModels));
+
         taxSelectListAdapter = new TaxSelectListAdapter(getContext(), taxModelList, mFragmentNavigation, new ReturnTaxCallback() {
             @Override
             public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
@@ -202,6 +206,17 @@ public class TaxSelectFragment extends BaseFragment {
             }
         });
         taxRv.setAdapter(taxSelectListAdapter);
+    }
+
+    private void fillItems() {
+        TaxRateEnum[] values = TaxRateEnum.values();
+        for(TaxRateEnum item : values){
+            TaxModel taxModel = new TaxModel();
+            taxModel.setName(item.getLabel());
+            taxModel.setTaxRate(item.getRateValue());
+            taxModel.setId(item.getId());
+            taxModelList.add(taxModel);
+        }
     }
 
     public void updateAdapter(String searchText) {

@@ -1,11 +1,11 @@
-package com.paypad.vuk507.keypad;
+package com.paypad.vuk507.uiUtils.keypad;
 
 import android.view.View;
 
 import java.util.ArrayList;
 
-import static com.paypad.vuk507.keypad.KeyPadLogic.returnInteger;
-import static com.paypad.vuk507.keypad.KeyPadLogic.returnList;
+import static com.paypad.vuk507.uiUtils.keypad.KeyPadLogic.returnInteger;
+import static com.paypad.vuk507.uiUtils.keypad.KeyPadLogic.returnList;
 
 public class KeyPadClick implements View.OnClickListener {
 

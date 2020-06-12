@@ -21,4 +21,17 @@ public class DataUtils {
     public static double getDoubleValueFromFormattedString(String rateOrAmountStr){
         return Double.valueOf(rateOrAmountStr.replaceAll(",", ""));
     }
+
+    public static String getShortenCustomerName(String name) {
+        StringBuilder returnValue = new StringBuilder();
+        if (name != null && !name.trim().isEmpty()) {
+            String[] seperatedName = name.trim().split(" ");
+            for (String word : seperatedName) {
+                if (returnValue.length() < 3)
+                    returnValue.append(word.substring(0, 1).toUpperCase());
+            }
+        }
+
+        return returnValue.toString();
+    }
 }

@@ -1,4 +1,4 @@
-package com.paypad.vuk507.menu.category;
+package com.paypad.vuk507.menu.category.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -56,7 +56,6 @@ public class CategorySelectListAdapter extends RecyclerView.Adapter<CategorySele
         TextView categoryTv;
         ImageView deleteImgv;
         Category category;
-        RadioButton selectCategoryRb;
 
         int position;
 
@@ -66,7 +65,6 @@ public class CategorySelectListAdapter extends RecyclerView.Adapter<CategorySele
             categoryTv = view.findViewById(R.id.categoryTv);
             categoryItemCv = view.findViewById(R.id.categoryItemCv);
             deleteImgv = view.findViewById(R.id.deleteImgv);
-            selectCategoryRb = view.findViewById(R.id.selectCategoryRb);
             deleteImgv.setVisibility(View.GONE);
 
             categoryItemCv.setOnClickListener(new View.OnClickListener() {

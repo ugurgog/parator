@@ -1,6 +1,7 @@
 package com.paypad.vuk507.menu.customer.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,9 @@ import com.paypad.vuk507.menu.discount.DiscountEditFragment;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.DataUtils;
+import com.paypad.vuk507.utils.ShapeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +58,9 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
     public class CustomerHolder extends RecyclerView.ViewHolder {
 
         private CardView customerItemCv;
-        private ImageView itemImgv;
-        private TextView shortNameTv;
         private TextView customerNameTv;
         private TextView customerInfoTv;
+        private TextView shortCustomerNameTv;
 
         private Customer customer;
         private int position;
@@ -66,8 +69,7 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
             super(view);
 
             customerItemCv = view.findViewById(R.id.customerItemCv);
-            itemImgv = view.findViewById(R.id.itemImgv);
-            shortNameTv = view.findViewById(R.id.shortNameTv);
+            shortCustomerNameTv = view.findViewById(R.id.shortCustomerNameTv);
             customerNameTv = view.findViewById(R.id.customerNameTv);
             customerInfoTv = view.findViewById(R.id.customerInfoTv);
 
@@ -91,22 +93,40 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
             this.customer = customer;
             this.position = position;
 
-            //discountNameTv.setText(discount.getName());
-            //rateOrAmountTv.setText(getRateOrAmountVal(discount));
+            customerNameTv.setText(customer.getName());
+            setCustomerInfo();
+            setCustomerShortName();
+            setShortenNameColor();
         }
 
-        private String getRateOrAmountVal(Discount discount) {
-            String rateOrAmounttr = "";
-            if(discount.getRate() != 0){
-                rateOrAmounttr = "% ".concat(Double.toString(discount.getRate()));
-            }else if(discount.getAmount() != 0){
-                rateOrAmounttr = CurrencyEnum.TL.getSymbol().concat(" ").concat(String.valueOf(discount.getAmount()));
+        private void setShortenNameColor() {
+            int colorCode = CommonUtils.getDarkRandomColor(context);
+            GradientDrawable imageShape = ShapeUtil.getShape(context.getResources().getColor(colorCode, null),
+                    context.getResources().getColor(colorCode, null),
+                    GradientDrawable.OVAL, 50, 0);
+            shortCustomerNameTv.setBackground(imageShape);
+        }
+
+        private void setCustomerInfo() {
+            String customerInfo = "";
+            if(customer.getEmail() != null && !customer.getEmail().isEmpty())
+                customerInfo = customer.getEmail();
+
+            if(customer.getPhoneNumber() != null && !customer.getPhoneNumber().isEmpty()){
+                if(!customerInfo.isEmpty())
+                    customerInfo = customerInfo.concat("|").concat(customer.getPhoneNumber());
+                else
+                    customerInfo = customer.getPhoneNumber();
             }
-            return rateOrAmounttr;
+            customerInfoTv.setText(customerInfo);
+        }
+
+        private void setCustomerShortName() {
+            shortCustomerNameTv.setText(DataUtils.getShortenCustomerName(customer.getName()));
         }
     }
 
-    public void addDiscount(Customer customer1){
+    public void addCustomer(Customer customer1){
         //TODO - categories listesi sorunlu bakacagiz
         if(customers != null && customer1 != null){
             customers.add(customer1);

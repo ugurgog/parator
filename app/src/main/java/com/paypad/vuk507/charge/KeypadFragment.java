@@ -10,9 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
@@ -21,9 +19,9 @@ import com.paypad.vuk507.db.ProductDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.keypad.KeyPad;
-import com.paypad.vuk507.keypad.KeyPadClick;
-import com.paypad.vuk507.keypad.keyPadClickListener;
+import com.paypad.vuk507.uiUtils.keypad.KeyPad;
+import com.paypad.vuk507.uiUtils.keypad.KeyPadClick;
+import com.paypad.vuk507.uiUtils.keypad.keyPadClickListener;
 import com.paypad.vuk507.menu.product.adapters.ProductTaxListAdapter;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
 import com.paypad.vuk507.model.Product;
@@ -35,7 +33,6 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,6 +64,12 @@ public class KeypadFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
     }
 
     @Nullable
@@ -139,7 +142,10 @@ public class KeypadFragment extends BaseFragment {
         taxTypeRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.HORIZONTAL));*/
     }
 
-    private void setProductAdapter(){
+    public void setProductAdapter(){
+        if(user == null || user.getUuid() == null)
+            return;
+
         RealmResults<Product> products = ProductDBHelper.getAllProducts(user.getUuid());
         List<Product> productList = new ArrayList(products);
         productTaxListAdapter = new ProductTaxListAdapter(getContext(), productList, new ReturnItemCallback() {

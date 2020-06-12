@@ -1,4 +1,4 @@
-package com.paypad.vuk507.keypad;
+package com.paypad.vuk507.uiUtils.keypad;
 
 
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 

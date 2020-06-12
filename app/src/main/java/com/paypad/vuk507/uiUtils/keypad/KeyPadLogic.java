@@ -1,4 +1,4 @@
-package com.paypad.vuk507.keypad;
+package com.paypad.vuk507.uiUtils.keypad;
 
 import android.view.View;
 

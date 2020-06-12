@@ -17,6 +17,15 @@ public class ProductDBHelper {
         return products;
     }
 
+    public static RealmResults<Product> getProductsByCategoryId(long categoryId){
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Product> products = realm.where(Product.class)
+                .equalTo("categoryId", categoryId)
+                .findAll();
+        return products;
+    }
+
+
     public static void deleteProduct(long id, CompleteCallback completeCallback){
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {

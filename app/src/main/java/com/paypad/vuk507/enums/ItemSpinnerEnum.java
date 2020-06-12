@@ -3,7 +3,8 @@ package com.paypad.vuk507.enums;
 public enum  ItemSpinnerEnum {
 
     PRODUCTS("All Items", "Tüm Ürünler", 0),
-    DISCOUNTS("Discounts", "İndirimler", 1);
+    DISCOUNTS("Discounts", "İndirimler", 1),
+    CATEGORIES("Categories", "Kategoriler", 2);
 
     private final String labelTr;
     private final String labelEn;
