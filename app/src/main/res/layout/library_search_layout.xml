@@ -59,7 +59,7 @@
                 android:layout_weight="1"
                 android:src="@drawable/ic_add_gray_24dp"
                 android:id="@+id/addItemImgv"
-                android:visibility="visible"/>
+                android:visibility="gone"/>
 
         </LinearLayout>
 

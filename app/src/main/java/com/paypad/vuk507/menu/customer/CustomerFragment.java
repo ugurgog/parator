@@ -1,4 +1,4 @@
-package com.paypad.vuk507.menu.discount;
+package com.paypad.vuk507.menu.customer;
 
 
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,12 +21,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.db.CustomerDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.menu.customer.adapters.CustomerListAdapter;
+import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.discount.adapters.DiscountListAdapter;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
+import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -45,7 +49,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class DiscountFragment extends BaseFragment {
+public class CustomerFragment extends BaseFragment {
 
     private View mView;
 
@@ -61,19 +65,18 @@ public class DiscountFragment extends BaseFragment {
     ImageView searchCancelImgv;
     @BindView(R.id.searchResultTv)
     TextView searchResultTv;
-    @BindView(R.id.createDiscountBtn)
-    Button createDiscountBtn;
-
-    @BindView(R.id.discountRv)
-    RecyclerView discountRv;
+    @BindView(R.id.customerRv)
+    RecyclerView customerRv;
+    @BindView(R.id.selectionImgv)
+    ClickableImageView selectionImgv;
 
     private User user;
     private Realm realm;
-    private RealmResults<Discount> discounts;
-    private List<Discount> discountList;
-    private DiscountListAdapter discountListAdapter;
+    private RealmResults<Customer> customers;
+    private List<Customer> customerList;
+    private CustomerListAdapter customerListAdapter;
 
-    public DiscountFragment() {
+    public CustomerFragment() {
 
     }
 
@@ -110,7 +113,7 @@ public class DiscountFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
-            mView = inflater.inflate(R.layout.fragment_discount, container, false);
+            mView = inflater.inflate(R.layout.fragment_customer, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -128,18 +131,6 @@ public class DiscountFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 Objects.requireNonNull(getActivity()).onBackPressed();
-            }
-        });
-
-        createDiscountBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new DiscountEditFragment(null, new ReturnDiscountCallback() {
-                    @Override
-                    public void OnReturn(Discount discount) {
-                        updateAdapterWithCurrentList();
-                    }
-                }));
             }
         });
 
@@ -176,35 +167,35 @@ public class DiscountFragment extends BaseFragment {
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        toolbarTitleTv.setText(getContext().getResources().getString(R.string.discounts));
+        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.customers));
         addItemImgv.setVisibility(View.GONE);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
-        discountRv.setLayoutManager(linearLayoutManager);
-        discountRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
+        customerRv.setLayoutManager(linearLayoutManager);
+        customerRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
     }
 
     public void updateAdapterWithCurrentList(){
-        discounts = DiscountDBHelper.getAllDiscounts(user.getUsername());
-        discountList = new ArrayList(discounts);
-        discountListAdapter = new DiscountListAdapter(getContext(), discountList, mFragmentNavigation, new ReturnDiscountCallback() {
+        customers = CustomerDBHelper.getAllCustomers(user.getUuid());
+        customerList = new ArrayList(customers);
+        customerListAdapter = new CustomerListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
             @Override
-            public void OnReturn(Discount discount) {
+            public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
                 updateAdapterWithCurrentList();
             }
         });
-        discountRv.setAdapter(discountListAdapter);
+        customerRv.setAdapter(customerListAdapter);
     }
 
     public void updateAdapter(String searchText) {
-        if (searchText != null && discountListAdapter != null) {
-            discountListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+        if (searchText != null && customerListAdapter != null) {
+            customerListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0 && discountList.size() > 0)
+                    if (size == 0 && customerList.size() > 0)
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

@@ -86,6 +86,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
                         @Override
                         public void OnReturn(Product product, ItemProcessEnum processEnum) {
                             returnItemCallback.OnReturn(product, processEnum);
+                            Log.i("Info", "ProductListAdapter callback.");
                         }
                     }));
                 }

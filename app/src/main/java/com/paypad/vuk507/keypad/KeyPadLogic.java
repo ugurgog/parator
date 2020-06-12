@@ -8,12 +8,6 @@ import java.util.ArrayList;
 
 class KeyPadLogic {
 
-    /**
-     * Return int on button click
-     *
-     * @param view
-     * @return
-     */
     static int returnInteger(View view) {
         int i = view.getId();
 
@@ -47,15 +41,7 @@ class KeyPadLogic {
     static ArrayList<Integer> returnList(int input, ArrayList<Integer> numbers) {
 
         if (numbers != null) {
-            if (input != -1 && input != -2) {
-                numbers.add(input);
-            } else if (input == -1) {
-                if (numbers.size() != 0) {
-                    numbers.remove(numbers.size() - 1);
-                }
-            } else {
-                // Do nothing
-            }
+            numbers.add(input);
         }
         return numbers;
     }

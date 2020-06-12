@@ -209,6 +209,7 @@ public class TaxEditFragment extends BaseFragment {
     }
 
     private void checkValidTax() {
+        CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
         if(taxNameEt.getText() == null || taxNameEt.getText().toString().isEmpty()){
             CommonUtils.snackbarDisplay(taxMainll,
                     Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.tax_name_can_not_be_empty));
@@ -265,6 +266,7 @@ public class TaxEditFragment extends BaseFragment {
                         returnTaxCallback.OnReturn((TaxModel) baseResponse.getObject(), ItemProcessEnum.CHANGED);
 
                     clearViews();
+                    Objects.requireNonNull(getActivity()).onBackPressed();
                 }
             }
         });

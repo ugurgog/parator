@@ -1,11 +1,9 @@
-package com.paypad.vuk507.menu.discount;
+package com.paypad.vuk507.menu.discount.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
@@ -13,16 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.enums.CurrencyEnum;
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.menu.discount.DiscountEditFragment;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
-import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.CustomDialogBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +52,6 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
         private CardView discountItemCv;
         private TextView discountNameTv;
         private TextView rateOrAmountTv;
-        private ImageView deleteImgv;
         private Discount discount;
         private int position;
 
@@ -69,7 +61,6 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
             discountItemCv = view.findViewById(R.id.discountItemCv);
             discountNameTv = view.findViewById(R.id.discountNameTv);
             rateOrAmountTv = view.findViewById(R.id.rateOrAmountTv);
-            deleteImgv = view.findViewById(R.id.deleteImgv);
 
             discountItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -77,54 +68,12 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
                     fragmentNavigation.pushFragment(new DiscountEditFragment(discount, new ReturnDiscountCallback() {
                         @Override
                         public void OnReturn(Discount discount) {
-                            discounts.set(position, discount);
-                            notifyItemChanged(position);
+                            returnDiscountCallback.OnReturn(discount);
+                            //discounts.set(position, discount);
+                            //notifyItemChanged(position);
                             //notifyDataSetChanged();
                         }
                     }));
-                }
-            });
-
-            deleteImgv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new CustomDialogBox.Builder((Activity) context)
-                            .setMessage(context.getResources().getString(R.string.sure_to_delete_discount))
-                            .setNegativeBtnVisibility(View.VISIBLE)
-                            .setNegativeBtnText(context.getResources().getString(R.string.cancel))
-                            .setNegativeBtnBackground(context.getResources().getColor(R.color.Silver, null))
-                            .setPositiveBtnVisibility(View.VISIBLE)
-                            .setPositiveBtnText(context.getResources().getString(R.string.yes))
-                            .setPositiveBtnBackground(context.getResources().getColor(R.color.bg_screen1, null))
-                            .setDurationTime(0)
-                            .isCancellable(true)
-                            .setEditTextVisibility(View.GONE)
-                            .OnPositiveClicked(new CustomDialogListener() {
-                                @Override
-                                public void OnClick() {
-                                    DiscountDBHelper.deleteDiscount(discount.getId(), new CompleteCallback() {
-                                        @Override
-                                        public void onComplete(BaseResponse baseResponse) {
-                                            CommonUtils.showToastShort(context, baseResponse.getMessage());
-                                            if(baseResponse.isSuccess()){
-
-                                                returnDiscountCallback.OnReturn((Discount) baseResponse.getObject());
-
-                                                //discounts.remove(position);
-                                                //notifyItemRemoved(position);
-                                                //notifyItemRangeChanged(position, getItemCount());
-                                                //notifyDataSetChanged();
-                                            }
-                                        }
-                                    });
-                                }
-                            })
-                            .OnNegativeClicked(new CustomDialogListener() {
-                                @Override
-                                public void OnClick() {
-
-                                }
-                            }).build();
                 }
             });
         }

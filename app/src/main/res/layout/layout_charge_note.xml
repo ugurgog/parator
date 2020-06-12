@@ -26,6 +26,19 @@
 
 
     <TextView
+        android:id="@+id/noteAmountTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/Black"
+        android:layout_marginStart="10dp"
+        android:text="0,00"
+        android:textStyle="bold"
+        android:layout_weight="1"
+        android:layout_gravity="center">
+    </TextView>
+
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/currencySymbolTv"
@@ -37,16 +50,6 @@
         android:layout_gravity="center">
     </TextView>
 
-    <TextView
-        android:id="@+id/noteAmountTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/Black"
-        android:layout_marginStart="10dp"
-        android:text="0,00"
-        android:textStyle="bold"
-        android:layout_weight="1"
-        android:layout_gravity="center">
-    </TextView>
+
 
 </LinearLayout>

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -42,9 +43,6 @@ public class ChargeFragment extends BaseFragment {
 
     View mView;
 
-    //@BindView(R.id.ntb_horizontal)
-    //NavigationTabBar navigationTabBar;
-
     @BindView(R.id.tablayout)
     TabLayout tablayout;
 
@@ -58,13 +56,15 @@ public class ChargeFragment extends BaseFragment {
     @BindView(R.id.navViewLayout)
     NavigationView navViewLayout;
 
+    @BindView(R.id.currencySymbolTv)
+    TextView currencySymbolTv;
+
     private static final int TAB_KEYPAD = 0;
     private static final int TAB_LIBRARY = 1;
 
     private int selectedTabPosition = TAB_KEYPAD;
     private boolean mDrawerState;
 
-    //private ChargePagerAdapter chargePagerAdapter;
     private ChargeViewPagerAdapter chargeViewPagerAdapter;
     private User user;
 
@@ -87,6 +87,8 @@ public class ChargeFragment extends BaseFragment {
     @Subscribe(sticky = true)
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
+        if(user == null)
+            user = UserDBHelper.getUserFromCache(getContext());
     }
 
     @Override
@@ -101,31 +103,15 @@ public class ChargeFragment extends BaseFragment {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_charge, container, false);
             ButterKnife.bind(this, mView);
-            initNavigationBar();
+            initVariables();
             setUpPager();
             setDrawerListeners();
         }
         return mView;
     }
 
-    private void initNavigationBar(){
-        /*final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
-        models.add(
-                new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.ic_keyboard_black_24dp, null),
-                        Color.parseColor("#d1395c"))
-                        .title(Objects.requireNonNull(getContext()).getResources().getString(R.string.keypad))
-                        .build()
-        );
-        models.add(
-                new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.ic_library_books_black_24dp, null),
-                        Color.parseColor("#FF861F"))
-                        .title(getContext().getResources().getString(R.string.library))
-                        .build()
-        );
-
-        navigationTabBar.setModels(models);*/
+    private void initVariables() {
+        currencySymbolTv.setText(CommonUtils.getCurrency().getSymbol());
     }
 
     private void setUpPager() {
@@ -133,24 +119,11 @@ public class ChargeFragment extends BaseFragment {
         tablayout.setupWithViewPager(htab_viewpager);
         setupTabIcons();
         setTabListener();
-
-        //chargePagerAdapter = new ChargePagerAdapter(getFragmentManager(), 2);
-        //htab_viewpager.setAdapter(chargePagerAdapter);
-
-
-
-        /*chargePagerAdapter = new ChargePagerAdapter(getFragmentManager(), 2);
-        htab_viewpager.setAdapter(chargePagerAdapter);
-        //htab_viewpager.setPageTransformer(true, new RotateUpTransformer());
-        navigationTabBar.setViewPager(htab_viewpager, 0);
-        setTabListener();*/
     }
 
     private void setupTabIcons() {
         Objects.requireNonNull(tablayout.getTabAt(0)).setIcon(tabIcons[0]);
         Objects.requireNonNull(tablayout.getTabAt(1)).setIcon(tabIcons[1]);
-
-        //tablayout.getTabAt(1).getIcon();
 
         Objects.requireNonNull(Objects.requireNonNull(tablayout.getTabAt(1)).getIcon())
                 .setColorFilter(Objects.requireNonNull(getContext()).getResources().getColor(R.color.tab_unselected, null), PorterDuff.Mode.SRC_IN);
@@ -183,28 +156,6 @@ public class ChargeFragment extends BaseFragment {
 
             }
         });
-
-        /*navigationTabBar.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
-                //viewPager.setCurrentItem(position);
-                selectedTabPosition = position;
-            }
-
-            @Override
-            public void onPageSelected(final int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(final int state) {
-
-            }
-        });*/
-    }
-
-    public int getSelectedTabPosition() {
-        return selectedTabPosition;
     }
 
     public void setDrawerListeners() {

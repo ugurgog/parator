@@ -176,22 +176,29 @@ public class CommonUtils {
     }
 
     public static void setAmountToView(double amount, EditText editText, int inputType){
+        String value = getDoubleStrValueForView(amount, inputType);
+        editText.setText(value);
+        editText.setSelection(editText.getText().length());
+    }
+
+
+    public static String getDoubleStrValueForView(double doubleVal, int inputType){
         DecimalFormat decimalFormat = new DecimalFormat("###,##0.00");
         Number x = null;
         try {
-            x = decimalFormat.parse(String.valueOf(amount));
+            x = decimalFormat.parse(String.valueOf(doubleVal));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        if(inputType == TYPE_RATE && amount > 100)
-            amount = 100;
+        if(inputType == TYPE_RATE && doubleVal > 100)
+            doubleVal = 100;
 
-        if(amount == 0)
-            editText.setText("");
-        else{
-            editText.setText(decimalFormat.format(x));
-        }
-        editText.setSelection(editText.getText().length());
+        String value = "";
+
+        if(doubleVal != 0)
+            value = decimalFormat.format(x);
+
+        return value;
     }
 }

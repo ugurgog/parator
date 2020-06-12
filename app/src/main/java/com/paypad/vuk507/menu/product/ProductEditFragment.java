@@ -132,7 +132,7 @@ public class ProductEditFragment extends BaseFragment {
     private Product productXX;
     private User user;
     private int deleteButtonStatus = 1;
-    private ReturnItemCallback returnItemCallback;
+    private ReturnItemCallback returnCallback;
     private boolean photoExist = false;
     private String galleryOrCameraSelect = "";
     private PermissionModule permissionModule;
@@ -148,7 +148,7 @@ public class ProductEditFragment extends BaseFragment {
 
     public ProductEditFragment(@Nullable Product product, ReturnItemCallback returnItemCallback) {
         this.productXX = product;
-        this.returnItemCallback = returnItemCallback;
+        this.returnCallback = returnItemCallback;
     }
 
     @Override
@@ -273,7 +273,7 @@ public class ProductEditFragment extends BaseFragment {
                         public void onComplete(BaseResponse baseResponse) {
                             CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
                             if(baseResponse.isSuccess()){
-                                returnItemCallback.OnReturn((Product) baseResponse.getObject(), ItemProcessEnum.DELETED);
+                                returnCallback.OnReturn((Product) baseResponse.getObject(), ItemProcessEnum.DELETED);
                                 Objects.requireNonNull(getActivity()).onBackPressed();
                             }
                         }
@@ -315,7 +315,7 @@ public class ProductEditFragment extends BaseFragment {
             @Override
             public void onGallerySelected() {
                 galleryOrCameraSelect = GALLERY_TEXT;
-                chechGalleryPermission();
+                checkGalleryPermission();
             }
 
             @Override
@@ -338,7 +338,7 @@ public class ProductEditFragment extends BaseFragment {
                 photoExist, photoChosenCallback);
     }
 
-    private void chechGalleryPermission() {
+    private void checkGalleryPermission() {
         if (!permissionModule.checkWriteExternalStoragePermission())
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PermissionModule.PERMISSION_WRITE_EXTERNAL_STORAGE);
         else
@@ -441,10 +441,16 @@ public class ProductEditFragment extends BaseFragment {
                             getContext().getResources().getString(R.string.delete_item));
                     btnDelete.setEnabled(false);
 
+
+                    Log.i("Info", "ProductEditFragment callback.");
+
+                    ItemProcessEnum processEnum;
                     if(finalInserted)
-                        returnItemCallback.OnReturn((Product) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+                        processEnum = ItemProcessEnum.INSERTED;
                     else
-                        returnItemCallback.OnReturn((Product) baseResponse.getObject(), ItemProcessEnum.CHANGED);
+                        processEnum = ItemProcessEnum.CHANGED;
+
+                    returnCallback.OnReturn((Product) baseResponse.getObject(), processEnum);
 
                     clearViews();
                     Objects.requireNonNull(getActivity()).onBackPressed();

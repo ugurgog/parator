@@ -1,5 +1,4 @@
-package com.paypad.vuk507.menu.discount;
-
+package com.paypad.vuk507.menu.customer;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -22,16 +21,15 @@ import com.bumptech.glide.Glide;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.DiscountDBHelper;
-import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
-import com.paypad.vuk507.model.UnitModel;
-import com.paypad.vuk507.model.pojo.BaseResponse;
+import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
@@ -51,7 +49,7 @@ import io.realm.Realm;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
-public class DiscountEditFragment extends BaseFragment {
+public class CustomerEditFragment extends BaseFragment {
 
     private View mView;
 
@@ -81,14 +79,14 @@ public class DiscountEditFragment extends BaseFragment {
     private Realm realm;
     private Discount discount;
     private User user;
-    private ReturnDiscountCallback returnDiscountCallback;
+    private ReturnCustomerCallback returnCustomerCallback;
     private int selectionType = TYPE_RATE;
     private NumberFormatWatcher numberFormatWatcher;
     private int deleteButtonStatus = 1;
 
-    public DiscountEditFragment(@Nullable Discount discount, ReturnDiscountCallback returnDiscountCallback) {
-        this.discount = discount;
-        this.returnDiscountCallback = returnDiscountCallback;
+    public CustomerEditFragment(@Nullable Customer customer, ReturnCustomerCallback returnCustomerCallback) {
+        //this.discount = discount;
+        this.returnCustomerCallback = returnCustomerCallback;
     }
 
     @Override
@@ -185,7 +183,7 @@ public class DiscountEditFragment extends BaseFragment {
                         public void onComplete(BaseResponse baseResponse) {
                             CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
                             if(baseResponse.isSuccess()){
-                                returnDiscountCallback.OnReturn((Discount) baseResponse.getObject());
+                                //returnDiscountCallback.OnReturn((Discount) baseResponse.getObject());
                                 Objects.requireNonNull(getActivity()).onBackPressed();
                             }
                         }
@@ -271,7 +269,7 @@ public class DiscountEditFragment extends BaseFragment {
                 CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
                 if(baseResponse.isSuccess()){
                     deleteButtonStatus = 1;
-                    returnDiscountCallback.OnReturn((Discount) baseResponse.getObject());
+                    //returnDiscountCallback.OnReturn((Discount) baseResponse.getObject());
                     clearItems();
                     Objects.requireNonNull(getActivity()).onBackPressed();
                 }
