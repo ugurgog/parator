@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,8 +33,11 @@ import com.paypad.vuk507.menu.customer.adapters.CustomerListAdapter;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.discount.adapters.DiscountListAdapter;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
+import com.paypad.vuk507.menu.tax.TaxEditFragment;
+import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -161,6 +166,39 @@ public class CustomerFragment extends BaseFragment {
                 searchEdittext.setText("");
                 searchCancelImgv.setVisibility(View.GONE);
                 CommonUtils.showKeyboard(getContext(),false, searchEdittext);
+            }
+        });
+
+        selectionImgv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(getContext(), selectionImgv);
+                popupMenu.inflate(R.menu.menu_customer);
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.createCustomer:
+                                mFragmentNavigation.pushFragment(new CustomerCreateFragment(new ReturnCustomerCallback() {
+                                    @Override
+                                    public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
+                                        updateAdapterWithCurrentList();
+                                    }
+                                }));
+                                break;
+                            case R.id.deleteCustomers:
+
+                                break;
+
+                            case R.id.viewGroups:
+
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
             }
         });
     }

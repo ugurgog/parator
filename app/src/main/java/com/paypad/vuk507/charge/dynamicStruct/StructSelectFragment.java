@@ -3,9 +3,12 @@ package com.paypad.vuk507.charge.dynamicStruct;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,31 +35,6 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.DynamicStructEnum;
-import com.paypad.vuk507.enums.ItemProcessEnum;
-import com.paypad.vuk507.enums.TaxRateEnum;
-import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.tax.TaxEditFragment;
-import com.paypad.vuk507.menu.tax.adapters.TaxSelectListAdapter;
-import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
-import com.paypad.vuk507.model.TaxModel;
-import com.paypad.vuk507.model.User;
-import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
-import com.paypad.vuk507.utils.CommonUtils;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmResults;
-
-import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 
 
 public class StructSelectFragment extends BottomSheetDialogFragment {
@@ -68,7 +46,7 @@ public class StructSelectFragment extends BottomSheetDialogFragment {
     private StructSelectListener selectListener;
 
     public interface StructSelectListener {
-        void onStructClick(DynamicStructEnum dynamicStructEnum);
+        void onStructClick(DynamicStructEnum dynamicStructEnum, boolean fromCategory);
     }
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -91,14 +69,19 @@ public class StructSelectFragment extends BottomSheetDialogFragment {
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
         View contentView = View.inflate(getContext(), R.layout.fragment_struct_select, null);
+
         dialog.setContentView(contentView);
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent()).getLayoutParams();
+
+        View parent = ((View) contentView.getParent());
+
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) parent.getLayoutParams();
         CoordinatorLayout.Behavior behavior = params.getBehavior();
 
         if (behavior instanceof BottomSheetBehavior) {
             ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
         }
-        ((View) contentView.getParent()).setBackgroundColor(getResources().getColor(android.R.color.transparent, null));
+
+        parent.setBackgroundColor(getResources().getColor(android.R.color.transparent, null));
         RecyclerView structRv = contentView.findViewById(R.id.structRv);
         ImageButton closeImgBtn = contentView.findViewById(R.id.closeImgBtn);
 
@@ -138,6 +121,7 @@ public class StructSelectFragment extends BottomSheetDialogFragment {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             //holder.structNameTv.setText(emojisList.get(position));
+            holder.dynamicStructEnum = dynamicStructEnums[position];
             holder.structNameTv.setText(dynamicStructEnums[position].getLabelEn());
         }
 
@@ -150,6 +134,8 @@ public class StructSelectFragment extends BottomSheetDialogFragment {
             TextView structNameTv;
             LinearLayout structItemll;
 
+            DynamicStructEnum dynamicStructEnum;
+
             ViewHolder(View itemView) {
                 super(itemView);
                 structNameTv = itemView.findViewById(R.id.structNameTv);
@@ -157,7 +143,7 @@ public class StructSelectFragment extends BottomSheetDialogFragment {
 
                 itemView.setOnClickListener(v -> {
                     if (selectListener != null) {
-                        //mEmojiListener.onEmojiClick(emojisList.get(getLayoutPosition()));
+                        selectListener.onStructClick(dynamicStructEnum, false);
                     }
                     dismiss();
                 });

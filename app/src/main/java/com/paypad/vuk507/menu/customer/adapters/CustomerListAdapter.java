@@ -76,7 +76,8 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
             customerItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fragmentNavigation.pushFragment(new CustomerEditFragment(customer, new ReturnCustomerCallback() {
+
+                    /*fragmentNavigation.pushFragment(new CustomerEditFragment(customer, new ReturnCustomerCallback() {
                         @Override
                         public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
                             returnCustomerCallback.OnReturn(customer, processEnum);
@@ -84,7 +85,7 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
                             //notifyItemChanged(position);
                             //notifyDataSetChanged();
                         }
-                    }));
+                    }));*/
                 }
             });
         }

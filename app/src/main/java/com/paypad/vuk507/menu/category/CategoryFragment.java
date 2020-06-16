@@ -173,7 +173,6 @@ public class CategoryFragment extends BaseFragment {
         categoryRv.setLayoutManager(linearLayoutManager);
         categoryRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
-
     }
 
     public void updateAdapterWithCurrentList(){

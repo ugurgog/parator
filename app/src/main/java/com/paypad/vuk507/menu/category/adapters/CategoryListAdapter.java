@@ -62,8 +62,6 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
         CardView categoryItemCv;
         TextView categoryTv;
-        ImageView deleteImgv;
-        ImageView arrowImgv;
         Category category;
 
         int position;
@@ -73,9 +71,6 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
             categoryTv = view.findViewById(R.id.categoryTv);
             categoryItemCv = view.findViewById(R.id.categoryItemCv);
-            deleteImgv = view.findViewById(R.id.deleteImgv);
-            arrowImgv = view.findViewById(R.id.arrowImgv);
-            arrowImgv.setVisibility(View.GONE);
 
             categoryItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -83,68 +78,9 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
                     fragmentNavigation.pushFragment(new CategoryEditFragment(category, new ReturnCategoryCallback() {
                         @Override
                         public void OnReturn(Category category) {
-
-                            if(category != null){
-                                categories.set(position, category);
-                                categoryChangedResult(position);
-                            }
-                            //notifyItemChanged(position);
-                            //notifyDataSetChanged();
+                            returnCategoryCallback.OnReturn(category);
                         }
                     }));
-                }
-            });
-
-            deleteImgv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new CustomDialogBox.Builder((Activity) context)
-                            .setMessage(context.getResources().getString(R.string.sure_to_delete_category))
-                            .setNegativeBtnVisibility(View.VISIBLE)
-                            .setNegativeBtnText(context.getResources().getString(R.string.cancel))
-                            .setNegativeBtnBackground(context.getResources().getColor(R.color.Silver, null))
-                            .setPositiveBtnVisibility(View.VISIBLE)
-                            .setPositiveBtnText(context.getResources().getString(R.string.yes))
-                            .setPositiveBtnBackground(context.getResources().getColor(R.color.bg_screen1, null))
-                            .setDurationTime(0)
-                            .isCancellable(true)
-                            .setEditTextVisibility(View.GONE)
-                            .OnPositiveClicked(new CustomDialogListener() {
-                                @Override
-                                public void OnClick() {
-                                    CategoryDBHelper.deleteCategory(category.getId(), new CompleteCallback() {
-                                        @Override
-                                        public void onComplete(BaseResponse baseResponse) {
-                                            CommonUtils.showToastShort(context, baseResponse.getMessage());
-                                            if(baseResponse.isSuccess()){
-
-
-
-
-                                                //categoryRemoveResult(position);
-                                                returnCategoryCallback.OnReturn((Category) baseResponse.getObject());
-
-                                                //categories.clear();
-                                                //categories.addAll(CategoryDBHelper.getAllCategories(LoginUtils.getUsernameFromCache(context)));
-                                                //notifyDataSetChanged();
-
-
-                                                //categories.remove(position);
-                                                //notifyItemRemoved(position);
-                                                //notifyItemRangeChanged(position, getItemCount());
-                                                //this.notifyDataSetChanged();
-                                            }
-                                        }
-                                    });
-
-                                }
-                            })
-                            .OnNegativeClicked(new CustomDialogListener() {
-                                @Override
-                                public void OnClick() {
-
-                                }
-                            }).build();
                 }
             });
         }

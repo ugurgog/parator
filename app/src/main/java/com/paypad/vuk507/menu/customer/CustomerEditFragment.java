@@ -53,43 +53,24 @@ public class CustomerEditFragment extends BaseFragment {
 
     private View mView;
 
-    @BindView(R.id.toolbarTitleTv)
-    AppCompatTextView toolbarTitleTv;
     @BindView(R.id.cancelImgv)
     ClickableImageView cancelImgv;
-    @BindView(R.id.saveBtn)
+
+    AppCompatTextView toolbarTitleTv;
+
     Button saveBtn;
-    @BindView(R.id.discountMainll)
-    LinearLayout discountMainll;
-    @BindView(R.id.editItemImgv)
-    ImageView editItemImgv;
-    @BindView(R.id.discountNameEt)
-    EditText discountNameEt;
 
-    @BindView(R.id.rateSymbolTv)
-    TextView rateSymbolTv;
-    @BindView(R.id.amountSymbolTv)
-    TextView amountSymbolTv;
 
-    @BindView(R.id.amountRateEt)
-    EditText amountRateEt;
-    @BindView(R.id.btnDelete)
-    Button btnDelete;
 
     private Realm realm;
-    private Discount discount;
     private User user;
     private ReturnCustomerCallback returnCustomerCallback;
-    private int selectionType = TYPE_RATE;
-    private NumberFormatWatcher numberFormatWatcher;
-    private int deleteButtonStatus = 1;
 
-    public CustomerEditFragment(@Nullable Customer customer, ReturnCustomerCallback returnCustomerCallback) {
-        //this.discount = discount;
+    public CustomerEditFragment(ReturnCustomerCallback returnCustomerCallback) {
         this.returnCustomerCallback = returnCustomerCallback;
     }
 
-    @Override
+    /*@Override
     public void onStart() {
         super.onStart();
     }
@@ -105,7 +86,7 @@ public class CustomerEditFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
             Objects.requireNonNull(getActivity()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-            mView = inflater.inflate(R.layout.fragment_discount_edit, container, false);
+            mView = inflater.inflate(R.layout.fragment_customer_edit, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -315,5 +296,5 @@ public class CustomerEditFragment extends BaseFragment {
         }
 
         shapeAmountRateSymbols();
-    }
+    }*/
 }

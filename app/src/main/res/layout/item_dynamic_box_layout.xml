@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/custom_button_bg"
-        android:padding="3dp"
+        android:padding="2dp"
         android:layout_gravity="center">
 
         <TextView
@@ -28,7 +28,7 @@
 
         </TextView>
 
-        <TextView
+        <!--TextView
             android:id="@+id/plusTv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -37,7 +37,7 @@
             android:gravity="center"
             android:textSize="25dp">
 
-        </TextView>
+        </TextView-->
 
         <ImageView
             android:layout_width="15dp"

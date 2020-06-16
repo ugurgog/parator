@@ -1,11 +1,14 @@
 package com.paypad.vuk507.charge;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,38 +18,47 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.dynamicStruct.DynamicStructListAdapter;
+import com.paypad.vuk507.charge.dynamicStruct.DynamicItemSelectFragmant;
+import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicStructListAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.StructSelectFragment;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
 import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
-import com.paypad.vuk507.db.ProductDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.interfaces.CustomDialogListener;
+import com.paypad.vuk507.model.Category;
+import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.uiUtils.keypad.KeyPad;
 import com.paypad.vuk507.uiUtils.keypad.KeyPadClick;
 import com.paypad.vuk507.uiUtils.keypad.keyPadClickListener;
-import com.paypad.vuk507.menu.product.adapters.ProductTaxListAdapter;
-import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.CustomDialogBox;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class KeypadFragment extends BaseFragment implements
-        StructSelectFragment.StructSelectListener {
+        StructSelectFragment.StructSelectListener,
+        DynamicItemSelectFragmant.ProductSelectListener,
+        DynamicItemSelectFragmant.DiscountSelectListener,
+        DynamicItemSelectFragmant.CategorySelectListener{
 
     View mView;
 
@@ -54,6 +66,12 @@ public class KeypadFragment extends BaseFragment implements
     TextView currencySymbolTv;
     @BindView(R.id.taxTypeRv)
     RecyclerView taxTypeRv;
+    @BindView(R.id.noteMainll)
+    LinearLayout noteMainll;
+    @BindView(R.id.notePicImgv)
+    ImageView notePicImgv;
+    @BindView(R.id.keypadMainLl)
+    LinearLayout keypadMainLl;
 
     private KeyPad keypad;
     //private ProductTaxListAdapter productTaxListAdapter;
@@ -61,6 +79,11 @@ public class KeypadFragment extends BaseFragment implements
     private DynamicStructListAdapter dynamicStructListAdapter;
 
     private StructSelectFragment structSelectFragment;
+    private DynamicItemSelectFragmant dynamicItemSelectFragmant;
+
+    private Realm realm;
+    private long categoryId;
+
     private static final int DYNAMIC_BOX_COUNT = 8;
 
     public KeypadFragment() {
@@ -119,11 +142,15 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     private void initVariables() {
+        realm = Realm.getDefaultInstance();
         keypad = mView.findViewById(R.id.keypad);
         currencySymbolTv.setText(CommonUtils.getCurrency().getSymbol());
-        initRecyclerView();
+
         structSelectFragment = new StructSelectFragment();
         structSelectFragment.setStructListener(this);
+
+        initRecyclerView();
+
     }
 
     private void initListeners() {
@@ -136,19 +163,13 @@ public class KeypadFragment extends BaseFragment implements
         }));
     }
 
-
     private void initRecyclerView(){
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.HORIZONTAL, false);
         taxTypeRv.setLayoutManager(gridLayoutManager);
-        setProductAdapter();
-
-        /*LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        taxTypeRv.setLayoutManager(linearLayoutManager);
-        taxTypeRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.HORIZONTAL));*/
+        setDynamicBoxAdapter();
     }
 
-    public void setProductAdapter(){
+    public void setDynamicBoxAdapter(){
         if(user == null || user.getUuid() == null)
             return;
 
@@ -167,26 +188,118 @@ public class KeypadFragment extends BaseFragment implements
 
         dynamicStructListAdapter = new DynamicStructListAdapter(getContext(), dynamicBoxModelList, mFragmentNavigation, new ReturnDynamicBoxListener() {
             @Override
-            public void onReturn(DynamicBoxModel dynamicBoxModel) {
+            public void onReturn(DynamicBoxModel dynamicBoxModel, ItemProcessEnum processEnum) {
 
+                if(processEnum == ItemProcessEnum.SELECTED){
+
+                    if(dynamicBoxModel.getStructId() == 0){
+                        structSelectFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), structSelectFragment.getTag());
+                    }else {
+                        //TODO - burada artik odemeye dahil edecegiz
+                    }
+                }else if(processEnum == ItemProcessEnum.DELETED){
+                    deleteDynamicBox(dynamicBoxModel);
+                }
             }
         });
         taxTypeRv.setAdapter(dynamicStructListAdapter);
+    }
 
+    private void deleteDynamicBox(DynamicBoxModel dynamicBoxModel){
+        new CustomDialogBox.Builder((Activity) getContext())
+                .setMessage(getContext().getResources().getString(R.string.sure_to_delete_dynamic_box))
+                .setNegativeBtnVisibility(View.VISIBLE)
+                .setNegativeBtnText(getContext().getResources().getString(R.string.cancel))
+                .setNegativeBtnBackground(getContext().getResources().getColor(R.color.Silver, null))
+                .setPositiveBtnVisibility(View.VISIBLE)
+                .setPositiveBtnText(getContext().getResources().getString(R.string.yes))
+                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                .setDurationTime(0)
+                .isCancellable(true)
+                .setEditTextVisibility(View.GONE)
+                .OnPositiveClicked(new CustomDialogListener() {
+                    @Override
+                    public void OnClick() {
+                        DynamicBoxModelDBHelper.deleteDynamicBoxByStructAndItemId(dynamicBoxModel.getStructId(), dynamicBoxModel.getItemId(), user.getUuid(), new CompleteCallback() {
+                            @Override
+                            public void onComplete(BaseResponse baseResponse) {
+                                CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
+                                if(baseResponse.isSuccess()){
+                                    setDynamicBoxAdapter();
+                                }
+                            }
+                        });
 
-        /*RealmResults<Product> products = ProductDBHelper.getAllProducts(user.getUuid());
-        List<Product> productList = new ArrayList(products);
-        productTaxListAdapter = new ProductTaxListAdapter(getContext(), productList, new ReturnItemCallback() {
-            @Override
-            public void OnReturn(Product product, ItemProcessEnum processEnum) {
-                structSelectFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), structSelectFragment.getTag());
-            }
-        });
-        taxTypeRv.setAdapter(productTaxListAdapter);*/
+                    }
+                })
+                .OnNegativeClicked(new CustomDialogListener() {
+                    @Override
+                    public void OnClick() {
+
+                    }
+                }).build();
     }
 
     @Override
-    public void onStructClick(DynamicStructEnum dynamicStructEnum) {
+    public void onStructClick(DynamicStructEnum dynamicStructEnum, boolean fromCategory) {
+        dynamicItemSelectFragmant = new DynamicItemSelectFragmant(dynamicStructEnum);
+        dynamicItemSelectFragmant.setProductSelectListener(this);
+        dynamicItemSelectFragmant.setDiscountSelectListener(this);
+        dynamicItemSelectFragmant.setCategorySelectListener(this);
 
+        if(fromCategory)
+            dynamicItemSelectFragmant.setCategoryId(categoryId);
+        else
+            dynamicItemSelectFragmant.setCategoryId(0);
+
+        dynamicItemSelectFragmant.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), dynamicItemSelectFragmant.getTag());
+    }
+
+    @Override
+    public void onPClick(Product product) {
+        DynamicBoxModel dynamicBoxModel = new DynamicBoxModel();
+        dynamicBoxModel.setCreateDate(new Date());
+        dynamicBoxModel.setItemId(product.getId());
+        dynamicBoxModel.setItemName(product.getName());
+        dynamicBoxModel.setUserUuid(user.getUuid());
+        dynamicBoxModel.setStructId(DynamicStructEnum.PRODUCT_SET.getId());
+        createDynamicBox(dynamicBoxModel);
+    }
+
+    @Override
+    public void onDClick(Discount discount) {
+        DynamicBoxModel dynamicBoxModel = new DynamicBoxModel();
+        dynamicBoxModel.setCreateDate(new Date());
+        dynamicBoxModel.setItemId(discount.getId());
+        dynamicBoxModel.setItemName(discount.getName());
+        dynamicBoxModel.setUserUuid(user.getUuid());
+        dynamicBoxModel.setStructId(DynamicStructEnum.DISCOUNT_SET.getId());
+        createDynamicBox(dynamicBoxModel);
+    }
+
+    @Override
+    public void onCClick(Category category) {
+        Log.i("Info", "category_name:" + category.getName());
+        this.categoryId = category.getId();
+        dismissDynamicFragment();
+        onStructClick(DynamicStructEnum.PRODUCT_SET, true);
+    }
+
+    private void createDynamicBox(DynamicBoxModel dynamicBoxModel){
+        DynamicBoxModelDBHelper.createOrUpdateDynamicBox(dynamicBoxModel, new CompleteCallback() {
+            @Override
+            public void onComplete(BaseResponse baseResponse) {
+                CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
+                if(baseResponse.isSuccess()){
+                    setDynamicBoxAdapter();
+                }
+                dismissDynamicFragment();
+            }
+        });
+    }
+
+    private void dismissDynamicFragment() {
+        if(dynamicItemSelectFragmant != null)
+            dynamicItemSelectFragmant.dismiss();
     }
 }

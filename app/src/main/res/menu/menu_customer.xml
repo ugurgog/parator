@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/createCustomer"
+        android:orderInCategory="100"
+        android:title="@string/create_customer"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/deleteCustomers"
+        android:orderInCategory="100"
+        android:title="@string/delete_customer"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/viewGroups"
+        android:orderInCategory="100"
+        android:title="@string/view_groups"
+        app:showAsAction="never" />
+
+</menu>
+

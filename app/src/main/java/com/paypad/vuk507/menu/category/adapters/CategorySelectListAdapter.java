@@ -54,7 +54,6 @@ public class CategorySelectListAdapter extends RecyclerView.Adapter<CategorySele
 
         CardView categoryItemCv;
         TextView categoryTv;
-        ImageView deleteImgv;
         Category category;
 
         int position;
@@ -64,8 +63,6 @@ public class CategorySelectListAdapter extends RecyclerView.Adapter<CategorySele
 
             categoryTv = view.findViewById(R.id.categoryTv);
             categoryItemCv = view.findViewById(R.id.categoryItemCv);
-            deleteImgv = view.findViewById(R.id.deleteImgv);
-            deleteImgv.setVisibility(View.GONE);
 
             categoryItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override

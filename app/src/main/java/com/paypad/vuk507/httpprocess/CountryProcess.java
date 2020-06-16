@@ -1,0 +1,112 @@
+package com.paypad.vuk507.httpprocess;
+
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.paypad.vuk507.enums.CountryDataEnum;
+import com.paypad.vuk507.httpprocess.interfaces.OnEventListener;
+import com.paypad.vuk507.utils.network.NetworkUtils;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static com.paypad.vuk507.utils.network.NetworkUtils.COUNTRY_NAMES_PARAM;
+
+public class CountryProcess extends AsyncTask<Void, Void, String> {
+
+    private OnEventListener<List<String>> mCallBack;
+    public Exception mException;
+    private Context context;
+    private CountryDataEnum countryDataEnum;
+
+    public CountryProcess(Context context, CountryDataEnum countryDataEnum, OnEventListener callback) {
+        mCallBack = callback;
+        this.context = context;
+        this.countryDataEnum = countryDataEnum;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+
+        if (mCallBack != null) {
+            mCallBack.onTaskContinue();
+        }
+    }
+
+    @Override
+    protected String doInBackground(Void... voids) {
+
+        URL strUrl = null;
+
+        if(countryDataEnum == CountryDataEnum.NAMES)
+            strUrl = NetworkUtils.buildCountryUrlByParam(COUNTRY_NAMES_PARAM);
+
+        String sessionResultStr = null;
+        try {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(strUrl)
+                    .build();
+
+            try {
+                Response response = client.newCall(request).execute();
+                sessionResultStr = response.body().string();
+            } catch (Exception e) {
+                e.printStackTrace();
+                mException = e;
+            }
+
+        } catch (Exception e) {
+            mException = e;
+            e.printStackTrace();
+        }
+        return sessionResultStr;
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+        if (s != null && !s.equals("")) {
+            try {
+                if(countryDataEnum == CountryDataEnum.NAMES)
+                    mCallBack.onSuccess(parseCountryNames(s));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            mCallBack.onFailure(mException);
+        }
+    }
+
+
+    private List<String> parseCountryNames(String jsonStr) throws JSONException {
+        List<String> countries = new ArrayList<>();
+        JSONObject resultJSONObject = new JSONObject(jsonStr);
+
+        Iterator<String> keys= resultJSONObject.keys();
+        while (keys.hasNext())
+        {
+            String keyValue = keys.next();
+            String countryName = resultJSONObject.getString(keyValue);
+            countries.add(countryName);
+        }
+
+        return countries;
+    }
+}

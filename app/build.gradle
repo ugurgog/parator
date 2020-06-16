@@ -61,6 +61,8 @@ dependencies {
     //Swipeable-RecyclerView
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.2'
 
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
+
     implementation 'commons-io:commons-io:2.7'
 
     //Trial

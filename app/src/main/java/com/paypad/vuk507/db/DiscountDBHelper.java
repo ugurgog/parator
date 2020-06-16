@@ -37,7 +37,7 @@ public class DiscountDBHelper {
         });
     }
 
-    public static Discount getDiscount(int id){
+    public static Discount getDiscount(long id){
         Realm realm = Realm.getDefaultInstance();
         Discount discount = realm.where(Discount.class).equalTo("id", id).findFirst();
         return discount;

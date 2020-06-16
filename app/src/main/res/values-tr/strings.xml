@@ -39,6 +39,9 @@
     <string name="select_category">Kategori Seçin</string>
     <string name="category">Kategori</string>
     <string name="delete_item">Ürünu Sil</string>
+    <string name="create_customer">Müşteri Oluştur</string>
+    <string name="delete_customer">Müşteri Sil</string>
+    <string name="view_groups">Grupları Görüntüle</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
@@ -81,6 +84,8 @@
     <string name="registering_user">Kullanıcı kaydediliyor...</string>
     <string name="username_is_defined_before">Sistemde böyle bir kullanıcı adı mevcut. Lütfen farklı kullanıcı adı belirleyin</string>
     <string name="product_category_can_not_be_empty">Lütfen bir kategori seçiniz</string>
+    <string name="end_editing">Düzenlemeyi Bitir</string>
+    <string name="editing_mode">Düzenleme Modu</string>
 
     <!-- Main menu items -->
     <string name="checkout">Çıkış</string>
@@ -91,6 +96,24 @@
     <string name="settings">Ayarlar</string>
     <string name="support">Destek</string>
     <string name="notifications">Bildirimler</string>
+
+    <!-- Customer Information -->
+    <string name="add_from_address_book">Rehberden Ekle</string>
+    <string name="personal_information">KİŞİSEL BİLGİLER</string>
+    <string name="first_name">Ad</string>
+    <string name="last_name">Soyad</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Telefon Numarası</string>
+    <string name="address">ADRES</string>
+    <string name="country">Ülke</string>
+    <string name="city">Şehir</string>
+    <string name="address2">Adres</string>
+    <string name="postal_code">Posta Kodu</string>
+    <string name="other_information">DİĞER BİLGİLER</string>
+    <string name="groups">Gruplar</string>
+    <string name="company">Kurum</string>
+    <string name="birthday">DOĞUM TARİHİ</string>
+    <string name="other">Diğer</string>
 
     <!-- App Messages -->
     <string name="amount_can_not_be_empty">Tutar boş olamaz</string>
@@ -106,9 +129,12 @@
     <string name="there_is_no_category_defined">Henüz bir kategori tanımı bulunmuyor</string>
     <string name="there_is_no_item_defined">Henüz bir ürün tanımı bulunmuyor</string>
     <string name="there_is_no_discount_defined">Henüz bir indirim tanımı bulunmuyor</string>
+    <string name="all_products_added_to_dynamic_boxes">Tüm ürünler dinamik kutulara eklendi.</string>
+    <string name="all_discounts_added_to_dynamic_boxes">Tüm indirimler dinamik kutulara eklendi.</string>
 
     <string name="sure_to_delete_category">Kategoriyi silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_discount">İndirimi silmek istediğinize emin misiniz?</string>
+    <string name="sure_to_delete_dynamic_box">Dinamik tanımı silmek istediğinize emin misiniz?</string>
 
     <string name="select_picture">Fotoğraf Seçin</string>
     <string name="open_camera">Kamerayı Aç</string>

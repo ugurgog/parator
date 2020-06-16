@@ -17,10 +17,13 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
+import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.User;
@@ -30,6 +33,7 @@ import com.paypad.vuk507.utils.CommonUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.Date;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -48,11 +52,14 @@ public class CategoryEditFragment extends BaseFragment {
     AppCompatTextView toolbarTitleTv;
     @BindView(R.id.saveBtn)
     Button saveBtn;
+    @BindView(R.id.btnDelete)
+    Button btnDelete;
 
     private Realm realm;
     private Category category;
     private ReturnCategoryCallback returnCategoryCallback;
     private User user;
+    private int deleteButtonStatus = 1;
 
     public CategoryEditFragment(@Nullable Category category, ReturnCategoryCallback returnCategoryCallback) {
         this.category = category;
@@ -140,24 +147,43 @@ public class CategoryEditFragment extends BaseFragment {
                 checkValidCategory();
             }
         });
+
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(deleteButtonStatus == 1){
+                    deleteButtonStatus ++;
+                    CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
+                            getContext().getResources().getString(R.string.confirm_delete));
+                }else if(deleteButtonStatus == 2){
+
+                    CategoryDBHelper.deleteCategory(category.getId(), new CompleteCallback() {
+                        @Override
+                        public void onComplete(BaseResponse baseResponse) {
+                            CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
+                            if(baseResponse.isSuccess()){
+                                returnCategoryCallback.OnReturn((Category) baseResponse.getObject());
+                                Objects.requireNonNull(getActivity()).onBackPressed();
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        setShapes();
         CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+        CommonUtils.setBtnFirstCondition(getContext(), btnDelete, getContext().getResources().getString(R.string.delete_unit));
 
         if(category == null){
             category = new Category();
+            btnDelete.setEnabled(false);
             toolbarTitleTv.setText(getContext().getResources().getString(R.string.create_category));
         }else
             categoryNameEt.setText(category.getName());
             toolbarTitleTv.setText(getContext().getResources().getString(R.string.edit_category));
-    }
-
-    private void setShapes() {
-        //categoryNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-        //        getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
     }
 
     private void checkValidCategory() {
@@ -166,7 +192,42 @@ public class CategoryEditFragment extends BaseFragment {
 
     private void updateCategory() {
 
+        boolean inserted = false;
+        realm.beginTransaction();
+
         if(category.getId() == 0){
+            category.setCreateDate(new Date());
+            category.setId(CategoryDBHelper.getCurrentPrimaryKeyId());
+            inserted = true;
+        }
+
+        Category tempCategory = realm.copyToRealm(category);
+
+        tempCategory.setName(categoryNameEt.getText().toString());
+        tempCategory.setCreateUsername(user.getUsername());
+
+        realm.commitTransaction();
+
+        boolean finalInserted = inserted;
+        CategoryDBHelper.createOrUpdateCategory(tempCategory, new CompleteCallback() {
+            @Override
+            public void onComplete(BaseResponse baseResponse) {
+                CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
+                if(baseResponse.isSuccess()){
+                    deleteButtonStatus = 1;
+                    CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
+                            getContext().getResources().getString(R.string.delete_unit));
+                    btnDelete.setEnabled(false);
+
+                    returnCategoryCallback.OnReturn((Category) baseResponse.getObject());
+
+                    clearViews();
+                    Objects.requireNonNull(getActivity()).onBackPressed();
+                }
+            }
+        });
+
+        /*if(category.getId() == 0){
             CategoryDBHelper.createCategory(categoryNameEt.getText().toString(), user.getUsername(), new CompleteCallback() {
                 @Override
                 public void onComplete(BaseResponse baseResponse) {
@@ -190,7 +251,7 @@ public class CategoryEditFragment extends BaseFragment {
                     }
                 }
             });
-        }
+        }*/
     }
 
     private void clearViews() {

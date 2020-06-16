@@ -46,7 +46,7 @@ public class ProductDBHelper {
         });
     }
 
-    public static Product getProduct(int id){
+    public static Product getProduct(long id){
         Realm realm = Realm.getDefaultInstance();
         Product product = realm.where(Product.class).equalTo("id", id).findFirst();
         return product;

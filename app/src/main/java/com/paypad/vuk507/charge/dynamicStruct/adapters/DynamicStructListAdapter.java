@@ -1,9 +1,6 @@
-package com.paypad.vuk507.charge.dynamicStruct;
+package com.paypad.vuk507.charge.dynamicStruct.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +14,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
+import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.db.DiscountDBHelper;
+import com.paypad.vuk507.db.ProductDBHelper;
+import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
-import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
-import com.paypad.vuk507.menu.product.ProductEditFragment;
-import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
+import com.paypad.vuk507.model.Category;
+import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.DataUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +56,6 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
 
         private CardView itemCv;
         private TextView itemNameTv;
-        private TextView plusTv;
         private ImageView deleteItemImgv;
 
         DynamicBoxModel dynamicBoxModel;
@@ -70,13 +66,28 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
 
             itemCv = view.findViewById(R.id.itemCv);
             itemNameTv = view.findViewById(R.id.itemNameTv);
-            plusTv = view.findViewById(R.id.plusTv);
             deleteItemImgv = view.findViewById(R.id.deleteItemImgv);
 
             itemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    dynamicBoxListener.onReturn(dynamicBoxModel, ItemProcessEnum.SELECTED);
+                }
+            });
 
+            deleteItemImgv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
+
+            itemCv.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if(dynamicBoxModel.getStructId() != 0)
+                        dynamicBoxListener.onReturn(dynamicBoxModel, ItemProcessEnum.DELETED);
+                    return false;
                 }
             });
         }
@@ -85,10 +96,30 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
             this.dynamicBoxModel = dynamicBoxModel;
             this.position = position;
 
+            deleteItemImgv.setVisibility(View.GONE);
+            setItemName();
+        }
+
+        private void setItemName() {
             if(dynamicBoxModel.getStructId() == 0){
-                itemNameTv.setText("");
-                plusTv.setText("");
-                deleteItemImgv.setVisibility(View.GONE);
+                itemNameTv.setText("+");
+            }else {
+                if(dynamicBoxModel.getItemName() != null && !dynamicBoxModel.getItemName().isEmpty()){
+                    itemNameTv.setText(dynamicBoxModel.getItemName());
+                }else {
+                    if(dynamicBoxModel.getStructId() == DynamicStructEnum.DISCOUNT_SET.getId()){
+                        Discount discount = DiscountDBHelper.getDiscount(dynamicBoxModel.getItemId());
+                        itemNameTv.setText(discount.getName());
+                    }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.PRODUCT_SET.getId()){
+                        Product product = ProductDBHelper.getProduct(dynamicBoxModel.getItemId());
+                        itemNameTv.setText(product.getName());
+                    }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.CATEGORY_SET.getId()){
+                        Category category = CategoryDBHelper.getCategory(dynamicBoxModel.getItemId());
+                        itemNameTv.setText(category.getName());
+                    }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.FUNCTION_SET.getId()){
+                        // TODO - function tanimi nasil yapiliyor
+                    }
+                }
             }
         }
     }

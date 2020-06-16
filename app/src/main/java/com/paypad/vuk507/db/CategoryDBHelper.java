@@ -1,6 +1,7 @@
 package com.paypad.vuk507.db;
 
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Category;
 
@@ -105,5 +106,41 @@ public class CategoryDBHelper {
                 completeCallback.onComplete(baseResponse);
             }
         });
+    }
+
+    public static void createOrUpdateCategory(Category category, CompleteCallback completeCallback) {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.executeTransaction(new Realm.Transaction(){
+
+            @Override
+            public void execute(Realm realm) {
+
+                BaseResponse baseResponse = new BaseResponse();
+                baseResponse.setSuccess(true);
+                try{
+                    realm.insertOrUpdate(category);
+
+                    baseResponse.setObject(category);
+                    baseResponse.setMessage("Category is saved!");
+                }catch (Exception e){
+                    baseResponse.setSuccess(false);
+                    baseResponse.setMessage("Category cannot be saved!");
+                }
+                completeCallback.onComplete(baseResponse);
+            }
+        });
+    }
+
+    public static int getCurrentPrimaryKeyId(){
+        Realm realm = Realm.getDefaultInstance();
+        Number currentIdNum = realm.where(Category.class).max("id");
+        int nextId;
+        if(currentIdNum == null) {
+            nextId = 1;
+        } else {
+            nextId = currentIdNum.intValue() + 1;
+        }
+        return nextId;
     }
 }

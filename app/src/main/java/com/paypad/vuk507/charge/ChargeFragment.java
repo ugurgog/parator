@@ -27,6 +27,7 @@ import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.login.InitialActivity;
 import com.paypad.vuk507.login.utils.LoginUtils;
+import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.item.ItemListFragment;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
@@ -103,7 +104,7 @@ public class ChargeFragment extends BaseFragment {
         super.onResume();
 
         if(keypadFragment != null){
-            keypadFragment.setProductAdapter();
+            keypadFragment.setDynamicBoxAdapter();
         }
     }
 
@@ -280,6 +281,7 @@ public class ChargeFragment extends BaseFragment {
     }
 
     private void startCustomersFragment() {
+        mFragmentNavigation.pushFragment(new CustomerFragment());
     }
 
     private void startReportsFragment() {

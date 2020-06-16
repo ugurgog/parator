@@ -2,6 +2,7 @@ package com.paypad.vuk507.model;
 
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -10,6 +11,7 @@ public class Group extends RealmObject {
     @PrimaryKey
     private long id;
     private String name;
+    private RealmList<Customer> customers;
     private Date createDate;
     private String userUuid;
 
@@ -43,5 +45,13 @@ public class Group extends RealmObject {
 
     public void setUserUuid(String userUuid) {
         this.userUuid = userUuid;
+    }
+
+    public RealmList<Customer> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(RealmList<Customer> customers) {
+        this.customers = customers;
     }
 }

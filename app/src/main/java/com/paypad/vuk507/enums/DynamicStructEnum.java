@@ -24,4 +24,8 @@ public enum DynamicStructEnum {
     public String getLabelEn() {
         return labelEn;
     }
+
+    public int getId() {
+        return id;
+    }
 }
