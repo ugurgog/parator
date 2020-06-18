@@ -18,7 +18,7 @@ public class NetworkUtils {
     public final static String COUNTRY_NAMES_PARAM = "names.json";
     private final static String COUNTRY_ISO3_PARAM = "iso3.json";
     private final static String COUNTRY_CAPITALS_PARAM = "capital.json";
-    private final static String COUNTRY_PHONE_CODES_PARAM = "phone.json";
+    public final static String COUNTRY_PHONE_CODES_PARAM = "phone.json";
     private final static String COUNTRY_CURRENCY_PARAM = "currency.json";
 
     public static URL buildCountryUrlByParam(String param) {

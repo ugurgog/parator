@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.bumptech.glide.Glide;
 import com.paypad.vuk507.MainActivity;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CustomRealmHelper;
@@ -19,6 +20,8 @@ import com.paypad.vuk507.login.utils.LoginUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Objects;
+
 
 public class InitialActivity extends AppCompatActivity {
 
@@ -26,6 +29,9 @@ public class InitialActivity extends AppCompatActivity {
     ImageView appIconImgv;
 
     User user;
+    private String username;
+    private String password;
+    private String applicationStart = MainActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,18 +43,23 @@ public class InitialActivity extends AppCompatActivity {
 
         //CustomRealmHelper.deleteRealmDB();
 
-        String username = LoginUtils.getUsernameFromCache(InitialActivity.this);
-        String password = LoginUtils.getPasswordFromCache(InitialActivity.this);
+        username = LoginUtils.getUsernameFromCache(InitialActivity.this);
+        password = LoginUtils.getPasswordFromCache(InitialActivity.this);
 
         if(!username.isEmpty() && !password.isEmpty()){
             startLoginProcess(username, password);
         } else
             startLoginActivity();
+
+        //thread.start();
     }
 
     private void initVariables() {
         mainActLayout = findViewById(R.id.mainActLayout);
         appIconImgv = findViewById(R.id.appIconImgv);
+        Glide.with(InitialActivity.this)
+                .load(R.drawable.pos_icon)
+                .into(appIconImgv);
     }
 
     public void startLoginProcess(String username, String password) {
@@ -59,8 +70,10 @@ public class InitialActivity extends AppCompatActivity {
             if(user.isLoggedIn()){
                 EventBus.getDefault().postSticky(new UserBus(user));
                 updateDeviceTokenForFCM();
-                startActivity(new Intent(InitialActivity.this, MainActivity.class));
-                finish();
+                applicationStart = MainActivity.class.getName();
+                thread.start();
+                //startActivity(new Intent(InitialActivity.this, MainActivity.class));
+                //finish();
             }else
                 startLoginActivity();
         }else
@@ -70,9 +83,31 @@ public class InitialActivity extends AppCompatActivity {
     private void startLoginActivity(){
         EventBus.getDefault().postSticky(new UserBus(user));
         updateDeviceTokenForFCM();
-        startActivity(new Intent(InitialActivity.this, LoginActivity.class));
-        finish();
+        applicationStart = LoginActivity.class.getName();
+        thread.start();
+        //startActivity(new Intent(InitialActivity.this, LoginActivity.class));
+        //finish();
     }
+
+
+    Thread thread = new Thread() {
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if(applicationStart.equals(MainActivity.class.getName())){
+                startActivity(new Intent(InitialActivity.this, MainActivity.class));
+                finish();
+            }else if(applicationStart.equals(LoginActivity.class.getName())){
+                startActivity(new Intent(InitialActivity.this, LoginActivity.class));
+                finish();
+            }
+        }
+    };
 
     public void updateDeviceTokenForFCM() {
         /*TokenDBHelper.updateTokenSigninValue(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid(), CHAR_E,

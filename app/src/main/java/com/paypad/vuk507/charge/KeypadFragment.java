@@ -26,6 +26,8 @@ import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
@@ -54,11 +56,14 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+
 public class KeypadFragment extends BaseFragment implements
         StructSelectFragment.StructSelectListener,
         DynamicItemSelectFragmant.ProductSelectListener,
         DynamicItemSelectFragmant.DiscountSelectListener,
-        DynamicItemSelectFragmant.CategorySelectListener{
+        DynamicItemSelectFragmant.CategorySelectListener,
+        DynamicItemSelectFragmant.PaymentSelectListener {
 
     View mView;
 
@@ -246,6 +251,7 @@ public class KeypadFragment extends BaseFragment implements
         dynamicItemSelectFragmant.setProductSelectListener(this);
         dynamicItemSelectFragmant.setDiscountSelectListener(this);
         dynamicItemSelectFragmant.setCategorySelectListener(this);
+        dynamicItemSelectFragmant.setPaymentSelectListener(this);
 
         if(fromCategory)
             dynamicItemSelectFragmant.setCategoryId(categoryId);
@@ -301,5 +307,16 @@ public class KeypadFragment extends BaseFragment implements
     private void dismissDynamicFragment() {
         if(dynamicItemSelectFragmant != null)
             dynamicItemSelectFragmant.dismiss();
+    }
+
+    @Override
+    public void onPaymentClick(PaymentTypeEnum paymentType) {
+        DynamicBoxModel dynamicBoxModel = new DynamicBoxModel();
+        dynamicBoxModel.setCreateDate(new Date());
+        dynamicBoxModel.setItemId(paymentType.getId());
+        dynamicBoxModel.setItemName(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? paymentType.getLabelTr() : paymentType.getLabelEn());
+        dynamicBoxModel.setUserUuid(user.getUuid());
+        dynamicBoxModel.setStructId(DynamicStructEnum.PAYMENT_SET.getId());
+        createDynamicBox(dynamicBoxModel);
     }
 }

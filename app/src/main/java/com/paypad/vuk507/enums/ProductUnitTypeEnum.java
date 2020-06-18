@@ -13,7 +13,7 @@ public enum  ProductUnitTypeEnum {
     private final String labelTr;
     private final String labelEn;
 
-    private ProductUnitTypeEnum(int id, String labelTr, String labelEn) {
+    private ProductUnitTypeEnum(int id, String labelEn, String labelTr) {
         this.id = id;
         this.labelTr = labelTr;
         this.labelEn = labelEn;

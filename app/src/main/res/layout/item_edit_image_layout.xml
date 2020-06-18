@@ -21,7 +21,7 @@
                 android:layout_width="@dimen/product_imageview_default_size"
                 android:layout_height="@dimen/product_imageview_default_size"
                 android:id="@+id/editItemImgv"
-                android:layout_centerInParent="true"/>
+                android:layout_centerInParent="true" />
 
             <TextView
                 android:id="@+id/itemShortNameTv"

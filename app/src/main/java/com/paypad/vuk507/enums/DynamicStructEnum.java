@@ -5,7 +5,7 @@ public enum DynamicStructEnum {
     PRODUCT_SET("Ürün Yerleştir", "Set Product", 1),
     CATEGORY_SET("Kategori Yerleştir", "Set Category", 2),
     DISCOUNT_SET("İndirim Yerleştir", "Set Discount", 3),
-    FUNCTION_SET("Fonksiyon Yerleştir", "Set Function", 4);
+    PAYMENT_SET("Ödeme Tipi Yerleştir", "Set Payment Type", 4);
 
     private final String labelTr;
     private final String labelEn;

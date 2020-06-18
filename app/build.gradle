@@ -63,6 +63,9 @@ dependencies {
 
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
 
+    //libphonenumber library
+    implementation 'io.michaelrocks:libphonenumber-android:8.12.5'
+
     implementation 'commons-io:commons-io:2.7'
 
     //Trial

@@ -24,7 +24,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicCategorySelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicDiscountSelectAdapter;
+import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicProductSelectAdapter;
+import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
@@ -32,6 +34,7 @@ import com.paypad.vuk507.db.ProductDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
@@ -49,6 +52,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -65,12 +69,14 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
     private ProductSelectListener productSelectListener;
     private DiscountSelectListener discountSelectListener;
     private CategorySelectListener categorySelectListener;
+    private PaymentSelectListener paymentSelectListener;
     private User user;
     private long categoryId;
 
     private DynamicProductSelectAdapter dynamicProductSelectAdapter;
     private DynamicDiscountSelectAdapter dynamicDiscountSelectAdapter;
     private DynamicCategorySelectAdapter dynamicCategorySelectAdapter;
+    private DynamicPaymentSelectAdapter dynamicPaymentSelectAdapter;
 
     private List<Product> productList;
     private List<Discount> discountList;
@@ -90,6 +96,10 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
     public interface CategorySelectListener{
         void onCClick(Category category);
+    }
+
+    public interface PaymentSelectListener{
+        void onPaymentClick(PaymentTypeEnum paymentType);
     }
 
     @Override
@@ -172,6 +182,8 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
             setDiscountAdapter();
         }else if(dynamicStructEnum == DynamicStructEnum.CATEGORY_SET){
             setCategoryAdapter();
+        }else if(dynamicStructEnum == DynamicStructEnum.PAYMENT_SET){
+            setPaymentAdapter();
         }
 
         searchEdittext.addTextChangedListener(new TextWatcher() {
@@ -238,7 +250,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
                             searchResultTv.setVisibility(View.GONE);
                     }
                 });
-            }else if(dynamicStructEnum == DynamicStructEnum.FUNCTION_SET ){
+            }else if(dynamicStructEnum == DynamicStructEnum.PAYMENT_SET ){
                 // TODO - Odeme icin search kontrolleri burada olacak
             }
         }
@@ -348,9 +360,39 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         structRv.setAdapter(dynamicCategorySelectAdapter);
     }
 
+    private void setPaymentAdapter(){
+        PaymentTypeEnum[] paymentTypeEnums = PaymentTypeEnum.values();
+        List<PaymentTypeEnum> paymentTypes = new ArrayList<>(Arrays.asList(paymentTypeEnums));
+
+        for(Iterator<PaymentTypeEnum> it = paymentTypes.iterator(); it.hasNext();) {
+            PaymentTypeEnum paymentTypeEnum = it.next();
+            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.PAYMENT_SET.getId(),
+                    paymentTypeEnum.getId(), user.getUuid());
+
+            if(dynamicBoxModel != null)
+                it.remove();
+        }
+
+        if(paymentTypes.size() == 0){
+            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.all_payments_added_to_dynamic_boxes));
+            dismiss();
+            return;
+        }
+
+        dynamicPaymentSelectAdapter = new DynamicPaymentSelectAdapter(getContext(), paymentTypes, new ReturnPaymentCallback() {
+            @Override
+            public void onReturn(PaymentTypeEnum paymentType) {
+                paymentSelectListener.onPaymentClick(paymentType);
+            }
+        });
+        structRv.setAdapter(dynamicPaymentSelectAdapter);
+    }
+
     public void setProductSelectListener(ProductSelectListener listener){ productSelectListener = listener;}
 
     public void setDiscountSelectListener(DiscountSelectListener listener){ discountSelectListener = listener;}
 
     public void setCategorySelectListener(CategorySelectListener listener){ categorySelectListener = listener;}
+
+    public void setPaymentSelectListener(PaymentSelectListener listener){ paymentSelectListener = listener;}
 }

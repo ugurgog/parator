@@ -17,39 +17,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout="@layout/item_edit_image_layout"/>
-
-            <!--RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="200dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:layout_centerInParent="true"
-                    android:orientation="vertical"
-                    android:background="@drawable/keypad_button_border">
-
-                    <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:padding="20dp"
-                        android:id="@+id/discountImgv"
-                        android:background="@color/Gray">
-
-                    </ImageView>
-
-                    <View
-                        android:layout_width="100dp"
-                        android:layout_height="20dp">
-                    </View>
-
-                </LinearLayout>
-
-
-
-            </RelativeLayout-->
+            <include layout="@layout/item_edit_image_layout" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -68,8 +36,7 @@
                     android:paddingLeft="8dp"
                     android:textColor="@color/Black"
                     android:textColorHint="@color/DarkGray"
-                    android:layout_marginTop="10dp"
-                    />
+                    android:layout_marginTop="10dp" />
 
                 <include layout="@layout/layout_rate_and_amount"
                     android:layout_marginTop="10dp"
@@ -82,7 +49,7 @@
                     android:layout_height="@dimen/custom_button_length_size"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/custom_button_bg"
-                    android:text="@string/delete_unit"
+                    android:text="@string/delete_discount"
                     android:textColor="@color/DodgerBlue"
                     android:textAllCaps="false"/>
 

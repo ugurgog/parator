@@ -41,6 +41,7 @@
     <string name="create_customer">Create Customer</string>
     <string name="delete_customer">Delete Customer</string>
     <string name="view_groups">View Groups</string>
+    <string name="delete_discount">Delete Discount</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -86,6 +87,8 @@
     <string name="product_category_can_not_be_empty">Please select a category</string>
     <string name="end_editing">End Editing</string>
     <string name="editing_mode">Editing Mode</string>
+    <string name="please_type_first_name">Please type first name</string>
+    <string name="choose_a_contact">Choose a Contact</string>
 
     <!-- Main menu items -->
     <string name="checkout">Checkout</string>
@@ -131,6 +134,7 @@
     <string name="there_is_no_discount_defined">There is no discount definition yet</string>
     <string name="all_products_added_to_dynamic_boxes">All products have been added to dynamic boxes.</string>
     <string name="all_discounts_added_to_dynamic_boxes">All discounts have been added to the dynamic boxes.</string>
+    <string name="all_payments_added_to_dynamic_boxes">All payment types have been added to the dynamic boxes.</string>
 
     <string name="sure_to_delete_category">Are you sure you want to delete the category?</string>
     <string name="sure_to_delete_discount">Are you sure you want to delete the discount?</string>

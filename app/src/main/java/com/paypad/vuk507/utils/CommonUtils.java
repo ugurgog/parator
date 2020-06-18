@@ -40,10 +40,10 @@ public class CommonUtils {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
-    public static int getPaddingInPixels(Context context, float dpSize) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        int paddingInPx = (int) (dpSize * scale + 0.5f);
-        return paddingInPx;
+    public static int getPaddingInPixels(Context context, float paddingDp) {
+        float density = Objects.requireNonNull(context).getResources().getDisplayMetrics().density;
+        int paddingPixel = (int)(paddingDp * density);
+        return paddingPixel;
     }
 
     public static boolean isEmptyCheck(String text) {
@@ -124,6 +124,14 @@ public class CommonUtils {
             return LANGUAGE_TR;
         }
         return LANGUAGE_EN;
+    }
+
+    public static String getDefaultLanguageCode() {
+        return Locale.getDefault().getLanguage();
+    }
+
+    public static String getDefaultCountryCode() {
+        return Locale.getDefault().getCountry();
     }
 
     public static void setSaveBtnEnability(boolean enability, Button saveBtn, Context context){

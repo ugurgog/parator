@@ -212,7 +212,7 @@ public class CustomerFragment extends BaseFragment {
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         customerRv.setLayoutManager(linearLayoutManager);
-        customerRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
+        //customerRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
     }
 

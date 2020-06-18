@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.paypad.vuk507.enums.CountryDataEnum;
 import com.paypad.vuk507.httpprocess.interfaces.OnEventListener;
+import com.paypad.vuk507.model.pojo.CountryPhoneCode;
 import com.paypad.vuk507.utils.network.NetworkUtils;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -27,16 +28,19 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.paypad.vuk507.utils.network.NetworkUtils.COUNTRY_NAMES_PARAM;
+import static com.paypad.vuk507.utils.network.NetworkUtils.COUNTRY_PHONE_CODES_PARAM;
 
 public class CountryProcess extends AsyncTask<Void, Void, String> {
 
     private OnEventListener<List<String>> mCallBack;
+    private OnEventListener<List<CountryPhoneCode>> mPhonesCallBack;
     public Exception mException;
     private Context context;
     private CountryDataEnum countryDataEnum;
 
     public CountryProcess(Context context, CountryDataEnum countryDataEnum, OnEventListener callback) {
         mCallBack = callback;
+        mPhonesCallBack = callback;
         this.context = context;
         this.countryDataEnum = countryDataEnum;
     }
@@ -45,8 +49,14 @@ public class CountryProcess extends AsyncTask<Void, Void, String> {
     protected void onPreExecute() {
         super.onPreExecute();
 
-        if (mCallBack != null) {
-            mCallBack.onTaskContinue();
+        if(countryDataEnum == CountryDataEnum.NAMES){
+            if (mCallBack != null) {
+                mCallBack.onTaskContinue();
+            }
+        }else if(countryDataEnum == CountryDataEnum.PHONE_CODES){
+            if (mPhonesCallBack != null) {
+                mPhonesCallBack.onTaskContinue();
+            }
         }
     }
 
@@ -57,6 +67,8 @@ public class CountryProcess extends AsyncTask<Void, Void, String> {
 
         if(countryDataEnum == CountryDataEnum.NAMES)
             strUrl = NetworkUtils.buildCountryUrlByParam(COUNTRY_NAMES_PARAM);
+        else if(countryDataEnum == CountryDataEnum.PHONE_CODES)
+            strUrl = NetworkUtils.buildCountryUrlByParam(COUNTRY_PHONE_CODES_PARAM);
 
         String sessionResultStr = null;
         try {
@@ -86,14 +98,18 @@ public class CountryProcess extends AsyncTask<Void, Void, String> {
             try {
                 if(countryDataEnum == CountryDataEnum.NAMES)
                     mCallBack.onSuccess(parseCountryNames(s));
+                else if(countryDataEnum == CountryDataEnum.PHONE_CODES)
+                    mPhonesCallBack.onSuccess(parseCountryPhoneCodes(s));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         } else {
-            mCallBack.onFailure(mException);
+            if(countryDataEnum == CountryDataEnum.NAMES)
+                mCallBack.onFailure(mException);
+            else if(countryDataEnum == CountryDataEnum.PHONE_CODES)
+                mPhonesCallBack.onFailure(mException);
         }
     }
-
 
     private List<String> parseCountryNames(String jsonStr) throws JSONException {
         List<String> countries = new ArrayList<>();
@@ -108,5 +124,21 @@ public class CountryProcess extends AsyncTask<Void, Void, String> {
         }
 
         return countries;
+    }
+
+    private List<CountryPhoneCode> parseCountryPhoneCodes(String jsonStr) throws JSONException {
+        List<CountryPhoneCode> phoneCodes = new ArrayList<>();
+        JSONObject resultJSONObject = new JSONObject(jsonStr);
+
+        Iterator<String> keys= resultJSONObject.keys();
+        while (keys.hasNext())
+        {
+            String keyValue = keys.next();
+            String dialCode = resultJSONObject.getString(keyValue);
+            CountryPhoneCode countryDial = new CountryPhoneCode(keyValue, dialCode);
+            phoneCodes.add(countryDial);
+        }
+
+        return phoneCodes;
     }
 }

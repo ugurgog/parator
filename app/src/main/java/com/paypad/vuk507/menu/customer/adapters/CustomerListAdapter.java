@@ -115,7 +115,7 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
 
             if(customer.getPhoneNumber() != null && !customer.getPhoneNumber().isEmpty()){
                 if(!customerInfo.isEmpty())
-                    customerInfo = customerInfo.concat("|").concat(customer.getPhoneNumber());
+                    customerInfo = customerInfo.concat(" | ").concat(customer.getPhoneNumber());
                 else
                     customerInfo = customer.getPhoneNumber();
             }

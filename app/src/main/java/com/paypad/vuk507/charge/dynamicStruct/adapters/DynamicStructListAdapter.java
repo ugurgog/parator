@@ -116,7 +116,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
                     }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.CATEGORY_SET.getId()){
                         Category category = CategoryDBHelper.getCategory(dynamicBoxModel.getItemId());
                         itemNameTv.setText(category.getName());
-                    }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.FUNCTION_SET.getId()){
+                    }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.PAYMENT_SET.getId()){
                         // TODO - function tanimi nasil yapiliyor
                     }
                 }

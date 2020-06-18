@@ -4,6 +4,7 @@ import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.CustomerGroup;
+import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
@@ -176,5 +177,17 @@ public class CustomerDBHelper {
         });
     }
 
+
+    public static int getCustomerCurrentPrimaryKeyId(){
+        Realm realm = Realm.getDefaultInstance();
+        Number currentIdNum = realm.where(Customer.class).max("id");
+        int nextId;
+        if(currentIdNum == null) {
+            nextId = 1;
+        } else {
+            nextId = currentIdNum.intValue() + 1;
+        }
+        return nextId;
+    }
 
 }

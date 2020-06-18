@@ -291,9 +291,12 @@ public class DiscountEditFragment extends BaseFragment {
     }
 
     private void initVariables() {
-        Glide.with(Objects.requireNonNull(getActivity())).load(R.drawable.icon_discount).into(editItemImgv);
+        Glide.with(Objects.requireNonNull(getActivity())).load(R.drawable.icon_discount_white_64dp).into(editItemImgv);
         amountSymbolTv.setText(CommonUtils.getCurrency().getSymbol());
         numberFormatWatcher = new NumberFormatWatcher(amountRateEt, TYPE_RATE);
+
+        int padding = CommonUtils.getPaddingInPixels(getContext(), 25);
+        editItemImgv.setPadding(padding,padding,padding,padding);
 
         realm = Realm.getDefaultInstance();
         if(discount == null) {

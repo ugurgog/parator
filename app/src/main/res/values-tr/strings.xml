@@ -23,7 +23,7 @@
     <string name="edit_unit">Birim Güncelle</string>
     <string name="delete_unit">Birimi Sil</string>
     <string name="confirm_delete">Silmeyi Onayla</string>
-    <string name="delete_tax">Vergii Sil</string>
+    <string name="delete_tax">Vergiyi Sil</string>
     <string name="create_tax">Vergi Oluştur</string>
     <string name="edit_tax">Vergi Güncelle</string>
     <string name="add_options">Opsiyon Ekle</string>
@@ -42,6 +42,7 @@
     <string name="create_customer">Müşteri Oluştur</string>
     <string name="delete_customer">Müşteri Sil</string>
     <string name="view_groups">Grupları Görüntüle</string>
+    <string name="delete_discount">İndirimi Sil</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
@@ -86,6 +87,8 @@
     <string name="product_category_can_not_be_empty">Lütfen bir kategori seçiniz</string>
     <string name="end_editing">Düzenlemeyi Bitir</string>
     <string name="editing_mode">Düzenleme Modu</string>
+    <string name="please_type_first_name">Lütfen ad bilgisini giriniz</string>
+    <string name="choose_a_contact">Kişi Seçin</string>
 
     <!-- Main menu items -->
     <string name="checkout">Çıkış</string>
@@ -131,6 +134,7 @@
     <string name="there_is_no_discount_defined">Henüz bir indirim tanımı bulunmuyor</string>
     <string name="all_products_added_to_dynamic_boxes">Tüm ürünler dinamik kutulara eklendi.</string>
     <string name="all_discounts_added_to_dynamic_boxes">Tüm indirimler dinamik kutulara eklendi.</string>
+    <string name="all_payments_added_to_dynamic_boxes">Tüm ödeme tipleri dinamik kutulara eklendi.</string>
 
     <string name="sure_to_delete_category">Kategoriyi silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_discount">İndirimi silmek istediğinize emin misiniz?</string>
