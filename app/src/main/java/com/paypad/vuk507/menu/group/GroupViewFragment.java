@@ -1,5 +1,4 @@
-package com.paypad.vuk507.menu.customer;
-
+package com.paypad.vuk507.menu.group;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -23,14 +23,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CustomerDBHelper;
+import com.paypad.vuk507.db.GroupDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.customer.adapters.CustomerListAdapter;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
+import com.paypad.vuk507.menu.group.adapters.GroupListAdapter;
 import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
-import com.paypad.vuk507.menu.group.GroupFragment;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.User;
@@ -44,45 +45,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class CustomerFragment extends BaseFragment {
+public class GroupViewFragment extends BaseFragment {
 
     private View mView;
 
-    @BindView(R.id.backImgv)
-    ClickableImageView backImgv;
-    @BindView(R.id.toolbarTitleTv)
-    AppCompatTextView toolbarTitleTv;
-    @BindView(R.id.searchEdittext)
-    EditText searchEdittext;
-    @BindView(R.id.addItemImgv)
-    ImageView addItemImgv;
-    @BindView(R.id.searchCancelImgv)
-    ImageView searchCancelImgv;
-    @BindView(R.id.searchResultTv)
-    TextView searchResultTv;
-    @BindView(R.id.customerRv)
-    RecyclerView customerRv;
-    @BindView(R.id.selectionImgv)
-    ClickableImageView selectionImgv;
+    private ClickableImageView backImgv;
+    private AppCompatTextView toolbarTitleTv;
+    private EditText searchEdittext;
+    private ImageView searchCancelImgv;
+    private TextView searchResultTv;
+    private ClickableImageView selectionImgv;
 
-    private User user;
+    private RecyclerView itemRv;
+    private LinearLayout mainll;
+
+    private CustomerListAdapter customerListAdapter;
+    private ReturnGroupCallback returnGroupCallback;
     private Realm realm;
+    private GroupCreateFragment groupCreateFragment;
+
     private RealmResults<Customer> customers;
     private List<Customer> customerList;
-    private CustomerListAdapter customerListAdapter;
+    private User user;
+    private Group group;
 
-    public CustomerFragment() {
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
+    public GroupViewFragment(Group group, ReturnGroupCallback returnGroupCallback) {
+        this.group = group;
+        this.returnGroupCallback = returnGroupCallback;
     }
 
     @Override
@@ -104,6 +97,7 @@ public class CustomerFragment extends BaseFragment {
             user = UserDBHelper.getUserFromCache(getContext());
     }
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,9 +105,9 @@ public class CustomerFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
-            mView = inflater.inflate(R.layout.fragment_customer, container, false);
+            mView = inflater.inflate(R.layout.fragment_custom_no_button_with_menu, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -124,6 +118,28 @@ public class CustomerFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+    }
+
+    private void initVariables() {
+        realm = Realm.getDefaultInstance();
+        mainll = mView.findViewById(R.id.mainll);
+        itemRv = mView.findViewById(R.id.itemRv);
+        searchEdittext = mView.findViewById(R.id.searchEdittext);
+        searchCancelImgv = mView.findViewById(R.id.searchCancelImgv);
+        searchResultTv = mView.findViewById(R.id.searchResultTv);
+        toolbarTitleTv = mView.findViewById(R.id.toolbarTitleTv);
+        backImgv = mView.findViewById(R.id.backImgv);
+        selectionImgv = mView.findViewById(R.id.selectionImgv);
+
+        toolbarTitleTv.setText(group.getName());
+
+        initGroupCreateFragment();
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        itemRv.setLayoutManager(linearLayoutManager);
+        //contactRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
+        updateAdapterWithCurrentList();
     }
 
     private void initListeners() {
@@ -168,37 +184,15 @@ public class CustomerFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 PopupMenu popupMenu = new PopupMenu(getContext(), selectionImgv);
-                popupMenu.inflate(R.menu.menu_customer);
+                popupMenu.inflate(R.menu.menu_group_view);
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
-                            case R.id.createCustomer:
-                                mFragmentNavigation.pushFragment(new CustomerCreateFragment(new ReturnCustomerCallback() {
-                                    @Override
-                                    public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
-                                        updateAdapterWithCurrentList();
-                                    }
-                                }));
+                            case R.id.editGroup:
+                                mFragmentNavigation.pushFragment(groupCreateFragment);
                                 break;
-                            case R.id.deleteCustomers:
-
-                                break;
-
-                            case R.id.viewGroups:
-                                mFragmentNavigation.pushFragment(new GroupFragment(new ReturnGroupCallback() {
-                                    @Override
-                                    public void OnGroupReturn(Group group, ItemProcessEnum processEnum) {
-
-                                    }
-                                }));
-                                break;
-
-                            case R.id.addToGroup:
-                                mFragmentNavigation.pushFragment(new CustomerSelectFragment());
-                                break;
-
                         }
                         return false;
                     }
@@ -208,37 +202,39 @@ public class CustomerFragment extends BaseFragment {
         });
     }
 
-    private void initVariables() {
-        realm = Realm.getDefaultInstance();
-        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.customers));
-        addItemImgv.setVisibility(View.GONE);
+    private void initGroupCreateFragment(){
+        groupCreateFragment = new GroupCreateFragment(group, new ReturnGroupCallback() {
+            @Override
+            public void OnGroupReturn(Group group, ItemProcessEnum processEnum) {
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
-
-        customerRv.setLayoutManager(linearLayoutManager);
-        //customerRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
-        updateAdapterWithCurrentList();
+                if(processEnum == ItemProcessEnum.DELETED){
+                    returnGroupCallback.OnGroupReturn(group, processEnum);
+                    Objects.requireNonNull(groupCreateFragment.getActivity()).onBackPressed();
+                    Objects.requireNonNull(getActivity()).onBackPressed();
+                }else
+                    toolbarTitleTv.setText(group.getName());
+            }
+        });
     }
 
     public void updateAdapterWithCurrentList(){
-        customers = CustomerDBHelper.getAllCustomers(user.getUuid());
-        customerList = new ArrayList(customers);
+        customerList = new ArrayList(group.getCustomers());
+
         customerListAdapter = new CustomerListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
             @Override
             public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
-                updateAdapterWithCurrentList();
+                //TODO - view current customer
             }
         });
-        customerRv.setAdapter(customerListAdapter);
+        itemRv.setAdapter(customerListAdapter);
     }
 
     public void updateAdapter(String searchText) {
-        if (searchText != null && customerListAdapter != null) {
+        if (searchText != null) {
             customerListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0 && customerList.size() > 0)
+                    if (size == 0)
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

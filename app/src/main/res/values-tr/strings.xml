@@ -43,11 +43,16 @@
     <string name="delete_customer">Müşteri Sil</string>
     <string name="view_groups">Grupları Görüntüle</string>
     <string name="delete_discount">İndirimi Sil</string>
+    <string name="create_group">Grup Oluştur</string>
+    <string name="delete_group">Grubu Sil</string>
+    <string name="group_name">Grup Adı</string>
+    <string name="edit_group">Grup Güncelle</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
+    <string name="done">Tamam</string>
 
     <string name="there_is_no_search_result">Sonuç yok</string>
 
@@ -89,6 +94,11 @@
     <string name="editing_mode">Düzenleme Modu</string>
     <string name="please_type_first_name">Lütfen ad bilgisini giriniz</string>
     <string name="choose_a_contact">Kişi Seçin</string>
+    <string name="add_to_group">Gruba Ekle</string>
+    <string name="select_group">Grup Seçin</string>
+
+    <string name="select_all">Tümünü Seç</string>
+    <string name="de_select_all">Tümünü Bırak</string>
 
     <!-- Main menu items -->
     <string name="checkout">Çıkış</string>
@@ -135,6 +145,9 @@
     <string name="all_products_added_to_dynamic_boxes">Tüm ürünler dinamik kutulara eklendi.</string>
     <string name="all_discounts_added_to_dynamic_boxes">Tüm indirimler dinamik kutulara eklendi.</string>
     <string name="all_payments_added_to_dynamic_boxes">Tüm ödeme tipleri dinamik kutulara eklendi.</string>
+    <string name="group_name_can_not_be_empty">Grup adı boş olamaz</string>
+    <string name="customers_will_be_added_group">müşteri seçilen gruba eklenecek.</string>
+    <string name="customers_added_to_group">müşteri seçilen gruba eklendi.</string>
 
     <string name="sure_to_delete_category">Kategoriyi silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_discount">İndirimi silmek istediğinize emin misiniz?</string>

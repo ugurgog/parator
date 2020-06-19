@@ -42,11 +42,16 @@
     <string name="delete_customer">Delete Customer</string>
     <string name="view_groups">View Groups</string>
     <string name="delete_discount">Delete Discount</string>
+    <string name="create_group">Create a Group</string>
+    <string name="delete_group">Delete Group</string>
+    <string name="group_name">Group Name</string>
+    <string name="edit_group">Edit Group</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="done">Done</string>
 
     <string name="there_is_no_search_result">There is no search result</string>
 
@@ -89,6 +94,11 @@
     <string name="editing_mode">Editing Mode</string>
     <string name="please_type_first_name">Please type first name</string>
     <string name="choose_a_contact">Choose a Contact</string>
+    <string name="add_to_group">Add to Group</string>
+    <string name="select_group">Select a Group</string>
+
+    <string name="select_all">Select All</string>
+    <string name="de_select_all">Deselect All</string>
 
     <!-- Main menu items -->
     <string name="checkout">Checkout</string>
@@ -135,6 +145,9 @@
     <string name="all_products_added_to_dynamic_boxes">All products have been added to dynamic boxes.</string>
     <string name="all_discounts_added_to_dynamic_boxes">All discounts have been added to the dynamic boxes.</string>
     <string name="all_payments_added_to_dynamic_boxes">All payment types have been added to the dynamic boxes.</string>
+    <string name="group_name_can_not_be_empty">Group name cannot be empty</string>
+    <string name="customers_will_be_added_group">customer(s) will be added to the selected group.</string>
+    <string name="customers_added_to_group">customer(s) added to the group</string>
 
     <string name="sure_to_delete_category">Are you sure you want to delete the category?</string>
     <string name="sure_to_delete_discount">Are you sure you want to delete the discount?</string>

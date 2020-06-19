@@ -5,7 +5,10 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.CheckBox;
+import android.widget.CheckedTextView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
@@ -13,15 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.enums.CurrencyEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.customer.CustomerEditFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
-import com.paypad.vuk507.menu.discount.DiscountEditFragment;
-import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Customer;
-import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
@@ -29,7 +27,7 @@ import com.paypad.vuk507.utils.ShapeUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapter.CustomerHolder> {
+public class CustomerSelectListAdapter extends RecyclerView.Adapter<CustomerSelectListAdapter.CustomerHolder> {
 
     private Context context;
     private List<Customer> customers = new ArrayList<>();
@@ -37,8 +35,9 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
 
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnCustomerCallback returnCustomerCallback;
+    private boolean selectAllChecked = false;
 
-    public CustomerListAdapter(Context context, List<Customer> customers,
+    public CustomerSelectListAdapter(Context context, List<Customer> customers,
                                BaseFragment.FragmentNavigation fragmentNavigation,
                                ReturnCustomerCallback returnCustomerCallback) {
         this.context = context;
@@ -51,16 +50,20 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
     @Override
     public CustomerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
-        itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_customer_list, parent, false);
+        itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_custom_list_no_pic_with_cb, parent, false);
         return new CustomerHolder(itemView);
+    }
+
+    public void setSelectAllChecked(boolean selectAllChecked) {
+        this.selectAllChecked = selectAllChecked;
     }
 
     public class CustomerHolder extends RecyclerView.ViewHolder {
 
-        private CardView customerItemCv;
-        private TextView customerNameTv;
-        private TextView customerInfoTv;
-        private TextView shortCustomerNameTv;
+        private CardView itemCv;
+        private TextView nameTv;
+        private TextView infoTv;
+        private CheckBox checkbox;
 
         private Customer customer;
         private int position;
@@ -68,15 +71,35 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
         public CustomerHolder(View view) {
             super(view);
 
-            customerItemCv = view.findViewById(R.id.customerItemCv);
-            shortCustomerNameTv = view.findViewById(R.id.shortCustomerNameTv);
-            customerNameTv = view.findViewById(R.id.customerNameTv);
-            customerInfoTv = view.findViewById(R.id.customerInfoTv);
+            itemCv = view.findViewById(R.id.itemCv);
+            nameTv = view.findViewById(R.id.nameTv);
+            infoTv = view.findViewById(R.id.infoTv);
+            checkbox = view.findViewById(R.id.checkbox);
 
-            customerItemCv.setOnClickListener(new View.OnClickListener() {
+            itemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    returnCustomerCallback.OnReturn(customer, ItemProcessEnum.SELECTED);
+
+                    if(checkbox.isChecked())
+                        checkbox.setChecked(false);
+                    else
+                        checkbox.setChecked(true);
+
+                    if(checkbox.isChecked())
+                        returnCustomerCallback.OnReturn(customer, ItemProcessEnum.SELECTED);
+                    else
+                        returnCustomerCallback.OnReturn(customer, ItemProcessEnum.UNSELECTED);
+                }
+            });
+
+            checkbox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if(checkbox.isChecked())
+                        returnCustomerCallback.OnReturn(customer, ItemProcessEnum.SELECTED);
+                    else
+                        returnCustomerCallback.OnReturn(customer, ItemProcessEnum.UNSELECTED);
                 }
             });
         }
@@ -87,23 +110,18 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
 
             setCustomerName();
             setCustomerInfo();
-            setCustomerShortName();
-            setShortenNameColor();
+
+            if(selectAllChecked){
+                checkbox.setChecked(true);
+            }else
+                checkbox.setChecked(false);
         }
 
         private void setCustomerName() {
             String fullName = (customer.getName() != null ? customer.getName() : "")
                     .concat(" ")
                     .concat(customer.getSurname() != null ? customer.getSurname() : "").trim();
-            customerNameTv.setText(fullName);
-        }
-
-        private void setShortenNameColor() {
-            int colorCode = CommonUtils.getDarkRandomColor(context);
-            GradientDrawable imageShape = ShapeUtil.getShape(context.getResources().getColor(colorCode, null),
-                    context.getResources().getColor(colorCode, null),
-                    GradientDrawable.OVAL, 50, 0);
-            shortCustomerNameTv.setBackground(imageShape);
+            nameTv.setText(fullName);
         }
 
         private void setCustomerInfo() {
@@ -117,11 +135,7 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
                 else
                     customerInfo = customer.getPhoneNumber();
             }
-            customerInfoTv.setText(customerInfo);
-        }
-
-        private void setCustomerShortName() {
-            shortCustomerNameTv.setText(DataUtils.getCustomerShortName(customer.getName(), customer.getSurname()));
+            infoTv.setText(customerInfo);
         }
     }
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/selectAll"
+        android:orderInCategory="100"
+        android:title="@string/select_all"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/deselectAll"
+        android:orderInCategory="100"
+        android:title="@string/de_select_all"
+        app:showAsAction="never" />
+
+</menu>
+

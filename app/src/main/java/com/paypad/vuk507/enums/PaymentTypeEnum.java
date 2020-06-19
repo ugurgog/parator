@@ -11,7 +11,7 @@ public enum PaymentTypeEnum {
     private final String labelTr;
     private final String labelEn;
 
-    private PaymentTypeEnum(int id, String labelEn, String labelTr) {
+    PaymentTypeEnum(int id, String labelEn, String labelTr) {
         this.id = id;
         this.labelTr = labelTr;
         this.labelEn = labelEn;

@@ -4,5 +4,6 @@ public enum ItemProcessEnum {
     DELETED,
     INSERTED,
     CHANGED,
-    SELECTED;
+    SELECTED,
+    UNSELECTED;
 }

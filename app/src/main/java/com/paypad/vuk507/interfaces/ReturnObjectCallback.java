@@ -1,5 +1,5 @@
 package com.paypad.vuk507.interfaces;
 
-public interface ReturnObjectCallback {
-    void OnReturn(Object object);
+public interface ReturnObjectCallback<T>  {
+    void OnReturn(T object);
 }

@@ -21,5 +21,11 @@
         android:title="@string/view_groups"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/addToGroup"
+        android:orderInCategory="100"
+        android:title="@string/add_to_group"
+        app:showAsAction="never" />
+
 </menu>
 

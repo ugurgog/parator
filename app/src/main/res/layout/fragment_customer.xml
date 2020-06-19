@@ -10,23 +10,43 @@
 
     <include layout="@layout/library_search_layout" />
 
-    <LinearLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
-        android:orientation="vertical"
-        android:layout_marginBottom="10dp">
+        android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/customerRv"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:orientation="vertical"
+            android:layout_marginBottom="10dp">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/customerRv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
+            </androidx.recyclerview.widget.RecyclerView>
 
-    </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/addBtn"
+            android:visibility="gone"
+            android:background="@color/DodgerBlue"
+            android:textColor="@color/White"
+            android:text="@string/add_to_group"
+            android:textAllCaps="false">
+
+        </Button>
+
+    </RelativeLayout>
+
 
 
 </LinearLayout>

@@ -96,7 +96,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
         }
 
         private void setCustomerShortName() {
-            shortCustomerNameTv.setText(DataUtils.getShortenCustomerName(contact.getName()));
+            shortCustomerNameTv.setText(DataUtils.getContactShortName(contact.getName()));
         }
     }
 

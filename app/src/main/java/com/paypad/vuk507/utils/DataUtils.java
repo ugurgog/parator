@@ -18,11 +18,26 @@ public class DataUtils {
             return name;
     }
 
+    public static String getCustomerShortName(String name, String surname) {
+        String shortName = "";
+
+        if (name != null && !name.trim().isEmpty() && surname != null && !surname.trim().isEmpty()) {
+            shortName = name.substring(0,1).toUpperCase().concat(surname.substring(0,1).toUpperCase());
+        }else if (name != null && !name.trim().isEmpty()){
+            if(name.length() > 1)
+                shortName = name.substring(0,2).toUpperCase();
+            else
+                shortName = name.substring(0,1).toUpperCase();
+        }
+
+        return shortName;
+    }
+
     public static double getDoubleValueFromFormattedString(String rateOrAmountStr){
         return Double.valueOf(rateOrAmountStr.replaceAll(",", ""));
     }
 
-    public static String getShortenCustomerName(String name) {
+    public static String getContactShortName(String name) {
         StringBuilder returnValue = new StringBuilder();
         if (name != null && !name.trim().isEmpty()) {
             String[] seperatedName = name.trim().split(" ");

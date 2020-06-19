@@ -33,7 +33,9 @@ import com.paypad.vuk507.contact.ContactDialogFragment;
 import com.paypad.vuk507.contact.ContactHelper;
 import com.paypad.vuk507.contact.adapters.ContactListAdapter;
 import com.paypad.vuk507.contact.interfaces.ReturnContactListener;
+import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.CustomerDBHelper;
+import com.paypad.vuk507.db.GroupDBHelper;
 import com.paypad.vuk507.db.ProductDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.CountryDataEnum;
@@ -42,9 +44,13 @@ import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.httpprocess.CountryProcess;
 import com.paypad.vuk507.httpprocess.interfaces.OnEventListener;
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.interfaces.ReturnObjectCallback;
 import com.paypad.vuk507.login.utils.Validation;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
+import com.paypad.vuk507.menu.group.SelectMultiGroupFragment;
+import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Customer;
+import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
@@ -75,6 +81,7 @@ import io.michaelrocks.libphonenumber.android.NumberParseException;
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
 import io.michaelrocks.libphonenumber.android.Phonenumber;
 import io.realm.Realm;
+import io.realm.RealmList;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -121,21 +128,17 @@ public class CustomerCreateFragment extends BaseFragment
     @BindView(R.id.groupSelectll)
     LinearLayout groupSelectll;
 
-
-
-    private Realm realm;
     private User user;
     private ReturnCustomerCallback returnCustomerCallback;
 
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private CountrySelectFragment countrySelectFragment;
     private ContactDialogFragment contactDialogFragment;
-    private PhoneNumberUtil util = null;
     private PermissionModule permissionModule;
-    private List<CountryPhoneCode> phoneCodes = null;
-    private List<Contact> contactList = null;
+    private List<Group> selectedGroupList;
+    private Realm realm;
 
-    public CustomerCreateFragment(ReturnCustomerCallback returnCustomerCallback) {
+    CustomerCreateFragment(ReturnCustomerCallback returnCustomerCallback) {
         this.returnCustomerCallback = returnCustomerCallback;
     }
 
@@ -214,7 +217,13 @@ public class CustomerCreateFragment extends BaseFragment
         groupSelectll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                mFragmentNavigation.pushFragment(new SelectMultiGroupFragment(selectedGroupList, new ReturnObjectCallback() {
+                    @Override
+                    public void OnReturn(Object object) {
+                        selectedGroupList = (List<Group>) object;
+                        setGroupTvDescription();
+                    }
+                }));
             }
         });
 
@@ -247,8 +256,9 @@ public class CustomerCreateFragment extends BaseFragment
             }
         });
 
-        toolbarTitleTv.setText(getResources().getString(R.string.create_customer));
-        util = PhoneNumberUtil.createInstance(Objects.requireNonNull(getContext()));
+        selectedGroupList = new ArrayList<>();
+        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.create_customer));
+        PhoneNumberUtil util = PhoneNumberUtil.createInstance(Objects.requireNonNull(getContext()));
         phoneNumberEt.addTextChangedListener(new PhoneNumberTextWatcher(phoneNumberEt, util));
     }
 
@@ -298,6 +308,22 @@ public class CustomerCreateFragment extends BaseFragment
         dialog.show();
     }
 
+    private void setGroupTvDescription() {
+        String groupNameInfo = "";
+
+        if(selectedGroupList.size() != 0){
+            for(Group group : selectedGroupList){
+                if(group.getName() != null){
+                    groupNameInfo = groupNameInfo.concat(group.getName()).concat(",");
+                }
+            }
+            groupNameInfo = groupNameInfo.substring(0, groupNameInfo.length() -1 );
+        }else
+            groupNameInfo = getContext().getResources().getString(R.string.groups);
+
+        groupDescTv.setText(groupNameInfo);
+    }
+
     private void checkValidCustomer() {
         if(emailEt.getText() != null && !emailEt.getText().toString().isEmpty()){
             boolean checkEmail = Validation.getInstance().isValidEmail(getContext(), emailEt.getText().toString());
@@ -340,19 +366,39 @@ public class CustomerCreateFragment extends BaseFragment
             e.printStackTrace();
         }
 
-        CustomerDBHelper.createOrUpdateCustomer(customer, new CompleteCallback() {
+        CustomerDBHelper.createOrUpdateCustomer(customer, baseResponse -> {
+            CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
+            if(baseResponse.isSuccess()){
+                returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+            }
+        });
+
+        if(selectedGroupList != null && selectedGroupList.size() > 0){
+            for(Group group : selectedGroupList){
+                updateGroup(group, customer);
+            }
+        }
+
+        Objects.requireNonNull(getActivity()).onBackPressed();
+    }
+
+    public void updateGroup(Group group, Customer customer){
+        realm.beginTransaction();
+
+        Group tempGroup = realm.copyToRealm(group);
+        tempGroup.getCustomers().add(customer);
+
+        realm.commitTransaction();
+
+        GroupDBHelper.createOrUpdateGroup(tempGroup, new CompleteCallback() {
             @Override
             public void onComplete(BaseResponse baseResponse) {
-                CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
-                if(baseResponse.isSuccess()){
-                    returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.INSERTED);
-                    Objects.requireNonNull(getActivity()).onBackPressed();
-                }
+
             }
         });
     }
 
-    public void getContactList() {
+    private void getContactList() {
         if (!permissionModule.checkReadContactsPermission()) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PermissionModule.PERMISSION_READ_CONTACTS);
         } else {

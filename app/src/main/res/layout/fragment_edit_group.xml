@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/taxMainll">
+    android:id="@+id/mainll">
 
     <include layout="@layout/toolbar_item_update"/>
 
@@ -17,56 +17,27 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/taxNameEt"
+            android:id="@+id/nameEt"
             android:layout_width="match_parent"
             android:layout_height="@dimen/custom_edittext_height_size"
             android:background="@drawable/custom_edittext_bg"
             android:drawablePadding="20dp"
-            android:hint="@string/tax_name"
+            android:hint="@string/group_name"
             android:inputType="text"
             android:paddingLeft="8dp"
             android:textColor="@color/Black"
             android:textColorHint="@color/DarkGray"
             />
 
-
-        <!--EditText
-            android:id="@+id/taxRateEt"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/custom_edittext_height_size"
-            android:background="@color/transparent"
-            android:drawablePadding="20dp"
-            android:hint="% 0"
-            android:inputType="number"
-            android:paddingLeft="8dp"
-            android:textColor="@color/Black"
-            android:textColorHint="@color/DarkGray"
-            android:layout_marginTop="10dp"/-->
-
-        <include layout="@layout/layout_amount"
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-
         <Button
             android:id="@+id/btnDelete"
             android:layout_width="match_parent"
             android:layout_height="@dimen/custom_button_length_size"
             android:layout_marginTop="20dp"
-            android:text="@string/delete_tax"
+            android:text="@string/delete_group"
             android:textColor="@color/DodgerBlue"
             android:textAllCaps="false"
             android:background="@drawable/custom_button_bg"/>
-
-        <!--Button
-            android:id="@+id/btnDelete"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="30dp"
-            android:text="@string/delete_tax"
-            android:textColor="@color/White"
-            android:textAllCaps="false"/-->
 
     </LinearLayout>
 

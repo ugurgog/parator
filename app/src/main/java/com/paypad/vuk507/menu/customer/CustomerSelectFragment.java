@@ -1,6 +1,5 @@
 package com.paypad.vuk507.menu.customer;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,8 +8,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -26,14 +27,18 @@ import com.paypad.vuk507.db.CustomerDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.customer.adapters.CustomerListAdapter;
+import com.paypad.vuk507.menu.customer.adapters.CustomerSelectListAdapter;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
-import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
 import com.paypad.vuk507.menu.group.GroupFragment;
+import com.paypad.vuk507.menu.group.SelectGroupForCustomerAddFragment;
+import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 
@@ -49,7 +54,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class CustomerFragment extends BaseFragment {
+public class CustomerSelectFragment extends BaseFragment {
 
     private View mView;
 
@@ -69,14 +74,18 @@ public class CustomerFragment extends BaseFragment {
     RecyclerView customerRv;
     @BindView(R.id.selectionImgv)
     ClickableImageView selectionImgv;
+    @BindView(R.id.addBtn)
+    Button addBtn;
 
     private User user;
     private Realm realm;
     private RealmResults<Customer> customers;
     private List<Customer> customerList;
-    private CustomerListAdapter customerListAdapter;
+    private CustomerSelectListAdapter customerListAdapter;
+    private List<Customer> selectedCustomerList;
+    private SelectGroupForCustomerAddFragment selectGroupForCustomerAddFragment;
 
-    public CustomerFragment() {
+    public CustomerSelectFragment() {
 
     }
 
@@ -168,42 +177,41 @@ public class CustomerFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 PopupMenu popupMenu = new PopupMenu(getContext(), selectionImgv);
-                popupMenu.inflate(R.menu.menu_customer);
+                popupMenu.inflate(R.menu.menu_select_deselect);
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
-                            case R.id.createCustomer:
-                                mFragmentNavigation.pushFragment(new CustomerCreateFragment(new ReturnCustomerCallback() {
-                                    @Override
-                                    public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
-                                        updateAdapterWithCurrentList();
-                                    }
-                                }));
-                                break;
-                            case R.id.deleteCustomers:
+                            case R.id.selectAll:
+                                customerListAdapter.setSelectAllChecked(true);
+                                customerListAdapter.notifyDataSetChanged();
+                                selectedCustomerList = customerList;
+                                selectGroupForCustomerAddFragment.setSelectedCustomerList(selectedCustomerList);
+                                CommonUtils.setSaveBtnEnability(true, addBtn, getContext());
 
                                 break;
-
-                            case R.id.viewGroups:
-                                mFragmentNavigation.pushFragment(new GroupFragment(new ReturnGroupCallback() {
-                                    @Override
-                                    public void OnGroupReturn(Group group, ItemProcessEnum processEnum) {
-
-                                    }
-                                }));
+                            case R.id.deselectAll:
+                                customerListAdapter.setSelectAllChecked(false);
+                                customerListAdapter.notifyDataSetChanged();
+                                selectedCustomerList = new ArrayList<>();
+                                selectGroupForCustomerAddFragment.setSelectedCustomerList(selectedCustomerList);
+                                CommonUtils.setSaveBtnEnability(false, addBtn, getContext());
                                 break;
-
-                            case R.id.addToGroup:
-                                mFragmentNavigation.pushFragment(new CustomerSelectFragment());
-                                break;
-
                         }
                         return false;
                     }
                 });
                 popupMenu.show();
+            }
+        });
+
+
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //initSelectGroupFragment();
+                mFragmentNavigation.pushFragment(selectGroupForCustomerAddFragment);
             }
         });
     }
@@ -213,21 +221,66 @@ public class CustomerFragment extends BaseFragment {
         toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.customers));
         addItemImgv.setVisibility(View.GONE);
 
+        setRvMargins();
+        CommonUtils.setSaveBtnEnability(false, addBtn, getContext());
+        selectedCustomerList = new ArrayList<>();
+
+        initSelectGroupFragment();
+        initRecyclerView();
+    }
+
+    private void setRvMargins(){
+        addBtn.setVisibility(View.VISIBLE);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+        params.setMargins(0, 0, 0, CommonUtils.getPaddingInPixels(getContext(), 30));
+        customerRv.setLayoutParams(params);
+    }
+
+    private void initRecyclerView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         customerRv.setLayoutManager(linearLayoutManager);
-        //customerRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
+    }
+
+    private void  initSelectGroupFragment(){
+        selectGroupForCustomerAddFragment = new SelectGroupForCustomerAddFragment(selectedCustomerList, new CompleteCallback() {
+            @Override
+            public void onComplete(BaseResponse baseResponse) {
+                if(baseResponse.isSuccess()){
+                    CommonUtils.showToastShort(getContext(), String.valueOf(selectedCustomerList.size()).concat(" ")
+                            .concat(getContext().getResources().getString(R.string.customers_added_to_group)));
+                }else {
+                    CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
+                }
+
+                selectGroupForCustomerAddFragment.getActivity().onBackPressed();
+                Objects.requireNonNull(getActivity()).onBackPressed();
+            }
+        });
     }
 
     public void updateAdapterWithCurrentList(){
         customers = CustomerDBHelper.getAllCustomers(user.getUuid());
         customerList = new ArrayList(customers);
-        customerListAdapter = new CustomerListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
+        customerListAdapter = new CustomerSelectListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
             @Override
             public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
-                updateAdapterWithCurrentList();
+
+                if(processEnum == ItemProcessEnum.SELECTED){
+                    selectedCustomerList.add(customer);
+                    CommonUtils.setSaveBtnEnability(true, addBtn, getContext());
+                }else {
+                    selectedCustomerList.remove(customer);
+
+                    if(selectedCustomerList.size() == 0)
+                        CommonUtils.setSaveBtnEnability(false, addBtn, getContext());
+                }
             }
         });
         customerRv.setAdapter(customerListAdapter);
