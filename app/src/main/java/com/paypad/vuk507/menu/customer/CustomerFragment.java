@@ -175,7 +175,7 @@ public class CustomerFragment extends BaseFragment {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.createCustomer:
-                                mFragmentNavigation.pushFragment(new CustomerCreateFragment(new ReturnCustomerCallback() {
+                                mFragmentNavigation.pushFragment(new CustomerCreateFragment(null, new ReturnCustomerCallback() {
                                     @Override
                                     public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
                                         updateAdapterWithCurrentList();
@@ -198,7 +198,6 @@ public class CustomerFragment extends BaseFragment {
                             case R.id.addToGroup:
                                 mFragmentNavigation.pushFragment(new CustomerSelectFragment());
                                 break;
-
                         }
                         return false;
                     }
@@ -227,7 +226,14 @@ public class CustomerFragment extends BaseFragment {
         customerListAdapter = new CustomerListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
             @Override
             public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
-                updateAdapterWithCurrentList();
+
+                mFragmentNavigation.pushFragment(new CustomerViewFragment(customer, new ReturnCustomerCallback() {
+                    @Override
+                    public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
+                        if(processEnum == ItemProcessEnum.DELETED || processEnum == ItemProcessEnum.CHANGED)
+                            updateAdapterWithCurrentList();
+                    }
+                }));
             }
         });
         customerRv.setAdapter(customerListAdapter);

@@ -185,17 +185,22 @@ public class CustomerSelectFragment extends BaseFragment {
                         switch (item.getItemId()) {
                             case R.id.selectAll:
                                 customerListAdapter.setSelectAllChecked(true);
+                                selectedCustomerList = new ArrayList<>();
+                                selectedCustomerList.addAll(customerList);
+                                customerListAdapter.setSelectedCustomerList(selectedCustomerList);
+
                                 customerListAdapter.notifyDataSetChanged();
-                                selectedCustomerList = customerList;
-                                selectGroupForCustomerAddFragment.setSelectedCustomerList(selectedCustomerList);
+
                                 CommonUtils.setSaveBtnEnability(true, addBtn, getContext());
 
                                 break;
                             case R.id.deselectAll:
                                 customerListAdapter.setSelectAllChecked(false);
-                                customerListAdapter.notifyDataSetChanged();
                                 selectedCustomerList = new ArrayList<>();
-                                selectGroupForCustomerAddFragment.setSelectedCustomerList(selectedCustomerList);
+                                customerListAdapter.setSelectedCustomerList(selectedCustomerList);
+
+                                customerListAdapter.notifyDataSetChanged();
+
                                 CommonUtils.setSaveBtnEnability(false, addBtn, getContext());
                                 break;
                         }
@@ -211,6 +216,7 @@ public class CustomerSelectFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 //initSelectGroupFragment();
+                initSelectGroupFragment();
                 mFragmentNavigation.pushFragment(selectGroupForCustomerAddFragment);
             }
         });
@@ -224,8 +230,6 @@ public class CustomerSelectFragment extends BaseFragment {
         setRvMargins();
         CommonUtils.setSaveBtnEnability(false, addBtn, getContext());
         selectedCustomerList = new ArrayList<>();
-
-        initSelectGroupFragment();
         initRecyclerView();
     }
 
@@ -268,7 +272,7 @@ public class CustomerSelectFragment extends BaseFragment {
     public void updateAdapterWithCurrentList(){
         customers = CustomerDBHelper.getAllCustomers(user.getUuid());
         customerList = new ArrayList(customers);
-        customerListAdapter = new CustomerSelectListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
+        customerListAdapter = new CustomerSelectListAdapter(getContext(), customerList, selectedCustomerList,  mFragmentNavigation, new ReturnCustomerCallback() {
             @Override
             public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
 
@@ -281,6 +285,7 @@ public class CustomerSelectFragment extends BaseFragment {
                     if(selectedCustomerList.size() == 0)
                         CommonUtils.setSaveBtnEnability(false, addBtn, getContext());
                 }
+                //selectGroupForCustomerAddFragment.setSelectedCustomerList(selectedCustomerList);
             }
         });
         customerRv.setAdapter(customerListAdapter);

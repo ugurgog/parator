@@ -82,6 +82,7 @@ import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
 import io.michaelrocks.libphonenumber.android.Phonenumber;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -137,8 +138,10 @@ public class CustomerCreateFragment extends BaseFragment
     private PermissionModule permissionModule;
     private List<Group> selectedGroupList;
     private Realm realm;
+    private Customer customer;
 
-    CustomerCreateFragment(ReturnCustomerCallback returnCustomerCallback) {
+    CustomerCreateFragment(Customer customer, ReturnCustomerCallback returnCustomerCallback) {
+        this.customer = customer;
         this.returnCustomerCallback = returnCustomerCallback;
     }
 
@@ -258,8 +261,80 @@ public class CustomerCreateFragment extends BaseFragment
 
         selectedGroupList = new ArrayList<>();
         toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.create_customer));
+        
+        if(customer != null){
+            btnAddFromAddress.setVisibility(View.GONE);
+            toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.edit_customer));
+            fillCustomerFields();
+        }else {
+            customer = new Customer();
+        }
+        
         PhoneNumberUtil util = PhoneNumberUtil.createInstance(Objects.requireNonNull(getContext()));
         phoneNumberEt.addTextChangedListener(new PhoneNumberTextWatcher(phoneNumberEt, util));
+    }
+
+    private void fillCustomerFields() {
+        firstNameEt.setText(customer.getName());
+
+        if(customer.getSurname() != null && !customer.getSurname().isEmpty())
+            lastNameEt.setText(customer.getSurname());
+
+        if(customer.getEmail() != null && !customer.getEmail().isEmpty())
+            emailEt.setText(customer.getEmail());
+
+        if(customer.getPhoneNumber() != null && !customer.getPhoneNumber().isEmpty())
+            phoneNumberEt.setText(customer.getPhoneNumber());
+
+        if(customer.getCountry() != null && !customer.getCountry().isEmpty())
+            countryEt.setText(customer.getCountry());
+
+        if(customer.getCity() != null && !customer.getCity().isEmpty())
+            cityEt.setText(customer.getCity());
+
+        if(customer.getAddress() != null && !customer.getAddress().isEmpty())
+            addressEt.setText(customer.getAddress());
+
+        if(customer.getPostalCode() != null && !customer.getPostalCode().isEmpty())
+            postalCodeEt.setText(customer.getPostalCode());
+
+        if(customer.getCompany() != null && !customer.getCompany().isEmpty())
+            companyEt.setText(customer.getCompany());
+
+        if(customer.getOtherInformation() != null && !customer.getOtherInformation().isEmpty())
+            otherInfoEt.setText(customer.getOtherInformation());
+
+        if(customer.getBirthday() != null){
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+            birthDayEt.setText(simpleDateFormat.format(customer.getBirthday()));
+        }
+
+        setGroupNames();
+    }
+
+    private void setGroupNames() {
+        RealmResults<Group> allGroups = GroupDBHelper.getUserGroups(user.getUuid());
+        List<Group> groups = new ArrayList<>();
+        groups.addAll( new ArrayList(allGroups));
+
+        if(groups.size() > 0){
+            String groupNames = "";
+            for(Group group : groups){
+                for(Customer customer1 : group.getCustomers()){
+                    if(customer1.getId() == customer.getId()){
+                        groupNames = groupNames.concat(group.getName()).concat(",");
+                        break;
+                    }
+                }
+            }
+
+            if(groupNames.trim().isEmpty())
+                groupDescTv.setText(getResources().getString(R.string.groups));
+            else
+                groupDescTv.setText(groupNames.substring(0, groupNames.length() - 1));
+
+        }else
+            groupDescTv.setText(getResources().getString(R.string.groups));
     }
 
     private void setInfoFromContact(Contact contact){
@@ -344,32 +419,55 @@ public class CustomerCreateFragment extends BaseFragment
     }
 
     private void createCustomer() {
-        Customer customer = new Customer();
-        customer.setId(CustomerDBHelper.getCustomerCurrentPrimaryKeyId());
-        customer.setUserUuid(user.getUuid());
-        customer.setCreateDate(new Date());
-        customer.setName(firstNameEt.getText().toString());
-        customer.setSurname(lastNameEt.getText().toString());
-        customer.setEmail(emailEt.getText().toString());
-        customer.setPhoneNumber(phoneNumberEt.getText().toString());
-        customer.setCountry(countryEt.getText().toString());
-        customer.setCity(cityEt.getText().toString());
-        customer.setAddress(addressEt.getText().toString());
-        customer.setPostalCode(postalCodeEt.getText().toString());
-        customer.setCompany(companyEt.getText().toString());
-        customer.setOtherInformation(otherInfoEt.getText().toString());
+        boolean inserted = false;
+        realm.beginTransaction();
+
+        if(customer.getId() == 0){
+            customer.setCreateDate(new Date());
+            customer.setId(CustomerDBHelper.getCustomerCurrentPrimaryKeyId());
+            customer.setUserUuid(user.getUuid());
+            inserted = true;
+        }
+
+        Customer tempCustomer = realm.copyToRealm(customer);
+
+
+
+
+        //Customer customer = new Customer();
+        //customer.setId(CustomerDBHelper.getCustomerCurrentPrimaryKeyId());
+        //customer.setUserUuid(user.getUuid());
+        //customer.setCreateDate(new Date());
+        tempCustomer.setName(firstNameEt.getText().toString());
+        tempCustomer.setSurname(lastNameEt.getText().toString());
+        tempCustomer.setEmail(emailEt.getText().toString());
+        tempCustomer.setPhoneNumber(phoneNumberEt.getText().toString());
+        tempCustomer.setCountry(countryEt.getText().toString());
+        tempCustomer.setCity(cityEt.getText().toString());
+        tempCustomer.setAddress(addressEt.getText().toString());
+        tempCustomer.setPostalCode(postalCodeEt.getText().toString());
+        tempCustomer.setCompany(companyEt.getText().toString());
+        tempCustomer.setOtherInformation(otherInfoEt.getText().toString());
 
         try {
             @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            customer.setBirthday(formatter.parse(birthDayEt.getText().toString()));
+            tempCustomer.setBirthday(formatter.parse(birthDayEt.getText().toString()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        CustomerDBHelper.createOrUpdateCustomer(customer, baseResponse -> {
+
+        realm.commitTransaction();
+
+        boolean finalInserted = inserted;
+        CustomerDBHelper.createOrUpdateCustomer(tempCustomer, baseResponse -> {
             CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
             if(baseResponse.isSuccess()){
-                returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+
+                if(finalInserted)
+                    returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+                else
+                    returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.CHANGED);
             }
         });
 

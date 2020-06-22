@@ -90,7 +90,44 @@ public class GroupDBHelper {
         });
     }
 
-    public static void deleteCustomerFromGroups(long customerId, CompleteCallback completeCallback){
-        //TODO - customer i tum gruplardan silecegiz.
+    public static void deleteCustomerFromGroups(long customerId, String uuid, CompleteCallback completeCallback){
+        RealmResults<Group> allGroups = GroupDBHelper.getUserGroups(uuid);
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                BaseResponse baseResponse = new BaseResponse();
+                baseResponse.setSuccess(true);
+
+                try{
+                    for(Group group : allGroups){
+
+                        int index = 0;
+
+                        for(Customer customer : group.getCustomers()){
+                            if(customer.getId() == customerId){
+                                group.getCustomers().get(index).deleteFromRealm();
+                                break;
+                            }
+                            index++;
+                        }
+                    }
+                }catch (Exception e){
+                    baseResponse.setSuccess(false);
+                    baseResponse.setMessage("Customer could not deleted in groups!");
+                }
+                completeCallback.onComplete(baseResponse);
+            }
+        });
+
+
+
+
+
+
+
+
+
     }
 }

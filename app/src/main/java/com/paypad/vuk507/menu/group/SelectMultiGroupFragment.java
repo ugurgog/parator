@@ -151,7 +151,13 @@ public class SelectMultiGroupFragment extends BaseFragment {
         createBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                mFragmentNavigation.pushFragment(new GroupCreateFragment(null, new ReturnGroupCallback() {
+                    @Override
+                    public void OnGroupReturn(Group group, ItemProcessEnum processEnum) {
+                        if(processEnum == ItemProcessEnum.INSERTED)
+                            updateAdapterWithCurrentList();
+                    }
+                }));
             }
         });
     }

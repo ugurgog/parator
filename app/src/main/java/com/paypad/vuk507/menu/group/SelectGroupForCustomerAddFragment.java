@@ -93,6 +93,7 @@ public class SelectGroupForCustomerAddFragment extends BaseFragment {
 
     public void setSelectedCustomerList(List<Customer> selectedCustomerList) {
         this.selectedCustomerList = selectedCustomerList;
+        //infoTv.setText(String.valueOf(selectedCustomerList.size()).concat(" ").concat(getContext().getResources().getString(R.string.customers_will_be_added_group)));
     }
 
     @Override

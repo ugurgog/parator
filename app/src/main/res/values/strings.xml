@@ -96,6 +96,7 @@
     <string name="choose_a_contact">Choose a Contact</string>
     <string name="add_to_group">Add to Group</string>
     <string name="select_group">Select a Group</string>
+    <string name="edit_customer">Edit Customer</string>
 
     <string name="select_all">Select All</string>
     <string name="de_select_all">Deselect All</string>
@@ -127,6 +128,10 @@
     <string name="company">Company</string>
     <string name="birthday">BIRTHDAY</string>
     <string name="other">Other</string>
+    <string name="name">Name</string>
+    <string name="edit">Edit</string>
+    <string name="edit_personal_information">Edit Personal Information</string>
+
 
     <!-- App Messages -->
     <string name="amount_can_not_be_empty">Amount cannot be empty</string>
@@ -152,6 +157,7 @@
     <string name="sure_to_delete_category">Are you sure you want to delete the category?</string>
     <string name="sure_to_delete_discount">Are you sure you want to delete the discount?</string>
     <string name="sure_to_delete_dynamic_box">Are you sure you want to delete the dynamic box?</string>
+    <string name="sure_to_delete_customer">Are you sure you want to delete the customer?</string>
 
 
     <string name="select_picture">Select Picture</string>

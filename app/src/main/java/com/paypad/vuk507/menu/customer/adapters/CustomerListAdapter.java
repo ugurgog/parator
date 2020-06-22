@@ -117,7 +117,13 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
                 else
                     customerInfo = customer.getPhoneNumber();
             }
-            customerInfoTv.setText(customerInfo);
+
+            if(customerInfo.trim().isEmpty()){
+                customerInfoTv.setVisibility(View.GONE);
+            }else {
+                customerInfoTv.setVisibility(View.VISIBLE);
+                customerInfoTv.setText(customerInfo);
+            }
         }
 
         private void setCustomerShortName() {

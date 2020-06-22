@@ -96,6 +96,7 @@
     <string name="choose_a_contact">Kişi Seçin</string>
     <string name="add_to_group">Gruba Ekle</string>
     <string name="select_group">Grup Seçin</string>
+    <string name="edit_customer">Müşteri Güncelle</string>
 
     <string name="select_all">Tümünü Seç</string>
     <string name="de_select_all">Tümünü Bırak</string>
@@ -127,6 +128,10 @@
     <string name="company">Kurum</string>
     <string name="birthday">DOĞUM TARİHİ</string>
     <string name="other">Diğer</string>
+    <string name="name">Ad</string>
+    <string name="edit">Güncelle</string>
+    <string name="edit_personal_information">Bilgileri Güncelle</string>
+
 
     <!-- App Messages -->
     <string name="amount_can_not_be_empty">Tutar boş olamaz</string>
@@ -152,6 +157,7 @@
     <string name="sure_to_delete_category">Kategoriyi silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_discount">İndirimi silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_dynamic_box">Dinamik tanımı silmek istediğinize emin misiniz?</string>
+    <string name="sure_to_delete_customer">Müşteriyi silmek istediğinize emin misiniz?</string>
 
     <string name="select_picture">Fotoğraf Seçin</string>
     <string name="open_camera">Kamerayı Aç</string>

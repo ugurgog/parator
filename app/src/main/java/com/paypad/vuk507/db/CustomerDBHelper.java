@@ -36,14 +36,7 @@ public class CustomerDBHelper {
 
                     if(customer != null){
                         customer.deleteFromRealm();
-
-
-                        GroupDBHelper.deleteCustomerFromGroups(customerId, new CompleteCallback() {
-                            @Override
-                            public void onComplete(BaseResponse baseResponse) {
-                                //TODO - musteriler silindi mi?
-                            }
-                        });
+                        baseResponse.setMessage("Customer deleted successfully");
 
                     }else {
                         baseResponse.setSuccess(false);
