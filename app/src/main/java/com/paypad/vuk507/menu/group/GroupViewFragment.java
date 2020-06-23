@@ -218,7 +218,14 @@ public class GroupViewFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
-        customerList = new ArrayList(group.getCustomers());
+        //customerList = new ArrayList(group.getCustomers());
+
+        customerList = new ArrayList<>();
+        for(Long customerId : group.getCustomerIds()){
+            Customer customer = CustomerDBHelper.getCustomer(customerId);
+            if(customer != null)
+                customerList.add(customer);
+        }
 
         customerListAdapter = new CustomerListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
             @Override

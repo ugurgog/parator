@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.charge.interfaces.AmountCallback;
+import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
 import com.paypad.vuk507.uiUtils.NDSpinner;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
@@ -176,42 +178,7 @@ public class LibraryFragment extends BaseFragment {
                 }
             }
         });
-
-        /*addItemImgv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popupMenu = new PopupMenu(getContext(), addItemImgv);
-                popupMenu.inflate(R.menu.menu_add_item);
-
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.createItem:
-                                mFragmentNavigation.pushFragment(new ProductEditFragment(null, new ReturnItemCallback() {
-                                    @Override
-                                    public void OnReturn(Product product, ItemProcessEnum processEnum) {
-
-                                    }
-                                }));
-                                break;
-                            case R.id.createDiscount:
-                                mFragmentNavigation.pushFragment(new DiscountEditFragment(null, new ReturnDiscountCallback() {
-                                    @Override
-                                    public void OnReturn(Discount discount) {
-
-                                    }
-                                }));
-                                break;
-                        }
-                        return false;
-                    }
-                });
-                popupMenu.show();
-            }
-        });*/
     }
-
 
     private void setSpinnerAdapter() {
         List<String> spinnerList = getDefaultSpinnerList();
@@ -306,10 +273,27 @@ public class LibraryFragment extends BaseFragment {
         }else
             itemExistInfoTv.setVisibility(View.GONE);
 
-        productListAdapter = new ProductListAdapter(getContext(), productList, mFragmentNavigation, new ReturnItemCallback() {
+        productListAdapter = new ProductListAdapter(getContext(), productList, mFragmentNavigation, ItemProcessEnum.SELECTED, new ReturnItemCallback() {
             @Override
             public void OnReturn(Product product, ItemProcessEnum processEnum) {
-                setProductAdapter(0);
+
+                if(product.getAmount() == 0){
+
+                    mFragmentNavigation.pushFragment(new DynamicAmountFragment(product, new AmountCallback() {
+                        @Override
+                        public void OnDynamicAmountReturn(double amount) {
+
+                            Log.i("Info", "dynamic_amount:" + amount);
+
+
+                        }
+                    }));
+
+
+                }else {
+                    //TODO - urun tutari 0 degil, toplam tutara eklenecek
+                }
+
             }
         });
         itemListRv.setAdapter(productListAdapter);

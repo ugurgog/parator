@@ -3,6 +3,7 @@ package com.paypad.vuk507.charge;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -32,6 +34,7 @@ import com.paypad.vuk507.menu.item.ItemListFragment;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -58,8 +61,10 @@ public class ChargeFragment extends BaseFragment {
     @BindView(R.id.navViewLayout)
     NavigationView navViewLayout;
 
-    @BindView(R.id.currencySymbolTv)
-    TextView currencySymbolTv;
+    @BindView(R.id.chargell)
+    LinearLayout chargell;
+    @BindView(R.id.chargeAmountTv)
+    TextView chargeAmountTv;
 
     private static final int TAB_KEYPAD = 0;
     private static final int TAB_LIBRARY = 1;
@@ -123,7 +128,9 @@ public class ChargeFragment extends BaseFragment {
     }
 
     private void initVariables() {
-        currencySymbolTv.setText(CommonUtils.getCurrency().getSymbol());
+        chargeAmountTv.setHint("0,00".concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
+        chargell.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.DodgerBlue, null),
+                getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 20, 0));
     }
 
     private void setUpPager() {

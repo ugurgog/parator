@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">vuk507</string>
+    <string name="app_name">Paratör</string>
 
     <array name="tab_name">
         <item>Klavye</item>
@@ -47,12 +47,14 @@
     <string name="delete_group">Grubu Sil</string>
     <string name="group_name">Grup Adı</string>
     <string name="edit_group">Grup Güncelle</string>
+    <string name="add_note">Not Ekle</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
     <string name="done">Tamam</string>
+    <string name="add">Ekle</string>
 
     <string name="there_is_no_search_result">Sonuç yok</string>
 
@@ -97,6 +99,8 @@
     <string name="add_to_group">Gruba Ekle</string>
     <string name="select_group">Grup Seçin</string>
     <string name="edit_customer">Müşteri Güncelle</string>
+    <string name="select_customers">Müşteri Seçin</string>
+    <string name="delete_customers">Müşterileri Sil</string>
 
     <string name="select_all">Tümünü Seç</string>
     <string name="de_select_all">Tümünü Bırak</string>
@@ -158,6 +162,7 @@
     <string name="sure_to_delete_discount">İndirimi silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_dynamic_box">Dinamik tanımı silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_customer">Müşteriyi silmek istediğinize emin misiniz?</string>
+    <string name="sure_to_delete_selected_customers">Seçilen müşterileri silmek istediğinize emin misiniz?</string>
 
     <string name="select_picture">Fotoğraf Seçin</string>
     <string name="open_camera">Kamerayı Aç</string>

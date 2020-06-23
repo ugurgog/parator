@@ -1,6 +1,5 @@
 package com.paypad.vuk507.uiUtils.keypad;
 
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -15,14 +14,14 @@ import androidx.core.content.ContextCompat;
 
 import com.paypad.vuk507.R;
 
-public class KeyPad extends TableLayout {
+public class KeyPadWithoutAdd extends TableLayout {
 
-    private Button num1, num2, num3, num4, num5, num6, num7, num8, num9, num0, btnNumpadBack, btnNumpadAdd;
+    private Button num1, num2, num3, num4, num5, num6, num7, num8, num9, num0, btnNumpadBack;
     //private ImageButton btnNumpadAdd;
     private KeyPadClick listener;
     private TableLayout tableLayout;
 
-    public KeyPad(Context context, AttributeSet attrs) {
+    public KeyPadWithoutAdd(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflateNumpad(context);
     }
@@ -33,7 +32,7 @@ public class KeyPad extends TableLayout {
     }
 
     private void inflateNumpad(Context context) {
-        View view = inflate(context, R.layout.keypad_layout, this);
+        View view = inflate(context, R.layout.keypad_without_add_layout, this);
         initialiseWidgets(view);
     }
 
@@ -50,8 +49,7 @@ public class KeyPad extends TableLayout {
         num9 = view.findViewById(R.id.btnNumpad9);
         num0 = view.findViewById(R.id.btnNumpad0);
         btnNumpadBack = view.findViewById(R.id.btnNumpadBack);
-        btnNumpadAdd = view.findViewById(R.id.btnNumpadAdd);
-        // Background
+
         tableLayout = view.findViewById(R.id.numpad_container);
     }
 
@@ -67,7 +65,6 @@ public class KeyPad extends TableLayout {
         num9.setOnClickListener(listener);
         num0.setOnClickListener(listener);
         btnNumpadBack.setOnClickListener(listener);
-        btnNumpadAdd.setOnClickListener(listener);
     }
 
     // Currently not working!
@@ -86,14 +83,8 @@ public class KeyPad extends TableLayout {
         num9.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
         num0.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
         btnNumpadBack.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-        btnNumpadAdd.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
     }
 
-    /**
-     * Change color of button's text
-     * @param context
-     * @param colorId
-     */
     public void setButtonTextColor(@NonNull Context context, @NonNull int colorId) {
         num1.setTextColor(ContextCompat.getColor(context, colorId));
         num2.setTextColor(ContextCompat.getColor(context, colorId));

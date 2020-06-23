@@ -1,5 +1,6 @@
 package com.paypad.vuk507.menu.customer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,10 +25,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CustomerDBHelper;
+import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
+import com.paypad.vuk507.db.GroupDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.httpprocess.interfaces.OnEventListener;
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.customer.adapters.CustomerListAdapter;
 import com.paypad.vuk507.menu.customer.adapters.CustomerSelectListAdapter;
@@ -36,16 +42,20 @@ import com.paypad.vuk507.menu.group.GroupFragment;
 import com.paypad.vuk507.menu.group.SelectGroupForCustomerAddFragment;
 import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
 import com.paypad.vuk507.model.Customer;
+import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Group;
+import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.CustomDialogBox;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -84,9 +94,11 @@ public class CustomerSelectFragment extends BaseFragment {
     private CustomerSelectListAdapter customerListAdapter;
     private List<Customer> selectedCustomerList;
     private SelectGroupForCustomerAddFragment selectGroupForCustomerAddFragment;
+    private CompleteCallback completeCallback;
+    private ItemProcessEnum processType;
 
-    public CustomerSelectFragment() {
-
+    public CustomerSelectFragment(ItemProcessEnum processEnum) {
+        processType = processEnum;
     }
 
     @Override
@@ -211,21 +223,78 @@ public class CustomerSelectFragment extends BaseFragment {
             }
         });
 
-
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //initSelectGroupFragment();
-                initSelectGroupFragment();
-                mFragmentNavigation.pushFragment(selectGroupForCustomerAddFragment);
+
+                if(processType != null && (processType == ItemProcessEnum.DELETED)){
+
+                    new CustomDialogBox.Builder((Activity) getContext())
+                            .setMessage(getContext().getResources().getString(R.string.sure_to_delete_selected_customers))
+                            .setNegativeBtnVisibility(View.VISIBLE)
+                            .setNegativeBtnText(getContext().getResources().getString(R.string.cancel))
+                            .setNegativeBtnBackground(getContext().getResources().getColor(R.color.Silver, null))
+                            .setPositiveBtnVisibility(View.VISIBLE)
+                            .setPositiveBtnText(getContext().getResources().getString(R.string.yes))
+                            .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                            .setDurationTime(0)
+                            .isCancellable(true)
+                            .setEditTextVisibility(View.GONE)
+                            .OnPositiveClicked(new CustomDialogListener() {
+                                @Override
+                                public void OnClick() {
+                                    approveDeleteCustomers();
+                                }
+                            })
+                            .OnNegativeClicked(new CustomDialogListener() {
+                                @Override
+                                public void OnClick() {
+
+                                }
+                            }).build();
+
+                }else {
+                    initSelectGroupFragment();
+                    mFragmentNavigation.pushFragment(selectGroupForCustomerAddFragment);
+                }
             }
         });
     }
 
+    private void approveDeleteCustomers() {
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
+        for (Customer customer : selectedCustomerList) {
+            GroupDBHelper.deleteCustomerFromGroups(customer.getId(), user.getUuid(), new CompleteCallback() {
+                @Override
+                public void onComplete(BaseResponse baseResponse) {
+
+                }
+            });
+        }
+
+        for (Customer customer : selectedCustomerList) {
+            CustomerDBHelper.deleteCustomer(customer.getId(), new CompleteCallback() {
+                @Override
+                public void onComplete(BaseResponse baseResponse) {
+
+                }
+            });
+        }
+
+        completeCallback.onComplete(baseResponse);
+        Objects.requireNonNull(getActivity()).onBackPressed();
+    }
+
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.customers));
+        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.select_customers));
         addItemImgv.setVisibility(View.GONE);
+
+        if(processType != null && (processType == ItemProcessEnum.DELETED))
+            addBtn.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.delete_customers));
+        else
+            addBtn.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.add_to_group));
 
         setRvMargins();
         CommonUtils.setSaveBtnEnability(false, addBtn, getContext());
@@ -285,7 +354,6 @@ public class CustomerSelectFragment extends BaseFragment {
                     if(selectedCustomerList.size() == 0)
                         CommonUtils.setSaveBtnEnability(false, addBtn, getContext());
                 }
-                //selectGroupForCustomerAddFragment.setSelectedCustomerList(selectedCustomerList);
             }
         });
         customerRv.setAdapter(customerListAdapter);
@@ -303,5 +371,9 @@ public class CustomerSelectFragment extends BaseFragment {
                 }
             });
         }
+    }
+
+    public void setCompleteCallback(CompleteCallback completeCallback) {
+        this.completeCallback = completeCallback;
     }
 }

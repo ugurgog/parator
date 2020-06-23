@@ -1,5 +1,7 @@
 package com.paypad.vuk507.db;
 
+import androidx.annotation.NonNull;
+
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.CustomerGroup;
@@ -57,7 +59,7 @@ public class GroupDBHelper {
                     baseResponse.setMessage("Group is saved!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Gropo cannot be saved!");
+                    baseResponse.setMessage("Group cannot be saved!");
                 }
                 completeCallback.onComplete(baseResponse);
             }
@@ -105,9 +107,10 @@ public class GroupDBHelper {
 
                         int index = 0;
 
-                        for(Customer customer : group.getCustomers()){
-                            if(customer.getId() == customerId){
-                                group.getCustomers().get(index).deleteFromRealm();
+                        for(Long foundCustomerId : group.getCustomerIds()){
+                            if(foundCustomerId == customerId){
+                                group.getCustomerIds().remove(index);
+                                realm.insertOrUpdate(group);
                                 break;
                             }
                             index++;
@@ -120,14 +123,37 @@ public class GroupDBHelper {
                 completeCallback.onComplete(baseResponse);
             }
         });
+    }
 
+    public static void deleteCustomerFromAGroup(long customerId, Group group, CompleteCallback completeCallback){
 
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
 
+                BaseResponse baseResponse = new BaseResponse();
+                baseResponse.setSuccess(true);
 
+                try{
+                    int index = 0;
+                    for (Long customerIdFound : group.getCustomerIds()) {
+                        if (customerIdFound == customerId) {
+                            group.getCustomerIds().remove(index);
 
+                            realm.insertOrUpdate(group);
+                            baseResponse.setObject(group);
+                            break;
+                        }
+                        index++;
+                    }
 
-
-
-
+                }catch (Exception e){
+                    baseResponse.setSuccess(false);
+                    baseResponse.setMessage("Customer could not be deleted from group");
+                }
+                completeCallback.onComplete(baseResponse);
+            }
+        });
     }
 }

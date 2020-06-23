@@ -50,6 +50,7 @@ import com.paypad.vuk507.model.pojo.Contact;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
+import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.PermissionModule;
 import com.paypad.vuk507.utils.PhoneNumberTextWatcher;
 
@@ -121,6 +122,7 @@ public class CustomerViewFragment extends BaseFragment{
     private ReturnCustomerCallback returnCustomerCallback;
     private long customerId;
     private boolean deleteCustomer = false;
+    private CustomerCreateFragment customerCreateFragment;
 
     CustomerViewFragment(Customer customer, ReturnCustomerCallback returnCustomerCallback) {
         this.mCustomer = customer;
@@ -187,28 +189,31 @@ public class CustomerViewFragment extends BaseFragment{
             @Override
             public void onClick(View view) {
 
-                mFragmentNavigation.pushFragment(new CustomerCreateFragment(mCustomer, new ReturnCustomerCallback() {
+                initCustomerCreateFragment();
+                mFragmentNavigation.pushFragment(customerCreateFragment);
+
+                /*mFragmentNavigation.pushFragment(new CustomerCreateFragment(mCustomer, new ReturnCustomerCallback() {
                     @Override
                     public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
                         mCustomer = customer;
                         fillCustomerFields();
                         returnCustomerCallback.OnReturn(customer, processEnum);
                     }
-                }));
+                }));*/
             }
         });
 
         emailll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                DataUtils.sendEmailToCustomer(getContext(), emailTv.getText().toString());
             }
         });
 
         phoneNumberll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                DataUtils.callCustomer(getContext(), phoneNumberTv.getText().toString());
             }
         });
 
@@ -223,7 +228,8 @@ public class CustomerViewFragment extends BaseFragment{
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.editPersonalInformation:
-
+                                initCustomerCreateFragment();
+                                mFragmentNavigation.pushFragment(customerCreateFragment);
                                 break;
                             case R.id.deleteCustomer:
 
@@ -256,6 +262,23 @@ public class CustomerViewFragment extends BaseFragment{
                     }
                 });
                 popupMenu.show();
+            }
+        });
+    }
+
+    private void initCustomerCreateFragment(){
+        customerCreateFragment = new CustomerCreateFragment(mCustomer, new ReturnCustomerCallback() {
+            @Override
+            public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
+                mCustomer = customer;
+                fillCustomerFields();
+                returnCustomerCallback.OnReturn(customer, processEnum);
+            }
+        });
+        customerCreateFragment.setReturnGroupCallback(new ReturnGroupCallback() {
+            @Override
+            public void OnGroupReturn(Group group, ItemProcessEnum processEnum) {
+                setGroupNames();
             }
         });
     }
@@ -300,24 +323,28 @@ public class CustomerViewFragment extends BaseFragment{
                 .concat(" ")
                 .concat(mCustomer.getSurname() != null ? mCustomer.getSurname() : "").trim());
 
-        if(mCustomer.getEmail() != null && !mCustomer.getEmail().isEmpty())
+        if(mCustomer.getEmail() != null && !mCustomer.getEmail().isEmpty()){
+            emailll.setVisibility(View.VISIBLE);
             emailTv.setText(mCustomer.getEmail());
-        else
+        } else
             emailll.setVisibility(View.GONE);
 
-        if(mCustomer.getPhoneNumber() != null && !mCustomer.getPhoneNumber().isEmpty())
+        if(mCustomer.getPhoneNumber() != null && !mCustomer.getPhoneNumber().isEmpty()){
+            phoneNumberll.setVisibility(View.VISIBLE);
             phoneNumberTv.setText(mCustomer.getPhoneNumber());
-        else
+        } else
             phoneNumberll.setVisibility(View.GONE);
 
-        if(mCustomer.getCompany() != null && !mCustomer.getCompany().isEmpty())
+        if(mCustomer.getCompany() != null && !mCustomer.getCompany().isEmpty()){
+            companyll.setVisibility(View.VISIBLE);
             companyTv.setText(mCustomer.getCompany());
-        else
+        } else
             companyll.setVisibility(View.GONE);
 
         setGroupNames();
 
         if(mCustomer.getBirthday() != null){
+            birthdayll.setVisibility(View.VISIBLE);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
             birthdayTv.setText(simpleDateFormat.format(mCustomer.getBirthday()));
         } else
@@ -325,14 +352,17 @@ public class CustomerViewFragment extends BaseFragment{
 
         setAddress();
 
-        if(mCustomer.getOtherInformation() != null && !mCustomer.getOtherInformation().isEmpty())
+        if(mCustomer.getOtherInformation() != null && !mCustomer.getOtherInformation().isEmpty()){
+            otherll.setVisibility(View.VISIBLE);
             otherTv.setText(mCustomer.getOtherInformation());
-        else
+        } else
             otherll.setVisibility(View.GONE);
     }
 
     private void setAddress() {
         String fullAddress = "";
+
+        addressll.setVisibility(View.VISIBLE);
 
         if(mCustomer.getAddress() != null && !mCustomer.getAddress().trim().isEmpty())
             fullAddress = fullAddress.concat(mCustomer.getAddress()).concat(",");
@@ -360,8 +390,8 @@ public class CustomerViewFragment extends BaseFragment{
         if(groups.size() > 0){
             String groupNames = "";
             for(Group group : groups){
-                for(Customer customer1 : group.getCustomers()){
-                    if(customer1.getId() == mCustomer.getId()){
+                for(Long customerId : group.getCustomerIds()){
+                    if(customerId == mCustomer.getId()){
                         groupNames = groupNames.concat(group.getName()).concat(",");
                         break;
                     }

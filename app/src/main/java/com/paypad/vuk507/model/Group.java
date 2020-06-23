@@ -11,9 +11,10 @@ public class Group extends RealmObject {
     @PrimaryKey
     private long id;
     private String name;
-    private RealmList<Customer> customers;
+    //private RealmList<Customer> customers;
     private Date createDate;
     private String userUuid;
+    private RealmList<Long> customerIds;
 
     public long getId() {
         return id;
@@ -47,11 +48,11 @@ public class Group extends RealmObject {
         this.userUuid = userUuid;
     }
 
-    public RealmList<Customer> getCustomers() {
-        return customers;
+    public RealmList<Long> getCustomerIds() {
+        return customerIds;
     }
 
-    public void setCustomers(RealmList<Customer> customers) {
-        this.customers = customers;
+    public void setCustomerIds(RealmList<Long> customerIds) {
+        this.customerIds = customerIds;
     }
 }

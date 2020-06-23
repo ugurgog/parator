@@ -48,6 +48,7 @@ import com.paypad.vuk507.interfaces.ReturnObjectCallback;
 import com.paypad.vuk507.login.utils.Validation;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.group.SelectMultiGroupFragment;
+import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Group;
@@ -137,8 +138,10 @@ public class CustomerCreateFragment extends BaseFragment
     private ContactDialogFragment contactDialogFragment;
     private PermissionModule permissionModule;
     private List<Group> selectedGroupList;
+    private List<Group> initialSelectedGroupList;
     private Realm realm;
     private Customer customer;
+    private ReturnGroupCallback returnGroupCallback;
 
     CustomerCreateFragment(Customer customer, ReturnCustomerCallback returnCustomerCallback) {
         this.customer = customer;
@@ -260,6 +263,7 @@ public class CustomerCreateFragment extends BaseFragment
         });
 
         selectedGroupList = new ArrayList<>();
+        initialSelectedGroupList = new ArrayList<>();
         toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.create_customer));
         
         if(customer != null){
@@ -320,9 +324,11 @@ public class CustomerCreateFragment extends BaseFragment
         if(groups.size() > 0){
             String groupNames = "";
             for(Group group : groups){
-                for(Customer customer1 : group.getCustomers()){
-                    if(customer1.getId() == customer.getId()){
+                for(Long customerId : group.getCustomerIds()){
+                    if(customerId == customer.getId()){
                         groupNames = groupNames.concat(group.getName()).concat(",");
+                        selectedGroupList.add(group);
+                        initialSelectedGroupList.add(group);
                         break;
                     }
                 }
@@ -431,13 +437,6 @@ public class CustomerCreateFragment extends BaseFragment
 
         Customer tempCustomer = realm.copyToRealm(customer);
 
-
-
-
-        //Customer customer = new Customer();
-        //customer.setId(CustomerDBHelper.getCustomerCurrentPrimaryKeyId());
-        //customer.setUserUuid(user.getUuid());
-        //customer.setCreateDate(new Date());
         tempCustomer.setName(firstNameEt.getText().toString());
         tempCustomer.setSurname(lastNameEt.getText().toString());
         tempCustomer.setEmail(emailEt.getText().toString());
@@ -448,6 +447,8 @@ public class CustomerCreateFragment extends BaseFragment
         tempCustomer.setPostalCode(postalCodeEt.getText().toString());
         tempCustomer.setCompany(companyEt.getText().toString());
         tempCustomer.setOtherInformation(otherInfoEt.getText().toString());
+
+        long customerId = tempCustomer.getId();
 
         try {
             @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -471,9 +472,36 @@ public class CustomerCreateFragment extends BaseFragment
             }
         });
 
+        // Secilen gruplara customer dahil edilir
+        // TODO - unselected yapilan gruplardan da customer cikartilmali ???
         if(selectedGroupList != null && selectedGroupList.size() > 0){
             for(Group group : selectedGroupList){
-                updateGroup(group, customer);
+                if(!group.getCustomerIds().contains(customerId))
+                    updateGroup(group, tempCustomer);
+            }
+        }
+
+        if(initialSelectedGroupList.size() > 0){
+            for(Group initial : initialSelectedGroupList){
+                boolean exist = false;
+                for (Group selected : selectedGroupList){
+
+                    if(selected.getId() == initial.getId()){
+
+                        exist = true;
+                        break;
+                    }
+                }
+                if(!exist){
+                    GroupDBHelper.deleteCustomerFromAGroup(customerId, initial, new CompleteCallback() {
+                        @Override
+                        public void onComplete(BaseResponse baseResponse) {
+                            if(baseResponse.isSuccess()){
+                                returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.DELETED);
+                            }
+                        }
+                    });
+                }
             }
         }
 
@@ -484,14 +512,17 @@ public class CustomerCreateFragment extends BaseFragment
         realm.beginTransaction();
 
         Group tempGroup = realm.copyToRealm(group);
-        tempGroup.getCustomers().add(customer);
+
+        tempGroup.getCustomerIds().add(customer.getId());
 
         realm.commitTransaction();
 
         GroupDBHelper.createOrUpdateGroup(tempGroup, new CompleteCallback() {
             @Override
             public void onComplete(BaseResponse baseResponse) {
-
+                if(baseResponse.isSuccess()){
+                    returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+                }
             }
         });
     }
@@ -517,5 +548,9 @@ public class CustomerCreateFragment extends BaseFragment
     public void onCountryClick(String country) {
         if(country != null && !country.isEmpty())
             countryEt.setText(country);
+    }
+
+    public void setReturnGroupCallback(ReturnGroupCallback returnGroupCallback) {
+        this.returnGroupCallback = returnGroupCallback;
     }
 }

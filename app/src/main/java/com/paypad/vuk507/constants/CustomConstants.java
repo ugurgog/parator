@@ -30,4 +30,7 @@ public class CustomConstants {
     public static final int MAX_IMAGE_SIZE_2ANDHALFMB =  2621440;
     public static final int MAX_IMAGE_SIZE_5MB = 5242880;
 
+
+    public static final double MAX_PRICE_VALUE = 999999.99d;
+
 }

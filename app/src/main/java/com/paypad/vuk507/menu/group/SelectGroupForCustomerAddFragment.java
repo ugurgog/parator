@@ -173,23 +173,24 @@ public class SelectGroupForCustomerAddFragment extends BaseFragment {
         realm.beginTransaction();
 
         Group tempGroup = realm.copyToRealm(selectedGroup);
-        RealmList<Customer> addedCustomers = new RealmList<>();
+        RealmList<Long> addedCustomers = new RealmList<>();
+
 
         for(Customer customer : selectedCustomerList){
 
             boolean customerExist = false;
 
-            for(Customer customer1 : selectedGroup.getCustomers()){
-                if(customer.getId() == customer1.getId()){
+            for(Long customerId : selectedGroup.getCustomerIds()){
+                if(customer.getId() == customerId){
                     customerExist = true;
                     break;
                 }
             }
             if(!customerExist)
-                addedCustomers.add(customer);
+                addedCustomers.add(customer.getId());
         }
 
-        tempGroup.getCustomers().addAll(addedCustomers);
+        tempGroup.getCustomerIds().addAll(addedCustomers);
 
         realm.commitTransaction();
 

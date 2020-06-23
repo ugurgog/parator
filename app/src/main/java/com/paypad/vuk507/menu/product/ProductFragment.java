@@ -193,7 +193,7 @@ public class ProductFragment extends BaseFragment {
 
         products = ProductDBHelper.getAllProducts(user.getUuid());
         productList = new ArrayList(products);
-        productListAdapter = new ProductListAdapter(getContext(), productList, mFragmentNavigation, new ReturnItemCallback() {
+        productListAdapter = new ProductListAdapter(getContext(), productList, mFragmentNavigation, null, new ReturnItemCallback() {
             @Override
             public void OnReturn(Product product, ItemProcessEnum processEnum) {
                 updateAdapterWithCurrentList();

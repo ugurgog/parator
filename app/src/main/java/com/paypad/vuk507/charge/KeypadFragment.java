@@ -22,6 +22,7 @@ import com.paypad.vuk507.charge.dynamicStruct.DynamicItemSelectFragmant;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicStructListAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.StructSelectFragment;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
+import com.paypad.vuk507.charge.sale.AddNoteToSaleFragment;
 import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.DynamicStructEnum;
@@ -37,6 +38,7 @@ import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.uiUtils.keypad.KeyPad;
 import com.paypad.vuk507.uiUtils.keypad.KeyPadClick;
+import com.paypad.vuk507.uiUtils.keypad.KeyPadSingleNumberListener;
 import com.paypad.vuk507.uiUtils.keypad.keyPadClickListener;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
@@ -67,19 +69,22 @@ public class KeypadFragment extends BaseFragment implements
 
     View mView;
 
-    @BindView(R.id.currencySymbolTv)
-    TextView currencySymbolTv;
     @BindView(R.id.taxTypeRv)
     RecyclerView taxTypeRv;
     @BindView(R.id.noteMainll)
     LinearLayout noteMainll;
-    @BindView(R.id.notePicImgv)
-    ImageView notePicImgv;
     @BindView(R.id.keypadMainLl)
     LinearLayout keypadMainLl;
 
+    //Sale note variables
+    @BindView(R.id.notePicImgv)
+    ImageView notePicImgv;
+    @BindView(R.id.saleNoteTv)
+    TextView saleNoteTv;
+    @BindView(R.id.saleAmountTv)
+    TextView saleAmountTv;
+
     private KeyPad keypad;
-    //private ProductTaxListAdapter productTaxListAdapter;
     private User user;
     private DynamicStructListAdapter dynamicStructListAdapter;
 
@@ -149,7 +154,8 @@ public class KeypadFragment extends BaseFragment implements
     private void initVariables() {
         realm = Realm.getDefaultInstance();
         keypad = mView.findViewById(R.id.keypad);
-        currencySymbolTv.setText(CommonUtils.getCurrency().getSymbol());
+        saleAmountTv.setHint("0,00".concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
+        saleNoteTv.setHint(getResources().getString(R.string.add_note));
 
         structSelectFragment = new StructSelectFragment();
         structSelectFragment.setStructListener(this);
@@ -159,13 +165,31 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     private void initListeners() {
-        keypad.setOnNumPadClickListener(new KeyPadClick(new keyPadClickListener() {
+        keypad.setOnNumPadClickListener(new KeyPadClick(new KeyPadSingleNumberListener() {
             @Override
-            public void onKeypadClicked(ArrayList<Integer> nums) {
+            public void onKeypadClicked(Integer number) {
 
-                Log.i("Info", "nums:" + nums);
+
+
             }
         }));
+
+        saleNoteTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mFragmentNavigation.pushFragment(new AddNoteToSaleFragment(saleNoteTv.getText().toString(), new AddNoteToSaleFragment.NoteCallback() {
+                    @Override
+                    public void onNoteReturn(String note) {
+                        saleNoteTv.setText(note);
+
+                        if(note != null && !note.isEmpty())
+                            notePicImgv.setVisibility(View.VISIBLE);
+                        else
+                            notePicImgv.setVisibility(View.GONE);
+                    }
+                }));
+            }
+        });
     }
 
     private void initRecyclerView(){

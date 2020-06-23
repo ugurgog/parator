@@ -39,14 +39,16 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
 
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnItemCallback returnItemCallback;
+    private ItemProcessEnum processType;
 
     public ProductListAdapter(Context context, List<Product> products,
-                   BaseFragment.FragmentNavigation fragmentNavigation,
+                   BaseFragment.FragmentNavigation fragmentNavigation, ItemProcessEnum processType,
                    ReturnItemCallback returnItemCallback) {
         this.context = context;
         this.products.addAll(products);
         this.orgProducts.addAll(products);
         this.fragmentNavigation = fragmentNavigation;
+        this.processType = processType;
         this.returnItemCallback = returnItemCallback;
     }
 
@@ -82,13 +84,19 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
             productItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fragmentNavigation.pushFragment(new ProductEditFragment(product, new ReturnItemCallback() {
-                        @Override
-                        public void OnReturn(Product product, ItemProcessEnum processEnum) {
-                            returnItemCallback.OnReturn(product, processEnum);
-                            Log.i("Info", "ProductListAdapter callback.");
-                        }
-                    }));
+
+                    // If process comes from Library step, just product will be selected
+                    if(processType != null && (processType == ItemProcessEnum.SELECTED)){
+                        returnItemCallback.OnReturn(product, processType);
+                    }else{
+                        fragmentNavigation.pushFragment(new ProductEditFragment(product, new ReturnItemCallback() {
+                            @Override
+                            public void OnReturn(Product product, ItemProcessEnum processEnum) {
+                                returnItemCallback.OnReturn(product, processEnum);
+                                Log.i("Info", "ProductListAdapter callback.");
+                            }
+                        }));
+                    }
                 }
             });
         }

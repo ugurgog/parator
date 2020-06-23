@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="60dp"
@@ -7,51 +8,48 @@
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:src="@drawable/icon_add_note"
         android:paddingBottom="20dp"
         android:paddingTop="20dp"
         android:layout_weight="1"
-        android:id="@+id/notePicImgv">
+        android:id="@+id/notePicImgv"
+        android:layout_gravity="center"
+        android:visibility="gone">
 
     </ImageView>
 
     <TextView
+        android:id="@+id/saleNoteTv"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="Note"
         android:layout_weight="13"
+        android:hint="@string/add_note"
         android:layout_gravity="center"
-        android:gravity="center|start">
+        android:gravity="center|start"
+        android:maxLines="1"
+        android:textSize="17sp"
+        android:paddingStart="10dp"
+        tools:ignore="RtlSymmetry">
     </TextView>
 
 
     <TextView
-        android:id="@+id/noteAmountTv"
-        android:layout_width="wrap_content"
+        android:id="@+id/saleAmountTv"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:textColor="@color/Black"
         android:layout_marginStart="10dp"
-        android:text="0,00"
-        android:textStyle="bold"
         android:layout_weight="1"
-        android:layout_gravity="center">
+        android:textColorHint="@color/Gray"
+        android:layout_gravity="center"
+        android:textSize="20sp"
+        android:gravity="center|end"
+        android:paddingEnd="10dp"
+        android:maxLines="1"
+        tools:ignore="RtlSymmetry">
     </TextView>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/currencySymbolTv"
-        android:textColor="@color/Black"
-        android:text="TL"
-        android:layout_marginStart="10dp"
-        android:textStyle="bold|italic"
-        android:layout_weight="1"
-        android:layout_gravity="center">
-    </TextView>
-
 
 
 </LinearLayout>

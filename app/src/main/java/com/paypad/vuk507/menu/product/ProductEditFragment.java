@@ -63,7 +63,8 @@ import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.FileAdapter;
 import com.paypad.vuk507.utils.IntentSelectUtil;
-import com.paypad.vuk507.utils.NumberFormatWatcher;
+import com.paypad.vuk507.utils.NumberFormatWatcher
+        ;
 import com.paypad.vuk507.utils.PermissionModule;
 import com.paypad.vuk507.utils.dialogBoxUtil.DialogBoxUtil;
 

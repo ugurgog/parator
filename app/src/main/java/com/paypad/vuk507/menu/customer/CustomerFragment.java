@@ -26,6 +26,7 @@ import com.paypad.vuk507.db.CustomerDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.customer.adapters.CustomerListAdapter;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
@@ -34,6 +35,7 @@ import com.paypad.vuk507.menu.group.GroupFragment;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 
@@ -75,6 +77,8 @@ public class CustomerFragment extends BaseFragment {
     private RealmResults<Customer> customers;
     private List<Customer> customerList;
     private CustomerListAdapter customerListAdapter;
+    private CustomerCreateFragment customerCreateFragment;
+    private CustomerSelectFragment customerSelectFragment;
 
     public CustomerFragment() {
 
@@ -175,15 +179,12 @@ public class CustomerFragment extends BaseFragment {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.createCustomer:
-                                mFragmentNavigation.pushFragment(new CustomerCreateFragment(null, new ReturnCustomerCallback() {
-                                    @Override
-                                    public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
-                                        updateAdapterWithCurrentList();
-                                    }
-                                }));
+                                initCustomerCreateFragment();
+                                mFragmentNavigation.pushFragment(customerCreateFragment);
                                 break;
                             case R.id.deleteCustomers:
-
+                                initCustomerSelectFragment(ItemProcessEnum.DELETED);
+                                mFragmentNavigation.pushFragment(customerSelectFragment);
                                 break;
 
                             case R.id.viewGroups:
@@ -196,13 +197,40 @@ public class CustomerFragment extends BaseFragment {
                                 break;
 
                             case R.id.addToGroup:
-                                mFragmentNavigation.pushFragment(new CustomerSelectFragment());
+                                initCustomerSelectFragment(null);
+                                mFragmentNavigation.pushFragment(customerSelectFragment);
                                 break;
                         }
                         return false;
                     }
                 });
                 popupMenu.show();
+            }
+        });
+    }
+
+    private void initCustomerCreateFragment(){
+        customerCreateFragment = new CustomerCreateFragment(null, new ReturnCustomerCallback() {
+            @Override
+            public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
+                updateAdapterWithCurrentList();
+            }
+        });
+        customerCreateFragment.setReturnGroupCallback(new ReturnGroupCallback() {
+            @Override
+            public void OnGroupReturn(Group group, ItemProcessEnum processEnum) {
+
+            }
+        });
+    }
+
+
+    private void initCustomerSelectFragment(ItemProcessEnum processType){
+        customerSelectFragment = new CustomerSelectFragment(processType);
+        customerSelectFragment.setCompleteCallback(new CompleteCallback() {
+            @Override
+            public void onComplete(BaseResponse baseResponse) {
+                updateAdapterWithCurrentList();
             }
         });
     }

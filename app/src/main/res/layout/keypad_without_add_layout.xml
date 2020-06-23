@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/numpad_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="bottom"
+    android:gravity="bottom">
+
+    <TableRow
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/btnNumpad1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="1"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+        <Button
+            android:id="@+id/btnNumpad2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="2"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+        <Button
+            android:id="@+id/btnNumpad3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="3"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/btnNumpad4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="4"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+        <Button
+            android:id="@+id/btnNumpad5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="5"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+        <Button
+            android:id="@+id/btnNumpad6"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="6"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/btnNumpad7"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="7"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+        <Button
+            android:id="@+id/btnNumpad8"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="8"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+        <Button
+            android:id="@+id/btnNumpad9"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="9"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/btnNumpadBack"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="C"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+        <Button
+            android:id="@+id/btnNumpad0"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:background="@drawable/keypad_button_border"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="0"
+            android:textColor="@color/keypad_item_color"
+            android:textSize="@dimen/keypad_btn_text_size" />
+
+
+    </TableRow>
+
+</TableLayout>

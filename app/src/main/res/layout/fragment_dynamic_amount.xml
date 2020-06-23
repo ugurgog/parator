@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/productMainll">
+
+    <include layout="@layout/toolbar_item_update"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/amountTv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:hint="0,00 TL"
+            android:inputType="text"
+            android:paddingLeft="8dp"
+            android:textColor="@color/Black"
+            android:textColorHint="@color/DarkGray"
+            android:layout_weight="1"
+            android:layout_gravity="right"
+            android:gravity="right|center_vertical"
+            android:paddingEnd="20dp"
+            android:textSize="35sp"/>
+
+        <com.paypad.vuk507.uiUtils.keypad.KeyPadWithoutAdd
+            android:id="@+id/keypad"
+            android:layout_width="match_parent"
+            android:layout_weight="4"
+            android:layout_height="0dp">
+
+        </com.paypad.vuk507.uiUtils.keypad.KeyPadWithoutAdd>
+
+    </LinearLayout>
+
+</LinearLayout>
