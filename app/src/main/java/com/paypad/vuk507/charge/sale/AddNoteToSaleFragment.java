@@ -1,14 +1,21 @@
 package com.paypad.vuk507.charge.sale;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +24,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
+import com.paypad.vuk507.charge.interfaces.OnKeyboardVisibilityListener;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.model.Product;
@@ -36,7 +44,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AddNoteToSaleFragment extends BaseFragment {
+public class AddNoteToSaleFragment extends BaseFragment  implements OnKeyboardVisibilityListener {
 
     View mView;
 
@@ -48,9 +56,18 @@ public class AddNoteToSaleFragment extends BaseFragment {
     AppCompatTextView toolbarTitleTv;
     @BindView(R.id.saveBtn)
     Button saveBtn;
+    @BindView(R.id.mainll)
+    LinearLayout mainll;
 
     private NoteCallback noteCallback;
     private String note;
+    private boolean closedClicked;
+
+    @Override
+    public void onVisibilityChanged(boolean visible) {
+        if(!visible && closedClicked)
+            Objects.requireNonNull(getActivity()).onBackPressed();
+    }
 
     public interface NoteCallback{
         void onNoteReturn(String note);
@@ -96,6 +113,7 @@ public class AddNoteToSaleFragment extends BaseFragment {
     private void initVariables() {
         toolbarTitleTv.setText(getResources().getString(R.string.add_note));
         saveBtn.setText(getResources().getString(R.string.done));
+        setKeyboardVisibilityListener(this);
 
         if(note != null && !note.isEmpty()){
             noteEt.setText(note);
@@ -106,18 +124,45 @@ public class AddNoteToSaleFragment extends BaseFragment {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                closedClicked = true;
                 noteCallback.onNoteReturn(noteEt.getText().toString());
                 CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
-                Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
 
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                closedClicked = true;
                 CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
-                Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
     }
+
+
+    private void setKeyboardVisibilityListener(final OnKeyboardVisibilityListener onKeyboardVisibilityListener) {
+        final View parentView = ((ViewGroup) mView.findViewById(R.id.mainll)).getChildAt(0);
+        parentView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            private boolean alreadyOpen;
+            private final int defaultKeyboardHeightDP = 100;
+            private final int EstimatedKeyboardDP = defaultKeyboardHeightDP + 48;
+            private final Rect rect = new Rect();
+
+            @Override
+            public void onGlobalLayout() {
+                int estimatedKeyboardHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, EstimatedKeyboardDP, parentView.getResources().getDisplayMetrics());
+                parentView.getWindowVisibleDisplayFrame(rect);
+                int heightDiff = parentView.getRootView().getHeight() - (rect.bottom - rect.top);
+                boolean isShown = heightDiff >= estimatedKeyboardHeight;
+
+                if (isShown == alreadyOpen) {
+                    return;
+                }
+                alreadyOpen = isShown;
+                onKeyboardVisibilityListener.onVisibilityChanged(isShown);
+            }
+        });
+    }
+
 }
