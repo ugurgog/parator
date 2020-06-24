@@ -62,4 +62,5 @@ public class Discount extends RealmObject {
     public void setAmount(double amount) {
         this.amount = amount;
     }
+
 }

@@ -22,6 +22,7 @@ import com.paypad.vuk507.charge.dynamicStruct.DynamicItemSelectFragmant;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicStructListAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.StructSelectFragment;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
+import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.sale.AddNoteToSaleFragment;
 import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
@@ -36,6 +37,7 @@ import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.uiUtils.keypad.KeyPad;
 import com.paypad.vuk507.uiUtils.keypad.KeyPadClick;
 import com.paypad.vuk507.uiUtils.keypad.KeyPadSingleNumberListener;
@@ -44,6 +46,7 @@ import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
+import com.paypad.vuk507.utils.DataUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -59,6 +62,8 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class KeypadFragment extends BaseFragment implements
         StructSelectFragment.StructSelectListener,
@@ -96,8 +101,16 @@ public class KeypadFragment extends BaseFragment implements
 
     private static final int DYNAMIC_BOX_COUNT = 8;
 
+    private double amount = 0d;
+
+    private SaleCalculateCallback saleCalculateCallback;
+
     public KeypadFragment() {
 
+    }
+
+    public void setSaleCalculateCallback(SaleCalculateCallback saleCalculateCallback) {
+        this.saleCalculateCallback = saleCalculateCallback;
     }
 
     @Override
@@ -169,8 +182,48 @@ public class KeypadFragment extends BaseFragment implements
             @Override
             public void onKeypadClicked(Integer number) {
 
+                if(number == -1){
+                    if(amount > 0d){
+                        saleCalculateCallback.onRemoveCustomAmount(amount);
+                        clearAmountFields();
+
+                        if(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount() == 0){
+                            saleCalculateCallback.onItemsCleared();
+                        }
 
 
+                    }else {
+                        if(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount() > 0){
+                            clearItems();
+                        }else {
+                            clearAmountFields();
+                        }
+                    }
+                }else if(number == -2){
+
+                    if(amount > 0){
+                        SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), amount, saleNoteTv.getText().toString());
+                        saleCalculateCallback.onCustomAmountAdded();
+                        clearAmountFields();
+                    }
+
+                }else {
+                    if(amount == 0){
+                        amount = (amount  + number) / 100;
+                        saleCalculateCallback.onNewSaleCreated();
+                    }else {
+                        amount = (amount * 10) + (number / 100.00d);
+                    }
+
+                    if(amount > MAX_PRICE_VALUE){
+                        amount = MAX_PRICE_VALUE;
+                    }
+
+                    String amountStr = CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                    saleAmountTv.setText(amountStr);
+
+                    saleCalculateCallback.onCustomAmountReturn(amount);
+                }
             }
         }));
 
@@ -181,6 +234,7 @@ public class KeypadFragment extends BaseFragment implements
                     @Override
                     public void onNoteReturn(String note) {
                         saleNoteTv.setText(note);
+                        saleCalculateCallback.onSaleNoteReturn(note);
 
                         if(note != null && !note.isEmpty())
                             notePicImgv.setVisibility(View.VISIBLE);
@@ -190,6 +244,42 @@ public class KeypadFragment extends BaseFragment implements
                 }));
             }
         });
+    }
+
+    public void clearAmountFields(){
+        saleAmountTv.setText("");
+        amount = 0;
+        notePicImgv.setVisibility(View.GONE);
+        saleNoteTv.setText("");
+    }
+
+    public void clearItems(){
+        new CustomDialogBox.Builder((Activity) getContext())
+                .setTitle(getContext().getResources().getString(R.string.clear_sale))
+                .setMessage(getContext().getResources().getString(R.string.question_are_you_sure))
+                .setNegativeBtnVisibility(View.VISIBLE)
+                .setNegativeBtnText(getContext().getResources().getString(R.string.cancel))
+                .setNegativeBtnBackground(getContext().getResources().getColor(R.color.Silver, null))
+                .setPositiveBtnVisibility(View.VISIBLE)
+                .setPositiveBtnText(getContext().getResources().getString(R.string.yes))
+                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                .setDurationTime(0)
+                .isCancellable(true)
+                .setEditTextVisibility(View.GONE)
+                .OnPositiveClicked(new CustomDialogListener() {
+                    @Override
+                    public void OnClick() {
+                        SaleModelInstance.setInstance(null);
+                        clearAmountFields();
+                        saleCalculateCallback.onItemsCleared();
+                    }
+                })
+                .OnNegativeClicked(new CustomDialogListener() {
+                    @Override
+                    public void OnClick() {
+
+                    }
+                }).build();
     }
 
     private void initRecyclerView(){

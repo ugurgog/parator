@@ -48,6 +48,13 @@
     <string name="group_name">Grup Adı</string>
     <string name="edit_group">Grup Güncelle</string>
     <string name="add_note">Not Ekle</string>
+    <string name="custom_amount">Özel Tutar</string>
+    <string name="clear_sale">Satışı Temizle</string>
+    <string name="question_are_you_sure">Emin misiniz?</string>
+    <string name="current_sale">Mevcut Satış</string>
+    <string name="add_customer">Müşteri Ekle</string>
+    <string name="clear_items">Tümünü Sil</string>
+    <string name="total">Toplam</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>

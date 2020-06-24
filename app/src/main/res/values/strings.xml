@@ -47,6 +47,13 @@
     <string name="group_name">Group Name</string>
     <string name="edit_group">Edit Group</string>
     <string name="add_note">Add Note</string>
+    <string name="custom_amount">Custom Amount</string>
+    <string name="clear_sale">Clear Sale</string>
+    <string name="question_are_you_sure">Are you sure?</string>
+    <string name="current_sale">Current Sale</string>
+    <string name="add_customer">Add Customer</string>
+    <string name="clear_items">Clear Items</string>
+    <string name="total">Total</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>

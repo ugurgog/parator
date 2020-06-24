@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
+import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
 import com.paypad.vuk507.uiUtils.NDSpinner;
 import com.paypad.vuk507.db.CategoryDBHelper;
@@ -91,9 +92,14 @@ public class LibraryFragment extends BaseFragment {
     private CategorySelectListAdapter categorySelectListAdapter;
 
     private User user;
+    private SaleCalculateCallback saleCalculateCallback;
 
     public LibraryFragment() {
 
+    }
+
+    public void setSaleCalculateCallback(SaleCalculateCallback saleCalculateCallback) {
+        this.saleCalculateCallback = saleCalculateCallback;
     }
 
     @Override
@@ -248,9 +254,10 @@ public class LibraryFragment extends BaseFragment {
         discountListAdapter = new DiscountListAdapter(getContext(), discountList, mFragmentNavigation, new ReturnDiscountCallback() {
             @Override
             public void OnReturn(Discount discount) {
-                setDiscountAdapter();
+                //setDiscountAdapter();
+                saleCalculateCallback.onDiscountSelected(discount);
             }
-        });
+        }, ItemProcessEnum.SELECTED);
         itemListRv.setAdapter(discountListAdapter);
     }
 
@@ -285,13 +292,14 @@ public class LibraryFragment extends BaseFragment {
 
                             Log.i("Info", "dynamic_amount:" + amount);
 
+                            saleCalculateCallback.onProductSelected(product, amount);
 
                         }
                     }));
 
 
                 }else {
-                    //TODO - urun tutari 0 degil, toplam tutara eklenecek
+                    saleCalculateCallback.onProductSelected(product, product.getAmount());
                 }
 
             }

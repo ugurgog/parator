@@ -195,7 +195,7 @@ public class DiscountFragment extends BaseFragment {
             public void OnReturn(Discount discount) {
                 updateAdapterWithCurrentList();
             }
-        });
+        }, null);
         discountRv.setAdapter(discountListAdapter);
     }
 

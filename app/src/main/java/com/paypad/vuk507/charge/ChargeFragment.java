@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
@@ -24,6 +25,10 @@ import com.google.android.material.tabs.TabLayout;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.adapter.ChargeViewPagerAdapter;
+import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
+import com.paypad.vuk507.charge.sale.SaleListFragment;
+import com.paypad.vuk507.charge.utils.ChargeHelper;
+import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
@@ -31,20 +36,30 @@ import com.paypad.vuk507.login.InitialActivity;
 import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.item.ItemListFragment;
+import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.RealmList;
 
-public class ChargeFragment extends BaseFragment {
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
+
+public class ChargeFragment extends BaseFragment implements SaleCalculateCallback {
 
     View mView;
 
@@ -66,15 +81,28 @@ public class ChargeFragment extends BaseFragment {
     @BindView(R.id.chargeAmountTv)
     TextView chargeAmountTv;
 
+    @BindView(R.id.toolbarTitleTv)
+    AppCompatTextView toolbarTitleTv;
+    @BindView(R.id.saleCountTv)
+    TextView saleCountTv;
+    @BindView(R.id.toolbarll)
+    LinearLayout toolbarll;
+
     private static final int TAB_KEYPAD = 0;
     private static final int TAB_LIBRARY = 1;
 
     private int selectedTabPosition = TAB_KEYPAD;
     private boolean mDrawerState;
+    private int currentSaleCount = 0;
 
     private ChargeViewPagerAdapter chargeViewPagerAdapter;
     private User user;
     private KeypadFragment keypadFragment;
+    private LibraryFragment libraryFragment;
+    private double totalAmount;
+    private String saleNote;
+
+    //private List<Discount> discountList;
 
     private int[] tabIcons = {
             R.drawable.ic_keyboard_black_24dp,
@@ -121,6 +149,7 @@ public class ChargeFragment extends BaseFragment {
             mView = inflater.inflate(R.layout.fragment_charge, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
+            initListeners();
             setUpPager();
             setDrawerListeners();
         }
@@ -131,6 +160,16 @@ public class ChargeFragment extends BaseFragment {
         chargeAmountTv.setHint("0,00".concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
         chargell.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.DodgerBlue, null),
                 getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 20, 0));
+        SaleModelInstance.reset();
+    }
+
+    private void initListeners() {
+        toolbarll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mFragmentNavigation.pushFragment(new SaleListFragment());
+            }
+        });
     }
 
     private void setUpPager() {
@@ -150,9 +189,14 @@ public class ChargeFragment extends BaseFragment {
 
     private void setupViewPager() {
         keypadFragment = new KeypadFragment();
+        keypadFragment.setSaleCalculateCallback(this);
+
+        libraryFragment = new LibraryFragment();
+        libraryFragment.setSaleCalculateCallback(this);
+
         chargeViewPagerAdapter = new ChargeViewPagerAdapter(getFragmentManager());
         chargeViewPagerAdapter.addFrag(keypadFragment, getContext().getResources().getString(R.string.keypad));
-        chargeViewPagerAdapter.addFrag(new LibraryFragment(), getContext().getResources().getString(R.string.library));
+        chargeViewPagerAdapter.addFrag(libraryFragment, getContext().getResources().getString(R.string.library));
         htab_viewpager.setAdapter(chargeViewPagerAdapter);
     }
 
@@ -295,5 +339,125 @@ public class ChargeFragment extends BaseFragment {
     }
 
     private void startTransactionsFragment() {
+    }
+
+    @Override
+    public void onProductSelected(Product product, double amount) {
+
+        SaleModelInstance.getInstance().getSaleModel().addProduct(product, amount);
+
+
+        if (totalAmount > 0) {
+            SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote);
+        }
+
+        Log.i("Info", "::onProductSelected -> totalAmount_2:" + SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount());
+
+
+        totalAmount = 0d;
+        totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount();
+
+        Log.i("Info", "::onProductSelected -> totalAmount_3:" + SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount());
+
+        String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+        chargeAmountTv.setText(amountStr);
+        totalAmount = 0d;
+        onNewSaleCreated();
+    }
+
+    @Override
+    public void onKeyPadClicked(int number) {
+
+    }
+
+    @Override
+    public void onTaxSelected(TaxModel taxModel) {
+
+    }
+
+    @Override
+    public void onDiscountSelected(Discount discount) {
+        if(discount.getRate() > 0){
+            SaleModelInstance.getInstance().getSaleModel().addDiscountRateToAllSaleItems(discount);
+        }else if(discount.getAmount() > 0){
+            SaleModelInstance.getInstance().getSaleModel().addDiscountAmount(discount);
+        }
+
+        Log.i("Info", "::onDiscountSelected -> totalAmount_1:" + SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount());
+
+        if(totalAmount > 0){
+            SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote);
+        }
+
+        Log.i("Info", "::onDiscountSelected -> totalAmount_2:" + SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount());
+
+
+        totalAmount = 0d;
+        totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount();
+
+        Log.i("Info", "::onDiscountSelected -> totalAmount_3:" + SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount());
+
+        String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+        chargeAmountTv.setText(amountStr);
+        totalAmount = 0d;
+    }
+
+    @Override
+    public void onCustomAmountReturn(double amount) {
+        totalAmount = 0d;
+        totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount() + amount;
+        String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+        chargeAmountTv.setText(amountStr);
+    }
+
+    @Override
+    public void onItemsCleared() {
+        toolbarTitleTv.setText(getResources().getString(R.string.no_sale));
+        currentSaleCount = 0;
+        saleCountTv.setVisibility(View.GONE);
+        saleCountTv.setText("");
+        totalAmount = 0;
+        saleNote = "";
+
+        if(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount() == 0){
+            chargeAmountTv.setText("");
+        }
+    }
+
+    @Override
+    public void onNewSaleCreated() {
+        toolbarTitleTv.setText(getResources().getString(R.string.current_sale));
+        currentSaleCount ++;
+        saleCountTv.setVisibility(View.VISIBLE);
+        saleCountTv.setText(String.valueOf(currentSaleCount));
+    }
+
+    @Override
+    public void onCustomAmountAdded() {
+        toolbarTitleTv.setText(getResources().getString(R.string.current_sale));
+        saleCountTv.setVisibility(View.VISIBLE);
+        saleCountTv.setText(String.valueOf(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount()));
+        totalAmount = 0d;
+        saleNote = "";
+    }
+
+    @Override
+    public void onRemoveCustomAmount(double amount) {
+        totalAmount = totalAmount - amount;
+        String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+        chargeAmountTv.setText(amountStr);
+        currentSaleCount --;
+
+        if(currentSaleCount == 0){
+            saleCountTv.setVisibility(View.GONE);
+        }else {
+            saleCountTv.setVisibility(View.VISIBLE);
+            saleCountTv.setText(String.valueOf(currentSaleCount));
+        }
+    }
+
+    @Override
+    public void onSaleNoteReturn(String note) {
+        saleNote = note;
     }
 }

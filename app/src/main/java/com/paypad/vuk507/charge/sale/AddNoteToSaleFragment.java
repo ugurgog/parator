@@ -62,9 +62,11 @@ public class AddNoteToSaleFragment extends BaseFragment  implements OnKeyboardVi
     private NoteCallback noteCallback;
     private String note;
     private boolean closedClicked;
+    private boolean keyboardVisibility;
 
     @Override
     public void onVisibilityChanged(boolean visible) {
+        keyboardVisibility = visible;
         if(!visible && closedClicked)
             Objects.requireNonNull(getActivity()).onBackPressed();
     }
@@ -126,7 +128,11 @@ public class AddNoteToSaleFragment extends BaseFragment  implements OnKeyboardVi
             public void onClick(View view) {
                 closedClicked = true;
                 noteCallback.onNoteReturn(noteEt.getText().toString());
-                CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
+
+                if(!keyboardVisibility)
+                    Objects.requireNonNull(getActivity()).onBackPressed();
+                else
+                    CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
             }
         });
 
@@ -134,11 +140,14 @@ public class AddNoteToSaleFragment extends BaseFragment  implements OnKeyboardVi
             @Override
             public void onClick(View view) {
                 closedClicked = true;
-                CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
+
+                if(!keyboardVisibility)
+                    Objects.requireNonNull(getActivity()).onBackPressed();
+                else
+                    CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
             }
         });
     }
-
 
     private void setKeyboardVisibilityListener(final OnKeyboardVisibilityListener onKeyboardVisibilityListener) {
         final View parentView = ((ViewGroup) mView.findViewById(R.id.mainll)).getChildAt(0);

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.CurrencyEnum;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.discount.DiscountEditFragment;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
@@ -28,15 +29,18 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
 
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnDiscountCallback returnDiscountCallback;
+    private ItemProcessEnum processType;
 
     public DiscountListAdapter(Context context, List<Discount> discounts,
                                BaseFragment.FragmentNavigation fragmentNavigation,
-                               ReturnDiscountCallback returnDiscountCallback) {
+                               ReturnDiscountCallback returnDiscountCallback,
+                               ItemProcessEnum processType) {
         this.context = context;
         this.discounts.addAll(discounts);
         this.orgDiscounts.addAll(discounts);
         this.fragmentNavigation = fragmentNavigation;
         this.returnDiscountCallback = returnDiscountCallback;
+        this.processType = processType;
     }
 
     @Override
@@ -65,15 +69,21 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
             discountItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fragmentNavigation.pushFragment(new DiscountEditFragment(discount, new ReturnDiscountCallback() {
-                        @Override
-                        public void OnReturn(Discount discount) {
-                            returnDiscountCallback.OnReturn(discount);
-                            //discounts.set(position, discount);
-                            //notifyItemChanged(position);
-                            //notifyDataSetChanged();
-                        }
-                    }));
+
+                    if(processType == ItemProcessEnum.SELECTED){
+                        returnDiscountCallback.OnReturn(discount);
+                    } else {
+                        fragmentNavigation.pushFragment(new DiscountEditFragment(discount, new ReturnDiscountCallback() {
+                            @Override
+                            public void OnReturn(Discount discount) {
+                                returnDiscountCallback.OnReturn(discount);
+                                //discounts.set(position, discount);
+                                //notifyItemChanged(position);
+                                //notifyDataSetChanged();
+                            }
+                        }));
+                    }
+
                 }
             });
         }

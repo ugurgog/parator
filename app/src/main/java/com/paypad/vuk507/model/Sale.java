@@ -10,9 +10,10 @@ public class Sale extends RealmObject {
 
     @PrimaryKey
     private long id;
-    private RealmList<Long> saleIds;
+    private int saleCount;
+    private RealmList<String> saleIds;
     private long customerId;
-    private RealmList<Long> discountIds;
+    private RealmList<Discount> discounts;
     private double totalAmount;         // Split dahil edilmemis Total Amount
     private boolean paymentCompleted;
     private long paymentTypeId;         // (No Split)
@@ -32,11 +33,19 @@ public class Sale extends RealmObject {
         this.id = id;
     }
 
-    public RealmList<Long> getSaleIds() {
+    public int getSaleCount() {
+        return saleCount;
+    }
+
+    public void setSaleCount(int saleCount) {
+        this.saleCount = saleCount;
+    }
+
+    public RealmList<String> getSaleIds() {
         return saleIds;
     }
 
-    public void setSaleIds(RealmList<Long> saleIds) {
+    public void setSaleIds(RealmList<String> saleIds) {
         this.saleIds = saleIds;
     }
 
@@ -48,12 +57,12 @@ public class Sale extends RealmObject {
         this.customerId = customerId;
     }
 
-    public RealmList<Long> getDiscountIds() {
-        return discountIds;
+    public RealmList<Discount> getDiscounts() {
+        return discounts;
     }
 
-    public void setDiscountIds(RealmList<Long> discountIds) {
-        this.discountIds = discountIds;
+    public void setDiscounts(RealmList<Discount> discounts) {
+        this.discounts = discounts;
     }
 
     public double getTotalAmount() {

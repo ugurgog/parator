@@ -42,7 +42,8 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
-                android:gravity="center">
+                android:gravity="center"
+                android:id="@+id/toolbarll">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/toolbarTitleTv"
@@ -54,8 +55,19 @@
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/toolbarTextSize" />
 
-                <include layout="@layout/charge_count_layout"
-                    android:id="@+id/chargeCntTv"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/circle_text_bg"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="9dp"
+                    android:textStyle="bold"
+                    android:id="@+id/saleCountTv"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="2dp"
+                    android:visibility="gone"/>
 
             </LinearLayout>
 

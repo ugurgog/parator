@@ -163,7 +163,17 @@ public class DynamicAmountFragment extends BaseFragment{
                     amountTv.setText("");
                     totalAmount = 0;
                 }else {
-                    String amountStr = DataUtils.getTotalAmount(totalAmount, number);
+                    if(totalAmount == 0){
+                        totalAmount = (totalAmount  + number) / 100;
+                    }else {
+                        totalAmount = (totalAmount * 10) + (number / 100.00d);
+                    }
+
+                    if(totalAmount > MAX_PRICE_VALUE){
+                        totalAmount = MAX_PRICE_VALUE;
+                    }
+
+                    String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
                     amountTv.setText(amountStr);
                 }
             }

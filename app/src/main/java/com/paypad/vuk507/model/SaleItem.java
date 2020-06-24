@@ -12,9 +12,10 @@ public class SaleItem extends RealmObject {
     private double amount;
     private int quantity;
     private String note;
-    private RealmList<Long> discountIds;
+    private RealmList<Discount> discounts;
     private long productId;
-    private long taxRate;
+    private double taxRate;
+    private String uuid;
 
     public long getId() {
         return id;
@@ -56,12 +57,12 @@ public class SaleItem extends RealmObject {
         this.note = note;
     }
 
-    public RealmList<Long> getDiscountIds() {
-        return discountIds;
+    public RealmList<Discount> getDiscounts() {
+        return discounts;
     }
 
-    public void setDiscountIds(RealmList<Long> discountIds) {
-        this.discountIds = discountIds;
+    public void setDiscounts(RealmList<Discount> discounts) {
+        this.discounts = discounts;
     }
 
     public long getProductId() {
@@ -72,11 +73,19 @@ public class SaleItem extends RealmObject {
         this.productId = productId;
     }
 
-    public long getTaxRate() {
+    public double getTaxRate() {
         return taxRate;
     }
 
-    public void setTaxRate(long taxRate) {
+    public void setTaxRate(double taxRate) {
         this.taxRate = taxRate;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }
