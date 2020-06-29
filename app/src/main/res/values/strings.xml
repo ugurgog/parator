@@ -128,6 +128,8 @@
     <string name="payment_amount">Payment Amount</string>
     <string name="new_sale">New Sale</string>
     <string name="no_change">No Change</string>
+    <string name="how_like_your_receipt">How would you like your receipt?</string>
+    <string name="no_receipt">No Receipt</string>
 
     <string name="select_all">Select All</string>
     <string name="de_select_all">Deselect All</string>

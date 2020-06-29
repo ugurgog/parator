@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -33,11 +34,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="end"
-                    android:layout_weight="2"
                     android:background="@null"
                     android:text="@string/new_sale"
                     android:textAllCaps="false"
-                    android:textColor="@color/DodgerBlue">
+                    android:textColor="@color/DodgerBlue"
+                    android:textSize="@dimen/default_size_20sp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp">
 
                 </Button>
 
@@ -51,7 +54,9 @@
                     android:textAllCaps="false"
                     android:textColor="@color/DodgerBlue"
                     android:layout_alignParentEnd="true"
-                    android:paddingEnd="10dp">
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textSize="@dimen/default_size_20sp">
 
                 </Button>
 
@@ -86,129 +91,74 @@
                 android:layout_marginTop="10dp"
                 android:text="@string/no_change"
                 android:textColor="@color/Black"
-                android:textSize="@dimen/default_size_25sp"
+                android:textSize="@dimen/default_size_20sp"
                 android:textStyle="bold"
                 android:id="@+id/changeAmountTv"
                 android:gravity="center"
-                android:layout_gravity="center"></TextView>
+                android:layout_gravity="center">
+
+            </TextView>
 
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="dhjsakhjdjhaskdhj dasdjahsdhjasdjhashdkhaksdjhdskjhdajkhdhsjdkhakjshdkjahsdhkj"
+                android:textColor="@color/Black"
+                android:textSize="@dimen/default_size_17sp"
+                android:id="@+id/paymentInfoTv"
+                android:gravity="center"
+                android:layout_gravity="center">
 
-
-
-
-
-
-
+            </TextView>
 
 
             <LinearLayout
-                android:id="@+id/priceLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/price_upper"
-                    android:textColor="@color/Black"
-                    android:textSize="@dimen/select_list_tv_size"
-                    android:textStyle="bold"></TextView>
-
-                <LinearLayout
-                    android:id="@+id/pricell"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="60dp"
+                    android:text="@string/how_like_your_receipt"
+                    android:textColor="@color/Black"
+                    android:textSize="@dimen/default_size_17sp"
+                    android:gravity="center"
+                    android:layout_gravity="center">
+
+                </TextView>
+
+
+                <Button
+                    android:id="@+id/btnEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/custom_button_length_size"
                     android:layout_marginTop="20dp"
-                    android:orientation="vertical">
+                    android:text="@string/email"
+                    android:textColor="@color/White"
+                    android:background="@color/DodgerBlue"
+                    android:textAllCaps="false"/>
 
 
-                    <TextView
-                        android:id="@+id/priceTv"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/Black"
-                        android:textSize="@dimen/default_size_15sp"
-
-                        />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.3dp"
-                        android:layout_marginTop="5dp"
-                        android:background="@color/fab_color_shadow" />
-
-                </LinearLayout>
+                <Button
+                    android:id="@+id/btnReceipt"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/custom_button_length_size"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/no_receipt"
+                    android:textColor="@color/White"
+                    android:background="@color/DodgerBlue"
+                    android:textAllCaps="false"/>
 
             </LinearLayout>
 
 
-            <TextView
-                android:id="@+id/quantity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:text="@string/quantity_upper"
-                android:textColor="@color/Black"
-                android:textSize="@dimen/select_list_tv_size"
-                android:textStyle="bold"></TextView>
 
-
-            <include
-                layout="@layout/layout_sale_quantity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp" />
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:text="@string/notes_upper"
-                android:textColor="@color/Black"
-                android:textSize="@dimen/select_list_tv_size"
-                android:textStyle="bold"></TextView>
-
-            <EditText
-                android:id="@+id/noteEt"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/custom_edittext_height_size"
-                android:hint="@string/add_note"
-                android:inputType="text"
-                android:textColor="@color/Black"
-                android:textColorHint="@color/DarkGray"
-                android:textSize="@dimen/default_size_15sp"
-                android:theme="@style/CustomerEditTextTheme" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:text="@string/discounts_upper"
-                android:textColor="@color/Black"
-                android:textSize="@dimen/select_list_tv_size"
-                android:textStyle="bold"></TextView>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/discountsRv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
-
-            </androidx.recyclerview.widget.RecyclerView>
-
-            <Button
-                android:id="@+id/btnDelete"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/custom_button_length_size"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/custom_button_bg"
-                android:text="@string/remove_item"
-                android:textAllCaps="false"
-                android:textColor="@color/DodgerBlue" />
 
         </LinearLayout>
 

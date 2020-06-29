@@ -62,6 +62,7 @@ public class CashSelectFragment extends BaseFragment {
     private User user;
     private DynamicPaymentSelectAdapter dynamicPaymentSelectAdapter;
     private Transaction mTransaction;
+    private double cashAmount;
 
     public CashSelectFragment(Transaction transaction) {
         mTransaction = transaction;
@@ -124,7 +125,11 @@ public class CashSelectFragment extends BaseFragment {
         btnTender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                double changeAmount = cashAmount - mTransaction.getTransactionAmount();
 
+                mTransaction.setCashAmount(cashAmount);
+                mTransaction.setChangeAmount(changeAmount);
+                mFragmentNavigation.pushFragment(new PaymentFragment(mTransaction));
             }
         });
 
@@ -147,8 +152,10 @@ public class CashSelectFragment extends BaseFragment {
 
                     if(amount < mTransaction.getTransactionAmount())
                         CommonUtils.setSaveBtnEnability(false, btnTender, getContext());
-                    else
+                    else{
+                        cashAmount = amount;
                         CommonUtils.setSaveBtnEnability(true, btnTender, getContext());
+                    }
                 } else {
                     CommonUtils.setSaveBtnEnability(true, btnTender, getContext());
                 }
@@ -157,6 +164,8 @@ public class CashSelectFragment extends BaseFragment {
     }
 
     private void initVariables() {
+        cashAmount = mTransaction.getTransactionAmount();
+        mTransaction.setPaymentTypeId(PaymentTypeEnum.CASH.getId());
         tenderAmountEt.addTextChangedListener(new NumberFormatWatcher(tenderAmountEt, TYPE_PRICE));
         String amountStr = CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                 .concat(" ")

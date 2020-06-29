@@ -2,6 +2,7 @@ package com.paypad.vuk507.utils;
 
 import android.util.Log;
 
+import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 
@@ -26,6 +27,41 @@ public class LogUtil {
         }catch (Exception e){
 
         }
+    }
 
+    public static void logSale(Sale sale){
+        try{
+            Log.i("Info", "::logSale Transactions +++++++++++++++++++++++++");
+            Log.i("Info", "::logSale CustomerId:" + sale.getCustomerId() +
+                    ", Discounts:" + sale.getDiscounts().toString() +
+                    ", DiscountedAmount:" + sale.getDiscountedAmount() +
+                    ", TotalAmount:" + sale.getTotalAmount() +
+                    ", SaleCount:" + sale.getSaleCount() +
+                    ", SaleUuid:" + sale.getSaleUuid() +
+                    ", RemainAmount:" + sale.getRemainAmount() +
+                    ", UserUuid:" + sale.getUserUuid() +
+                    ", CreateDate:" + sale.getCreateDate());
+        }catch (Exception e){
+
+        }
+    }
+
+    public static void logTransaction(Transaction transaction){
+        try{
+            Log.i("Info", "::logTransaction +++++++++++++++++++++++++");
+            Log.i("Info", "::logTransaction SaleUuid:" + transaction.getSaleUuid() +
+                    ", TransactionUuid:" + transaction.getTransactionUuid() +
+                    ", SeqNumber:" + transaction.getSeqNumber() +
+                    ", TransactionAmount:" + transaction.getTransactionAmount() +
+                    ", TotalAmount:" + transaction.getTotalAmount() +
+                    ", TipAmount:" + transaction.getTipAmount() +
+                    ", PaymentTypeId:" + transaction.getPaymentTypeId() +
+                    ", CreateDate:" + transaction.getCreateDate() +
+                    ", ChangeAmount:" + transaction.getChangeAmount() +
+                    ", CashAmount:" + transaction.getCashAmount() +
+                    ", UserUuid:" + transaction.getUserUuid());
+        }catch (Exception e){
+
+        }
     }
 }

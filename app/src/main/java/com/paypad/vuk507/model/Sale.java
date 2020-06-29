@@ -8,8 +8,9 @@ import io.realm.annotations.PrimaryKey;
 
 public class Sale extends RealmObject {
 
-    @PrimaryKey
-    private long id;
+    //@PrimaryKey
+    //private long id;
+    private String saleUuid;
     private int saleCount;
     //private RealmList<String> saleIds;
     private long customerId;
@@ -26,15 +27,15 @@ public class Sale extends RealmObject {
     private double remainAmount;        // Parcali odeme sonrasi kalan tutar
     private Date createDate;
     private String userUuid;
-    private String saleUuid;
 
-    public long getId() {
+
+    /*public long getId() {
         return id;
     }
 
     public void setId(long id) {
         this.id = id;
-    }
+    }*/
 
     public int getSaleCount() {
         return saleCount;

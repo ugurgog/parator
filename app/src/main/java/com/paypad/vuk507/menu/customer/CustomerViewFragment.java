@@ -18,6 +18,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.charge.payment.PaymentCompletedFragment;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
 import com.paypad.vuk507.db.CustomerDBHelper;
 import com.paypad.vuk507.db.GroupDBHelper;
@@ -201,7 +202,7 @@ public class CustomerViewFragment extends BaseFragment{
                 PopupMenu popupMenu = new PopupMenu(getContext(), selectionImgv);
                 popupMenu.inflate(R.menu.menu_customer_view);
 
-                if(classTag.equals(SaleListFragment.class.getName()))
+                if(classTag.equals(SaleListFragment.class.getName()) || classTag.equals(PaymentCompletedFragment.class.getName()))
                     popupMenu.getMenu().findItem(R.id.deleteCustomer).setVisible(false);
                 else
                     popupMenu.getMenu().findItem(R.id.addToSale).setVisible(false);

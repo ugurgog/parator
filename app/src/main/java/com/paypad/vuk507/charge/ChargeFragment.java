@@ -46,6 +46,7 @@ import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
@@ -381,6 +382,7 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     @Override
     public void onProductSelected(Product product, double amount, boolean isDynamicAmount) {
         SaleModelInstance.getInstance().getSaleModel().addProduct(product, amount, isDynamicAmount);
+        addUserUUIDToSale();
 
         if (totalAmount > 0)
             SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote);
@@ -407,6 +409,7 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
         }else if(discount.getAmount() > 0){
             SaleModelInstance.getInstance().getSaleModel().addDiscountAmount(discount);
         }
+        addUserUUIDToSale();
 
         if(totalAmount > 0)
             SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote);
@@ -446,8 +449,8 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     @Override
     public void onCustomAmountAdded(double amount, String note) {
         SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), amount, note);
-
         currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount();
+        addUserUUIDToSale();
 
         setCurrentSaleCount();
         setChargeAmountTv();
@@ -537,5 +540,9 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
             else
                 toolbarTitleTv.setText(customerName);
         }
+    }
+
+    private void addUserUUIDToSale(){
+        SaleModelInstance.getInstance().getSaleModel().setSaleUserUuid(user.getUuid());
     }
 }

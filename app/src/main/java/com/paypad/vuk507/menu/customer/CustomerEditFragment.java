@@ -451,8 +451,10 @@ public class CustomerEditFragment extends BaseFragment
         long customerId = tempCustomer.getId();
 
         try {
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            tempCustomer.setBirthday(formatter.parse(birthDayEt.getText().toString()));
+            if(birthDayEt.getText() != null && !birthDayEt.getText().toString().isEmpty()){
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                tempCustomer.setBirthday(formatter.parse(birthDayEt.getText().toString()));
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }

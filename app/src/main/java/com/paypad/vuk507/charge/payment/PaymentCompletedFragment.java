@@ -2,6 +2,7 @@ package com.paypad.vuk507.charge.payment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,15 +22,23 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
+import com.paypad.vuk507.charge.sale.SaleListFragment;
 import com.paypad.vuk507.charge.sale.adapters.SaleItemDiscountListAdapter;
 import com.paypad.vuk507.db.DiscountDBHelper;
+import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.menu.customer.CustomerFragment;
+import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
+import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -50,49 +59,27 @@ public class PaymentCompletedFragment extends BaseFragment {
 
     private View mView;
 
-    @BindView(R.id.cancelImgv)
-    ClickableImageView cancelImgv;
-    @BindView(R.id.toolbarTitleTv)
-    AppCompatTextView toolbarTitleTv;
-    @BindView(R.id.saveBtn)
-    Button saveBtn;
+    //Toolbar views
+    @BindView(R.id.continueBtn)
+    Button continueBtn;
+    @BindView(R.id.addCustomerBtn)
+    Button addCustomerBtn;
 
-    @BindView(R.id.pricell)
-    LinearLayout pricell;
-    @BindView(R.id.priceTv)
-    TextView priceTv;
-    @BindView(R.id.priceLayout)
-    LinearLayout priceLayout;
-
-    @BindView(R.id.noteEt)
-    EditText noteEt;
-    @BindView(R.id.discountsRv)
-    RecyclerView discountsRv;
-    @BindView(R.id.btnDelete)
-    Button btnDelete;
-
-
-    @BindView(R.id.reduceQuantityBtn)
-    Button reduceQuantityBtn;
-    @BindView(R.id.quantityCountTv)
-    TextView quantityCountTv;
-    @BindView(R.id.increaseQuantityBtn)
-    Button increaseQuantityBtn;
-    @BindView(R.id.quantity)
-    TextView quantity;
-
+    @BindView(R.id.changeAmountTv)
+    TextView changeAmountTv;
+    @BindView(R.id.paymentInfoTv)
+    TextView paymentInfoTv;
+    @BindView(R.id.btnEmail)
+    Button btnEmail;
+    @BindView(R.id.btnReceipt)
+    Button btnReceipt;
 
     private User user;
-    private SaleItem saleItem;
-    private SaleItemDiscountListAdapter saleItemDiscountListAdapter;
-    private double saleAmount;
-    private int quantityCount = 0;
-    private ReturnSaleItemCallback returnSaleItemCallback;
-    private int deleteButtonStatus = 1;
+    private Transaction mTransaction;
+    private Customer mCustomer;
 
-    PaymentCompletedFragment(SaleItem saleItem, ReturnSaleItemCallback callback) {
-        this.saleItem = saleItem;
-        this.returnSaleItemCallback = callback;
+    PaymentCompletedFragment(Transaction transaction) {
+        mTransaction = transaction;
     }
 
     @Override
@@ -142,124 +129,80 @@ public class PaymentCompletedFragment extends BaseFragment {
     }
 
     private void initListeners() {
-        cancelImgv.setOnClickListener(new View.OnClickListener() {
+        btnReceipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
-            }
-        });
-
-        saveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saleItem.setAmount(saleAmount);
-                saleItem.setQuantity(quantityCount);
-                saleItem.setNote(noteEt.getText().toString());
-                SaleModelInstance.getInstance().getSaleModel().setSaleCount();
-                returnSaleItemCallback.onReturn(saleItem, ItemProcessEnum.CHANGED);
-                Objects.requireNonNull(getActivity()).onBackPressed();
-            }
-        });
-
-
-        reduceQuantityBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(quantityCount > 0)
-                    quantityCount --;
-                quantityCountTv.setText(String.valueOf(quantityCount));
-            }
-        });
-
-        increaseQuantityBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                quantityCount ++;
-                quantityCountTv.setText(String.valueOf(quantityCount));
 
             }
         });
 
-        btnDelete.setOnClickListener(new View.OnClickListener() {
+        btnEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(deleteButtonStatus == 1){
-                    deleteButtonStatus ++;
-                    CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
-                            getContext().getResources().getString(R.string.confirm_delete));
-                }else if(deleteButtonStatus == 2){
-                    SaleModelInstance.getInstance().getSaleModel().getSaleItems().remove(saleItem);
-                    returnSaleItemCallback.onReturn(null, ItemProcessEnum.DELETED);
-                    Objects.requireNonNull(getActivity()).onBackPressed();
+
+            }
+        });
+
+        continueBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        addCustomerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(SaleModelInstance.getInstance().getSaleModel().getSale().getCustomerId() == 0){
+                    mFragmentNavigation.pushFragment(new CustomerFragment(PaymentCompletedFragment.class.getName(), new ReturnCustomerCallback() {
+                        @Override
+                        public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
+                            addCustomerToSale(customer);
+                        }
+                    }));
+                }else {
+                    removeCustomerFfromSale();
                 }
-            }
-        });
-
-        pricell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Product product = new Product();
-                product.setName(saleItem.getName());
-                product.setAmount(saleItem.getAmount());
-                mFragmentNavigation.pushFragment(new DynamicAmountFragment(product, new AmountCallback() {
-                    @Override
-                    public void OnDynamicAmountReturn(double amount) {
-                        saleAmount = amount;
-                        setItemPrice();
-                    }
-                }));
             }
         });
     }
 
     private void initVariables() {
-        discountsRv.setNestedScrollingEnabled(false);
 
-        if(!saleItem.isDynamicAmount())
-            priceLayout.setVisibility(View.GONE);
-
-        setToolbarTitle();
-        setSaleItemVariables();
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
-
-        discountsRv.setLayoutManager(linearLayoutManager);
-        updateAdapterWithCurrentList();
     }
 
-    private void setSaleItemVariables() {
-        saleAmount = saleItem.getAmount();
-        setItemPrice();
+    private void addCustomerToSale(Customer customer){
+        if(customer != null){
+            SaleModelInstance.getInstance().getSaleModel().getSale().setCustomerId(customer.getId());
 
-        if(saleItem.getNote() != null && !saleItem.getNote().isEmpty())
-            noteEt.setText(saleItem.getNote());
+            SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel(), new CompleteCallback() {
+                @Override
+                public void onComplete(BaseResponse baseResponse) {
+                    if(baseResponse.isSuccess()){
+                        addCustomerBtn.setText(getResources().getString(R.string.remove_customer));
 
-        quantityCount = saleItem.getQuantity();
-        quantityCountTv.setText(String.valueOf(quantityCount));
-    }
-
-    private void setItemPrice(){
-        priceTv.setText(CommonUtils.getDoubleStrValueForView(saleAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
-    }
-
-    private void setToolbarTitle() {
-        double totalAmount = saleItem.getAmount();
-        String amountStr = saleItem.getName().concat(" ").concat(CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-        toolbarTitleTv.setText(amountStr);
-    }
-
-    public void updateAdapterWithCurrentList(){
-        List<Discount> discountList = new ArrayList<>();
-
-        for(Discount discount : DiscountDBHelper.getAllDiscounts(user.getUsername())){
-            if(discount.getRate() > 0d){
-                discountList.add(discount);
-            }
+                        if(customer.getEmail() != null && !customer.getEmail().isEmpty()){
+                            btnEmail.setText(getResources().getString(R.string.email).concat(" (")
+                                    .concat(customer.getEmail()).concat(")"));
+                        }
+                    }
+                }
+            });
         }
+    }
 
-        saleItemDiscountListAdapter = new SaleItemDiscountListAdapter(discountList, saleItem);
-        discountsRv.setAdapter(saleItemDiscountListAdapter);
+    private void removeCustomerFfromSale(){
+        SaleModelInstance.getInstance().getSaleModel().getSale().setCustomerId(0);
+
+        SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel(), new CompleteCallback() {
+            @Override
+            public void onComplete(BaseResponse baseResponse) {
+                if(baseResponse.isSuccess()){
+                    addCustomerBtn.setText(getResources().getString(R.string.add_customer));
+                    btnEmail.setText(getResources().getString(R.string.email));
+                }
+            }
+        });
     }
 }

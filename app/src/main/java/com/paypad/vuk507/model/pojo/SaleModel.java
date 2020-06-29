@@ -58,6 +58,11 @@ public class SaleModel implements Serializable {
         this.transactions = transactions;
     }
 
+    public void setSaleUserUuid(String uuid){
+        if(sale.getUserUuid() == null || sale.getUserUuid().isEmpty())
+            sale.setUserUuid(uuid);
+    }
+
     public String addProduct(Product product, double amount, boolean isDynamicAmount){
         SaleItem saleItem = new SaleItem();
         saleItem.setProductId(product.getId());
