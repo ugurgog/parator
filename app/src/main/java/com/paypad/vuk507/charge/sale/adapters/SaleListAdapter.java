@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.category.CategoryEditFragment;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
@@ -30,11 +32,11 @@ import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHolder> {
 
     private List<SaleItem> saleItems = new ArrayList<>();
+    private ReturnSaleItemCallback returnSaleItemCallback;
 
-    private BaseFragment.FragmentNavigation fragmentNavigation;
-
-    public SaleListAdapter(List<SaleItem> saleItems) {
+    public SaleListAdapter(List<SaleItem> saleItems, ReturnSaleItemCallback callback) {
         this.saleItems.addAll(saleItems);
+        this.returnSaleItemCallback = callback;
     }
 
     @NonNull
@@ -73,6 +75,7 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
                     }else {
                         //TODO - discounts
                     }
+                    returnSaleItemCallback.onReturn(saleItem, ItemProcessEnum.SELECTED);
                 }
             });
         }
@@ -88,7 +91,11 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
 
         private void setSaleItemAmount() {
             if(saleItem != null ){
-                String amountStr = CommonUtils.getDoubleStrValueForView(saleItem.getAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                String amountStr = "";
+                if(saleItem.getUuid() == null || saleItem.getUuid().isEmpty()){ //Bu indirimlerdir
+                    amountStr = amountStr.concat("- ").concat(CommonUtils.getDoubleStrValueForView(saleItem.getAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                }else
+                    amountStr = CommonUtils.getDoubleStrValueForView(saleItem.getAmount() * (double) saleItem.getQuantity(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
                 saleAmountTv.setText(amountStr);
             }
         }
@@ -102,7 +109,7 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
         }
 
         private void setSaleItemNoteInfo() {
-            if(saleItem != null && saleItem.getNote() != null){
+            if(saleItem != null && saleItem.getNote() != null && !saleItem.getNote().isEmpty()){
                 saleNoteTv.setVisibility(View.VISIBLE);
                 saleNoteTv.setText(saleItem.getNote());
             }else
@@ -110,8 +117,13 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
         }
 
         private void setSaleItemName() {
-            if(saleItem != null && saleItem.getName() != null)
-                saleNameTv.setText(saleItem.getName());
+            if(saleItem != null && saleItem.getName() != null){
+                if(saleItem.getQuantity() > 1){
+                    saleNameTv.setText(saleItem.getName().concat(" X ").concat(String.valueOf(saleItem.getQuantity())));
+                }else
+                    saleNameTv.setText(saleItem.getName());
+            }
+
         }
     }
 

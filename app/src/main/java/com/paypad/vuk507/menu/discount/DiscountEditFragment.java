@@ -22,13 +22,10 @@ import com.bumptech.glide.Glide;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.DiscountDBHelper;
-import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
-import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.User;
@@ -107,7 +104,7 @@ public class DiscountEditFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
             Objects.requireNonNull(getActivity()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-            mView = inflater.inflate(R.layout.fragment_discount_edit, container, false);
+            mView = inflater.inflate(R.layout.fragment_edit_discount, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();

@@ -292,14 +292,14 @@ public class LibraryFragment extends BaseFragment {
 
                             Log.i("Info", "dynamic_amount:" + amount);
 
-                            saleCalculateCallback.onProductSelected(product, amount);
+                            saleCalculateCallback.onProductSelected(product, amount, true);
 
                         }
                     }));
 
 
                 }else {
-                    saleCalculateCallback.onProductSelected(product, product.getAmount());
+                    saleCalculateCallback.onProductSelected(product, product.getAmount(), false);
                 }
 
             }

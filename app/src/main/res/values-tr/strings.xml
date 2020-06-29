@@ -55,6 +55,13 @@
     <string name="add_customer">Müşteri Ekle</string>
     <string name="clear_items">Tümünü Sil</string>
     <string name="total">Toplam</string>
+    <string name="price_upper">FİYAT</string>
+    <string name="quantity_upper">MİKTAR</string>
+    <string name="notes_upper">NOTLAR</string>
+    <string name="discounts_upper">İNDİRİMLER</string>
+    <string name="remove_item">Satışı Sil</string>
+    <string name="remove_customer">Müşteriyi Çıkar</string>
+    <string name="all_items">Tüm Ürünler</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
@@ -108,6 +115,19 @@
     <string name="edit_customer">Müşteri Güncelle</string>
     <string name="select_customers">Müşteri Seçin</string>
     <string name="delete_customers">Müşterileri Sil</string>
+    <string name="split_amount">Parçalı Öde</string>
+    <string name="select_payment_type_below">Ödeme tipini seçiniz</string>
+    <string name="tender">Devam Et</string>
+    <string name="cash">Nakit</string>
+    <string name="split_by_amount">Tutarı Böl</string>
+    <string name="continue_text">Devam Et</string>
+    <string name="split_into_equal_payment">EŞİT ÖDEMELERE BÖL</string>
+    <string name="custom">Değişken</string>
+    <string name="number_of_splits">Bölme Sayısı</string>
+    <string name="split_equality">Eşit Bölme</string>
+    <string name="payment_amount">Ödeme Tutarı</string>
+    <string name="new_sale">Yeni Satış</string>
+    <string name="no_change">Para Üstü Yok</string>
 
     <string name="select_all">Tümünü Seç</string>
     <string name="de_select_all">Tümünü Bırak</string>

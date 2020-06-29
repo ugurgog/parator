@@ -4,6 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
+        android:id="@+id/addToSale"
+        android:orderInCategory="100"
+        android:title="Add To Sale"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/editPersonalInformation"
         android:orderInCategory="100"
         android:title="@string/edit_personal_information"

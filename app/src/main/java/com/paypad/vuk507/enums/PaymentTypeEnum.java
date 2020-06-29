@@ -2,10 +2,10 @@ package com.paypad.vuk507.enums;
 
 public enum PaymentTypeEnum {
 
-    CASH(1, "Cash", "Nakit"),
-    CREDIT_CARD(2, "Credit Card", "Kredi Kartı"),
-    GIFT_CARD(3, "Gift Card", "Hediye Kartı"),
-    CHECK(4,"Check", "Çek");
+    CASH(-1, "Cash", "Nakit"),
+    CREDIT_CARD(-2, "Credit Card", "Kredi Kartı"),
+    GIFT_CARD(-3, "Gift Card", "Hediye Kartı"),
+    CHECK(-4,"Check", "Çek");
 
     private final int id;
     private final String labelTr;

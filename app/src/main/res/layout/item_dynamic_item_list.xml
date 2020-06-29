@@ -30,7 +30,6 @@
             android:layout_gravity="center"
             android:layout_margin="20dp"
             android:id="@+id/itemNameTv"
-            android:text="Hamburger"
             android:paddingStart="20dp"
             android:textSize="@dimen/item_image_text_size"
             android:textColor="@color/Black">

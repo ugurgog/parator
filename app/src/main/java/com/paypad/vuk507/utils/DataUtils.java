@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Product;
 
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
@@ -88,7 +89,6 @@ public class DataUtils {
             ex.printStackTrace();
         }
     }
-
 
     public static String getTotalAmount(double totalAmount, int number){
         if(totalAmount == 0){

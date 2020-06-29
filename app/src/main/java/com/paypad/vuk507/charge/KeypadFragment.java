@@ -202,8 +202,7 @@ public class KeypadFragment extends BaseFragment implements
                 }else if(number == -2){
 
                     if(amount > 0){
-                        SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), amount, saleNoteTv.getText().toString());
-                        saleCalculateCallback.onCustomAmountAdded();
+                        saleCalculateCallback.onCustomAmountAdded(amount, saleNoteTv.getText().toString());
                         clearAmountFields();
                     }
 
@@ -244,6 +243,10 @@ public class KeypadFragment extends BaseFragment implements
                 }));
             }
         });
+    }
+
+    public double getAmount() {
+        return amount;
     }
 
     public void clearAmountFields(){

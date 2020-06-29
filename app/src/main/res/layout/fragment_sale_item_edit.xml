@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_item_update" />
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/priceLayout">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/price_upper"
+                    android:textStyle="bold"
+                    android:layout_marginTop="10dp"
+                    android:textSize="@dimen/select_list_tv_size"
+                    android:textColor="@color/Black">
+                </TextView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="20dp"
+                    android:id="@+id/pricell">
+
+
+                    <TextView
+                        android:id="@+id/priceTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/Black"
+                        android:textSize="@dimen/default_size_15sp"
+
+                        />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.3dp"
+                        android:background="@color/fab_color_shadow"
+                        android:layout_marginTop="5dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/quantity_upper"
+                android:textStyle="bold"
+                android:layout_marginTop="40dp"
+                android:textSize="@dimen/select_list_tv_size"
+                android:textColor="@color/Black"
+                android:id="@+id/quantity">
+            </TextView>
+
+
+            <include layout="@layout/layout_sale_quantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notes_upper"
+                android:textStyle="bold"
+                android:layout_marginTop="40dp"
+                android:textSize="@dimen/select_list_tv_size"
+                android:textColor="@color/Black">
+            </TextView>
+
+            <EditText
+                android:id="@+id/noteEt"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_edittext_height_size"
+                android:inputType="text"
+                android:hint="@string/add_note"
+                android:textColor="@color/Black"
+                android:textColorHint="@color/DarkGray"
+                android:textSize="@dimen/default_size_15sp"
+                android:theme="@style/CustomerEditTextTheme"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/discounts_upper"
+                android:textStyle="bold"
+                android:layout_marginTop="40dp"
+                android:textSize="@dimen/select_list_tv_size"
+                android:textColor="@color/Black">
+            </TextView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/discountsRv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_button_length_size"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/custom_button_bg"
+                android:text="@string/remove_item"
+                android:textColor="@color/DodgerBlue"
+                android:textAllCaps="false"/>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

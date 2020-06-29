@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_item_update" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/custom_edittext_height_size"
+            android:background="@drawable/custom_edittext_bg"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center|start"
+                android:paddingStart="10dp"
+                android:text="@string/number_of_splits"
+                android:textColor="@color/Black"
+                android:textStyle="bold">
+
+            </TextView>
+
+            <EditText
+                android:id="@+id/splitCountEt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="end"
+                android:hint="0"
+                android:paddingEnd="10dp"
+                tools:ignore="RtlSymmetry"
+                android:inputType="number">
+
+
+            </EditText>
+
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/continueBtn"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/custom_button_bg"
+            android:text="@string/continue_text"
+            android:textAllCaps="false"
+            android:textColor="@color/White">
+
+        </Button>
+
+    </LinearLayout>
+
+
+</LinearLayout>

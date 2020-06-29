@@ -11,19 +11,22 @@ public class Sale extends RealmObject {
     @PrimaryKey
     private long id;
     private int saleCount;
-    private RealmList<String> saleIds;
+    //private RealmList<String> saleIds;
     private long customerId;
     private RealmList<Discount> discounts;
     private double totalAmount;         // Split dahil edilmemis Total Amount
+    private double discountedAmount;    // Indirimlerin uygulanmis tutarin son hali
     private boolean paymentCompleted;
-    private long paymentTypeId;         // (No Split)
-    private double tipAmount;           // Kredi karti odemelerinde tip amount dolu olabilir (No Split)
-    private double cashAmount;          // Cash odemelerde musterinin verdigi nakit tutari (No Split)
-    private double changeAmount;        // Cash odemelerde musteriye verilen para ustu(No Split)
-    private int splitCount;             // Split oldugunda bu alan dolu olacak
-    private RealmList<Long> splitIds;   // Split oldugunda bu alan dolu olacak
+    //private long paymentTypeId;         // (No Split)
+    //private double tipAmount;           // Kredi karti odemelerinde tip amount dolu olabilir (No Split)
+    //private double cashAmount;          // Cash odemelerde musterinin verdigi nakit tutari (No Split)
+    //private double changeAmount;        // Cash odemelerde musteriye verilen para ustu(No Split)
+    //private int splitCount;             // Split oldugunda bu alan dolu olacak
+    //private RealmList<Split> splits;    // Split oldugunda bu alan dolu olacak
+    private double remainAmount;        // Parcali odeme sonrasi kalan tutar
     private Date createDate;
     private String userUuid;
+    private String saleUuid;
 
     public long getId() {
         return id;
@@ -41,13 +44,13 @@ public class Sale extends RealmObject {
         this.saleCount = saleCount;
     }
 
-    public RealmList<String> getSaleIds() {
+    /*public RealmList<String> getSaleIds() {
         return saleIds;
     }
 
     public void setSaleIds(RealmList<String> saleIds) {
         this.saleIds = saleIds;
-    }
+    }*/
 
     public long getCustomerId() {
         return customerId;
@@ -81,15 +84,15 @@ public class Sale extends RealmObject {
         this.paymentCompleted = paymentCompleted;
     }
 
-    public long getPaymentTypeId() {
+    /*public long getPaymentTypeId() {
         return paymentTypeId;
     }
 
     public void setPaymentTypeId(long paymentTypeId) {
         this.paymentTypeId = paymentTypeId;
-    }
+    }*/
 
-    public int getSplitCount() {
+    /*public int getSplitCount() {
         return splitCount;
     }
 
@@ -97,12 +100,12 @@ public class Sale extends RealmObject {
         this.splitCount = splitCount;
     }
 
-    public RealmList<Long> getSplitIds() {
-        return splitIds;
+    public RealmList<Split> getSplits() {
+        return splits;
     }
 
-    public void setSplitIds(RealmList<Long> splitIds) {
-        this.splitIds = splitIds;
+    public void setSplits(RealmList<Split> splits) {
+        this.splits = splits;
     }
 
     public double getTipAmount() {
@@ -111,7 +114,7 @@ public class Sale extends RealmObject {
 
     public void setTipAmount(double tipAmount) {
         this.tipAmount = tipAmount;
-    }
+    }*/
 
     public Date getCreateDate() {
         return createDate;
@@ -129,7 +132,7 @@ public class Sale extends RealmObject {
         this.userUuid = userUuid;
     }
 
-    public double getCashAmount() {
+    /*public double getCashAmount() {
         return cashAmount;
     }
 
@@ -143,5 +146,29 @@ public class Sale extends RealmObject {
 
     public void setChangeAmount(double changeAmount) {
         this.changeAmount = changeAmount;
+    }*/
+
+    public double getDiscountedAmount() {
+        return discountedAmount;
+    }
+
+    public void setDiscountedAmount(double discountedAmount) {
+        this.discountedAmount = discountedAmount;
+    }
+
+    public double getRemainAmount() {
+        return remainAmount;
+    }
+
+    public void setRemainAmount(double remainAmount) {
+        this.remainAmount = remainAmount;
+    }
+
+    public String getSaleUuid() {
+        return saleUuid;
+    }
+
+    public void setSaleUuid(String saleUuid) {
+        this.saleUuid = saleUuid;
     }
 }

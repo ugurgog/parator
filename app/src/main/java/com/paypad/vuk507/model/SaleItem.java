@@ -6,8 +6,8 @@ import io.realm.annotations.PrimaryKey;
 
 public class SaleItem extends RealmObject {
 
-    @PrimaryKey
-    private long id;
+    //@PrimaryKey
+    //private long id;
     private String name;
     private double amount;
     private int quantity;
@@ -15,15 +15,17 @@ public class SaleItem extends RealmObject {
     private RealmList<Discount> discounts;
     private long productId;
     private double taxRate;
+    private boolean isDynamicAmount;
     private String uuid;
+    private String saleUuid;
 
-    public long getId() {
+    /*public long getId() {
         return id;
     }
 
     public void setId(long id) {
         this.id = id;
-    }
+    }*/
 
     public String getName() {
         return name;
@@ -87,5 +89,21 @@ public class SaleItem extends RealmObject {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public boolean isDynamicAmount() {
+        return isDynamicAmount;
+    }
+
+    public void setDynamicAmount(boolean dynamicAmount) {
+        isDynamicAmount = dynamicAmount;
+    }
+
+    public String getSaleUuid() {
+        return saleUuid;
+    }
+
+    public void setSaleUuid(String saleUuid) {
+        this.saleUuid = saleUuid;
     }
 }

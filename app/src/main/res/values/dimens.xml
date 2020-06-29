@@ -20,6 +20,8 @@
     <dimen name="item_image_text_size">20sp</dimen>
     <dimen name="item_image_picture_size">60dp</dimen>
 
+    <dimen name="default_size_35sp">35sp</dimen>
+    <dimen name="default_size_25sp">25sp</dimen>
     <dimen name="default_size_20sp">20sp</dimen>
     <dimen name="default_size_13sp">13sp</dimen>
     <dimen name="default_size_15sp">15sp</dimen>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_item_update" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/Silver"
+        android:gravity="center"
+        android:paddingStart="30dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="30dp"
+        android:paddingBottom="10dp"
+        android:text="su kadardan bu kadar kalacak sdhsdsdgsgdhgsdggshdghsgdhg"
+        android:textColor="@color/Black"></TextView>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/split_by_amount"
+                android:textAllCaps="true"
+                android:textColor="@color/Black"
+                android:textSize="@dimen/select_list_tv_size"
+                android:textStyle="bold"
+                android:id="@+id/remainInfoTv">
+
+            </TextView>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_edittext_height_size"
+                android:background="@drawable/custom_edittext_bg"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center|start"
+                    android:paddingStart="10dp"
+                    android:text="@string/payment_amount"
+                    android:textColor="@color/Black"
+                    android:textStyle="bold">
+
+
+                </TextView>
+
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="end"
+                    android:hint="0.00 tl"
+                    android:paddingEnd="10dp"
+                    android:id="@+id/amountEt"
+                    android:inputType="number">
+                </EditText>
+
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/continueBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/custom_button_bg"
+                android:text="@string/continue_text"
+                android:textAllCaps="false"
+                android:textColor="@color/DodgerBlue"
+                style="?android:attr/buttonBarButtonStyle">
+            </Button>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/split_into_equal_payment"
+                android:textAllCaps="true"
+                android:textColor="@color/Black"
+                android:textSize="@dimen/select_list_tv_size"
+                android:textStyle="bold">
+            </TextView>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/custom_button_bg"
+                    android:text="2"
+                    android:textColor="@color/DodgerBlue"
+                    android:layout_marginEnd="15dp"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:id="@+id/splitTwoBtn">
+                </Button>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/custom_button_bg"
+                    android:text="3"
+                    android:textColor="@color/DodgerBlue"
+                    android:layout_marginEnd="15dp"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:id="@+id/splitThreeBtn">
+                </Button>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/custom_button_bg"
+                    android:text="4"
+                    android:textColor="@color/DodgerBlue"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:id="@+id/splitFourBtn">
+                </Button>
+
+
+
+            </LinearLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/custom_button_bg"
+                android:text="@string/custom"
+                android:textColor="@color/DodgerBlue"
+                android:textAllCaps="false"
+                android:layout_marginTop="15dp"
+                style="?android:attr/buttonBarButtonStyle"
+                android:id="@+id/splitCustomBtn">
+            </Button>
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+
+
+</LinearLayout>

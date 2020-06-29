@@ -135,4 +135,8 @@ public class Customer extends RealmObject {
     public void setUserUuid(String userUuid) {
         this.userUuid = userUuid;
     }
+
+    public String getFullName(){
+        return (getName() != null ? getName() : "").concat(" ").concat(getSurname() != null ? getSurname() : "").trim();
+    }
 }

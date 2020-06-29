@@ -35,6 +35,7 @@ import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
@@ -378,7 +379,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
             return;
         }
 
-        dynamicPaymentSelectAdapter = new DynamicPaymentSelectAdapter(getContext(), paymentTypes, new ReturnPaymentCallback() {
+        dynamicPaymentSelectAdapter = new DynamicPaymentSelectAdapter(getContext(), ProcessDirectionEnum.DIRECTION_FAST_MENU, paymentTypes, new ReturnPaymentCallback() {
             @Override
             public void onReturn(PaymentTypeEnum paymentType) {
                 paymentSelectListener.onPaymentClick(paymentType);

@@ -1,21 +1,13 @@
 package com.paypad.vuk507.menu.customer;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -26,50 +18,34 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.contact.ContactDialogFragment;
-import com.paypad.vuk507.contact.interfaces.ReturnContactListener;
+import com.paypad.vuk507.charge.sale.SaleListFragment;
 import com.paypad.vuk507.db.CustomerDBHelper;
-import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.db.GroupDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
-import com.paypad.vuk507.interfaces.ReturnObjectCallback;
-import com.paypad.vuk507.login.utils.Validation;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
-import com.paypad.vuk507.menu.group.GroupFragment;
-import com.paypad.vuk507.menu.group.SelectMultiGroupFragment;
 import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
-import com.paypad.vuk507.model.pojo.Contact;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
-import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
 import com.paypad.vuk507.utils.DataUtils;
-import com.paypad.vuk507.utils.PermissionModule;
-import com.paypad.vuk507.utils.PhoneNumberTextWatcher;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
-import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class CustomerViewFragment extends BaseFragment{
@@ -122,10 +98,12 @@ public class CustomerViewFragment extends BaseFragment{
     private ReturnCustomerCallback returnCustomerCallback;
     private long customerId;
     private boolean deleteCustomer = false;
-    private CustomerCreateFragment customerCreateFragment;
+    private CustomerEditFragment customerEditFragment;
+    private String classTag;
 
-    CustomerViewFragment(Customer customer, ReturnCustomerCallback returnCustomerCallback) {
+    CustomerViewFragment(Customer customer, String classTag, ReturnCustomerCallback returnCustomerCallback) {
         this.mCustomer = customer;
+        this.classTag = classTag;
         this.returnCustomerCallback = returnCustomerCallback;
     }
 
@@ -190,9 +168,9 @@ public class CustomerViewFragment extends BaseFragment{
             public void onClick(View view) {
 
                 initCustomerCreateFragment();
-                mFragmentNavigation.pushFragment(customerCreateFragment);
+                mFragmentNavigation.pushFragment(customerEditFragment);
 
-                /*mFragmentNavigation.pushFragment(new CustomerCreateFragment(mCustomer, new ReturnCustomerCallback() {
+                /*mFragmentNavigation.pushFragment(new CustomerEditFragment(mCustomer, new ReturnCustomerCallback() {
                     @Override
                     public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
                         mCustomer = customer;
@@ -223,13 +201,23 @@ public class CustomerViewFragment extends BaseFragment{
                 PopupMenu popupMenu = new PopupMenu(getContext(), selectionImgv);
                 popupMenu.inflate(R.menu.menu_customer_view);
 
+                if(classTag.equals(SaleListFragment.class.getName()))
+                    popupMenu.getMenu().findItem(R.id.deleteCustomer).setVisible(false);
+                else
+                    popupMenu.getMenu().findItem(R.id.addToSale).setVisible(false);
+
+
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
+                            case R.id.addToSale:
+                                returnCustomerCallback.OnReturn(mCustomer, ItemProcessEnum.SELECTED);
+
+                                break;
                             case R.id.editPersonalInformation:
                                 initCustomerCreateFragment();
-                                mFragmentNavigation.pushFragment(customerCreateFragment);
+                                mFragmentNavigation.pushFragment(customerEditFragment);
                                 break;
                             case R.id.deleteCustomer:
 
@@ -267,7 +255,7 @@ public class CustomerViewFragment extends BaseFragment{
     }
 
     private void initCustomerCreateFragment(){
-        customerCreateFragment = new CustomerCreateFragment(mCustomer, new ReturnCustomerCallback() {
+        customerEditFragment = new CustomerEditFragment(mCustomer, new ReturnCustomerCallback() {
             @Override
             public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
                 mCustomer = customer;
@@ -275,7 +263,7 @@ public class CustomerViewFragment extends BaseFragment{
                 returnCustomerCallback.OnReturn(customer, processEnum);
             }
         });
-        customerCreateFragment.setReturnGroupCallback(new ReturnGroupCallback() {
+        customerEditFragment.setReturnGroupCallback(new ReturnGroupCallback() {
             @Override
             public void OnGroupReturn(Group group, ItemProcessEnum processEnum) {
                 setGroupNames();

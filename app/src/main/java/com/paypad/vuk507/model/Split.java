@@ -5,14 +5,14 @@ import io.realm.annotations.PrimaryKey;
 
 public class Split extends RealmObject {
 
-    @PrimaryKey
     private long id;
     private double splitAmount;     // Split amount tutari
-    private double tipAmount;       // Tip Amount
+    private double tipAmount;       // Tip Amount - Kredi karti odemelerinde
     private double totalAmount;     // Split + Tip Amount
     private long paymentTypeId;     // Cash/Kredi Karti/Other
     private double cashAmount;      // Cash odemelerde verilen tutar
     private double changeAmount;    // Cash odemelerde verilen para ustu
+    private boolean paymentCompleted;
 
     public long getId() {
         return id;
@@ -68,5 +68,13 @@ public class Split extends RealmObject {
 
     public void setChangeAmount(double changeAmount) {
         this.changeAmount = changeAmount;
+    }
+
+    public boolean isPaymentCompleted() {
+        return paymentCompleted;
+    }
+
+    public void setPaymentCompleted(boolean paymentCompleted) {
+        this.paymentCompleted = paymentCompleted;
     }
 }

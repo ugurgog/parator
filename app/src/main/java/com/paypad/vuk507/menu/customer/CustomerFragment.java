@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.charge.sale.SaleListFragment;
 import com.paypad.vuk507.db.CustomerDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
@@ -77,11 +78,15 @@ public class CustomerFragment extends BaseFragment {
     private RealmResults<Customer> customers;
     private List<Customer> customerList;
     private CustomerListAdapter customerListAdapter;
-    private CustomerCreateFragment customerCreateFragment;
+    private CustomerEditFragment customerEditFragment;
     private CustomerSelectFragment customerSelectFragment;
+    private CustomerViewFragment customerViewFragment;
+    private String classTag;
+    private ReturnCustomerCallback returnCustomerCallback;
 
-    public CustomerFragment() {
-
+    public CustomerFragment(String classTag, ReturnCustomerCallback callback) {
+        this.classTag = classTag;
+        this.returnCustomerCallback = callback;
     }
 
     @Override
@@ -180,7 +185,7 @@ public class CustomerFragment extends BaseFragment {
                         switch (item.getItemId()) {
                             case R.id.createCustomer:
                                 initCustomerCreateFragment();
-                                mFragmentNavigation.pushFragment(customerCreateFragment);
+                                mFragmentNavigation.pushFragment(customerEditFragment);
                                 break;
                             case R.id.deleteCustomers:
                                 initCustomerSelectFragment(ItemProcessEnum.DELETED);
@@ -210,13 +215,13 @@ public class CustomerFragment extends BaseFragment {
     }
 
     private void initCustomerCreateFragment(){
-        customerCreateFragment = new CustomerCreateFragment(null, new ReturnCustomerCallback() {
+        customerEditFragment = new CustomerEditFragment(null, new ReturnCustomerCallback() {
             @Override
             public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
                 updateAdapterWithCurrentList();
             }
         });
-        customerCreateFragment.setReturnGroupCallback(new ReturnGroupCallback() {
+        customerEditFragment.setReturnGroupCallback(new ReturnGroupCallback() {
             @Override
             public void OnGroupReturn(Group group, ItemProcessEnum processEnum) {
 
@@ -240,6 +245,9 @@ public class CustomerFragment extends BaseFragment {
         toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.customers));
         addItemImgv.setVisibility(View.GONE);
 
+        if(classTag.equals(SaleListFragment.class.getName()))
+            selectionImgv.setVisibility(View.GONE);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
@@ -254,17 +262,26 @@ public class CustomerFragment extends BaseFragment {
         customerListAdapter = new CustomerListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
             @Override
             public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
-
-                mFragmentNavigation.pushFragment(new CustomerViewFragment(customer, new ReturnCustomerCallback() {
-                    @Override
-                    public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
-                        if(processEnum == ItemProcessEnum.DELETED || processEnum == ItemProcessEnum.CHANGED)
-                            updateAdapterWithCurrentList();
-                    }
-                }));
+                initCustomerViewFragment(customer);
+                mFragmentNavigation.pushFragment(customerViewFragment);
             }
         });
         customerRv.setAdapter(customerListAdapter);
+    }
+
+    private void initCustomerViewFragment(Customer customer){
+        customerViewFragment = new CustomerViewFragment(customer, classTag, new ReturnCustomerCallback() {
+            @Override
+            public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
+                if(processEnum == ItemProcessEnum.DELETED || processEnum == ItemProcessEnum.CHANGED)
+                    updateAdapterWithCurrentList();
+                else if(processEnum == ItemProcessEnum.SELECTED){
+                    Objects.requireNonNull(customerViewFragment.getActivity()).onBackPressed();
+                    returnCustomerCallback.OnReturn(customer, processEnum);
+                    Objects.requireNonNull(getActivity()).onBackPressed();
+                }
+            }
+        });
     }
 
     public void updateAdapter(String searchText) {

@@ -17,6 +17,7 @@ import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
 import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.model.Category;
@@ -34,28 +35,44 @@ import java.util.List;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 
-public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter<DynamicPaymentSelectAdapter.ViewHolder> {
+public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter {
 
     private Context context;
     private List<PaymentTypeEnum> paymentTypes;
     private ReturnPaymentCallback returnPaymentCallback;
+    private ProcessDirectionEnum directionType;
 
-    public DynamicPaymentSelectAdapter(Context context, List<PaymentTypeEnum> paymentTypes, ReturnPaymentCallback returnPaymentCallback) {
+    public DynamicPaymentSelectAdapter(Context context, ProcessDirectionEnum directionType, List<PaymentTypeEnum> paymentTypes, ReturnPaymentCallback returnPaymentCallback) {
         this.context = context;
         this.paymentTypes = paymentTypes;
         this.returnPaymentCallback = returnPaymentCallback;
+        this.directionType = directionType;
     }
 
     @Override
-    public DynamicPaymentSelectAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dynamic_item_list, parent, false);
-        return new DynamicPaymentSelectAdapter.ViewHolder(view);
+    public  RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        View view = null;
+        if(directionType == ProcessDirectionEnum.DIRECTION_FAST_MENU){
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dynamic_item_list, parent, false);
+            return new DynamicPaymentSelectAdapter.FastMenuHolder(view);
+        }else if(directionType == ProcessDirectionEnum.DIRECTION_PAYMENT_SELECT){
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_payment_select, parent, false);
+            return new DynamicPaymentSelectAdapter.PaymentHolder(view);
+        }
+        return null;
     }
 
     @Override
-    public void onBindViewHolder(DynamicPaymentSelectAdapter.ViewHolder holder, int position) {
-        PaymentTypeEnum paymentType = paymentTypes.get(position);
-        holder.setData(paymentType, position);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+
+        if (holder instanceof FastMenuHolder) {
+            PaymentTypeEnum paymentType = paymentTypes.get(position);
+            ((FastMenuHolder) holder).setData(paymentType, position);
+        } else {
+            PaymentTypeEnum paymentType = paymentTypes.get(position);
+            ((PaymentHolder) holder).setData(paymentType, position);
+        }
     }
 
     @Override
@@ -63,7 +80,7 @@ public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter<DynamicPay
         return paymentTypes.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class FastMenuHolder extends RecyclerView.ViewHolder {
         private LinearLayout structItemll;
         private TextView colorfulTv;
         private TextView itemNameTv;
@@ -71,7 +88,7 @@ public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter<DynamicPay
         int position;
         PaymentTypeEnum paymentType;
 
-        ViewHolder(View itemView) {
+        FastMenuHolder(View itemView) {
             super(itemView);
             structItemll = itemView.findViewById(R.id.structItemll);
             colorfulTv = itemView.findViewById(R.id.colorfulTv);
@@ -95,6 +112,31 @@ public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter<DynamicPay
                     context.getResources().getColor(colorCode, null),
                     GradientDrawable.OVAL, 50, 0);
             colorfulTv.setBackground(imageShape);
+        }
+    }
+
+
+    class PaymentHolder extends RecyclerView.ViewHolder {
+        private LinearLayout itemll;
+        private TextView itemNameTv;
+
+        int position;
+        PaymentTypeEnum paymentType;
+
+        PaymentHolder(View itemView) {
+            super(itemView);
+            itemll = itemView.findViewById(R.id.itemll);
+            itemNameTv = itemView.findViewById(R.id.itemNameTv);
+
+            itemll.setOnClickListener(v -> {
+                returnPaymentCallback.onReturn(paymentType);
+            });
+        }
+
+        void setData(PaymentTypeEnum paymentType, int position) {
+            this.paymentType = paymentType;
+            this.position = position;
+            itemNameTv.setText(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? paymentType.getLabelTr() : paymentType.getLabelEn());
         }
     }
 }

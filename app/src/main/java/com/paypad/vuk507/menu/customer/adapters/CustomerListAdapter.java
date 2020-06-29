@@ -16,7 +16,6 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.CurrencyEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.customer.CustomerEditFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.discount.DiscountEditFragment;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;

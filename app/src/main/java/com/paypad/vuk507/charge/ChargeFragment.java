@@ -26,16 +26,20 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.adapter.ChargeViewPagerAdapter;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
+import com.paypad.vuk507.charge.payment.SelectChargePaymentFragment;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
 import com.paypad.vuk507.charge.utils.ChargeHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.login.InitialActivity;
 import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.menu.customer.CustomerFragment;
+import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.item.ItemListFragment;
+import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
@@ -44,6 +48,8 @@ import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.DataUtils;
+import com.paypad.vuk507.utils.DeepObjectCopy;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -101,6 +107,8 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     private LibraryFragment libraryFragment;
     private double totalAmount;
     private String saleNote;
+    private boolean isCustomerExist= false;
+    private String customerName = "";
 
     //private List<Discount> discountList;
 
@@ -167,9 +175,42 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
         toolbarll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new SaleListFragment());
+                if(keypadFragment.getAmount() > 0){
+                    onCustomAmountAdded(keypadFragment.getAmount(), saleNote);
+                    keypadFragment.clearAmountFields();
+                }
+
+                startSaleListFragment();
             }
         });
+
+        settingsImgv.setOnClickListener(v -> {
+            settingsImgv.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.image_click));
+            if (mDrawerState) {
+                drawerLayout.closeDrawer(Gravity.LEFT);
+            } else {
+                drawerLayout.openDrawer(Gravity.LEFT);
+            }
+        });
+
+        chargell.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(keypadFragment.getAmount() > 0){
+                    onCustomAmountAdded(keypadFragment.getAmount(), saleNote);
+                    keypadFragment.clearAmountFields();
+                }
+
+                SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
+                mFragmentNavigation.pushFragment(new SelectChargePaymentFragment());
+            }
+        });
+    }
+
+    private void startSaleListFragment() {
+        SaleListFragment saleListFragment = new SaleListFragment();
+        saleListFragment.setSaleCalculateCallback(this);
+        mFragmentNavigation.pushFragment(saleListFragment);
     }
 
     private void setUpPager() {
@@ -238,15 +279,6 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 mDrawerState = true;
-            }
-        });
-
-        settingsImgv.setOnClickListener(v -> {
-            settingsImgv.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.image_click));
-            if (mDrawerState) {
-                drawerLayout.closeDrawer(Gravity.LEFT);
-            } else {
-                drawerLayout.openDrawer(Gravity.LEFT);
             }
         });
 
@@ -332,7 +364,12 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     }
 
     private void startCustomersFragment() {
-        mFragmentNavigation.pushFragment(new CustomerFragment());
+        mFragmentNavigation.pushFragment(new CustomerFragment(ChargeFragment.class.getName(), new ReturnCustomerCallback() {
+            @Override
+            public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
+
+            }
+        }));
     }
 
     private void startReportsFragment() {
@@ -342,25 +379,13 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     }
 
     @Override
-    public void onProductSelected(Product product, double amount) {
+    public void onProductSelected(Product product, double amount, boolean isDynamicAmount) {
+        SaleModelInstance.getInstance().getSaleModel().addProduct(product, amount, isDynamicAmount);
 
-        SaleModelInstance.getInstance().getSaleModel().addProduct(product, amount);
-
-
-        if (totalAmount > 0) {
+        if (totalAmount > 0)
             SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote);
-        }
 
-        Log.i("Info", "::onProductSelected -> totalAmount_2:" + SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount());
-
-
-        totalAmount = 0d;
-        totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount();
-
-        Log.i("Info", "::onProductSelected -> totalAmount_3:" + SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount());
-
-        String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-        chargeAmountTv.setText(amountStr);
+        setChargeAmountTv();
         totalAmount = 0d;
         onNewSaleCreated();
     }
@@ -383,60 +408,50 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
             SaleModelInstance.getInstance().getSaleModel().addDiscountAmount(discount);
         }
 
-        Log.i("Info", "::onDiscountSelected -> totalAmount_1:" + SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount());
-
-        if(totalAmount > 0){
+        if(totalAmount > 0)
             SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote);
-        }
 
-        Log.i("Info", "::onDiscountSelected -> totalAmount_2:" + SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount());
-
-
-        totalAmount = 0d;
-        totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount();
-
-        Log.i("Info", "::onDiscountSelected -> totalAmount_3:" + SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount());
-
-        String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-        chargeAmountTv.setText(amountStr);
+        setChargeAmountTv();
         totalAmount = 0d;
     }
 
     @Override
     public void onCustomAmountReturn(double amount) {
-        totalAmount = 0d;
-        totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount() + amount;
+        totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount("", amount, "");
+        //totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount() + amount;
         String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-        chargeAmountTv.setText(amountStr);
+
+        if(totalAmount <= 0d)
+            chargeAmountTv.setText("");
+        else
+            chargeAmountTv.setText(amountStr);
     }
 
     @Override
     public void onItemsCleared() {
-        toolbarTitleTv.setText(getResources().getString(R.string.no_sale));
         currentSaleCount = 0;
-        saleCountTv.setVisibility(View.GONE);
-        saleCountTv.setText("");
+        isCustomerExist = false;
+        setCurrentSaleCount();
         totalAmount = 0;
         saleNote = "";
-
-        if(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount() == 0){
-            chargeAmountTv.setText("");
-        }
+        setChargeAmountTv();
     }
 
     @Override
     public void onNewSaleCreated() {
-        toolbarTitleTv.setText(getResources().getString(R.string.current_sale));
         currentSaleCount ++;
-        saleCountTv.setVisibility(View.VISIBLE);
-        saleCountTv.setText(String.valueOf(currentSaleCount));
+        setCurrentSaleCount();
     }
 
     @Override
-    public void onCustomAmountAdded() {
-        toolbarTitleTv.setText(getResources().getString(R.string.current_sale));
-        saleCountTv.setVisibility(View.VISIBLE);
-        saleCountTv.setText(String.valueOf(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount()));
+    public void onCustomAmountAdded(double amount, String note) {
+        SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), amount, note);
+
+        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount();
+
+        setCurrentSaleCount();
+        setChargeAmountTv();
+
         totalAmount = 0d;
         saleNote = "";
     }
@@ -445,19 +460,82 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     public void onRemoveCustomAmount(double amount) {
         totalAmount = totalAmount - amount;
         String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-        chargeAmountTv.setText(amountStr);
-        currentSaleCount --;
 
-        if(currentSaleCount == 0){
-            saleCountTv.setVisibility(View.GONE);
-        }else {
-            saleCountTv.setVisibility(View.VISIBLE);
-            saleCountTv.setText(String.valueOf(currentSaleCount));
-        }
+        if(totalAmount <= 0d)
+            chargeAmountTv.setText("");
+        else
+            chargeAmountTv.setText(amountStr);
+
+        currentSaleCount --;
+        setCurrentSaleCount();
     }
 
     @Override
     public void onSaleNoteReturn(String note) {
         saleNote = note;
+    }
+
+    @Override
+    public void onSaleItemEditted() {
+        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount();
+        setCurrentSaleCount();
+        setChargeAmountTv();
+    }
+
+    @Override
+    public void onCustomerAdded(Customer customer) {
+        isCustomerExist = true;
+        customerName = customer.getFullName();
+        SaleModelInstance.getInstance().getSaleModel().getSale().setCustomerId(customer.getId());
+        toolbarTitleTv.setText(customerName);
+    }
+
+    @Override
+    public void onCustomerRemoved() {
+        isCustomerExist = false;
+        SaleModelInstance.getInstance().getSaleModel().getSale().setCustomerId(0);
+        toolbarTitleTv.setText(getResources().getString(R.string.current_sale));
+    }
+
+    @Override
+    public void onSaleItemDeleted() {
+        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount();
+        setCurrentSaleCount();
+        setChargeAmountTv();
+    }
+
+    @Override
+    public void OnDiscountRemoved() {
+        setChargeAmountTv();
+    }
+
+    private void setChargeAmountTv(){
+        SaleModelInstance.getInstance().getSaleModel().setDiscountedAmountOfSale();
+        double amountx = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount();
+        String amountStr = CommonUtils.getDoubleStrValueForView(amountx, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+
+        if(amountx <= 0d)
+            chargeAmountTv.setText("");
+        else
+            chargeAmountTv.setText(amountStr);
+    }
+
+    private void setCurrentSaleCount(){
+        if(currentSaleCount == 0){
+            saleCountTv.setVisibility(View.GONE);
+
+            if(!isCustomerExist)
+                toolbarTitleTv.setText(getResources().getString(R.string.no_sale));
+            else
+                toolbarTitleTv.setText(customerName);
+        }else {
+            saleCountTv.setVisibility(View.VISIBLE);
+            saleCountTv.setText(String.valueOf(currentSaleCount));
+
+            if(!isCustomerExist)
+                toolbarTitleTv.setText(getResources().getString(R.string.current_sale));
+            else
+                toolbarTitleTv.setText(customerName);
+        }
     }
 }

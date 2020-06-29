@@ -54,6 +54,13 @@
     <string name="add_customer">Add Customer</string>
     <string name="clear_items">Clear Items</string>
     <string name="total">Total</string>
+    <string name="price_upper">PRICE</string>
+    <string name="quantity_upper">QUANTITY</string>
+    <string name="notes_upper">NOTES</string>
+    <string name="discounts_upper">DISCOUNTS</string>
+    <string name="remove_item">Remove Item</string>
+    <string name="remove_customer">Remove Customer</string>
+    <string name="all_items">All Items</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -108,6 +115,19 @@
     <string name="edit_customer">Edit Customer</string>
     <string name="select_customers">Select Customers</string>
     <string name="delete_customers">Delete Customers</string>
+    <string name="split_amount">Split Amount</string>
+    <string name="select_payment_type_below">Select payment type below</string>
+    <string name="tender">Tender</string>
+    <string name="cash">Cash</string>
+    <string name="split_by_amount">Splıt By Amount</string>
+    <string name="continue_text">Continue</string>
+    <string name="split_into_equal_payment">SPLIT INTO EQUAL PAYMENTS</string>
+    <string name="custom">Custom</string>
+    <string name="number_of_splits">Number of Splits</string>
+    <string name="split_equality">Split Equality</string>
+    <string name="payment_amount">Payment Amount</string>
+    <string name="new_sale">New Sale</string>
+    <string name="no_change">No Change</string>
 
     <string name="select_all">Select All</string>
     <string name="de_select_all">Deselect All</string>
