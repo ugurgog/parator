@@ -130,6 +130,7 @@
     <string name="no_change">Para Üstü Yok</string>
     <string name="how_like_your_receipt">Makbuzunuzu nasıl istersiniz?</string>
     <string name="no_receipt">Makbuz İstemiyorum</string>
+    <string name="change">Para üstü</string>
 
     <string name="select_all">Tümünü Seç</string>
     <string name="de_select_all">Tümünü Bırak</string>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
+import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
@@ -46,7 +48,7 @@ import butterknife.ButterKnife;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class CashSelectFragment extends BaseFragment {
+public class CashSelectFragment extends BaseFragment implements PaymentStatusCallback {
 
     private View mView;
 
@@ -63,9 +65,15 @@ public class CashSelectFragment extends BaseFragment {
     private DynamicPaymentSelectAdapter dynamicPaymentSelectAdapter;
     private Transaction mTransaction;
     private double cashAmount;
+    private PaymentFragment paymentFragment;
+    private PaymentStatusCallback paymentStatusCallback;
 
     public CashSelectFragment(Transaction transaction) {
         mTransaction = transaction;
+    }
+
+    public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
+        this.paymentStatusCallback = paymentStatusCallback;
     }
 
     @Override
@@ -129,7 +137,9 @@ public class CashSelectFragment extends BaseFragment {
 
                 mTransaction.setCashAmount(cashAmount);
                 mTransaction.setChangeAmount(changeAmount);
-                mFragmentNavigation.pushFragment(new PaymentFragment(mTransaction));
+
+                initPaymentFragment();
+                mFragmentNavigation.pushFragment(paymentFragment);
             }
         });
 
@@ -174,4 +184,24 @@ public class CashSelectFragment extends BaseFragment {
         tenderAmountEt.setHint(CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
     }
 
+    private void initPaymentFragment(){
+        paymentFragment = new PaymentFragment(mTransaction);
+        paymentFragment.setPaymentStatusCallback(this);
+    }
+
+    @Override
+    public void OnPaymentReturn(int status) {
+        try{
+            if(paymentFragment != null)
+                Objects.requireNonNull(paymentFragment.getActivity()).onBackPressed();
+        }catch (Exception e){
+            Log.i("Info", "Error:" + e);
+        }
+
+        //Objects.requireNonNull(getActivity()).onBackPressed();
+
+        paymentStatusCallback.OnPaymentReturn(status);
+
+
+    }
 }

@@ -66,6 +66,9 @@ dependencies {
     //libphonenumber library
     implementation 'io.michaelrocks:libphonenumber-android:8.12.5'
 
+    //Gif play library
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.16'
+
     implementation 'commons-io:commons-io:2.7'
 
     //Trial

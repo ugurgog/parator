@@ -6,12 +6,14 @@ import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 
+import java.util.List;
+
 public class LogUtil {
 
-    public static void logTransactions(){
+    public static void logTransactions(List<Transaction> transactions){
 
         try{
-            for(Transaction transaction : SaleModelInstance.getInstance().getSaleModel().getTransactions()){
+            for(Transaction transaction : transactions){
                 Log.i("Info", "::logTransactions Transactions +++++++++++++++++++++++++");
                 Log.i("Info", "::logTransactions Transaction: SaleUuid         :" + transaction.getSaleUuid() );
                 Log.i("Info", "::logTransactions Transaction: TransactionUuid  :" + transaction.getTransactionUuid() );
@@ -23,6 +25,7 @@ public class LogUtil {
                 Log.i("Info", "::logTransactions Transaction: PaymentTypeId    :" + transaction.getPaymentTypeId() );
                 Log.i("Info", "::logTransactions Transaction: TipAmount        :" + transaction.getTipAmount() );
                 Log.i("Info", "::logTransactions Transaction: TotalAmount      :" + transaction.getTotalAmount() );
+                Log.i("Info", "::logTransactions Transaction: PaymentCompleted :" + transaction.isPaymentCompleted() );
             }
         }catch (Exception e){
 

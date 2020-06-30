@@ -6,6 +6,7 @@ import android.net.Uri;
 
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
@@ -102,5 +103,10 @@ public class DataUtils {
         }
 
         return CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+    }
+
+    public static void showBaseResponseMessage(Context context, BaseResponse baseResponse){
+        if(baseResponse.getMessage() != null && !baseResponse.getMessage().isEmpty())
+            CommonUtils.showToastShort(context, baseResponse.getMessage());
     }
 }

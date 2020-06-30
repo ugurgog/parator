@@ -383,5 +383,14 @@ public class SaleModel implements Serializable {
         return  amountx;
     }*/
 
+    public boolean isExistNotCompletedTransaction(){
+
+
+        for(Transaction transaction : transactions){
+            if(!transaction.isPaymentCompleted())
+                return true;
+        }
+        return false;
+    }
 
 }

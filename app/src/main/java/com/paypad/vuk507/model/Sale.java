@@ -24,7 +24,7 @@ public class Sale extends RealmObject {
     //private double changeAmount;        // Cash odemelerde musteriye verilen para ustu(No Split)
     //private int splitCount;             // Split oldugunda bu alan dolu olacak
     //private RealmList<Split> splits;    // Split oldugunda bu alan dolu olacak
-    private double remainAmount;        // Parcali odeme sonrasi kalan tutar
+    private double remainAmount;          // Parcali odeme sonrasi kalan tutar
     private Date createDate;
     private String userUuid;
 

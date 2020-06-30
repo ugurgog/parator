@@ -2,41 +2,33 @@ package com.paypad.vuk507.charge.payment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
-import com.paypad.vuk507.MainActivity;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
+import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.login.InitialActivity;
-import com.paypad.vuk507.login.LoginActivity;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
-import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.LogUtil;
-import com.paypad.vuk507.utils.NumberFormatWatcher;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -46,19 +38,28 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pl.droidsonroids.gif.GifImageView;
 
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
-
-public class PaymentFragment extends BaseFragment {
+public class PaymentFragment extends BaseFragment implements PaymentStatusCallback {
 
     private View mView;
+
+    @BindView(R.id.mainll)
+    LinearLayout mainll;
 
     private User user;
     private Transaction mTransaction;
     private ProgressDialog progressDialog;
+    private PaymentCompletedFragment paymentCompletedFragment;
+    private PaymentStatusCallback paymentStatusCallback;
 
     public PaymentFragment(Transaction transaction) {
         mTransaction = transaction;
+    }
+
+
+    public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
+        this.paymentStatusCallback = paymentStatusCallback;
     }
 
     @Override
@@ -159,7 +160,30 @@ public class PaymentFragment extends BaseFragment {
 
         LogUtil.logTransaction(mTransaction);
 
-        TransactionDBHelper.createOrUpdateTransaction(mTransaction, new CompleteCallback() {
+        BaseResponse transactionSaveResponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
+
+        DataUtils.showBaseResponseMessage(getContext(),transactionSaveResponse);
+
+        if(transactionSaveResponse.isSuccess()){
+
+            LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
+
+            SaleModelInstance.getInstance().getSaleModel().getSale().setRemainAmount(
+                    SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount() - mTransaction.getTransactionAmount());
+
+            if(SaleModelInstance.getInstance().getSaleModel().isExistNotCompletedTransaction()){
+                initPaymentCompletedFragment(ProcessDirectionEnum.PAYMENT_PARTIALLY_COMPLETED);
+                mFragmentNavigation.pushFragment(paymentCompletedFragment);
+                progressDialog.dismiss();
+            }else {
+                showCompletedScreen();
+            }
+        }else {
+            progressDialog.dismiss();
+        }
+
+
+        /*TransactionDBHelper.createOrUpdateTransaction(mTransaction, new CompleteCallback() {
             @Override
             public void onComplete(BaseResponse baseResponse) {
 
@@ -168,14 +192,20 @@ public class PaymentFragment extends BaseFragment {
 
                 if(baseResponse.isSuccess()){
 
-                    mFragmentNavigation.pushFragment(new PaymentCompletedFragment(mTransaction));
-                    progressDialog.dismiss();
-                    //Objects.requireNonNull(getActivity()).onBackPressed();
+                    LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
+
+                    if(SaleModelInstance.getInstance().getSaleModel().isExistNotCompletedTransaction()){
+                        initPaymentCompletedFragment(ProcessDirectionEnum.PAYMENT_PARTIALLY_COMPLETED);
+                        mFragmentNavigation.pushFragment(paymentCompletedFragment);
+                        progressDialog.dismiss();
+                    }else {
+                        showCompletedScreen();
+                    }
                 }else {
                     progressDialog.dismiss();
                 }
             }
-        });
+        });*/
     }
 
     Thread thread = new Thread() {
@@ -188,4 +218,39 @@ public class PaymentFragment extends BaseFragment {
             }
         }
     };
+
+    private void initPaymentCompletedFragment(ProcessDirectionEnum processType){
+        paymentCompletedFragment = new PaymentCompletedFragment(mTransaction, processType);
+        paymentCompletedFragment.setPaymentStatusCallback(this);
+    }
+
+    private void showCompletedScreen(){
+        View child = getLayoutInflater().inflate(R.layout.layout_payment_fully_completed, null);
+
+        GifImageView gifImageView = child.findViewById(R.id.gifImageView);
+
+        gifImageView.setLayoutParams(new LinearLayout.LayoutParams(
+                CommonUtils.getScreenWidth(getContext()),
+                CommonUtils.getScreenHeight(getContext()) + CommonUtils.getNavigationBarHeight(getContext())
+        ));
+
+        mainll.addView(child);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                initPaymentCompletedFragment(ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED);
+                mFragmentNavigation.pushFragment(paymentCompletedFragment);
+
+            }
+        }, 5000);
+    }
+
+    @Override
+    public void OnPaymentReturn(int status) {
+        if(paymentCompletedFragment != null)
+            Objects.requireNonNull(paymentCompletedFragment.getActivity()).onBackPressed();
+
+        paymentStatusCallback.OnPaymentReturn(status);
+    }
 }

@@ -188,7 +188,7 @@ public class SplitAmountFragment extends BaseFragment {
                 double secondAmount = amount - firstAmount;
                 decideSplitCountByAmount(secondAmount);
 
-                LogUtil.logTransactions();
+                LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
 
                 completeCallback.onComplete(null);
                 Objects.requireNonNull(getActivity()).onBackPressed();
@@ -237,7 +237,7 @@ public class SplitAmountFragment extends BaseFragment {
             SaleModelInstance.getInstance().getSaleModel().getTransactions().add(transaction);
         }
 
-        LogUtil.logTransactions();
+        LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
 
         completeCallback.onComplete(null);
 

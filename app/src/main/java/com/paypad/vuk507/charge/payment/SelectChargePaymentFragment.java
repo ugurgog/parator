@@ -2,6 +2,7 @@ package com.paypad.vuk507.charge.payment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +14,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
+import com.paypad.vuk507.MainActivity;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
+import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
 import com.paypad.vuk507.charge.sale.adapters.SaleItemDiscountListAdapter;
 import com.paypad.vuk507.db.DiscountDBHelper;
@@ -51,6 +56,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -63,7 +70,7 @@ import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class SelectChargePaymentFragment extends BaseFragment {
+public class SelectChargePaymentFragment extends BaseFragment implements PaymentStatusCallback {
 
     private View mView;
 
@@ -83,6 +90,7 @@ public class SelectChargePaymentFragment extends BaseFragment {
     private DynamicPaymentSelectAdapter dynamicPaymentSelectAdapter;
     //private double splitAmount = 0d;
     private Transaction mTransaction;
+    private CashSelectFragment cashSelectFragment;
 
     public SelectChargePaymentFragment() {
 
@@ -195,7 +203,8 @@ public class SelectChargePaymentFragment extends BaseFragment {
             @Override
             public void onReturn(PaymentTypeEnum paymentType) {
                 if(paymentType.getId() == PaymentTypeEnum.CASH.getId()){
-                    mFragmentNavigation.pushFragment(new CashSelectFragment(mTransaction));
+                    initCashSelectFragment();
+                    mFragmentNavigation.pushFragment(cashSelectFragment);
                 }
             }
         });
@@ -228,4 +237,21 @@ public class SelectChargePaymentFragment extends BaseFragment {
         splitInfoTv.setText(infoText);
     }
 
+    private void initCashSelectFragment(){
+        cashSelectFragment = new CashSelectFragment(mTransaction);
+        cashSelectFragment.setPaymentStatusCallback(this);
+    }
+
+    @Override
+    public void OnPaymentReturn(int status) {
+
+        if(cashSelectFragment != null)
+            Objects.requireNonNull(cashSelectFragment.getActivity()).onBackPressed();
+
+        if(status == STATUS_CONTINUE){
+            CommonUtils.showToastShort(getContext(), "Continue clicked");
+        }else if(status == STATUS_NEW_SALE){
+            CommonUtils.showToastShort(getContext(), "New Sale clicked");
+        }
+    }
 }

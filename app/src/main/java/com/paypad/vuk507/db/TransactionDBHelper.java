@@ -9,24 +9,24 @@ import io.realm.Realm;
 
 public class TransactionDBHelper {
 
-    public static void createOrUpdateTransaction(Transaction transaction, CompleteCallback completeCallback) {
+    public static BaseResponse createOrUpdateTransaction(Transaction transaction) {
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
         realm.executeTransaction(new Realm.Transaction(){
 
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     realm.insertOrUpdate(transaction);
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Transaction cannot be saved!");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 }
