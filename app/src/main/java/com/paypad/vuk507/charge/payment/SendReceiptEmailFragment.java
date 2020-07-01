@@ -115,6 +115,11 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(
+                //View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE );
+
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_send_receipt_email, container, false);
             ButterKnife.bind(this, mView);
@@ -143,6 +148,8 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
             @Override
             public void onClick(View view) {
                 Objects.requireNonNull(getActivity()).onBackPressed();
+
+                //mFragmentNavigation.pushFragment(new HideNavigationBarComponent());
             }
         });
     }

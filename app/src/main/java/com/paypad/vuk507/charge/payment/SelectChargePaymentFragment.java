@@ -1,5 +1,6 @@
 package com.paypad.vuk507.charge.payment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +27,9 @@ import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapt
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
+import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
+import com.paypad.vuk507.charge.payment.utils.CancelTransactionManager;
 import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
 import com.paypad.vuk507.charge.sale.adapters.SaleItemDiscountListAdapter;
 import com.paypad.vuk507.db.DiscountDBHelper;
@@ -38,6 +41,7 @@ import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Product;
@@ -49,6 +53,8 @@ import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.CustomDialogBox;
+import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.NumberFormatWatcher;
 
 import org.greenrobot.eventbus.EventBus;
@@ -93,6 +99,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     private CashSelectFragment cashSelectFragment;
     private PaymentStatusCallback paymentStatusCallback;
     private CreditCardSelectFragment creditCardSelectFragment;
+    private SaleCalculateCallback saleCalculateCallback;
 
     public SelectChargePaymentFragment() {
 
@@ -100,6 +107,10 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
 
     public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
         this.paymentStatusCallback = paymentStatusCallback;
+    }
+
+    public void setSaleCalculateCallback(SaleCalculateCallback saleCalculateCallback) {
+        this.saleCalculateCallback = saleCalculateCallback;
     }
 
     @Override
@@ -134,6 +145,9 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE );
+
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_select_charge_payment, container, false);
             ButterKnife.bind(this, mView);
@@ -152,7 +166,10 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
+                if(SaleModelInstance.getInstance().getSaleModel().isExistPaymentCompletedTransaction())
+                    handleCancelTransaction();
+                else
+                    Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
 
@@ -178,6 +195,8 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
             }
         });
     }
+
+
 
     private void initVariables() {
         createInitialTransaction();
@@ -254,6 +273,55 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     private void initCreditCardSelectFragment(){
         creditCardSelectFragment = new CreditCardSelectFragment(mTransaction);
         creditCardSelectFragment.setPaymentStatusCallback(this);
+    }
+
+    private void handleCancelTransaction() {
+        String title = "";
+
+        if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
+            title = CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+                    .concat(" İşlemi İptal Et");
+        }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
+            title = getResources().getString(R.string.cancel)
+                    .concat(" ")
+                    .concat(CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
+                    .concat(" Transaction");
+        }
+
+        new CustomDialogBox.Builder((Activity) getContext())
+                .setTitle(title)
+                .setMessage(getContext().getResources().getString(R.string.cancel_transaction_description))
+                .setNegativeBtnVisibility(View.VISIBLE)
+                .setNegativeBtnText(getContext().getResources().getString(R.string.keep))
+                .setNegativeBtnBackground(getContext().getResources().getColor(R.color.Silver, null))
+                .setPositiveBtnVisibility(View.VISIBLE)
+                .setPositiveBtnText(getContext().getResources().getString(R.string.cancel_transaction))
+                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                .setDurationTime(0)
+                .isCancellable(true)
+                .setEditTextVisibility(View.GONE)
+                .OnPositiveClicked(new CustomDialogListener() {
+                    @Override
+                    public void OnClick() {
+                        //TODO - odemesi gerceklesmiss transactionlar iptal edilecek mi????
+
+                        BaseResponse baseResponse = CancelTransactionManager.cancelTransactions();
+
+                        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+
+                        if(baseResponse.isSuccess()){
+                            saleCalculateCallback.OnTransactionCancelled();
+                            Objects.requireNonNull(getActivity()).onBackPressed();
+                        }
+
+                    }
+                })
+                .OnNegativeClicked(new CustomDialogListener() {
+                    @Override
+                    public void OnClick() {
+
+                    }
+                }).build();
     }
 
     @Override

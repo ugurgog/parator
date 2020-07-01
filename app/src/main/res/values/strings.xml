@@ -139,6 +139,10 @@
     <string name="receipt_from_my_business">Receipt from My Business</string>
     <string name="error_while_sending_receipt_mail">An error occurred while sending receipt mail!</string>
     <string name="receipt_send">Receipt Send</string>
+    <string name="thanks">Thanks</string>
+    <string name="cancel_transaction_description">This transaction includes previously authorized payments. Are you sure you want to cancel?</string>
+    <string name="keep">Keep</string>
+    <string name="cancel_transaction">Cancel Transaction</string>
 
     <string name="select_all">Select All</string>
     <string name="de_select_all">Deselect All</string>

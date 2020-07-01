@@ -23,5 +23,6 @@ public interface SaleCalculateCallback {
     void onCustomerRemoved();
     void onSaleItemDeleted();
     void OnDiscountRemoved();
+    void OnTransactionCancelled();
 
 }

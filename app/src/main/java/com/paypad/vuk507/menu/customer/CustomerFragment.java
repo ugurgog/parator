@@ -122,6 +122,10 @@ public class CustomerFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE );
+
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_customer, container, false);
             ButterKnife.bind(this, mView);

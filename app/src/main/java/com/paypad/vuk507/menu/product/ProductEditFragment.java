@@ -520,7 +520,9 @@ public class ProductEditFragment extends BaseFragment {
 
         if(productXX.getCategoryId() != 0){
             myCategory = CategoryDBHelper.getCategory(productXX.getCategoryId());
-            categoryTv.setText(myCategory.getName());
+
+            if(myCategory != null && myCategory.getName() != null)
+                categoryTv.setText(myCategory.getName());
         }
 
         if(productXX.getUnitType() != null && !productXX.getUnitType().isEmpty()){

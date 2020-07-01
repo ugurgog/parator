@@ -104,7 +104,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="dhjsakhjdjhaskdhj dasdjahsdhjasdjhashdkhaksdjhdskjhdajkhdhsjdkhakjshdkjahsdhkj"
                 android:textColor="@color/Black"
                 android:textSize="@dimen/default_size_17sp"
                 android:id="@+id/paymentInfoTv"
@@ -114,23 +113,23 @@
             </TextView>
 
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_height="match_parent"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
-                android:id="@+id/receiptInfoll">
+                android:id="@+id/receiptInfoll"
+                android:layout_marginTop="60dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="60dp"
                     android:text="@string/how_like_your_receipt"
                     android:textColor="@color/Black"
                     android:textSize="@dimen/default_size_17sp"
                     android:gravity="center"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    android:id="@+id/howToDescTv">
 
                 </TextView>
 
@@ -143,7 +142,8 @@
                     android:text="@string/email"
                     android:textColor="@color/White"
                     android:background="@color/DodgerBlue"
-                    android:textAllCaps="false"/>
+                    android:textAllCaps="false"
+                    android:layout_below="@id/howToDescTv"/>
 
 
                 <Button
@@ -154,9 +154,10 @@
                     android:text="@string/no_receipt"
                     android:textColor="@color/White"
                     android:background="@color/DodgerBlue"
-                    android:textAllCaps="false"/>
+                    android:textAllCaps="false"
+                    android:layout_below="@id/btnEmail"/>
 
-            </LinearLayout>
+            </RelativeLayout>
 
 
 

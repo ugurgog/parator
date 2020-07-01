@@ -139,6 +139,10 @@
     <string name="receipt_from_my_business">İşlem Makbuzu</string>
     <string name="error_while_sending_receipt_mail">Makbuz maili gönderimi sırasında bir hata ile karşılaşıldı!</string>
     <string name="receipt_send">Makbuz gönderildi</string>
+    <string name="thanks">Teşekkürler</string>
+    <string name="cancel_transaction_description">Bu işlem önceden onaylanmış ödemeleri içerir. İptal etmek istediğinizden emin misin?</string>
+    <string name="keep">Devam Et</string>
+    <string name="cancel_transaction">İşlemi İptal Et</string>
 
     <string name="select_all">Tümünü Seç</string>
     <string name="de_select_all">Tümünü Bırak</string>

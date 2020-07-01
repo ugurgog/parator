@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -154,8 +155,10 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE );
 
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_charge, container, false);
@@ -216,6 +219,7 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     private void initSelectChargePaymentFragment(){
         selectChargePaymentFragment = new SelectChargePaymentFragment();
         selectChargePaymentFragment.setPaymentStatusCallback(this);
+        selectChargePaymentFragment.setSaleCalculateCallback(this);
     }
 
     private void startSaleListFragment() {
@@ -521,6 +525,11 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     @Override
     public void OnDiscountRemoved() {
         setChargeAmountTv();
+    }
+
+    @Override
+    public void OnTransactionCancelled() {
+
     }
 
     private void setChargeAmountTv(){

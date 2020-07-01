@@ -33,30 +33,6 @@ public class SaleDBHelper {
         return baseResponse;
     }
 
-    public static BaseResponse saveSaleItems(SaleModel saleModel) {
-        Realm realm = Realm.getDefaultInstance();
-
-        BaseResponse baseResponse = new BaseResponse();
-        baseResponse.setSuccess(true);
-
-        realm.executeTransaction(new Realm.Transaction(){
-
-            @Override
-            public void execute(Realm realm) {
-                try{
-                    for(SaleItem saleItem : saleModel.getSaleItems())
-                        realm.insertOrUpdate(saleItem);
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Some of Sale Items cannot be saved!");
-                }
-            }
-        });
-
-        return baseResponse;
-    }
-
-
     public static Sale getSaleById(String saleId){
         Realm realm = Realm.getDefaultInstance();
         Sale sale = realm.where(Sale.class).equalTo("saleUuid", saleId).findFirst();

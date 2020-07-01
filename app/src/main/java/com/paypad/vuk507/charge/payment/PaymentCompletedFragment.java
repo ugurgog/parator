@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -84,7 +85,9 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     @BindView(R.id.btnReceipt)
     Button btnReceipt;
     @BindView(R.id.receiptInfoll)
-    LinearLayout receiptInfoll;
+    RelativeLayout receiptInfoll;
+    @BindView(R.id.mainll)
+    LinearLayout mainll;
 
     private User user;
     private Transaction mTransaction;
@@ -135,6 +138,10 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
+
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_payment_completed, container, false);
             ButterKnife.bind(this, mView);
@@ -153,7 +160,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
         btnReceipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                handleMailResponse(null, "");
             }
         });
 
@@ -290,16 +297,15 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     }
 
     private void handleMailResponse(BaseResponse baseResponse, String email) {
-        if(baseResponse.isSuccess()){
-            View child = getLayoutInflater().inflate(R.layout.layout_mail_send_result, null);
 
-            ImageView resultImgv = child.findViewById(R.id.resultImgv);
-            TextView mailSendResultTv =  child.findViewById(R.id.mailSendResultTv);
-            TextView sendEmailTv =  child.findViewById(R.id.sendEmailTv);
+        MailResultFragment mailResultFragment = new MailResultFragment(baseResponse, email);
+        Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction()
+                .replace(R.id.receiptInfoll, mailResultFragment, MailResultFragment.class.getName())
+                .addToBackStack(null)
+                .commit();
 
-            sendEmailTv.setText(email);
+        btnEmail.setVisibility(View.GONE);
+        btnReceipt.setVisibility(View.GONE);
 
-            receiptInfoll.addView(child);
-        }
     }
 }

@@ -17,6 +17,7 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.db.SaleDBHelper;
+import com.paypad.vuk507.db.SaleItemDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
@@ -137,7 +138,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
 
             if(saleBaseResponse.isSuccess()){
 
-                BaseResponse baseResponse = SaleDBHelper.saveSaleItems(SaleModelInstance.getInstance().getSaleModel());
+                BaseResponse baseResponse = SaleItemDBHelper.saveSaleItems(SaleModelInstance.getInstance().getSaleModel());
                 DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
                 if(baseResponse.isSuccess()){
@@ -222,7 +223,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
                 mFragmentNavigation.pushFragment(paymentCompletedFragment);
 
             }
-        }, 5000);
+        }, 4000);
     }
 
     @Override
