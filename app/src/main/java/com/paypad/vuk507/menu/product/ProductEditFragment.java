@@ -86,6 +86,7 @@ import static com.paypad.vuk507.constants.CustomConstants.FROM_FILE_TEXT;
 import static com.paypad.vuk507.constants.CustomConstants.GALLERY_TEXT;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.MAX_IMAGE_SIZE_1MB;
+import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class ProductEditFragment extends BaseFragment {
@@ -201,7 +202,7 @@ public class ProductEditFragment extends BaseFragment {
     }
 
     private void initListeners() {
-        amountRateEt.addTextChangedListener(new NumberFormatWatcher(amountRateEt, TYPE_PRICE));
+        amountRateEt.addTextChangedListener(new NumberFormatWatcher(amountRateEt, TYPE_PRICE, MAX_PRICE_VALUE));
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override

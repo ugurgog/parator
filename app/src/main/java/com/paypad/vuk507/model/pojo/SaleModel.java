@@ -378,6 +378,20 @@ public class SaleModel implements Serializable {
         return maxValue;*/
     }
 
+    public Transaction getTransactionWillBePaid(){
+        Transaction mTransaction = null;
+        long seqNumber = 999;
+        for(Transaction transaction : transactions){
+            if(!transaction.isPaymentCompleted()){
+                if(transaction.getSeqNumber() < seqNumber){
+                    mTransaction = transaction;
+                    seqNumber = transaction.getSeqNumber();
+                }
+            }
+        }
+        return mTransaction;
+    }
+
     /*public  double getTotalDiscountedAmount(){
         double amountx = sale.getTotalAmount() - getTotalDiscountAmountOfSale();
         return  amountx;

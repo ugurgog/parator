@@ -11,14 +11,16 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/Silver"
+        android:background="@color/custom_btn_bg_color"
         android:gravity="center"
         android:paddingStart="30dp"
         android:paddingTop="10dp"
         android:paddingEnd="30dp"
         android:paddingBottom="10dp"
-        android:text="su kadardan bu kadar kalacak sdhsdsdgsgdhgsdggshdghsgdhg"
-        android:textColor="@color/Black"></TextView>
+        android:textColor="@color/Black"
+        android:id="@+id/splitInfoTv"
+        android:textSize="@dimen/default_size_20sp">
+    </TextView>
 
 
     <ScrollView
@@ -90,10 +92,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/custom_button_bg"
+                android:background="@color/DodgerBlue"
                 android:text="@string/continue_text"
                 android:textAllCaps="false"
-                android:textColor="@color/DodgerBlue"
+                android:textColor="@color/White"
                 style="?android:attr/buttonBarButtonStyle">
             </Button>
 

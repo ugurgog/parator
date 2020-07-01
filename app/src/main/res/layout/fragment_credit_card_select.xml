@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/toolbar_including_back_view"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="@string/credit_card_payment_info"
+            android:gravity="center"
+            android:textSize="@dimen/default_size_17sp"
+            android:textColor="@color/Black">
+
+        </TextView>
+
+        <EditText
+            android:id="@+id/tenderAmountEt"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/custom_edittext_height_size"
+            android:background="@drawable/custom_edittext_bg"
+            android:drawablePadding="20dp"
+            android:inputType="number"
+            android:paddingLeft="8dp"
+            android:textColor="@color/Black"
+            android:textColorHint="@color/DarkGray"
+            android:layout_marginTop="20dp" />
+
+        <Button
+            android:id="@+id/btnTender"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/custom_button_length_size"
+            android:layout_marginTop="20dp"
+            android:text="@string/tender"
+            android:textColor="@color/White"
+            android:background="@color/DodgerBlue"
+            android:textAllCaps="false"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/credit_card_tip_info"
+            android:gravity="center"
+            android:textSize="@dimen/default_size_13sp">
+
+        </TextView>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

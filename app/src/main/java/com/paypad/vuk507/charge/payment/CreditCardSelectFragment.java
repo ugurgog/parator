@@ -10,22 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
-import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
-import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
@@ -38,18 +33,17 @@ import com.paypad.vuk507.utils.NumberFormatWatcher;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class CashSelectFragment extends BaseFragment implements PaymentStatusCallback {
+public class CreditCardSelectFragment extends BaseFragment implements PaymentStatusCallback {
 
     private View mView;
 
@@ -63,13 +57,12 @@ public class CashSelectFragment extends BaseFragment implements PaymentStatusCal
     AppCompatTextView toolbarTitleTv;
 
     private User user;
-    private DynamicPaymentSelectAdapter dynamicPaymentSelectAdapter;
     private Transaction mTransaction;
-    private double cashAmount;
+    private double totalAmount;
     private PaymentFragment paymentFragment;
     private PaymentStatusCallback paymentStatusCallback;
 
-    public CashSelectFragment(Transaction transaction) {
+    public CreditCardSelectFragment(Transaction transaction) {
         mTransaction = transaction;
     }
 
@@ -110,7 +103,7 @@ public class CashSelectFragment extends BaseFragment implements PaymentStatusCal
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
-            mView = inflater.inflate(R.layout.fragment_cash_select, container, false);
+            mView = inflater.inflate(R.layout.fragment_credit_card_select, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -134,10 +127,10 @@ public class CashSelectFragment extends BaseFragment implements PaymentStatusCal
         btnTender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                double changeAmount = cashAmount - mTransaction.getTransactionAmount();
+                double tipAmount = totalAmount - mTransaction.getTransactionAmount();
 
-                mTransaction.setCashAmount(cashAmount);
-                mTransaction.setChangeAmount(changeAmount);
+                mTransaction.setTotalAmount(totalAmount);
+                mTransaction.setTipAmount(tipAmount);
 
                 initPaymentFragment();
                 mFragmentNavigation.pushFragment(paymentFragment);
@@ -160,11 +153,12 @@ public class CashSelectFragment extends BaseFragment implements PaymentStatusCal
                 if (s != null && !s.toString().trim().isEmpty()) {
 
                     double amount = DataUtils.getDoubleValueFromFormattedString(tenderAmountEt.getText().toString());
+                    setToolbarDynamicTitle(amount);
 
                     if(amount < mTransaction.getTransactionAmount())
                         CommonUtils.setSaveBtnEnability(false, btnTender, getContext());
                     else{
-                        cashAmount = amount;
+                        totalAmount = amount;
                         CommonUtils.setSaveBtnEnability(true, btnTender, getContext());
                     }
                 } else {
@@ -175,19 +169,34 @@ public class CashSelectFragment extends BaseFragment implements PaymentStatusCal
     }
 
     private void initVariables() {
-        cashAmount = mTransaction.getTransactionAmount();
-        mTransaction.setPaymentTypeId(PaymentTypeEnum.CASH.getId());
+        totalAmount = mTransaction.getTransactionAmount();
+        mTransaction.setPaymentTypeId(PaymentTypeEnum.CREDIT_CARD.getId());
         tenderAmountEt.addTextChangedListener(new NumberFormatWatcher(tenderAmountEt, TYPE_PRICE, MAX_PRICE_VALUE));
-        String amountStr = CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
-                .concat(" ")
-                .concat(getResources().getString(R.string.cash));
-        toolbarTitleTv.setText(amountStr);
+        setToolbarTitleInitValue();
         tenderAmountEt.setHint(CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
     }
 
     private void initPaymentFragment(){
         paymentFragment = new PaymentFragment(mTransaction);
         paymentFragment.setPaymentStatusCallback(this);
+    }
+
+    private void setToolbarTitleInitValue(){
+        String amountStr = CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+        toolbarTitleTv.setText(amountStr);
+    }
+
+    private void setToolbarDynamicTitle(double amount){
+        if (amount > mTransaction.getTransactionAmount()) {
+            double tipAmount = amount - mTransaction.getTransactionAmount();
+
+            String title = CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+                    .concat(" + ")
+                    .concat(CommonUtils.getDoubleStrValueForView(tipAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
+                    .concat(" ").concat(getResources().getString(R.string.tip));
+            toolbarTitleTv.setText(title);
+        } else
+            setToolbarTitleInitValue();
     }
 
     @Override

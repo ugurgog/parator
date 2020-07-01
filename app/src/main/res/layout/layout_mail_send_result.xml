@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/White">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_tick_with_border_black_128dp"
+        android:tint="@color/DarkGray"
+        android:layout_gravity="center"
+        android:id="@+id/resultImgv">
+    </ImageView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mailSendResultTv"
+        android:text="@string/receipt_send"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:textColor="@color/Black"
+        android:textStyle="bold">
+
+    </TextView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sendEmailTv"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:textColor="@color/Black">
+
+    </TextView>
+
+</LinearLayout>

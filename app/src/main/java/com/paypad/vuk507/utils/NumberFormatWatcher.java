@@ -16,18 +16,26 @@ public class NumberFormatWatcher implements TextWatcher {
     private DecimalFormat decimalFormat;
     private EditText editText;
     private int inputType;
+    private double mMaxValue = 0d;
 
     private static final int PRICE_MAX_LEN = 10;
     private static final int RATE_MAX_LEN = 6;
+    private ReturnEtTextCallback returnEtTextCallback;
 
-    public NumberFormatWatcher(EditText editText, int inputType) {
+    public interface ReturnEtTextCallback{
+        void OnReturnEtValue(String text);
+    }
+
+    public void setReturnEtTextCallback(ReturnEtTextCallback returnEtTextCallback) {
+        this.returnEtTextCallback = returnEtTextCallback;
+    }
+
+    public NumberFormatWatcher(EditText editText, int inputType, double maxValue) {
         decimalFormat = new DecimalFormat("###,##0.00");
         this.editText = editText;
         this.inputType = inputType;
+        this.mMaxValue = maxValue;
     }
-
-    @SuppressWarnings("unused")
-    private static final String TAG = "NumberTextWatcher2";
 
     public void afterTextChanged(Editable s) {
         editText.removeTextChangedListener(this);
@@ -35,7 +43,7 @@ public class NumberFormatWatcher implements TextWatcher {
         try {
             if(inputType == TYPE_RATE){
                 editText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(RATE_MAX_LEN)});
-                editText.setHint("0%");
+                editText.setHint("0 %");
             }
             else if(inputType == TYPE_PRICE){
                 editText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(PRICE_MAX_LEN)});
@@ -48,8 +56,8 @@ public class NumberFormatWatcher implements TextWatcher {
 
             double num = Double.parseDouble(numberStr) / 100;
 
-            if(inputType == TYPE_RATE && num > 100)
-                num = 100;
+            if(num > mMaxValue && mMaxValue != 0)
+                num = mMaxValue;
 
             Number x = decimalFormat.parse(String.valueOf(num));
 
@@ -60,6 +68,9 @@ public class NumberFormatWatcher implements TextWatcher {
             }
 
             editText.setSelection(editText.getText().length());
+
+            if(returnEtTextCallback != null)
+                returnEtTextCallback.OnReturnEtValue(editText.getText().toString());
 
         } catch (NumberFormatException | ParseException nfe) {
             //TODO - hata loglamasi yapilacak mi?

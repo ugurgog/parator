@@ -117,7 +117,7 @@
     <string name="delete_customers">Delete Customers</string>
     <string name="split_amount">Split Amount</string>
     <string name="select_payment_type_below">Select payment type below</string>
-    <string name="tender">Tender</string>
+    <string name="tender">Pay</string>
     <string name="cash">Cash</string>
     <string name="split_by_amount">Splıt By Amount</string>
     <string name="continue_text">Continue</string>
@@ -131,6 +131,14 @@
     <string name="how_like_your_receipt">How would you like your receipt?</string>
     <string name="no_receipt">No Receipt</string>
     <string name="change">Change</string>
+    <string name="credit_card_payment_info">This amount (including tip) is used for tracking purposes only. You will not receive a deposit for this transaction.</string>
+    <string name="credit_card_tip_info">Tip amounts are listed seperately in your sales reports.</string>
+    <string name="tip">Tip</string>
+    <string name="provide_email_description">Provide your email to receive a digital receipt from this business.</string>
+    <string name="email_address">Email Address</string>
+    <string name="receipt_from_my_business">Receipt from My Business</string>
+    <string name="error_while_sending_receipt_mail">An error occurred while sending receipt mail!</string>
+    <string name="receipt_send">Receipt Send</string>
 
     <string name="select_all">Select All</string>
     <string name="de_select_all">Deselect All</string>

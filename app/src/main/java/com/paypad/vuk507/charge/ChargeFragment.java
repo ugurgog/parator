@@ -27,6 +27,7 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.adapter.ChargeViewPagerAdapter;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.payment.SelectChargePaymentFragment;
+import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
 import com.paypad.vuk507.charge.utils.ChargeHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
@@ -66,7 +67,8 @@ import io.realm.RealmList;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class ChargeFragment extends BaseFragment implements SaleCalculateCallback {
+public class ChargeFragment extends BaseFragment implements SaleCalculateCallback,
+        PaymentStatusCallback {
 
     View mView;
 
@@ -110,6 +112,7 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     private String saleNote;
     private boolean isCustomerExist= false;
     private String customerName = "";
+    private SelectChargePaymentFragment selectChargePaymentFragment;
 
     //private List<Discount> discountList;
 
@@ -203,9 +206,16 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
                 }
 
                 SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
-                mFragmentNavigation.pushFragment(new SelectChargePaymentFragment());
+
+                initSelectChargePaymentFragment();
+                mFragmentNavigation.pushFragment(selectChargePaymentFragment);
             }
         });
+    }
+
+    private void initSelectChargePaymentFragment(){
+        selectChargePaymentFragment = new SelectChargePaymentFragment();
+        selectChargePaymentFragment.setPaymentStatusCallback(this);
     }
 
     private void startSaleListFragment() {
@@ -432,6 +442,7 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
 
     @Override
     public void onItemsCleared() {
+        SaleModelInstance.setInstance(null);
         currentSaleCount = 0;
         isCustomerExist = false;
         setCurrentSaleCount();
@@ -544,5 +555,10 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
 
     private void addUserUUIDToSale(){
         SaleModelInstance.getInstance().getSaleModel().setSaleUserUuid(user.getUuid());
+    }
+
+    @Override
+    public void OnPaymentReturn(int status) {
+        onItemsCleared();
     }
 }

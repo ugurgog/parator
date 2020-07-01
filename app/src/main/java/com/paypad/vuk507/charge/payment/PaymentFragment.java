@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
 
     private User user;
     private Transaction mTransaction;
-    private ProgressDialog progressDialog;
+    //private ProgressDialog progressDialog;
     private PaymentCompletedFragment paymentCompletedFragment;
     private PaymentStatusCallback paymentStatusCallback;
 
@@ -113,43 +114,41 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     }
 
     private void initVariables() {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Please wait until payment completed...");
-        progressDialog.show();
+        //progressDialog = new ProgressDialog(getActivity());
+        //progressDialog.setMessage("Please wait until payment completed...");
+        //progressDialog.show();
 
-        mTransaction.setPaymentTypeId(PaymentTypeEnum.CASH.getId());
-        progressDialog.dismiss();
-
-        thread.start();
+        //thread.start();
 
         completePayment();
     }
 
     private void completePayment() {
-        final boolean[] saleSaved = {false};
 
-        SaleModelInstance.getInstance().getSaleModel().getSale().setCreateDate(new Date());
+        if(SaleDBHelper.getSaleById(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid()) != null){
+            saveTransaction();
+        }else {
+            SaleModelInstance.getInstance().getSaleModel().getSale().setCreateDate(new Date());
 
-        LogUtil.logSale(SaleModelInstance.getInstance().getSaleModel().getSale());
+            LogUtil.logSale(SaleModelInstance.getInstance().getSaleModel().getSale());
 
-        SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel(), new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
+            BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel());
+            DataUtils.showBaseResponseMessage(getContext(), saleBaseResponse);
 
-                if(baseResponse.getMessage() != null && !baseResponse.getMessage().isEmpty())
-                    CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
+            if(saleBaseResponse.isSuccess()){
+
+                BaseResponse baseResponse = SaleDBHelper.saveSaleItems(SaleModelInstance.getInstance().getSaleModel());
+                DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
                 if(baseResponse.isSuccess()){
-                    saleSaved[0] = true;
-
-                } else {
-                    progressDialog.dismiss();
+                    saveTransaction();
                 }
+                //else
+                //    progressDialog.dismiss();
             }
-        });
-
-        if(saleSaved[0])
-            saveTransaction();
+            //else
+            //    progressDialog.dismiss();
+        }
     }
 
     public void saveTransaction(){
@@ -174,38 +173,13 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
             if(SaleModelInstance.getInstance().getSaleModel().isExistNotCompletedTransaction()){
                 initPaymentCompletedFragment(ProcessDirectionEnum.PAYMENT_PARTIALLY_COMPLETED);
                 mFragmentNavigation.pushFragment(paymentCompletedFragment);
-                progressDialog.dismiss();
+                //progressDialog.dismiss();
             }else {
                 showCompletedScreen();
             }
         }else {
-            progressDialog.dismiss();
+            //progressDialog.dismiss();
         }
-
-
-        /*TransactionDBHelper.createOrUpdateTransaction(mTransaction, new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-
-                if(baseResponse.getMessage() != null && !baseResponse.getMessage().isEmpty())
-                    CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
-
-                if(baseResponse.isSuccess()){
-
-                    LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
-
-                    if(SaleModelInstance.getInstance().getSaleModel().isExistNotCompletedTransaction()){
-                        initPaymentCompletedFragment(ProcessDirectionEnum.PAYMENT_PARTIALLY_COMPLETED);
-                        mFragmentNavigation.pushFragment(paymentCompletedFragment);
-                        progressDialog.dismiss();
-                    }else {
-                        showCompletedScreen();
-                    }
-                }else {
-                    progressDialog.dismiss();
-                }
-            }
-        });*/
     }
 
     Thread thread = new Thread() {
@@ -225,6 +199,10 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     }
 
     private void showCompletedScreen(){
+
+        //BaseResponse baseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel());
+
+
         View child = getLayoutInflater().inflate(R.layout.layout_payment_fully_completed, null);
 
         GifImageView gifImageView = child.findViewById(R.id.gifImageView);
@@ -239,6 +217,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                //progressDialog.dismiss();
                 initPaymentCompletedFragment(ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED);
                 mFragmentNavigation.pushFragment(paymentCompletedFragment);
 
@@ -248,9 +227,12 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
 
     @Override
     public void OnPaymentReturn(int status) {
-        if(paymentCompletedFragment != null)
+        if(paymentCompletedFragment != null){
+            Log.i("Info", "::OnPaymentReturn paymentCompletedFragment closed");
             Objects.requireNonNull(paymentCompletedFragment.getActivity()).onBackPressed();
+        }
 
+        Log.i("Info", "::OnPaymentReturn PaymentFragment paymentStatusCallback triggered");
         paymentStatusCallback.OnPaymentReturn(status);
     }
 }

@@ -203,13 +203,15 @@ public class CommonUtils {
             e.printStackTrace();
         }
 
-        if(inputType == TYPE_RATE && doubleVal > 100)
-            doubleVal = 100;
+        if(inputType == TYPE_RATE && doubleVal > 100d)
+            doubleVal = 100d;
 
-        String value = "";
+        String value;
 
-        if(doubleVal != 0)
+        if(doubleVal != 0d)
             value = decimalFormat.format(x);
+        else
+            value = "0.00";
 
         return value;
     }

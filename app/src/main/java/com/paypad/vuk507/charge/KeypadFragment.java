@@ -272,7 +272,6 @@ public class KeypadFragment extends BaseFragment implements
                 .OnPositiveClicked(new CustomDialogListener() {
                     @Override
                     public void OnClick() {
-                        SaleModelInstance.setInstance(null);
                         clearAmountFields();
                         saleCalculateCallback.onItemsCleared();
                     }

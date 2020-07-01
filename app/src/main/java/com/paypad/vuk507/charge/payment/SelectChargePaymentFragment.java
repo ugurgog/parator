@@ -91,9 +91,15 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     //private double splitAmount = 0d;
     private Transaction mTransaction;
     private CashSelectFragment cashSelectFragment;
+    private PaymentStatusCallback paymentStatusCallback;
+    private CreditCardSelectFragment creditCardSelectFragment;
 
     public SelectChargePaymentFragment() {
 
+    }
+
+    public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
+        this.paymentStatusCallback = paymentStatusCallback;
     }
 
     @Override
@@ -154,7 +160,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
             @Override
             public void onClick(View view) {
 
-                mFragmentNavigation.pushFragment(new SplitAmountFragment(mTransaction.getTransactionAmount(), new CompleteCallback() {
+                mFragmentNavigation.pushFragment(new SplitAmountFragment(mTransaction, new CompleteCallback() {
                     @Override
                     public void onComplete(BaseResponse baseResponse) {
 
@@ -162,10 +168,8 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
 
                             if(!transaction.isPaymentCompleted()){
                                 mTransaction = transaction;
-                                //splitAmount = transaction.getTransactionAmount();
                                 setChargeAmount();
-                                setSplitInfoTv(transaction.getSeqNumber());
-
+                                setSplitInfoTv();
                                 break;
                             }
                         }
@@ -202,9 +206,12 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
         dynamicPaymentSelectAdapter = new DynamicPaymentSelectAdapter(getContext(), ProcessDirectionEnum.DIRECTION_PAYMENT_SELECT, paymentTypes, new ReturnPaymentCallback() {
             @Override
             public void onReturn(PaymentTypeEnum paymentType) {
-                if(paymentType.getId() == PaymentTypeEnum.CASH.getId()){
+                if(paymentType == PaymentTypeEnum.CASH){
                     initCashSelectFragment();
                     mFragmentNavigation.pushFragment(cashSelectFragment);
+                }else if(paymentType == PaymentTypeEnum.CREDIT_CARD){
+                    initCreditCardSelectFragment();
+                    mFragmentNavigation.pushFragment(creditCardSelectFragment);
                 }
             }
         });
@@ -216,21 +223,23 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
         chargeAmountTv.setText(amountStr);
     }
 
-    private void setSplitInfoTv(long id){
+    private void setSplitInfoTv(){
         splitInfoTv.setVisibility(View.VISIBLE);
 
         String infoText = "";
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
-            infoText = CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE)
+                    .concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" Toplam, Ödeme ")
-                    .concat(String.valueOf(id))
+                    .concat(String.valueOf(mTransaction.getSeqNumber()))
                     .concat("/")
                     .concat(String.valueOf(SaleModelInstance.getInstance().getSaleModel().getTransactions().size()));
         }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
             infoText = "Out of "
-                    .concat(CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
+                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE))
+                    .concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" Total, Payment ")
-                    .concat(String.valueOf(id))
+                    .concat(String.valueOf(mTransaction.getSeqNumber()))
                     .concat(" of ")
                     .concat(String.valueOf(SaleModelInstance.getInstance().getSaleModel().getTransactions().size()));
         }
@@ -242,16 +251,45 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
         cashSelectFragment.setPaymentStatusCallback(this);
     }
 
+    private void initCreditCardSelectFragment(){
+        creditCardSelectFragment = new CreditCardSelectFragment(mTransaction);
+        creditCardSelectFragment.setPaymentStatusCallback(this);
+    }
+
     @Override
     public void OnPaymentReturn(int status) {
 
-        if(cashSelectFragment != null)
-            Objects.requireNonNull(cashSelectFragment.getActivity()).onBackPressed();
+        try{
+            if(cashSelectFragment != null)
+                Objects.requireNonNull(cashSelectFragment.getActivity()).onBackPressed();
+
+        }catch (Exception e){
+            Log.i("Info", "Error:" + e);
+        }
+
+        try{
+            if(creditCardSelectFragment != null)
+                Objects.requireNonNull(creditCardSelectFragment.getActivity()).onBackPressed();
+
+        }catch (Exception e){
+            Log.i("Info", "Error:" + e);
+        }
+
 
         if(status == STATUS_CONTINUE){
             CommonUtils.showToastShort(getContext(), "Continue clicked");
         }else if(status == STATUS_NEW_SALE){
             CommonUtils.showToastShort(getContext(), "New Sale clicked");
         }
+
+        if(status == STATUS_NEW_SALE){
+            paymentStatusCallback.OnPaymentReturn(status);
+            Objects.requireNonNull(getActivity()).onBackPressed();
+        }else {
+            mTransaction = SaleModelInstance.getInstance().getSaleModel().getTransactionWillBePaid();
+            setChargeAmount();
+            setSplitInfoTv();
+        }
+
     }
 }

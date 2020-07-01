@@ -175,7 +175,6 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
 
                                 break;
                             case R.id.clearItems:
-                                SaleModelInstance.setInstance(null);
                                 saleCalculateCallback.onItemsCleared();
                                 Objects.requireNonNull(getActivity()).onBackPressed();
                                 break;

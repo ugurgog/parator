@@ -52,10 +52,12 @@ import java.util.UUID;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 
-public class SplitAmountFragment extends BaseFragment {
+public class SplitAmountFragment extends BaseFragment implements NumberFormatWatcher.ReturnEtTextCallback {
 
     private View mView;
 
@@ -72,6 +74,8 @@ public class SplitAmountFragment extends BaseFragment {
     EditText amountEt;
     @BindView(R.id.continueBtn)
     Button continueBtn;
+    @BindView(R.id.splitInfoTv)
+    TextView splitInfoTv;
 
     @BindView(R.id.splitTwoBtn)
     Button splitTwoBtn;
@@ -83,12 +87,14 @@ public class SplitAmountFragment extends BaseFragment {
     Button splitCustomBtn;
 
     private User user;
-    private double amount;
+    //private double amount;
+    private Transaction mTransaction;
     private CompleteCallback completeCallback;
     private CustomSplitFragment customSplitFragment;
+    private NumberFormatWatcher numberFormatWatcher;
 
-    public SplitAmountFragment(double amount, CompleteCallback completeCallback) {
-        this.amount = amount;
+    public SplitAmountFragment(Transaction transaction, CompleteCallback completeCallback) {
+        this.mTransaction = transaction;
         this.completeCallback = completeCallback;
     }
 
@@ -182,30 +188,66 @@ public class SplitAmountFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 double firstAmount = DataUtils.getDoubleValueFromFormattedString(amountEt.getText().toString());
-                removeNotPayedSplits();
-                decideSplitCountByAmount(firstAmount);
 
-                double secondAmount = amount - firstAmount;
-                decideSplitCountByAmount(secondAmount);
+                if(firstAmount == mTransaction.getTransactionAmount()){
+                    Objects.requireNonNull(getActivity()).onBackPressed();
+                }else {
+                    removeNotPayedSplits();
+                    decideSplitCountByAmount(firstAmount);
 
-                LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
+                    double secondAmount = mTransaction.getTransactionAmount() - firstAmount;
 
-                completeCallback.onComplete(null);
-                Objects.requireNonNull(getActivity()).onBackPressed();
+                    if(secondAmount > 0)
+                        decideSplitCountByAmount(secondAmount);
+
+                    LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
+
+                    completeCallback.onComplete(null);
+                    Objects.requireNonNull(getActivity()).onBackPressed();
+                }
             }
         });
     }
 
     private void initVariables() {
-        amountEt.addTextChangedListener(new NumberFormatWatcher(amountEt, TYPE_PRICE));
+        initNumberFormatWatcher();
+        amountEt.addTextChangedListener(numberFormatWatcher);
         amountEt.setHint("0.00 ".concat(CommonUtils.getCurrency().getSymbol()));
+        CommonUtils.setAmountToView(mTransaction.getTransactionAmount(), amountEt, TYPE_PRICE);
         saveBtn.setVisibility(View.GONE);
-        String amountStr = CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+        String amountStr = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount(), TYPE_PRICE)
+                .concat(" ")
+                .concat(CommonUtils.getCurrency().getSymbol());
         toolbarTitleTv.setText(amountStr);
+        setSplitInfoTv(mTransaction.getTransactionAmount());
+    }
+
+    private void initNumberFormatWatcher(){
+        numberFormatWatcher = new NumberFormatWatcher(amountEt, TYPE_PRICE, SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount());
+        numberFormatWatcher.setReturnEtTextCallback(this);
+    }
+
+    private void setSplitInfoTv(double amount) {
+        String infoText = "";
+
+        double remainAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount() - amount;
+
+        if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
+            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+                    .concat(" toplam tutardan, ödeme sonrası kalacak tutar ")
+                    .concat(CommonUtils.getDoubleStrValueForView(remainAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
+                    .concat(".");
+        }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
+            infoText = CommonUtils.getDoubleStrValueForView(remainAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+                    .concat(" of ")
+                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
+                    .concat(" will remain after this transaction.");
+        }
+        splitInfoTv.setText(infoText);
     }
 
     private void initCustomSplitFragment(){
-        customSplitFragment = new CustomSplitFragment(amount, new CustomSplitFragment.ReturnSplitCountCallback() {
+        customSplitFragment = new CustomSplitFragment(mTransaction.getTransactionAmount(), new CustomSplitFragment.ReturnSplitCountCallback() {
             @Override
             public void OnReturnSplitCount(int splitCount) {
                 removeNotPayedSplits();
@@ -254,5 +296,18 @@ public class SplitAmountFragment extends BaseFragment {
         transaction.setTransactionAmount(amountx);
         transaction.setSeqNumber(SaleModelInstance.getInstance().getSaleModel().getMaxSplitId() + 1);
         SaleModelInstance.getInstance().getSaleModel().getTransactions().add(transaction);
+    }
+
+    @Override
+    public void OnReturnEtValue(String text) {
+        if(text == null || text.isEmpty()){
+            CommonUtils.setSaveBtnEnability(false, continueBtn, getContext());
+            setSplitInfoTv(0d);
+        } else{
+            CommonUtils.setSaveBtnEnability(true, continueBtn, getContext());
+            double amount = DataUtils.getDoubleValueFromFormattedString(text);
+            setSplitInfoTv(amount);
+        }
+
     }
 }

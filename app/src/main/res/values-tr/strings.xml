@@ -117,7 +117,7 @@
     <string name="delete_customers">Müşterileri Sil</string>
     <string name="split_amount">Parçalı Öde</string>
     <string name="select_payment_type_below">Ödeme tipini seçiniz</string>
-    <string name="tender">Devam Et</string>
+    <string name="tender">Öde</string>
     <string name="cash">Nakit</string>
     <string name="split_by_amount">Tutarı Böl</string>
     <string name="continue_text">Devam Et</string>
@@ -131,6 +131,14 @@
     <string name="how_like_your_receipt">Makbuzunuzu nasıl istersiniz?</string>
     <string name="no_receipt">Makbuz İstemiyorum</string>
     <string name="change">Para üstü</string>
+    <string name="credit_card_payment_info">Bu miktar (bahşiş dahil) yalnızca izleme amaçlı kullanılır. Bu işlem için depozito almayacaksınız.</string>
+    <string name="credit_card_tip_info">Bahşiş tutarları satış raporlarınızda ayrı olarak listelenir.</string>
+    <string name="tip">Bahşiş</string>
+    <string name="provide_email_description">Bu işlemden dijital makbuz almak için lütfen e-postanızı girin.</string>
+    <string name="email_address">Mail Adresi</string>
+    <string name="receipt_from_my_business">İşlem Makbuzu</string>
+    <string name="error_while_sending_receipt_mail">Makbuz maili gönderimi sırasında bir hata ile karşılaşıldı!</string>
+    <string name="receipt_send">Makbuz gönderildi</string>
 
     <string name="select_all">Tümünü Seç</string>
     <string name="de_select_all">Tümünü Bırak</string>

@@ -45,6 +45,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 
+import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
+import static com.paypad.vuk507.constants.CustomConstants.MAX_RATE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
@@ -213,7 +215,9 @@ public class DiscountEditFragment extends BaseFragment {
     private void setNumberFormatWatcher(int selectionType){
         if(numberFormatWatcher != null)
             amountRateEt.removeTextChangedListener(numberFormatWatcher);
-        numberFormatWatcher = new NumberFormatWatcher(amountRateEt, selectionType);
+
+        double maxValue = selectionType == TYPE_RATE ? MAX_RATE_VALUE : MAX_PRICE_VALUE;
+        numberFormatWatcher = new NumberFormatWatcher(amountRateEt, selectionType, maxValue);
         amountRateEt.addTextChangedListener(numberFormatWatcher);
     }
 
@@ -290,7 +294,7 @@ public class DiscountEditFragment extends BaseFragment {
     private void initVariables() {
         Glide.with(Objects.requireNonNull(getActivity())).load(R.drawable.icon_discount_white_64dp).into(editItemImgv);
         amountSymbolTv.setText(CommonUtils.getCurrency().getSymbol());
-        numberFormatWatcher = new NumberFormatWatcher(amountRateEt, TYPE_RATE);
+        numberFormatWatcher = new NumberFormatWatcher(amountRateEt, TYPE_RATE, MAX_RATE_VALUE);
 
         int padding = CommonUtils.getPaddingInPixels(getContext(), 25);
         editItemImgv.setPadding(padding,padding,padding,padding);

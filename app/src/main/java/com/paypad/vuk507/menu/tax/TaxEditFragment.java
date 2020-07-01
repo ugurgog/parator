@@ -42,6 +42,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 
+import static com.paypad.vuk507.constants.CustomConstants.MAX_RATE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
@@ -148,7 +149,7 @@ public class TaxEditFragment extends BaseFragment {
             }
         });
 
-        amountRateEt.addTextChangedListener(new NumberFormatWatcher(amountRateEt, TYPE_RATE));
+        amountRateEt.addTextChangedListener(new NumberFormatWatcher(amountRateEt, TYPE_RATE, MAX_RATE_VALUE));
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
