@@ -33,12 +33,15 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter {
 
     private Context context;
     private List<PaymentTypeEnum> paymentTypes;
+    private List<PaymentTypeEnum> orgPaymentTypes;
     private ReturnPaymentCallback returnPaymentCallback;
     private ProcessDirectionEnum directionType;
 
@@ -47,6 +50,10 @@ public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter {
         this.paymentTypes = paymentTypes;
         this.returnPaymentCallback = returnPaymentCallback;
         this.directionType = directionType;
+    }
+
+    public void setOrgPaymentTypes(List<PaymentTypeEnum> orgPaymentTypes) {
+        this.orgPaymentTypes = orgPaymentTypes;
     }
 
     @Override
@@ -115,7 +122,6 @@ public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter {
         }
     }
 
-
     class PaymentHolder extends RecyclerView.ViewHolder {
         private LinearLayout itemll;
         private TextView itemNameTv;
@@ -138,5 +144,33 @@ public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter {
             this.position = position;
             itemNameTv.setText(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? paymentType.getLabelTr() : paymentType.getLabelEn());
         }
+    }
+
+    public void updateAdapter(String searchText, ReturnSizeCallback returnSizeCallback) {
+        if (searchText.trim().isEmpty()){
+            paymentTypes = orgPaymentTypes;
+        } else {
+
+            List<PaymentTypeEnum> tempPayments = new ArrayList<>();
+
+            for (PaymentTypeEnum disc : orgPaymentTypes) {
+
+                if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
+                    if(disc.getLabelTr().toLowerCase().contains(searchText.toLowerCase()))
+                        tempPayments.add(disc);
+                }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
+                    if(disc.getLabelEn().toLowerCase().contains(searchText.toLowerCase()))
+                        tempPayments.add(disc);
+                }
+            }
+            paymentTypes = tempPayments;
+        }
+
+        this.notifyDataSetChanged();
+
+        if (paymentTypes != null)
+            returnSizeCallback.OnReturn(paymentTypes.size());
+        else
+            returnSizeCallback.OnReturn(0);
     }
 }

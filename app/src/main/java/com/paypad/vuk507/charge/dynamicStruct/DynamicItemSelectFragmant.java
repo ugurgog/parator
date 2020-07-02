@@ -26,25 +26,30 @@ import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicCategorySelectAdap
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicDiscountSelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicProductSelectAdapter;
+import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicTaxSelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.db.ProductDBHelper;
+import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
+import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
+import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
 
@@ -66,10 +71,8 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
     private DynamicStructEnum dynamicStructEnum;
 
-    private ProductSelectListener productSelectListener;
-    private DiscountSelectListener discountSelectListener;
-    private CategorySelectListener categorySelectListener;
-    private PaymentSelectListener paymentSelectListener;
+    private DynamicItemSelectListener dynamicItemSelectListener;
+
     private User user;
     private long categoryId;
 
@@ -77,30 +80,38 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
     private DynamicDiscountSelectAdapter dynamicDiscountSelectAdapter;
     private DynamicCategorySelectAdapter dynamicCategorySelectAdapter;
     private DynamicPaymentSelectAdapter dynamicPaymentSelectAdapter;
+    private DynamicTaxSelectAdapter dynamicTaxSelectAdapter;
 
     private List<Product> productList;
     private List<Discount> discountList;
     private List<Category> categoryList;
+    private List<TaxModel> taxModelList;
+    private List<PaymentTypeEnum> paymentTypes;
 
     public DynamicItemSelectFragmant(DynamicStructEnum dynamicStructEnum) {
         this.dynamicStructEnum = dynamicStructEnum;
     }
 
-    public interface ProductSelectListener {
-        void onPClick(Product product);
+    public interface DynamicItemSelectListener {
+        void onProductClick(Product product);
+        void onDiscountClick(Discount discount);
+        void onCategoryClick(Category category);
+        void onTaxClick(TaxModel taxModel);
+        void onPaymentClick(PaymentTypeEnum paymentType);
+        void onCategoryProductSelected(Product product);
     }
 
-    public interface DiscountSelectListener{
-        void onDClick(Discount discount);
+    /*public interface DiscountSelectListener{
+        void onDiscountClick(Discount discount);
     }
 
     public interface CategorySelectListener{
-        void onCClick(Category category);
+        void onCategoryClick(Category category);
     }
 
     public interface PaymentSelectListener{
         void onPaymentClick(PaymentTypeEnum paymentType);
-    }
+    }*/
 
     @Override
     public void onAttach(Context context) {
@@ -177,13 +188,18 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         });
 
         if(dynamicStructEnum == DynamicStructEnum.PRODUCT_SET){
-            setProductAdapter();
+            if(categoryId > 0)
+                setCategoryProductsAdapter();
+            else
+                setProductAdapter();
         }else if(dynamicStructEnum == DynamicStructEnum.DISCOUNT_SET){
             setDiscountAdapter();
         }else if(dynamicStructEnum == DynamicStructEnum.CATEGORY_SET){
             setCategoryAdapter();
         }else if(dynamicStructEnum == DynamicStructEnum.PAYMENT_SET){
             setPaymentAdapter();
+        }else if(dynamicStructEnum == DynamicStructEnum.TAX_SET){
+            setTaxAdapter();
         }
 
         searchEdittext.addTextChangedListener(new TextWatcher() {
@@ -224,7 +240,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
                 dynamicProductSelectAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                     @Override
                     public void OnReturn(int size) {
-                        if (size == 0 && productList.size() > 0)
+                        if (size == 0 && productList != null && productList.size() > 0)
                             searchResultTv.setVisibility(View.VISIBLE);
                         else
                             searchResultTv.setVisibility(View.GONE);
@@ -234,7 +250,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
                 dynamicDiscountSelectAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                     @Override
                     public void OnReturn(int size) {
-                        if (size == 0 && discountList.size() > 0)
+                        if (size == 0 && discountList != null && discountList.size() > 0)
                             searchResultTv.setVisibility(View.VISIBLE);
                         else
                             searchResultTv.setVisibility(View.GONE);
@@ -244,25 +260,43 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
                 dynamicCategorySelectAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                     @Override
                     public void OnReturn(int size) {
-                        if (size == 0 && categoryList.size() > 0)
+                        if (size == 0 && categoryList != null && categoryList.size() > 0)
                             searchResultTv.setVisibility(View.VISIBLE);
                         else
                             searchResultTv.setVisibility(View.GONE);
                     }
                 });
-            }else if(dynamicStructEnum == DynamicStructEnum.PAYMENT_SET ){
-                // TODO - Odeme icin search kontrolleri burada olacak
+            }else if(dynamicStructEnum == DynamicStructEnum.TAX_SET ){
+
+                dynamicTaxSelectAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+                    @Override
+                    public void OnReturn(int size) {
+                        if (size == 0 && taxModelList != null && taxModelList.size() > 0)
+                            searchResultTv.setVisibility(View.VISIBLE);
+                        else
+                            searchResultTv.setVisibility(View.GONE);
+                    }
+                });
+
+            } else if(dynamicStructEnum == DynamicStructEnum.PAYMENT_SET ){
+
+                dynamicPaymentSelectAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+                    @Override
+                    public void OnReturn(int size) {
+                        if (size == 0 && paymentTypes != null && paymentTypes.size() > 0)
+                            searchResultTv.setVisibility(View.VISIBLE);
+                        else
+                            searchResultTv.setVisibility(View.GONE);
+                    }
+                });
+
             }
         }
     }
 
     private void setProductAdapter(){
         RealmResults<Product> products;
-        if(categoryId == 0)
-            products = ProductDBHelper.getAllProducts(user.getUuid());
-        else
-            products = ProductDBHelper.getProductsByCategoryId(categoryId);
-
+        products = ProductDBHelper.getAllProducts(user.getUuid());
         productList = new ArrayList(products);
 
         boolean dataExist = productList.size() > 0;
@@ -282,21 +316,36 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
                 return;
             }
         }else {
-            if(categoryId == 0){
-                CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_item_defined));
-                dismiss();
-                return;
-            }else {
-                CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_item_belongs_this_category));
-                dismiss();
-                return;
-            }
+            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_item_defined));
+            dismiss();
+            return;
         }
 
         dynamicProductSelectAdapter = new DynamicProductSelectAdapter(getContext(), productList, new ReturnItemCallback() {
             @Override
             public void OnReturn(Product product, ItemProcessEnum processEnum) {
-                productSelectListener.onPClick(product);
+                dynamicItemSelectListener.onProductClick(product);
+                //productSelectListener.onPClick(product);
+            }
+        });
+        structRv.setAdapter(dynamicProductSelectAdapter);
+    }
+
+    private void setCategoryProductsAdapter(){
+        RealmResults<Product> products;
+        products = ProductDBHelper.getProductsByCategoryId(categoryId);
+        productList = new ArrayList(products);
+
+        if(productList.size() == 0){
+            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_item_belongs_this_category));
+            dismiss();
+            return;
+        }
+
+        dynamicProductSelectAdapter = new DynamicProductSelectAdapter(getContext(), productList, new ReturnItemCallback() {
+            @Override
+            public void OnReturn(Product product, ItemProcessEnum processEnum) {
+                dynamicItemSelectListener.onCategoryProductSelected(product);
             }
         });
         structRv.setAdapter(dynamicProductSelectAdapter);
@@ -335,7 +384,8 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         dynamicDiscountSelectAdapter = new DynamicDiscountSelectAdapter(getContext(), discountList, new ReturnDiscountCallback() {
             @Override
             public void OnReturn(Discount discount) {
-                discountSelectListener.onDClick(discount);
+                dynamicItemSelectListener.onDiscountClick(discount);
+                //discountSelectListener.onDClick(discount);
             }
         });
         structRv.setAdapter(dynamicDiscountSelectAdapter);
@@ -345,7 +395,23 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         RealmResults<Category> categories = CategoryDBHelper.getAllCategories(user.getUsername());
         categoryList = new ArrayList(categories);
 
-        if(categoryList.size() == 0){
+        boolean dataExist = categoryList.size() > 0;
+
+        for(Iterator<Category> it = categoryList.iterator(); it.hasNext();) {
+            Category category = it.next();
+            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.CATEGORY_SET.getId(), category.getId(), user.getUuid());
+
+            if(dynamicBoxModel != null)
+                it.remove();
+        }
+
+        if(dataExist){
+            if(categoryList.size() == 0){
+                CommonUtils.showToastShort(getContext(), getResources().getString(R.string.all_categories_added_to_dynamic_boxes));
+                dismiss();
+                return;
+            }
+        }else {
             CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_category_defined));
             dismiss();
             return;
@@ -354,15 +420,58 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         dynamicCategorySelectAdapter = new DynamicCategorySelectAdapter(getContext(), categoryList, new ReturnCategoryCallback() {
             @Override
             public void OnReturn(Category category) {
-                categorySelectListener.onCClick(category);
+                dynamicItemSelectListener.onCategoryClick(category);
             }
         });
         structRv.setAdapter(dynamicCategorySelectAdapter);
     }
 
+    private void setTaxAdapter(){
+        RealmResults<TaxModel> taxModels = TaxDBHelper.getAllTaxes(user.getUsername());
+        taxModelList = new ArrayList(taxModels);
+
+        for(TaxRateEnum taxRateEnum : TaxRateEnum.values()){
+            TaxModel taxModel = new TaxModel();
+            taxModel.setId(taxRateEnum.getId());
+            taxModel.setName(taxRateEnum.getLabel());
+            taxModel.setTaxRate(taxRateEnum.getRateValue());
+            taxModelList.add(taxModel);
+        }
+
+        boolean dataExist = taxModelList.size() > 0;
+
+        for(Iterator<TaxModel> it = taxModelList.iterator(); it.hasNext();) {
+            TaxModel taxModel = it.next();
+            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.TAX_SET.getId(), taxModel.getId(), user.getUuid());
+
+            if(dynamicBoxModel != null)
+                it.remove();
+        }
+
+        if(dataExist){
+            if(taxModelList.size() == 0){
+                CommonUtils.showToastShort(getContext(), getResources().getString(R.string.all_taxes_added_to_dynamic_boxes));
+                dismiss();
+                return;
+            }
+        }else {
+            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_tax_defined));
+            dismiss();
+            return;
+        }
+
+        dynamicTaxSelectAdapter = new DynamicTaxSelectAdapter(getContext(), taxModelList, new ReturnTaxCallback() {
+            @Override
+            public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
+                dynamicItemSelectListener.onTaxClick(taxModel);
+            }
+        });
+        structRv.setAdapter(dynamicTaxSelectAdapter);
+    }
+
     private void setPaymentAdapter(){
         PaymentTypeEnum[] paymentTypeEnums = PaymentTypeEnum.values();
-        List<PaymentTypeEnum> paymentTypes = new ArrayList<>(Arrays.asList(paymentTypeEnums));
+        paymentTypes = new ArrayList<>(Arrays.asList(paymentTypeEnums));
 
         for(Iterator<PaymentTypeEnum> it = paymentTypes.iterator(); it.hasNext();) {
             PaymentTypeEnum paymentTypeEnum = it.next();
@@ -382,17 +491,14 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         dynamicPaymentSelectAdapter = new DynamicPaymentSelectAdapter(getContext(), ProcessDirectionEnum.DIRECTION_FAST_MENU, paymentTypes, new ReturnPaymentCallback() {
             @Override
             public void onReturn(PaymentTypeEnum paymentType) {
-                paymentSelectListener.onPaymentClick(paymentType);
+                dynamicItemSelectListener.onPaymentClick(paymentType);
             }
         });
+        dynamicPaymentSelectAdapter.setOrgPaymentTypes(paymentTypes);
         structRv.setAdapter(dynamicPaymentSelectAdapter);
     }
 
-    public void setProductSelectListener(ProductSelectListener listener){ productSelectListener = listener;}
-
-    public void setDiscountSelectListener(DiscountSelectListener listener){ discountSelectListener = listener;}
-
-    public void setCategorySelectListener(CategorySelectListener listener){ categorySelectListener = listener;}
-
-    public void setPaymentSelectListener(PaymentSelectListener listener){ paymentSelectListener = listener;}
+    public void setDynamicItemSelectListener(DynamicItemSelectListener dynamicItemSelectListener) {
+        this.dynamicItemSelectListener = dynamicItemSelectListener;
+    }
 }

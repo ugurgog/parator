@@ -331,4 +331,15 @@ public class LibraryFragment extends BaseFragment {
         itemListRv.setAdapter(categorySelectListAdapter);
     }
 
+    public ProductListAdapter getProductListAdapter() {
+        return productListAdapter;
+    }
+
+    public DiscountListAdapter getDiscountListAdapter() {
+        return discountListAdapter;
+    }
+
+    public CategorySelectListAdapter getCategorySelectListAdapter() {
+        return categorySelectListAdapter;
+    }
 }

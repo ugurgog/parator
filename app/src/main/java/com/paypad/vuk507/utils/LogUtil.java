@@ -2,6 +2,7 @@ package com.paypad.vuk507.utils;
 
 import android.util.Log;
 
+import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
@@ -63,6 +64,21 @@ public class LogUtil {
                     ", ChangeAmount:" + transaction.getChangeAmount() +
                     ", CashAmount:" + transaction.getCashAmount() +
                     ", UserUuid:" + transaction.getUserUuid());
+        }catch (Exception e){
+
+        }
+    }
+
+    public static void logDynamicBoxList(List<DynamicBoxModel> dynamicBoxModelList){
+        try{
+            for(DynamicBoxModel dynamicBoxModel : dynamicBoxModelList){
+                Log.i("Info", "::logDynamicBoxList +++++++++++++++++++++++++");
+                Log.i("Info", "::logDynamicBoxList itemId:" + dynamicBoxModel.getItemId() +
+                        ", StructId:" +  dynamicBoxModel.getStructId() +
+                        ", createUserId:" +  dynamicBoxModel.getCreateUserId()+
+                        ", createDate:" + dynamicBoxModel.getCreateDate());
+            }
+
         }catch (Exception e){
 
         }

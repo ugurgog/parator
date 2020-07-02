@@ -193,9 +193,14 @@
     <string name="there_is_no_category_defined">There is no category definition yet.</string>
     <string name="there_is_no_item_defined">There is no product definition yet</string>
     <string name="there_is_no_discount_defined">There is no discount definition yet</string>
+    <string name="there_is_no_tax_defined">There is no tax definition yet</string>
+
     <string name="all_products_added_to_dynamic_boxes">All products have been added to dynamic boxes.</string>
     <string name="all_discounts_added_to_dynamic_boxes">All discounts have been added to the dynamic boxes.</string>
     <string name="all_payments_added_to_dynamic_boxes">All payment types have been added to the dynamic boxes.</string>
+    <string name="all_taxes_added_to_dynamic_boxes">All taxes have been added to the dynamic boxes.</string>
+    <string name="all_categories_added_to_dynamic_boxes">All categories have been added to the dynamic boxes.</string>
+
     <string name="group_name_can_not_be_empty">Group name cannot be empty</string>
     <string name="customers_will_be_added_group">customer(s) will be added to the selected group.</string>
     <string name="customers_added_to_group">customer(s) added to the group</string>

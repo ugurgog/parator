@@ -24,8 +24,10 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.sale.adapters.SaleListAdapter;
+import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
@@ -38,7 +40,9 @@ import com.paypad.vuk507.menu.tax.adapters.TaxListAdapter;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Group;
+import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
@@ -52,6 +56,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -286,12 +291,26 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
             SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts().remove(discount);
 
             for(SaleItem saleItem: SaleModelInstance.getInstance().getSaleModel().getSaleItems()){
-                for(Discount discount1 : saleItem.getDiscounts()){
+
+                if(saleItem.getDiscounts() != null){
+                    for(Iterator<Discount> it = saleItem.getDiscounts().iterator(); it.hasNext();) {
+                        Discount discount1 = it.next();
+
+                        if(discount.getId() == discount1.getId()){
+                            it.remove();
+                            break;
+                        }
+                    }
+                }
+
+
+
+                /*for(Discount discount1 : saleItem.getDiscounts()){
                     if(discount.getId() == discount1.getId()){
                         saleItem.getDiscounts().remove(discount);
                         break;
                     }
-                }
+                }*/
             }
         }
         updateAdapterWithCurrentList();

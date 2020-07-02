@@ -33,9 +33,11 @@ import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
+import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.uiUtils.keypad.KeyPad;
@@ -47,6 +49,7 @@ import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
 import com.paypad.vuk507.utils.DataUtils;
+import com.paypad.vuk507.utils.LogUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -61,16 +64,14 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static com.paypad.vuk507.constants.CustomConstants.DYNAMIC_BOX_COUNT;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class KeypadFragment extends BaseFragment implements
         StructSelectFragment.StructSelectListener,
-        DynamicItemSelectFragmant.ProductSelectListener,
-        DynamicItemSelectFragmant.DiscountSelectListener,
-        DynamicItemSelectFragmant.CategorySelectListener,
-        DynamicItemSelectFragmant.PaymentSelectListener {
+        DynamicItemSelectFragmant.DynamicItemSelectListener {
 
     View mView;
 
@@ -99,7 +100,7 @@ public class KeypadFragment extends BaseFragment implements
     private Realm realm;
     private long categoryId;
 
-    private static final int DYNAMIC_BOX_COUNT = 8;
+
 
     private double amount = 0d;
 
@@ -170,11 +171,14 @@ public class KeypadFragment extends BaseFragment implements
         saleAmountTv.setHint("0,00".concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
         saleNoteTv.setHint(getResources().getString(R.string.add_note));
 
-        structSelectFragment = new StructSelectFragment();
-        structSelectFragment.setStructListener(this);
-
+        initStructSelectFragment();
         initRecyclerView();
 
+    }
+
+    private void initStructSelectFragment(){
+        structSelectFragment = new StructSelectFragment();
+        structSelectFragment.setStructListener(this);
     }
 
     private void initListeners() {
@@ -307,6 +311,8 @@ public class KeypadFragment extends BaseFragment implements
             dynamicBoxModelList.add(dynamicBoxModel);
         }
 
+        LogUtil.logDynamicBoxList(dynamicBoxModelList);
+
         dynamicStructListAdapter = new DynamicStructListAdapter(getContext(), dynamicBoxModelList, mFragmentNavigation, new ReturnDynamicBoxListener() {
             @Override
             public void onReturn(DynamicBoxModel dynamicBoxModel, ItemProcessEnum processEnum) {
@@ -314,9 +320,10 @@ public class KeypadFragment extends BaseFragment implements
                 if(processEnum == ItemProcessEnum.SELECTED){
 
                     if(dynamicBoxModel.getStructId() == 0){
+                        initStructSelectFragment();
                         structSelectFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), structSelectFragment.getTag());
                     }else {
-                        //TODO - burada artik odemeye dahil edecegiz
+                        handleDynamicBoxSelection(dynamicBoxModel);
                     }
                 }else if(processEnum == ItemProcessEnum.DELETED){
                     deleteDynamicBox(dynamicBoxModel);
@@ -324,6 +331,18 @@ public class KeypadFragment extends BaseFragment implements
             }
         });
         taxTypeRv.setAdapter(dynamicStructListAdapter);
+    }
+
+    private void handleDynamicBoxSelection(DynamicBoxModel dynamicBoxModel) {
+
+        if(dynamicBoxModel.getStructId() == DynamicStructEnum.CATEGORY_SET.getId()){
+            categoryId = dynamicBoxModel.getItemId();
+            onStructClick(DynamicStructEnum.PRODUCT_SET, true);
+        }else {
+            categoryId = 0;
+
+        }
+
     }
 
     private void deleteDynamicBox(DynamicBoxModel dynamicBoxModel){
@@ -364,10 +383,7 @@ public class KeypadFragment extends BaseFragment implements
     @Override
     public void onStructClick(DynamicStructEnum dynamicStructEnum, boolean fromCategory) {
         dynamicItemSelectFragmant = new DynamicItemSelectFragmant(dynamicStructEnum);
-        dynamicItemSelectFragmant.setProductSelectListener(this);
-        dynamicItemSelectFragmant.setDiscountSelectListener(this);
-        dynamicItemSelectFragmant.setCategorySelectListener(this);
-        dynamicItemSelectFragmant.setPaymentSelectListener(this);
+        dynamicItemSelectFragmant.setDynamicItemSelectListener(this);
 
         if(fromCategory)
             dynamicItemSelectFragmant.setCategoryId(categoryId);
@@ -375,36 +391,6 @@ public class KeypadFragment extends BaseFragment implements
             dynamicItemSelectFragmant.setCategoryId(0);
 
         dynamicItemSelectFragmant.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), dynamicItemSelectFragmant.getTag());
-    }
-
-    @Override
-    public void onPClick(Product product) {
-        DynamicBoxModel dynamicBoxModel = new DynamicBoxModel();
-        dynamicBoxModel.setCreateDate(new Date());
-        dynamicBoxModel.setItemId(product.getId());
-        dynamicBoxModel.setItemName(product.getName());
-        dynamicBoxModel.setUserUuid(user.getUuid());
-        dynamicBoxModel.setStructId(DynamicStructEnum.PRODUCT_SET.getId());
-        createDynamicBox(dynamicBoxModel);
-    }
-
-    @Override
-    public void onDClick(Discount discount) {
-        DynamicBoxModel dynamicBoxModel = new DynamicBoxModel();
-        dynamicBoxModel.setCreateDate(new Date());
-        dynamicBoxModel.setItemId(discount.getId());
-        dynamicBoxModel.setItemName(discount.getName());
-        dynamicBoxModel.setUserUuid(user.getUuid());
-        dynamicBoxModel.setStructId(DynamicStructEnum.DISCOUNT_SET.getId());
-        createDynamicBox(dynamicBoxModel);
-    }
-
-    @Override
-    public void onCClick(Category category) {
-        Log.i("Info", "category_name:" + category.getName());
-        this.categoryId = category.getId();
-        dismissDynamicFragment();
-        onStructClick(DynamicStructEnum.PRODUCT_SET, true);
     }
 
     private void createDynamicBox(DynamicBoxModel dynamicBoxModel){
@@ -426,13 +412,67 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     @Override
+    public void onProductClick(Product product) {
+        DynamicBoxModel dynamicBoxModel = new DynamicBoxModel();
+        dynamicBoxModel.setCreateDate(new Date());
+        dynamicBoxModel.setItemId(product.getId());
+        dynamicBoxModel.setCreateUserId(user.getUuid());
+        dynamicBoxModel.setStructId(DynamicStructEnum.PRODUCT_SET.getId());
+        createDynamicBox(dynamicBoxModel);
+    }
+
+    @Override
+    public void onDiscountClick(Discount discount) {
+        DynamicBoxModel dynamicBoxModel = new DynamicBoxModel();
+        dynamicBoxModel.setCreateDate(new Date());
+        dynamicBoxModel.setItemId(discount.getId());
+        dynamicBoxModel.setCreateUserId(user.getUuid());
+        dynamicBoxModel.setStructId(DynamicStructEnum.DISCOUNT_SET.getId());
+        createDynamicBox(dynamicBoxModel);
+    }
+
+    @Override
+    public void onCategoryClick(Category category) {
+
+        DynamicBoxModel dynamicBoxModel = new DynamicBoxModel();
+        dynamicBoxModel.setCreateDate(new Date());
+        dynamicBoxModel.setItemId(category.getId());
+        dynamicBoxModel.setCreateUserId(user.getUuid());
+        dynamicBoxModel.setStructId(DynamicStructEnum.CATEGORY_SET.getId());
+        createDynamicBox(dynamicBoxModel);
+    }
+
+    @Override
+    public void onTaxClick(TaxModel taxModel) {
+        DynamicBoxModel dynamicBoxModel = new DynamicBoxModel();
+        dynamicBoxModel.setCreateDate(new Date());
+        dynamicBoxModel.setItemId(taxModel.getId());
+        dynamicBoxModel.setCreateUserId(user.getUuid());
+        dynamicBoxModel.setStructId(DynamicStructEnum.TAX_SET.getId());
+        createDynamicBox(dynamicBoxModel);
+    }
+
+    @Override
     public void onPaymentClick(PaymentTypeEnum paymentType) {
         DynamicBoxModel dynamicBoxModel = new DynamicBoxModel();
         dynamicBoxModel.setCreateDate(new Date());
         dynamicBoxModel.setItemId(paymentType.getId());
-        dynamicBoxModel.setItemName(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? paymentType.getLabelTr() : paymentType.getLabelEn());
-        dynamicBoxModel.setUserUuid(user.getUuid());
+        //dynamicBoxModel.setItemName(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? paymentType.getLabelTr() : paymentType.getLabelEn());
+        dynamicBoxModel.setCreateUserId(user.getUuid());
         dynamicBoxModel.setStructId(DynamicStructEnum.PAYMENT_SET.getId());
         createDynamicBox(dynamicBoxModel);
+    }
+
+    @Override
+    public void onCategoryProductSelected(Product product) {
+        Log.i("Info", "categoryProductSelected:" + product.getName());
+
+        //TODO - Burada category altindan secilen urun satisa eklenecek.
+
+        dismissDynamicFragment();
+    }
+
+    public DynamicStructListAdapter getDynamicStructListAdapter() {
+        return dynamicStructListAdapter;
     }
 }

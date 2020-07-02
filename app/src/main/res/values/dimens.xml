@@ -31,4 +31,6 @@
 
     <dimen name="product_imageview_default_size">100dp</dimen>
 
+    <dimen name="dynamic_box_heigth">50dp</dimen>
+
 </resources>

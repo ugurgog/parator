@@ -430,6 +430,9 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
 
         setChargeAmountTv();
         totalAmount = 0d;
+
+        //keypadFragment.getDynamicStructListAdapter().notifyDataSetChanged();
+        keypadFragment.setDynamicBoxAdapter();
     }
 
     @Override
@@ -525,6 +528,8 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     @Override
     public void OnDiscountRemoved() {
         setChargeAmountTv();
+        libraryFragment.getDiscountListAdapter().notifyDataSetChanged();
+        keypadFragment.getDynamicStructListAdapter().notifyDataSetChanged();
     }
 
     @Override

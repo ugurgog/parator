@@ -28,7 +28,6 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.dynamicStruct.StructSelectFragment;
 import com.paypad.vuk507.contact.ContactDialogFragment;
 import com.paypad.vuk507.contact.ContactHelper;
 import com.paypad.vuk507.contact.adapters.ContactListAdapter;

@@ -17,6 +17,7 @@ import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.discount.DiscountEditFragment;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.pojo.SaleModelInstance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,7 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
 
                     if(processType == ItemProcessEnum.SELECTED){
                         returnDiscountCallback.OnReturn(discount);
+                        notifyItemChanged(position);
                     } else {
                         fragmentNavigation.pushFragment(new DiscountEditFragment(discount, new ReturnDiscountCallback() {
                             @Override
@@ -93,6 +95,19 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
             this.position = position;
             discountNameTv.setText(discount.getName());
             rateOrAmountTv.setText(getRateOrAmountVal(discount));
+            setEnabilityOfDiscount();
+        }
+
+        private void setEnabilityOfDiscount() {
+            if(SaleModelInstance.getInstance().getSaleModel().isDiscountInSale(discount)){
+                discountItemCv.setEnabled(false);
+                discountNameTv.setTextColor(context.getResources().getColor(R.color.Gray, null));
+                rateOrAmountTv.setTextColor(context.getResources().getColor(R.color.Gray, null));
+            }else {
+                discountItemCv.setEnabled(true);
+                discountNameTv.setTextColor(context.getResources().getColor(R.color.Black, null));
+                rateOrAmountTv.setTextColor(context.getResources().getColor(R.color.Black, null));
+            }
         }
 
         private String getRateOrAmountVal(Discount discount) {

@@ -14,7 +14,7 @@ public class DynamicBoxModelDBHelper {
     public static RealmResults<DynamicBoxModel> getAllDynamicBoxes(String uuid){
         Realm realm = Realm.getDefaultInstance();
         RealmResults<DynamicBoxModel> dynamicBoxModels = realm.where(DynamicBoxModel.class)
-                .equalTo("userUuid", uuid)
+                .equalTo("createUserId", uuid)
                 .findAll();
         return dynamicBoxModels;
     }
@@ -29,7 +29,7 @@ public class DynamicBoxModelDBHelper {
                 try{
                     DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
                             .equalTo("structId", id)
-                            .equalTo("userUuid", uuid)
+                            .equalTo("createUserId", uuid)
                             .findFirst();
 
                     dynamicBoxModel.deleteFromRealm();
@@ -53,7 +53,7 @@ public class DynamicBoxModelDBHelper {
                 try{
                     DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
                             .equalTo("structId", structId)
-                            .equalTo("userUuid", uuid)
+                            .equalTo("createUserId", uuid)
                             .equalTo("itemId", itemId)
                             .findFirst();
 
@@ -73,7 +73,7 @@ public class DynamicBoxModelDBHelper {
         DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
                 .equalTo("structId", structId)
                 .equalTo("itemId", itemId)
-                .equalTo("userUuid", uuid).findFirst();
+                .equalTo("createUserId", uuid).findFirst();
         return dynamicBoxModel;
     }
 

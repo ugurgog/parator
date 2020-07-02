@@ -23,10 +23,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.dynamicStruct.DynamicItemSelectFragmant;
-import com.paypad.vuk507.charge.dynamicStruct.StructSelectFragment;
-import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicStructListAdapter;
-import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DynamicBoxModelDBHelper;

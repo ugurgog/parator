@@ -34,4 +34,6 @@ public class CustomConstants {
     public static final double MAX_PRICE_VALUE = 999999.99d;
     public static final double MAX_RATE_VALUE = 100d;
 
+    public static final int DYNAMIC_BOX_COUNT = 8;
+
 }

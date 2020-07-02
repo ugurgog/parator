@@ -8,10 +8,8 @@ public class DynamicBoxModel extends RealmObject {
 
     private int structId;
     private long itemId;
-    private String itemName;
     private Date createDate;
-    private String userUuid;
-
+    private String createUserId;
 
     public int getStructId() {
         return structId;
@@ -37,20 +35,11 @@ public class DynamicBoxModel extends RealmObject {
         this.createDate = createDate;
     }
 
-    public String getUserUuid() {
-        return userUuid;
+    public String getCreateUserId() {
+        return createUserId;
     }
 
-    public void setUserUuid(String userUuid) {
-        this.userUuid = userUuid;
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId;
     }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-
 }

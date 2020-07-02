@@ -7,17 +7,17 @@ public enum PaymentTypeEnum {
     GIFT_CARD(-3, "Gift Card", "Hediye Kartı"),
     CHECK(-4,"Check", "Çek");
 
-    private final int id;
+    private final long id;
     private final String labelTr;
     private final String labelEn;
 
-    PaymentTypeEnum(int id, String labelEn, String labelTr) {
+    PaymentTypeEnum(long id, String labelEn, String labelTr) {
         this.id = id;
         this.labelTr = labelTr;
         this.labelEn = labelEn;
     }
 
-    public static PaymentTypeEnum getById(int id) {
+    public static PaymentTypeEnum getById(long id) {
         for (PaymentTypeEnum e : values()) {
             if (e.id == id)
                 return e;
@@ -33,7 +33,7 @@ public enum PaymentTypeEnum {
         return labelEn;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 }

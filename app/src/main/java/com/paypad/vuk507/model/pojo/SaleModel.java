@@ -414,5 +414,12 @@ public class SaleModel implements Serializable {
         return false;
     }
 
+    public boolean isDiscountInSale(Discount discount){
+        for(Discount discount1 : sale.getDiscounts()){
+            if(discount.getId() == discount1.getId())
+                return true;
+        }
+        return false;
+    }
 
 }
