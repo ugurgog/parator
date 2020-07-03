@@ -23,12 +23,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.DiscountDBHelper;
+import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.DynamicStructEnum;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.discount.adapters.DiscountListAdapter;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -37,6 +41,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -72,9 +77,14 @@ public class DiscountFragment extends BaseFragment {
     private RealmResults<Discount> discounts;
     private List<Discount> discountList;
     private DiscountListAdapter discountListAdapter;
+    private ReturnDiscountCallback discountCallback;
 
     public DiscountFragment() {
 
+    }
+
+    public void setDiscountCallback(ReturnDiscountCallback discountCallback) {
+        this.discountCallback = discountCallback;
     }
 
     @Override
@@ -134,12 +144,7 @@ public class DiscountFragment extends BaseFragment {
         createDiscountBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new DiscountEditFragment(null, new ReturnDiscountCallback() {
-                    @Override
-                    public void OnReturn(Discount discount) {
-                        updateAdapterWithCurrentList();
-                    }
-                }));
+                startDiscountEditFragment(null);
             }
         });
 
@@ -192,11 +197,22 @@ public class DiscountFragment extends BaseFragment {
         discountList = new ArrayList(discounts);
         discountListAdapter = new DiscountListAdapter(getContext(), discountList, mFragmentNavigation, new ReturnDiscountCallback() {
             @Override
-            public void OnReturn(Discount discount) {
-                updateAdapterWithCurrentList();
+            public void OnReturn(Discount discount, ItemProcessEnum processType) {
+                //updateAdapterWithCurrentList();
+                startDiscountEditFragment(discount);
             }
         }, null);
         discountRv.setAdapter(discountListAdapter);
+    }
+
+    private void startDiscountEditFragment(Discount discount){
+        mFragmentNavigation.pushFragment(new DiscountEditFragment(discount, new ReturnDiscountCallback() {
+            @Override
+            public void OnReturn(Discount discount, ItemProcessEnum processType) {
+                discountCallback.OnReturn(discount, processType);
+                updateAdapterWithCurrentList();
+            }
+        }));
     }
 
     public void updateAdapter(String searchText) {

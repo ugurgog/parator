@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.paypad.vuk507.db.TaxDBHelper;
+import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
@@ -108,5 +111,20 @@ public class DataUtils {
     public static void showBaseResponseMessage(Context context, BaseResponse baseResponse){
         if(baseResponse.getMessage() != null && !baseResponse.getMessage().isEmpty())
             CommonUtils.showToastShort(context, baseResponse.getMessage());
+    }
+
+    public static TaxModel getTaxModelById(long taxId){
+        TaxModel taxModel;
+
+        if(taxId < 0){
+            TaxRateEnum taxRateEnum = TaxRateEnum.getById(taxId);
+            taxModel = new TaxModel();
+            taxModel.setId(taxRateEnum.getId());
+            taxModel.setName(taxRateEnum.getLabel());
+            taxModel.setTaxRate(taxRateEnum.getRateValue());
+        }else
+            taxModel = TaxDBHelper.getTax(taxId);
+
+        return taxModel;
     }
 }

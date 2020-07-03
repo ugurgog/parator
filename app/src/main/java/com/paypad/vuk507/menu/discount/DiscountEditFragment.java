@@ -23,6 +23,7 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
@@ -184,7 +185,7 @@ public class DiscountEditFragment extends BaseFragment {
                         public void onComplete(BaseResponse baseResponse) {
                             CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
                             if(baseResponse.isSuccess()){
-                                returnDiscountCallback.OnReturn((Discount) baseResponse.getObject());
+                                returnDiscountCallback.OnReturn((Discount) baseResponse.getObject(), ItemProcessEnum.DELETED);
                                 Objects.requireNonNull(getActivity()).onBackPressed();
                             }
                         }
@@ -272,7 +273,12 @@ public class DiscountEditFragment extends BaseFragment {
                 CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
                 if(baseResponse.isSuccess()){
                     deleteButtonStatus = 1;
-                    returnDiscountCallback.OnReturn((Discount) baseResponse.getObject());
+
+                    if(finalInserted)
+                        returnDiscountCallback.OnReturn((Discount) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+                    else
+                        returnDiscountCallback.OnReturn((Discount) baseResponse.getObject(), ItemProcessEnum.CHANGED);
+
                     clearItems();
                     Objects.requireNonNull(getActivity()).onBackPressed();
                 }

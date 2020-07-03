@@ -383,7 +383,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
         dynamicDiscountSelectAdapter = new DynamicDiscountSelectAdapter(getContext(), discountList, new ReturnDiscountCallback() {
             @Override
-            public void OnReturn(Discount discount) {
+            public void OnReturn(Discount discount, ItemProcessEnum processType) {
                 dynamicItemSelectListener.onDiscountClick(discount);
                 //discountSelectListener.onDClick(discount);
             }

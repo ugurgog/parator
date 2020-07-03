@@ -128,7 +128,7 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_sale_list, container, false);
             ButterKnife.bind(this, mView);

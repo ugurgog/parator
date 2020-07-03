@@ -1,31 +1,36 @@
-package com.paypad.vuk507.model;
+package com.paypad.vuk507.model.order;
 
-import com.paypad.vuk507.model.order.OrderItemTax;
+import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
-public class SaleItem extends RealmObject {
+public class OrderItem extends RealmObject {
 
-    private String name;
+    private String orderId;
+    private String orderItemId;
     private double amount;
     private int quantity;
     private String note;
-    private RealmList<Discount> discounts;
     private long productId;
     private boolean isDynamicAmount;
-    private String uuid;
-    private String saleUuid;
+    private RealmList<OrderItemDiscount> orderItemDiscounts;
     private RealmList<OrderItemTax> orderItemTaxes;
 
-
-    public String getName() {
-        return name;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getOrderItemId() {
+        return orderItemId;
+    }
+
+    public void setOrderItemId(String orderItemId) {
+        this.orderItemId = orderItemId;
     }
 
     public double getAmount() {
@@ -52,28 +57,12 @@ public class SaleItem extends RealmObject {
         this.note = note;
     }
 
-    public RealmList<Discount> getDiscounts() {
-        return discounts;
-    }
-
-    public void setDiscounts(RealmList<Discount> discounts) {
-        this.discounts = discounts;
-    }
-
     public long getProductId() {
         return productId;
     }
 
     public void setProductId(long productId) {
         this.productId = productId;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
     public boolean isDynamicAmount() {
@@ -84,12 +73,12 @@ public class SaleItem extends RealmObject {
         isDynamicAmount = dynamicAmount;
     }
 
-    public String getSaleUuid() {
-        return saleUuid;
+    public RealmList<OrderItemDiscount> getOrderItemDiscounts() {
+        return orderItemDiscounts;
     }
 
-    public void setSaleUuid(String saleUuid) {
-        this.saleUuid = saleUuid;
+    public void setOrderItemDiscounts(RealmList<OrderItemDiscount> orderItemDiscounts) {
+        this.orderItemDiscounts = orderItemDiscounts;
     }
 
     public RealmList<OrderItemTax> getOrderItemTaxes() {

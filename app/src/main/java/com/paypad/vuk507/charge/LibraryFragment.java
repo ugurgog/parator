@@ -170,7 +170,7 @@ public class LibraryFragment extends BaseFragment {
                 }else if(selectedSpinner.getId() == ItemSpinnerEnum.DISCOUNTS.getId()){
                     mFragmentNavigation.pushFragment(new DiscountEditFragment(null, new ReturnDiscountCallback() {
                         @Override
-                        public void OnReturn(Discount discount) {
+                        public void OnReturn(Discount discount, ItemProcessEnum processType) {
                             setDiscountAdapter();
                         }
                     }));
@@ -241,7 +241,7 @@ public class LibraryFragment extends BaseFragment {
         itemListRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
     }
 
-    private void setDiscountAdapter(){
+    public void setDiscountAdapter(){
         RealmResults<Discount> discounts = DiscountDBHelper.getAllDiscounts(user.getUsername());
         List<Discount> discountList = new ArrayList(discounts);
 
@@ -253,7 +253,7 @@ public class LibraryFragment extends BaseFragment {
 
         discountListAdapter = new DiscountListAdapter(getContext(), discountList, mFragmentNavigation, new ReturnDiscountCallback() {
             @Override
-            public void OnReturn(Discount discount) {
+            public void OnReturn(Discount discount, ItemProcessEnum processType) {
                 //setDiscountAdapter();
                 saleCalculateCallback.onDiscountSelected(discount);
             }

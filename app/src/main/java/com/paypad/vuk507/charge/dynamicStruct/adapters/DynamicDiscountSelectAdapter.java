@@ -68,7 +68,7 @@ public class DynamicDiscountSelectAdapter extends RecyclerView.Adapter<DynamicDi
             structItemll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    returnDiscountCallback.OnReturn(discount);
+                    returnDiscountCallback.OnReturn(discount, ItemProcessEnum.SELECTED);
                 }
             });
         }

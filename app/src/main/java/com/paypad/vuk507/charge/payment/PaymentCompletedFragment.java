@@ -27,8 +27,6 @@ import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.payment.utils.SendMail;
 import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
-import com.paypad.vuk507.charge.sale.adapters.SaleItemDiscountListAdapter;
-import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;

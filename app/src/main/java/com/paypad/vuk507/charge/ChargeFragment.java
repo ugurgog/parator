@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +29,6 @@ import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.payment.SelectChargePaymentFragment;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
-import com.paypad.vuk507.charge.utils.ChargeHelper;
-import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
@@ -43,33 +40,31 @@ import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.item.ItemListFragment;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.order.OrderItemTax;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
-import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.DataUtils;
-import com.paypad.vuk507.utils.DeepObjectCopy;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.RealmList;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class ChargeFragment extends BaseFragment implements SaleCalculateCallback,
-        PaymentStatusCallback {
+public class ChargeFragment extends BaseFragment implements
+        SaleCalculateCallback,
+        PaymentStatusCallback,
+        ItemListFragment.DiscountUpdateCallback {
 
     View mView;
 
@@ -114,6 +109,10 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     private boolean isCustomerExist= false;
     private String customerName = "";
     private SelectChargePaymentFragment selectChargePaymentFragment;
+
+    private SaleItem saleItem = null;
+    //private OrderItemTax orderItemTax = null;
+    private TaxModel mTaxModel = null;
 
     //private List<Discount> discountList;
 
@@ -183,7 +182,7 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
             @Override
             public void onClick(View view) {
                 if(keypadFragment.getAmount() > 0){
-                    onCustomAmountAdded(keypadFragment.getAmount(), saleNote);
+                    //onCustomAmountAdded(keypadFragment.getAmount(), saleNote);
                     keypadFragment.clearAmountFields();
                 }
 
@@ -204,7 +203,7 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
             @Override
             public void onClick(View view) {
                 if(keypadFragment.getAmount() > 0){
-                    onCustomAmountAdded(keypadFragment.getAmount(), saleNote);
+                    //onCustomAmountAdded(keypadFragment.getAmount(), saleNote);
                     keypadFragment.clearAmountFields();
                 }
 
@@ -246,6 +245,7 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     private void setupViewPager() {
         keypadFragment = new KeypadFragment();
         keypadFragment.setSaleCalculateCallback(this);
+        keypadFragment.setPaymentStatusCallback(this);
 
         libraryFragment = new LibraryFragment();
         libraryFragment.setSaleCalculateCallback(this);
@@ -375,7 +375,9 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     }
 
     private void startItemsFragment() {
-        mFragmentNavigation.pushFragment(new ItemListFragment());
+        ItemListFragment itemListFragment = new ItemListFragment();
+        itemListFragment.setDiscountUpdateCallback(this);
+        mFragmentNavigation.pushFragment(itemListFragment);
     }
 
     private void startCustomersFragment() {
@@ -398,21 +400,17 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
         SaleModelInstance.getInstance().getSaleModel().addProduct(product, amount, isDynamicAmount);
         addUserUUIDToSale();
 
-        if (totalAmount > 0)
-            SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote);
+        //if (totalAmount > 0)
+        //    SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote, null);
 
         setChargeAmountTv();
         totalAmount = 0d;
         onNewSaleCreated();
+        keypadFragment.clearAmountFields();
     }
 
     @Override
     public void onKeyPadClicked(int number) {
-
-    }
-
-    @Override
-    public void onTaxSelected(TaxModel taxModel) {
 
     }
 
@@ -426,25 +424,33 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
         addUserUUIDToSale();
 
         if(totalAmount > 0)
-            SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote);
+            SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote, null);
 
         setChargeAmountTv();
         totalAmount = 0d;
 
-        //keypadFragment.getDynamicStructListAdapter().notifyDataSetChanged();
-        keypadFragment.setDynamicBoxAdapter();
+        updateDiscountAdapter();
+        updateDynamicBoxAdapter();
+        keypadFragment.clearAmountFields();
     }
 
     @Override
-    public void onCustomAmountReturn(double amount) {
-        totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount("", amount, "");
-        //totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount() + amount;
-        String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+    public void OnTaxSelected(TaxModel taxModel) {
+        if(saleItem != null){
+            //orderItemTax = SaleModelInstance.getInstance().getSaleModel().getOrderItemTax(taxModel);
 
-        if(totalAmount <= 0d)
-            chargeAmountTv.setText("");
-        else
-            chargeAmountTv.setText(amountStr);
+            mTaxModel = taxModel;
+
+            totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount2(saleItem);
+
+            totalAmount = totalAmount + ((totalAmount / 100d) * mTaxModel.getTaxRate());
+            String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+
+            if(totalAmount <= 0d)
+                chargeAmountTv.setText("");
+            else
+                chargeAmountTv.setText(amountStr);
+        }
     }
 
     @Override
@@ -456,6 +462,10 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
         totalAmount = 0;
         saleNote = "";
         setChargeAmountTv();
+        updateDiscountAdapter();
+        updateDynamicBoxAdapter();
+        mTaxModel = null;
+        saleItem = null;
     }
 
     @Override
@@ -465,9 +475,15 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     }
 
     @Override
-    public void onCustomAmountAdded(double amount, String note) {
-        SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), amount, note);
-        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount();
+    public boolean OnCustomItemAdd() {
+        if(mTaxModel == null){
+            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
+            return false;
+        }
+
+        SaleModelInstance.getInstance().getSaleModel().addCustomItem(saleItem, mTaxModel);
+
+        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
         addUserUUIDToSale();
 
         setCurrentSaleCount();
@@ -475,6 +491,46 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
 
         totalAmount = 0d;
         saleNote = "";
+        saleItem = null;
+        mTaxModel = null;
+        keypadFragment.clearAmountFields();
+        return true;
+    }
+
+    @Override
+    public void onCustomAmountReturn(double amount) {
+
+        saleItem = new SaleItem();
+        saleItem.setName(getResources().getString(R.string.custom_amount));
+        saleItem.setUuid(UUID.randomUUID().toString());
+        saleItem.setAmount(amount);
+        saleItem.setQuantity(1);
+        saleItem.setDynamicAmount(true);
+        saleItem.setNote(saleNote != null ? saleNote : "");
+        saleItem.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
+
+        totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount2(saleItem);
+        String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+
+        if(totalAmount <= 0d)
+            chargeAmountTv.setText("");
+        else
+            chargeAmountTv.setText(amountStr);
+
+
+
+
+
+        /*
+
+
+        totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount("", amount, "");
+        String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+
+        if(totalAmount <= 0d)
+            chargeAmountTv.setText("");
+        else
+            chargeAmountTv.setText(amountStr);*/
     }
 
     @Override
@@ -496,12 +552,7 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
         saleNote = note;
     }
 
-    @Override
-    public void onSaleItemEditted() {
-        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount();
-        setCurrentSaleCount();
-        setChargeAmountTv();
-    }
+
 
     @Override
     public void onCustomerAdded(Customer customer) {
@@ -519,8 +570,16 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     }
 
     @Override
+    public void onSaleItemEditted() {
+        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
+        setCurrentSaleCount();
+        setChargeAmountTv();
+    }
+
+    @Override
     public void onSaleItemDeleted() {
-        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount();
+
+        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
         setCurrentSaleCount();
         setChargeAmountTv();
     }
@@ -528,8 +587,8 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     @Override
     public void OnDiscountRemoved() {
         setChargeAmountTv();
-        libraryFragment.getDiscountListAdapter().notifyDataSetChanged();
-        keypadFragment.getDynamicStructListAdapter().notifyDataSetChanged();
+        updateDiscountAdapter();
+        updateDynamicBoxAdapter();
     }
 
     @Override
@@ -574,5 +633,22 @@ public class ChargeFragment extends BaseFragment implements SaleCalculateCallbac
     @Override
     public void OnPaymentReturn(int status) {
         onItemsCleared();
+    }
+
+    @Override
+    public void OnDiscountUpdated() {
+        setChargeAmountTv();
+        updateDiscountAdapter();
+        updateDynamicBoxAdapter();
+    }
+
+    private void updateDynamicBoxAdapter() {
+        if(keypadFragment != null )
+            keypadFragment.setDynamicBoxAdapter();
+    }
+
+    private void updateDiscountAdapter() {
+        if(libraryFragment != null && libraryFragment.getDiscountListAdapter() != null)
+            libraryFragment.setDiscountAdapter();
     }
 }

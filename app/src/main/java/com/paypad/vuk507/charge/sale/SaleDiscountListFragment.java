@@ -168,7 +168,7 @@ public class SaleDiscountListFragment extends BaseFragment implements ReturnDisc
     }
 
     @Override
-    public void OnReturn(Discount discount) {
+    public void OnReturn(Discount discount, ItemProcessEnum processType) {
         removedDiscounts.add(discount);
     }
 }

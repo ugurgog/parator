@@ -10,12 +10,12 @@ public interface SaleCalculateCallback {
 
     void onProductSelected(Product product, double amount, boolean isDynamicAmount);
     void onKeyPadClicked(int number);
-    void onTaxSelected(TaxModel taxModel);
     void onDiscountSelected(Discount discount);
+    void OnTaxSelected(TaxModel taxModel);
     void onCustomAmountReturn(double amount);
     void onItemsCleared();
     void onNewSaleCreated();
-    void onCustomAmountAdded(double amount, String note);
+    boolean OnCustomItemAdd();
     void onRemoveCustomAmount(double amount);
     void onSaleNoteReturn(String note);
     void onSaleItemEditted();
@@ -24,5 +24,6 @@ public interface SaleCalculateCallback {
     void onSaleItemDeleted();
     void OnDiscountRemoved();
     void OnTransactionCancelled();
+
 
 }

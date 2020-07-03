@@ -22,14 +22,23 @@ import com.paypad.vuk507.charge.dynamicStruct.DynamicItemSelectFragmant;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicStructListAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.StructSelectFragment;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
+import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
+import com.paypad.vuk507.charge.payment.CashSelectFragment;
+import com.paypad.vuk507.charge.payment.CreditCardSelectFragment;
+import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.sale.AddNoteToSaleFragment;
+import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
+import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
+import com.paypad.vuk507.db.ProductDBHelper;
+import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.ProductUnitTypeEnum;
+import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
@@ -38,6 +47,7 @@ import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.TaxModel;
+import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.uiUtils.keypad.KeyPad;
@@ -58,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,7 +82,8 @@ import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class KeypadFragment extends BaseFragment implements
         StructSelectFragment.StructSelectListener,
-        DynamicItemSelectFragmant.DynamicItemSelectListener {
+        DynamicItemSelectFragmant.DynamicItemSelectListener ,
+        PaymentStatusCallback{
 
     View mView;
 
@@ -97,8 +109,13 @@ public class KeypadFragment extends BaseFragment implements
     private StructSelectFragment structSelectFragment;
     private DynamicItemSelectFragmant dynamicItemSelectFragmant;
 
+    private PaymentStatusCallback paymentStatusCallback;
+
     private Realm realm;
     private long categoryId;
+
+    private CashSelectFragment cashSelectFragment;
+    private CreditCardSelectFragment creditCardSelectFragment;
 
 
 
@@ -106,12 +123,18 @@ public class KeypadFragment extends BaseFragment implements
 
     private SaleCalculateCallback saleCalculateCallback;
 
+    private Transaction mTransaction;
+
     public KeypadFragment() {
 
     }
 
     public void setSaleCalculateCallback(SaleCalculateCallback saleCalculateCallback) {
         this.saleCalculateCallback = saleCalculateCallback;
+    }
+
+    public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
+        this.paymentStatusCallback = paymentStatusCallback;
     }
 
     @Override
@@ -191,7 +214,7 @@ public class KeypadFragment extends BaseFragment implements
                         saleCalculateCallback.onRemoveCustomAmount(amount);
                         clearAmountFields();
 
-                        if(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount() == 0){
+                        if(SaleModelInstance.getInstance().getSaleModel().getSaleCount() == 0){
                             saleCalculateCallback.onItemsCleared();
                         }
 
@@ -206,8 +229,9 @@ public class KeypadFragment extends BaseFragment implements
                 }else if(number == -2){
 
                     if(amount > 0){
-                        saleCalculateCallback.onCustomAmountAdded(amount, saleNoteTv.getText().toString());
-                        clearAmountFields();
+                        saleCalculateCallback.OnCustomItemAdd();
+                        //saleCalculateCallback.onCustomAmountAdded(amount, saleNoteTv.getText().toString());
+                        //clearAmountFields();
                     }
 
                 }else {
@@ -341,9 +365,83 @@ public class KeypadFragment extends BaseFragment implements
         }else {
             categoryId = 0;
 
+            if(dynamicBoxModel.getStructId() == DynamicStructEnum.PRODUCT_SET.getId()){
+                Product product = ProductDBHelper.getProduct(dynamicBoxModel.getItemId());
+                handleProductSelect(product);
+            }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.DISCOUNT_SET.getId()){
+                Discount discount = DiscountDBHelper.getDiscount(dynamicBoxModel.getItemId());
+                saleCalculateCallback.onDiscountSelected(discount);
+            }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.PAYMENT_SET.getId()){
+
+                if(dynamicBoxModel.getItemId() == PaymentTypeEnum.CASH.getId()){
+
+                    if(fillSaleInfo()){
+                        createInitialTransaction();
+                        initCashSelectFragment();
+                        mFragmentNavigation.pushFragment(cashSelectFragment);
+                    }
+
+                }else if(dynamicBoxModel.getItemId() == PaymentTypeEnum.CREDIT_CARD.getId()){
+
+                    if(fillSaleInfo()){
+                        createInitialTransaction();
+                        initCreditCardSelectFragment();
+                        mFragmentNavigation.pushFragment(creditCardSelectFragment);
+                    }
+
+                }else {
+
+                    //TODO - Diger odeme tipleri icin burada aksiyon alacagiz
+                }
+
+
+            }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.TAX_SET.getId()){
+
+                TaxModel taxModel = new TaxModel();
+                if(dynamicBoxModel.getItemId() < 0){
+                    TaxRateEnum taxRateEnum = TaxRateEnum.getById(dynamicBoxModel.getItemId());
+                    taxModel.setId(taxRateEnum.getId());
+                    taxModel.setName(taxRateEnum.getLabel());
+                    taxModel.setTaxRate(taxRateEnum.getRateValue());
+                }else
+                    taxModel = TaxDBHelper.getTax(dynamicBoxModel.getItemId());
+
+                saleCalculateCallback.OnTaxSelected(taxModel);
+            }
+
+
         }
 
     }
+
+    private boolean fillSaleInfo(){
+
+        if(saleCalculateCallback.OnCustomItemAdd()){
+            SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
+            return true;
+        }else
+            return false;
+    }
+
+    private void initCashSelectFragment(){
+        cashSelectFragment = new CashSelectFragment(mTransaction);
+        cashSelectFragment.setPaymentStatusCallback(this);
+    }
+
+    private void initCreditCardSelectFragment(){
+        creditCardSelectFragment = new CreditCardSelectFragment(mTransaction);
+        creditCardSelectFragment.setPaymentStatusCallback(this);
+    }
+
+    private void createInitialTransaction() {
+        mTransaction = new Transaction();
+        mTransaction.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
+        mTransaction.setTransactionUuid(UUID.randomUUID().toString());
+        mTransaction.setSeqNumber(SaleModelInstance.getInstance().getSaleModel().getMaxSplitId() + 1);
+        mTransaction.setTransactionAmount(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount());
+        SaleModelInstance.getInstance().getSaleModel().getTransactions().add(mTransaction);
+    }
+
 
     private void deleteDynamicBox(DynamicBoxModel dynamicBoxModel){
         new CustomDialogBox.Builder((Activity) getContext())
@@ -465,14 +563,46 @@ public class KeypadFragment extends BaseFragment implements
 
     @Override
     public void onCategoryProductSelected(Product product) {
-        Log.i("Info", "categoryProductSelected:" + product.getName());
-
-        //TODO - Burada category altindan secilen urun satisa eklenecek.
-
+        handleProductSelect(product);
         dismissDynamicFragment();
     }
 
-    public DynamicStructListAdapter getDynamicStructListAdapter() {
+    DynamicStructListAdapter getDynamicStructListAdapter() {
         return dynamicStructListAdapter;
+    }
+
+    private void handleProductSelect(Product product){
+        if(product.getAmount() == 0){
+
+            mFragmentNavigation.pushFragment(new DynamicAmountFragment(product, new AmountCallback() {
+                @Override
+                public void OnDynamicAmountReturn(double amount) {
+                    saleCalculateCallback.onProductSelected(product, amount, true);
+                }
+            }));
+        }else {
+            saleCalculateCallback.onProductSelected(product, product.getAmount(), false);
+        }
+    }
+
+    @Override
+    public void OnPaymentReturn(int status) {
+        try{
+            if(cashSelectFragment != null)
+                Objects.requireNonNull(cashSelectFragment.getActivity()).onBackPressed();
+
+        }catch (Exception e){
+            Log.i("Info", "Error:" + e);
+        }
+
+        try{
+            if(creditCardSelectFragment != null)
+                Objects.requireNonNull(creditCardSelectFragment.getActivity()).onBackPressed();
+
+        }catch (Exception e){
+            Log.i("Info", "Error:" + e);
+        }
+
+        paymentStatusCallback.OnPaymentReturn(status);
     }
 }

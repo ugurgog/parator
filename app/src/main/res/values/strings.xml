@@ -88,6 +88,7 @@
     <string name="price">Price</string>
     <string name="variable">Variable</string>
     <string name="tax_rate">Tax Rate</string>
+    <string name="tax_upper">TAX</string>
 
     <!-- Login screen items -->
     <string name="username">Username</string>
@@ -179,9 +180,11 @@
     <string name="edit_personal_information">Edit Personal Information</string>
 
 
+
     <!-- App Messages -->
     <string name="amount_can_not_be_empty">Amount cannot be empty</string>
     <string name="product_name_can_not_be_empty">Product name cannot be empty</string>
+    <string name="please_select_tax_rate">Please select tax for custom item</string>
 
     <string name="discount_name_can_not_be_empty">Discount name cannot be empty</string>
     <string name="discount_rate_amount_can_not_be_empty">Discount amount or discount rate must be filled</string>

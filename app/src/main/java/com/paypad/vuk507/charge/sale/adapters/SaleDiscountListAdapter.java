@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.SaleItem;
@@ -71,7 +72,7 @@ public class SaleDiscountListAdapter extends RecyclerView.Adapter<SaleDiscountLi
             deleteDiscImgBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    discountCallback.OnReturn(discount);
+                    discountCallback.OnReturn(discount, ItemProcessEnum.DELETED);
                     discounts.remove(discount);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, getItemCount());

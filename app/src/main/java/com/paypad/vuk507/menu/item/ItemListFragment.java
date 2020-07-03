@@ -21,14 +21,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.ItemsEnum;
 import com.paypad.vuk507.menu.category.CategoryFragment;
 import com.paypad.vuk507.menu.discount.DiscountFragment;
+import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.menu.product.ProductFragment;
 import com.paypad.vuk507.menu.tax.TaxEditFragment;
 import com.paypad.vuk507.menu.tax.TaxFragment;
 import com.paypad.vuk507.menu.unit.UnitFragment;
 import com.paypad.vuk507.model.Category;
+import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
@@ -42,7 +45,8 @@ import io.realm.Realm;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 
-public class ItemListFragment extends BaseFragment {
+public class ItemListFragment extends BaseFragment implements
+        ReturnDiscountCallback {
 
     private View mView;
 
@@ -55,6 +59,11 @@ public class ItemListFragment extends BaseFragment {
 
     private ArrayList<String> itemList = new ArrayList<>();
     private ArrayAdapter<String> listAdapter ;
+    private DiscountUpdateCallback discountUpdateCallback;
+
+    public interface DiscountUpdateCallback{
+        void OnDiscountUpdated();
+    }
 
     public ItemListFragment() {
 
@@ -116,7 +125,9 @@ public class ItemListFragment extends BaseFragment {
                 //TODO - Modifiers
                 break;
             case 3:
-                mFragmentNavigation.pushFragment(new DiscountFragment());
+                DiscountFragment discountFragment = new DiscountFragment();
+                discountFragment.setDiscountCallback(this);
+                mFragmentNavigation.pushFragment(discountFragment);
                 break;
             case 4:
                 mFragmentNavigation.pushFragment(new UnitFragment());
@@ -146,5 +157,14 @@ public class ItemListFragment extends BaseFragment {
         }else
             for(ItemsEnum item : values)
                 itemList.add(item.getLabelEn());
+    }
+
+    @Override
+    public void OnReturn(Discount discount, ItemProcessEnum processType) {
+        discountUpdateCallback.OnDiscountUpdated();
+    }
+
+    public void setDiscountUpdateCallback(DiscountUpdateCallback discountUpdateCallback) {
+        this.discountUpdateCallback = discountUpdateCallback;
     }
 }

@@ -2,15 +2,16 @@ package com.paypad.vuk507.model.pojo;
 
 import android.util.Log;
 
-import com.paypad.vuk507.db.ProductDBHelper;
 import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.order.OrderItemTax;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.Split;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
+import com.paypad.vuk507.utils.DataUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class SaleModel implements Serializable {
 
     }
 
+
     public List<Transaction> getTransactions() {
         return transactions;
     }
@@ -72,24 +74,77 @@ public class SaleModel implements Serializable {
         saleItem.setQuantity(1);
         saleItem.setDynamicAmount(isDynamicAmount);
         saleItem.setSaleUuid(sale.getSaleUuid());
-        saleItem.setTaxRate(product.getTaxId() < 0 ? TaxRateEnum.getById(product.getTaxId()).getRateValue() : TaxDBHelper.getTax(product.getTaxId()).getTaxRate());
 
-        //sale.getSaleIds().add(saleItem.getUuid());
-        sale.setSaleCount(sale.getSaleCount() + 1);
+        setOrderItemTaxForProduct(saleItem, product);
+
+        sale.setSaleCount(getSaleCount() + 1);
         sale.setTotalAmount(sale.getTotalAmount() + saleItem.getAmount());
 
         addAllDiscountsToSaleItem(saleItem);
         saleItems.add(saleItem);
 
-
         setDiscountedAmountOfSale();
-
-        Log.i("Info", "::addProduct -> totaAmount:" + sale.getTotalAmount());
 
         return saleItem.getUuid();
     }
 
-    public String addCustomAmount(String name, double amount, String note){
+    public void setOrderItemTaxForCustomItem(SaleItem saleItem,TaxModel taxModel) {
+
+        OrderItemTax orderItemTax = new OrderItemTax();
+        orderItemTax.setOrderItemTaxId(UUID.randomUUID().toString());
+        orderItemTax.setName(taxModel.getName());
+        orderItemTax.setTaxRate(taxModel.getTaxRate());
+        orderItemTax.setTaxId(taxModel.getId());
+
+        if(saleItem.getOrderItemTaxes() == null)
+            saleItem.setOrderItemTaxes(new RealmList<>());
+
+        saleItem.getOrderItemTaxes().add(orderItemTax);
+    }
+
+    public void setOrderItemTaxForProduct(SaleItem saleItem, Product product) {
+
+        TaxModel taxModel = DataUtils.getTaxModelById(product.getTaxId());
+
+        OrderItemTax orderItemTax = new OrderItemTax();
+
+        orderItemTax.setOrderItemTaxId(UUID.randomUUID().toString());
+        orderItemTax.setName(taxModel.getName());
+        orderItemTax.setTaxRate(taxModel.getTaxRate());
+        orderItemTax.setTaxId(taxModel.getId());
+
+        if(saleItem.getOrderItemTaxes() == null)
+            saleItem.setOrderItemTaxes(new RealmList<>());
+
+        saleItem.getOrderItemTaxes().add(orderItemTax);
+    }
+
+    public OrderItemTax getOrderItemTax(TaxModel taxModelx) {
+
+        if(taxModelx == null)
+            return null;
+
+        String orderItemTaxId = UUID.randomUUID().toString();
+
+        TaxModel taxModel;
+
+        if(taxModelx.getId() < 0){
+            TaxRateEnum taxRateEnum = TaxRateEnum.getById(taxModelx.getId());
+            taxModel = new TaxModel();
+            taxModel.setId(taxRateEnum.getId());
+            taxModel.setName(taxRateEnum.getLabel());
+            taxModel.setTaxRate(taxRateEnum.getRateValue());
+        }else
+            taxModel = TaxDBHelper.getTax(taxModelx.getId());
+
+        OrderItemTax orderItemTax = new OrderItemTax();
+        orderItemTax.setOrderItemTaxId(orderItemTaxId);
+        orderItemTax.setName(taxModel.getName());
+        orderItemTax.setTaxRate(taxModel.getTaxRate());
+        return orderItemTax;
+    }
+
+    public String addCustomAmount(String name, double amount, String note, TaxModel taxModel){
         SaleItem saleItem = new SaleItem();
         saleItem.setName(name);
         saleItem.setUuid(UUID.randomUUID().toString());
@@ -99,8 +154,12 @@ public class SaleModel implements Serializable {
         saleItem.setNote(note != null ? note : "");
         saleItem.setSaleUuid(sale.getSaleUuid());
 
+
+        setOrderItemTaxForCustomItem(saleItem, taxModel);
+
+
         //sale.getSaleIds().add(saleItem.getUuid());
-        sale.setSaleCount(sale.getSaleCount() + 1);
+        sale.setSaleCount(getSaleCount() + 1);
         sale.setTotalAmount(sale.getTotalAmount() + saleItem.getAmount());
 
 
@@ -115,10 +174,26 @@ public class SaleModel implements Serializable {
         return saleItem.getUuid();
     }
 
+    public String addCustomItem(SaleItem saleItem, TaxModel taxModel){
+        setOrderItemTaxForCustomItem(saleItem, taxModel);
+
+        saleItem.setAmount(saleItem.getAmount() + ((saleItem.getAmount() / 100d) * taxModel.getTaxRate()));
+
+        sale.setSaleCount(getSaleCount() + 1);
+        sale.setTotalAmount(sale.getTotalAmount() + saleItem.getAmount());
+
+        addAllDiscountsToSaleItem(saleItem);
+        saleItems.add(saleItem);
+
+        setDiscountedAmountOfSale();
+
+        return saleItem.getUuid();
+    }
+
     /* Burada herhangi bir satisa ekleme yapilmaz. Keypad den girilen her tutar degerinde
        Charge butonu uzerinde gorunecek tutar icin bir hesaplama yapilir.
        Hesaplanan indirimli tutar geri donulur */
-    public double getDynamicCustomAmount(String name, double amount, String note){
+    /*public double getDynamicCustomAmount(String name, double amount, String note){
         SaleItem saleItem = new SaleItem();
         saleItem.setName(name);
         saleItem.setUuid(UUID.randomUUID().toString());
@@ -126,6 +201,27 @@ public class SaleModel implements Serializable {
         saleItem.setQuantity(1);
         saleItem.setNote(note != null ? note : "");
 
+        double totalAmount = sale.getTotalAmount() + saleItem.getAmount();
+        double discountedAmount = 0d;
+
+        if (sale.getDiscounts() != null) {
+            for (Discount discount : sale.getDiscounts()) {
+                if (discount.getRate() > 0d) {
+
+                    if (saleItem.getDiscounts() == null)
+                        saleItem.setDiscounts(new RealmList<>());
+
+                    saleItem.getDiscounts().add(discount);
+                }
+            }
+            discountedAmount = totalAmount - getTotalDiscountAmountOfSale();
+            discountedAmount = discountedAmount - getTotalDiscountAmountOfSaleItem(saleItem);
+        }
+
+        return discountedAmount;
+    }*/
+
+    public double getDynamicCustomAmount2(SaleItem saleItem){
         double totalAmount = sale.getTotalAmount() + saleItem.getAmount();
         double discountedAmount = 0d;
 
@@ -171,16 +267,7 @@ public class SaleModel implements Serializable {
             index++;
         }
         //sale.getSaleIds().remove(uuid);
-        sale.setSaleCount(sale.getSaleCount() - 1);
-    }
-
-    public void addTaxToCustomAmount(String uuid, double taxRate){
-        for(SaleItem saleItem : saleItems){
-            if(saleItem.getUuid().equals(uuid)){
-                saleItem.setTaxRate(taxRate);
-                break;
-            }
-        }
+        sale.setSaleCount(getSaleCount() - 1);
     }
 
     public void updateNoteToSaleItem(String uuid, String note){
@@ -326,6 +413,8 @@ public class SaleModel implements Serializable {
 
         if(sale.getTotalAmount() > 0)
             sale.setDiscountedAmount(sale.getTotalAmount() - getTotalDiscountAmountOfSale());
+        else
+            sale.setDiscountedAmount(0d);
 
         if(sale.getDiscountedAmount() <= 0)
             sale.setDiscountedAmount(0d);
@@ -344,12 +433,13 @@ public class SaleModel implements Serializable {
         return discountAmount;
     }
 
-    public void setSaleCount(){
+    public int getSaleCount(){
         int totalSaleCount = 0;
         for(SaleItem saleItem : saleItems)
             totalSaleCount = totalSaleCount + saleItem.getQuantity();
 
         sale.setSaleCount(totalSaleCount);
+        return totalSaleCount;
     }
 
     public void setRemainAmount(){

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,6 +45,7 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
         this.processType = processType;
     }
 
+    @NonNull
     @Override
     public DiscountHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
@@ -60,7 +62,7 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
         private Discount discount;
         private int position;
 
-        public DiscountHolder(View view) {
+        DiscountHolder(View view) {
             super(view);
 
             discountItemCv = view.findViewById(R.id.discountItemCv);
@@ -72,18 +74,19 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
                 public void onClick(View view) {
 
                     if(processType == ItemProcessEnum.SELECTED){
-                        returnDiscountCallback.OnReturn(discount);
+                        returnDiscountCallback.OnReturn(discount, ItemProcessEnum.SELECTED);
                         notifyItemChanged(position);
                     } else {
-                        fragmentNavigation.pushFragment(new DiscountEditFragment(discount, new ReturnDiscountCallback() {
+                        returnDiscountCallback.OnReturn(discount, ItemProcessEnum.SELECTED);
+                        /*fragmentNavigation.pushFragment(new DiscountEditFragment(discount, new ReturnDiscountCallback() {
                             @Override
-                            public void OnReturn(Discount discount) {
-                                returnDiscountCallback.OnReturn(discount);
+                            public void OnReturn(Discount discount, ItemProcessEnum processType) {
+                                returnDiscountCallback.OnReturn(discount, processType);
                                 //discounts.set(position, discount);
                                 //notifyItemChanged(position);
                                 //notifyDataSetChanged();
                             }
-                        }));
+                        }));*/
                     }
 
                 }
@@ -99,14 +102,16 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
         }
 
         private void setEnabilityOfDiscount() {
-            if(SaleModelInstance.getInstance().getSaleModel().isDiscountInSale(discount)){
-                discountItemCv.setEnabled(false);
-                discountNameTv.setTextColor(context.getResources().getColor(R.color.Gray, null));
-                rateOrAmountTv.setTextColor(context.getResources().getColor(R.color.Gray, null));
-            }else {
-                discountItemCv.setEnabled(true);
-                discountNameTv.setTextColor(context.getResources().getColor(R.color.Black, null));
-                rateOrAmountTv.setTextColor(context.getResources().getColor(R.color.Black, null));
+            if(processType == ItemProcessEnum.SELECTED){
+                if(SaleModelInstance.getInstance().getSaleModel().isDiscountInSale(discount)){
+                    discountItemCv.setEnabled(false);
+                    discountNameTv.setTextColor(context.getResources().getColor(R.color.Gray, null));
+                    rateOrAmountTv.setTextColor(context.getResources().getColor(R.color.Gray, null));
+                }else {
+                    discountItemCv.setEnabled(true);
+                    discountNameTv.setTextColor(context.getResources().getColor(R.color.Black, null));
+                    rateOrAmountTv.setTextColor(context.getResources().getColor(R.color.Black, null));
+                }
             }
         }
 

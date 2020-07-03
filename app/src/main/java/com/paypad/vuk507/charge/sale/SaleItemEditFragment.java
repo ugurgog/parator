@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -89,6 +90,13 @@ public class SaleItemEditFragment extends BaseFragment {
     @BindView(R.id.quantity)
     TextView quantity;
 
+    @BindView(R.id.taxSelectrl)
+    RelativeLayout taxSelectrl;
+    @BindView(R.id.taxNameTv)
+    TextView taxNameTv;
+    @BindView(R.id.taxRateTv)
+    TextView taxRateTv;
+
 
     private User user;
     private SaleItem saleItem;
@@ -163,7 +171,7 @@ public class SaleItemEditFragment extends BaseFragment {
                 saleItem.setAmount(saleAmount);
                 saleItem.setQuantity(quantityCount);
                 saleItem.setNote(noteEt.getText().toString());
-                SaleModelInstance.getInstance().getSaleModel().setSaleCount();
+                SaleModelInstance.getInstance().getSaleModel().getSaleCount();
                 returnSaleItemCallback.onReturn(saleItem, ItemProcessEnum.CHANGED);
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
@@ -219,6 +227,15 @@ public class SaleItemEditFragment extends BaseFragment {
                 }));
             }
         });
+
+        if(saleItem.getProductId() <= 0){
+            taxSelectrl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
+        }
     }
 
     private void initVariables() {
@@ -246,6 +263,8 @@ public class SaleItemEditFragment extends BaseFragment {
 
         quantityCount = saleItem.getQuantity();
         quantityCountTv.setText(String.valueOf(quantityCount));
+
+
     }
 
     private void setItemPrice(){
