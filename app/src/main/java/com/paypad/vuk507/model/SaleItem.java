@@ -10,6 +10,7 @@ public class SaleItem extends RealmObject {
 
     private String name;
     private double amount;
+    private double amountIncludingTax;
     private int quantity;
     private String note;
     private RealmList<Discount> discounts;
@@ -34,6 +35,14 @@ public class SaleItem extends RealmObject {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public double getAmountIncludingTax() {
+        return amountIncludingTax;
+    }
+
+    public void setAmountIncludingTax(double amountIncludingTax) {
+        this.amountIncludingTax = amountIncludingTax;
     }
 
     public int getQuantity() {

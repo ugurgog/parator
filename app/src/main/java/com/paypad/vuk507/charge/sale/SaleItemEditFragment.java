@@ -32,15 +32,21 @@ import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.menu.tax.TaxSelectFragment;
+import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.order.OrderItemTax;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.ConversionHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -54,6 +60,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
 public class SaleItemEditFragment extends BaseFragment {
 
@@ -72,6 +79,8 @@ public class SaleItemEditFragment extends BaseFragment {
     TextView priceTv;
     @BindView(R.id.priceLayout)
     LinearLayout priceLayout;
+    @BindView(R.id.includingTaxPriceTv)
+    TextView includingTaxPriceTv;
 
     @BindView(R.id.noteEt)
     EditText noteEt;
@@ -105,6 +114,9 @@ public class SaleItemEditFragment extends BaseFragment {
     private int quantityCount = 0;
     private ReturnSaleItemCallback returnSaleItemCallback;
     private int deleteButtonStatus = 1;
+    private OrderItemTax orderItemTax;
+    private boolean isTaxUpdated = false;
+    private TaxModel mTaxModel;
 
     SaleItemEditFragment(SaleItem saleItem, ReturnSaleItemCallback callback) {
         this.saleItem = saleItem;
@@ -169,9 +181,16 @@ public class SaleItemEditFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 saleItem.setAmount(saleAmount);
+                saleItem.setAmountIncludingTax(saleAmount + ((saleAmount / 100d) * orderItemTax.getTaxRate()));
                 saleItem.setQuantity(quantityCount);
                 saleItem.setNote(noteEt.getText().toString());
                 SaleModelInstance.getInstance().getSaleModel().getSaleCount();
+
+                if(isTaxUpdated && mTaxModel != null)
+                    SaleModelInstance.getInstance().getSaleModel().setOrderItemTaxForCustomItem(saleItem, mTaxModel);
+
+                SaleModelInstance.getInstance().getSaleModel().setDiscountedAmountOfSale();
+
                 returnSaleItemCallback.onReturn(saleItem, ItemProcessEnum.CHANGED);
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
@@ -215,36 +234,47 @@ public class SaleItemEditFragment extends BaseFragment {
         pricell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Product product = new Product();
-                product.setName(saleItem.getName());
-                product.setAmount(saleItem.getAmount());
-                mFragmentNavigation.pushFragment(new DynamicAmountFragment(product, new AmountCallback() {
-                    @Override
-                    public void OnDynamicAmountReturn(double amount) {
-                        saleAmount = amount;
-                        setItemPrice();
-                    }
-                }));
+                if(saleItem.isDynamicAmount()){
+                    Product product = new Product();
+                    product.setName(saleItem.getName());
+                    product.setAmount(saleItem.getAmount());
+                    mFragmentNavigation.pushFragment(new DynamicAmountFragment(product, new AmountCallback() {
+                        @Override
+                        public void OnDynamicAmountReturn(double amount) {
+                            saleAmount = amount;
+                            setItemPrice();
+                        }
+                    }));
+                }
             }
         });
 
-        if(saleItem.getProductId() <= 0){
-            taxSelectrl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
+        taxSelectrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(saleItem.getProductId() <= 0){
+                    mFragmentNavigation.pushFragment(new TaxSelectFragment(new ReturnTaxCallback() {
+                        @Override
+                        public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
+                            if(taxModel != null && taxModel.getName() != null && !taxModel.getName().isEmpty()){
+                                mTaxModel = taxModel;
+                                orderItemTax = ConversionHelper.convertTaxModelToOrderItemTax(taxModel);
+                                setTaxFields();
+                                isTaxUpdated = true;
+                            }
+                        }
+                    }));
                 }
-            });
-        }
+            }
+        });
     }
 
     private void initVariables() {
         discountsRv.setNestedScrollingEnabled(false);
 
-        if(!saleItem.isDynamicAmount())
-            priceLayout.setVisibility(View.GONE);
+        //if(!saleItem.isDynamicAmount())
+        //    priceLayout.setVisibility(View.GONE);
 
-        setToolbarTitle();
         setSaleItemVariables();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -256,25 +286,50 @@ public class SaleItemEditFragment extends BaseFragment {
 
     private void setSaleItemVariables() {
         saleAmount = saleItem.getAmount();
+        orderItemTax = saleItem.getOrderItemTaxes().get(0);
+        quantityCount = saleItem.getQuantity();
+
         setItemPrice();
+        setTaxFields();
 
         if(saleItem.getNote() != null && !saleItem.getNote().isEmpty())
             noteEt.setText(saleItem.getNote());
-
-        quantityCount = saleItem.getQuantity();
+        
         quantityCountTv.setText(String.valueOf(quantityCount));
-
-
     }
 
     private void setItemPrice(){
         priceTv.setText(CommonUtils.getDoubleStrValueForView(saleAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
+        setToolbarTitle(saleAmount);
+
+        if(saleItem.isDynamicAmount())
+            priceTv.setTextColor(getResources().getColor(R.color.Black, null));
+        else
+            priceTv.setTextColor(getResources().getColor(R.color.Gray, null));
+
+        double includingAmount = saleAmount + ((saleAmount / 100d) * orderItemTax.getTaxRate());
+        includingTaxPriceTv.setText(CommonUtils.getDoubleStrValueForView(includingAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
     }
 
-    private void setToolbarTitle() {
-        double totalAmount = saleItem.getAmount();
-        String amountStr = saleItem.getName().concat(" ").concat(CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+    private void setToolbarTitle(double amount) {
+        String amountStr = saleItem.getName().concat(" ").concat(CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
         toolbarTitleTv.setText(amountStr);
+    }
+
+    private void setTaxFields(){
+        taxNameTv.setText((orderItemTax != null && orderItemTax.getName() != null) ? orderItemTax.getName() : "");
+        taxRateTv.setText("% ".concat(CommonUtils.getDoubleStrValueForView(orderItemTax.getTaxRate(), TYPE_RATE)));
+
+        if(saleItem.getProductId() <= 0){
+            taxNameTv.setTextColor(getResources().getColor(R.color.Black, null));
+            taxRateTv.setTextColor(getResources().getColor(R.color.Black, null));
+        }else {
+            taxNameTv.setTextColor(getResources().getColor(R.color.Gray, null));
+            taxRateTv.setTextColor(getResources().getColor(R.color.Gray, null));
+        }
+
+        double includingAmount = saleItem.getAmount() + ((saleItem.getAmount() / 100d) * orderItemTax.getTaxRate());
+        includingTaxPriceTv.setText(CommonUtils.getDoubleStrValueForView(includingAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
     }
 
     public void updateAdapterWithCurrentList(){

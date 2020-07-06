@@ -15,7 +15,7 @@ public interface SaleCalculateCallback {
     void onCustomAmountReturn(double amount);
     void onItemsCleared();
     void onNewSaleCreated();
-    boolean OnCustomItemAdd();
+    void OnCustomItemAdd();
     void onRemoveCustomAmount(double amount);
     void onSaleNoteReturn(String note);
     void onSaleItemEditted();

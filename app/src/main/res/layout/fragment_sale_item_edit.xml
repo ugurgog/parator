@@ -66,6 +66,41 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/including_tax_price_upper"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:textSize="@dimen/select_list_tv_size"
+                android:textColor="@color/Black">
+            </TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="20dp"
+                android:id="@+id/includingTaxPricell">
+
+
+                <TextView
+                    android:id="@+id/includingTaxPriceTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/Gray"
+                    android:textSize="@dimen/default_size_15sp"
+
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.3dp"
+                    android:background="@color/fab_color_shadow"
+                    android:layout_marginTop="5dp"/>
+
+            </LinearLayout>
+
 
 
             <TextView
@@ -155,12 +190,18 @@
 
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/fab_color_shadow"
+                android:layout_marginTop="10dp"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/discounts_upper"
                 android:textStyle="bold"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="30dp"
                 android:textSize="@dimen/select_list_tv_size"
                 android:textColor="@color/Black">
             </TextView>

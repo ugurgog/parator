@@ -181,9 +181,16 @@ public class ChargeFragment extends BaseFragment implements
         toolbarll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(keypadFragment.getAmount() > 0){
-                    //onCustomAmountAdded(keypadFragment.getAmount(), saleNote);
-                    keypadFragment.clearAmountFields();
+
+                if(saleItem != null ){
+                    if(mTaxModel == null){
+                        CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
+                        return ;
+                    }else {
+                        if(!SaleModelInstance.getInstance().getSaleModel().isSaleItemInSale(saleItem)){
+                            OnCustomItemAdd();
+                        }
+                    }
                 }
 
                 startSaleListFragment();
@@ -202,13 +209,19 @@ public class ChargeFragment extends BaseFragment implements
         chargell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(keypadFragment.getAmount() > 0){
-                    //onCustomAmountAdded(keypadFragment.getAmount(), saleNote);
-                    keypadFragment.clearAmountFields();
+                if(saleItem != null ){
+
+                    if(mTaxModel == null){
+                        CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
+                        return ;
+                    }else {
+                        if(!SaleModelInstance.getInstance().getSaleModel().isSaleItemInSale(saleItem)){
+                            OnCustomItemAdd();
+                        }
+                    }
                 }
 
                 SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
-
                 initSelectChargePaymentFragment();
                 mFragmentNavigation.pushFragment(selectChargePaymentFragment);
             }
@@ -400,13 +413,9 @@ public class ChargeFragment extends BaseFragment implements
         SaleModelInstance.getInstance().getSaleModel().addProduct(product, amount, isDynamicAmount);
         addUserUUIDToSale();
 
-        //if (totalAmount > 0)
-        //    SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote, null);
-
         setChargeAmountTv();
         totalAmount = 0d;
         onNewSaleCreated();
-        keypadFragment.clearAmountFields();
     }
 
     @Override
@@ -423,22 +432,17 @@ public class ChargeFragment extends BaseFragment implements
         }
         addUserUUIDToSale();
 
-        if(totalAmount > 0)
-            SaleModelInstance.getInstance().getSaleModel().addCustomAmount(getResources().getString(R.string.custom_amount), totalAmount, saleNote, null);
-
         setChargeAmountTv();
-        totalAmount = 0d;
+        //totalAmount = 0d;
 
         updateDiscountAdapter();
         updateDynamicBoxAdapter();
-        keypadFragment.clearAmountFields();
+        //keypadFragment.clearAmountFields();
     }
 
     @Override
     public void OnTaxSelected(TaxModel taxModel) {
         if(saleItem != null){
-            //orderItemTax = SaleModelInstance.getInstance().getSaleModel().getOrderItemTax(taxModel);
-
             mTaxModel = taxModel;
 
             totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount2(saleItem);
@@ -450,6 +454,8 @@ public class ChargeFragment extends BaseFragment implements
                 chargeAmountTv.setText("");
             else
                 chargeAmountTv.setText(amountStr);
+        }else {
+            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_custom_amount_first));
         }
     }
 
@@ -475,10 +481,16 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     @Override
-    public boolean OnCustomItemAdd() {
+    public void OnCustomItemAdd() {
+
+        if(saleItem == null){
+            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_type_custom_amount));
+            return;
+        }
+
         if(mTaxModel == null){
             CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
-            return false;
+            return;
         }
 
         SaleModelInstance.getInstance().getSaleModel().addCustomItem(saleItem, mTaxModel);
@@ -494,7 +506,6 @@ public class ChargeFragment extends BaseFragment implements
         saleItem = null;
         mTaxModel = null;
         keypadFragment.clearAmountFields();
-        return true;
     }
 
     @Override
@@ -516,21 +527,6 @@ public class ChargeFragment extends BaseFragment implements
             chargeAmountTv.setText("");
         else
             chargeAmountTv.setText(amountStr);
-
-
-
-
-
-        /*
-
-
-        totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount("", amount, "");
-        String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-
-        if(totalAmount <= 0d)
-            chargeAmountTv.setText("");
-        else
-            chargeAmountTv.setText(amountStr);*/
     }
 
     @Override
@@ -551,8 +547,6 @@ public class ChargeFragment extends BaseFragment implements
     public void onSaleNoteReturn(String note) {
         saleNote = note;
     }
-
-
 
     @Override
     public void onCustomerAdded(Customer customer) {

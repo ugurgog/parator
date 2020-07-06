@@ -11,6 +11,7 @@ import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
+import com.paypad.vuk507.utils.ConversionHelper;
 import com.paypad.vuk507.utils.DataUtils;
 
 import java.io.Serializable;
@@ -78,7 +79,8 @@ public class SaleModel implements Serializable {
         setOrderItemTaxForProduct(saleItem, product);
 
         sale.setSaleCount(getSaleCount() + 1);
-        sale.setTotalAmount(sale.getTotalAmount() + saleItem.getAmount());
+
+        sale.setTotalAmount(sale.getTotalAmount() + saleItem.getAmountIncludingTax());
 
         addAllDiscountsToSaleItem(saleItem);
         saleItems.add(saleItem);
@@ -90,36 +92,37 @@ public class SaleModel implements Serializable {
 
     public void setOrderItemTaxForCustomItem(SaleItem saleItem,TaxModel taxModel) {
 
-        OrderItemTax orderItemTax = new OrderItemTax();
-        orderItemTax.setOrderItemTaxId(UUID.randomUUID().toString());
-        orderItemTax.setName(taxModel.getName());
-        orderItemTax.setTaxRate(taxModel.getTaxRate());
-        orderItemTax.setTaxId(taxModel.getId());
+        if(saleItem.getOrderItemTaxes() != null && saleItem.getOrderItemTaxes().size() > 0)
+            saleItem.getOrderItemTaxes().clear();
+
+        OrderItemTax orderItemTax = ConversionHelper.convertTaxModelToOrderItemTax(taxModel);
 
         if(saleItem.getOrderItemTaxes() == null)
             saleItem.setOrderItemTaxes(new RealmList<>());
 
         saleItem.getOrderItemTaxes().add(orderItemTax);
+        saleItem.setAmountIncludingTax(saleItem.getAmount() + ((saleItem.getAmount() / 100d) * taxModel.getTaxRate()));
     }
 
     public void setOrderItemTaxForProduct(SaleItem saleItem, Product product) {
 
+        if(saleItem.getOrderItemTaxes() != null && saleItem.getOrderItemTaxes().size() > 0)
+            saleItem.getOrderItemTaxes().clear();
+
         TaxModel taxModel = DataUtils.getTaxModelById(product.getTaxId());
 
-        OrderItemTax orderItemTax = new OrderItemTax();
-
-        orderItemTax.setOrderItemTaxId(UUID.randomUUID().toString());
-        orderItemTax.setName(taxModel.getName());
-        orderItemTax.setTaxRate(taxModel.getTaxRate());
-        orderItemTax.setTaxId(taxModel.getId());
+        OrderItemTax orderItemTax = ConversionHelper.convertTaxModelToOrderItemTax(taxModel);
 
         if(saleItem.getOrderItemTaxes() == null)
             saleItem.setOrderItemTaxes(new RealmList<>());
 
         saleItem.getOrderItemTaxes().add(orderItemTax);
+
+        saleItem.setAmountIncludingTax(saleItem.getAmount());
+        //saleItem.setAmountIncludingTax(saleItem.getAmount() + ((saleItem.getAmount() / 100d) * taxModel.getTaxRate()));
     }
 
-    public OrderItemTax getOrderItemTax(TaxModel taxModelx) {
+    /*public OrderItemTax getOrderItemTax(TaxModel taxModelx) {
 
         if(taxModelx == null)
             return null;
@@ -142,9 +145,9 @@ public class SaleModel implements Serializable {
         orderItemTax.setName(taxModel.getName());
         orderItemTax.setTaxRate(taxModel.getTaxRate());
         return orderItemTax;
-    }
+    }*/
 
-    public String addCustomAmount(String name, double amount, String note, TaxModel taxModel){
+    /*public String addCustomAmount(String name, double amount, String note, TaxModel taxModel){
         SaleItem saleItem = new SaleItem();
         saleItem.setName(name);
         saleItem.setUuid(UUID.randomUUID().toString());
@@ -172,15 +175,17 @@ public class SaleModel implements Serializable {
         Log.i("Info", "::addCustomAmount -> totaAmount:" + sale.getTotalAmount());
 
         return saleItem.getUuid();
-    }
+    }*/
 
     public String addCustomItem(SaleItem saleItem, TaxModel taxModel){
         setOrderItemTaxForCustomItem(saleItem, taxModel);
 
-        saleItem.setAmount(saleItem.getAmount() + ((saleItem.getAmount() / 100d) * taxModel.getTaxRate()));
+        //saleItem.setAmount(saleItem.getAmount() + ((saleItem.getAmount() / 100d) * taxModel.getTaxRate()));
+
+
 
         sale.setSaleCount(getSaleCount() + 1);
-        sale.setTotalAmount(sale.getTotalAmount() + saleItem.getAmount());
+        sale.setTotalAmount(sale.getTotalAmount() + saleItem.getAmountIncludingTax());
 
         addAllDiscountsToSaleItem(saleItem);
         saleItems.add(saleItem);
@@ -257,7 +262,7 @@ public class SaleModel implements Serializable {
         }
     }
 
-    public void removeSaleItem(String uuid){
+    /*public void removeSaleItem(String uuid){
         int index = 0;
         for(SaleItem saleItem : saleItems){
             if(saleItem.getUuid().equals(uuid)){
@@ -268,7 +273,7 @@ public class SaleModel implements Serializable {
         }
         //sale.getSaleIds().remove(uuid);
         sale.setSaleCount(getSaleCount() - 1);
-    }
+    }*/
 
     public void updateNoteToSaleItem(String uuid, String note){
         for(SaleItem saleItem : saleItems){
@@ -313,10 +318,10 @@ public class SaleModel implements Serializable {
         sale.getDiscounts().add(discount);
         setDiscountedAmountOfSale();
 
-        double amount = sale.getTotalAmount() - discount.getAmount();
+        /*double amount = sale.getTotalAmount() - discount.getAmount();
 
         if(amount < 0d)
-            amount = 0d;
+            amount = 0d;*/
 
         //sale.setDiscountedAmount(amount);
     }
@@ -407,7 +412,7 @@ public class SaleModel implements Serializable {
     public void setDiscountedAmountOfSale(){
         double totalAmnt = 0d;
         for(SaleItem saleItem : saleItems)
-            totalAmnt = totalAmnt + (saleItem.getAmount() * saleItem.getQuantity());
+            totalAmnt = totalAmnt + (saleItem.getAmountIncludingTax() * saleItem.getQuantity());
 
         sale.setTotalAmount(totalAmnt);
 
@@ -421,7 +426,7 @@ public class SaleModel implements Serializable {
     }
 
     public double getTotalDiscountAmountOfSaleItem(SaleItem saleItem){
-        double totalAmount = saleItem.getAmount() * (double) saleItem.getQuantity();
+        double totalAmount = saleItem.getAmountIncludingTax() * (double) saleItem.getQuantity();
         double discountAmount = 0d;
 
         if(saleItem.getDiscounts() != null && saleItem.getDiscounts().size() > 0){
@@ -512,4 +517,11 @@ public class SaleModel implements Serializable {
         return false;
     }
 
+    public boolean isSaleItemInSale(SaleItem saleItem){
+        for(SaleItem saleItem1 : saleItems){
+            if(saleItem.getUuid().equals(saleItem1.getUuid()))
+                return true;
+        }
+        return false;
+    }
 }

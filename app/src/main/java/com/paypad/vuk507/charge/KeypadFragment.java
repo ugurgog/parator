@@ -375,7 +375,10 @@ public class KeypadFragment extends BaseFragment implements
 
                 if(dynamicBoxModel.getItemId() == PaymentTypeEnum.CASH.getId()){
 
-                    if(fillSaleInfo()){
+                    if(amount > 0d){
+                        CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
+                    }else {
+                        SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
                         createInitialTransaction();
                         initCashSelectFragment();
                         mFragmentNavigation.pushFragment(cashSelectFragment);
@@ -383,12 +386,14 @@ public class KeypadFragment extends BaseFragment implements
 
                 }else if(dynamicBoxModel.getItemId() == PaymentTypeEnum.CREDIT_CARD.getId()){
 
-                    if(fillSaleInfo()){
+                    if(amount > 0d){
+                        CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
+                    }else {
+                        SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
                         createInitialTransaction();
                         initCreditCardSelectFragment();
                         mFragmentNavigation.pushFragment(creditCardSelectFragment);
                     }
-
                 }else {
 
                     //TODO - Diger odeme tipleri icin burada aksiyon alacagiz
@@ -414,14 +419,14 @@ public class KeypadFragment extends BaseFragment implements
 
     }
 
-    private boolean fillSaleInfo(){
+    /*private boolean fillSaleInfo(){
 
         if(saleCalculateCallback.OnCustomItemAdd()){
             SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
             return true;
         }else
             return false;
-    }
+    }*/
 
     private void initCashSelectFragment(){
         cashSelectFragment = new CashSelectFragment(mTransaction);

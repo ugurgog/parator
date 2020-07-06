@@ -184,6 +184,9 @@
     <string name="amount_can_not_be_empty">Tutar boş olamaz</string>
     <string name="product_name_can_not_be_empty">Ürün adı boş olamaz</string>
     <string name="please_select_tax_rate">Lütfen özel ürün için KDV oranı seçin</string>
+    <string name="please_type_custom_amount">Lütfen geçerli bir tutar giriniz</string>
+    <string name="please_select_custom_amount_first">Lütfen önce tutar giriniz</string>
+    <string name="including_tax_price_upper">KDV DAHİL FİYAT</string>
 
     <string name="discount_name_can_not_be_empty">İndirim adı boş olamaz</string>
     <string name="discount_rate_amount_can_not_be_empty">İndirim tutarı veya indirim oranı dolu olmalıdır</string>
