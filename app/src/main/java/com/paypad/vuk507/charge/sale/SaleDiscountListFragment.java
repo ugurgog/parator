@@ -32,7 +32,6 @@ import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.menu.tax.TaxEditFragment;
-import com.paypad.vuk507.menu.tax.adapters.TaxListAdapter;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.SaleItem;

@@ -21,6 +21,7 @@
     <string name="create_unit">Create Unit</string>
     <string name="edit_unit">Edit Unit</string>
     <string name="delete_unit">Delete Unit</string>
+    <string name="delete_category">Delete Category</string>
     <string name="confirm_delete">Confirm Delete</string>
     <string name="delete_tax">Delete Tax</string>
     <string name="create_tax">Create Tax</string>
@@ -61,6 +62,7 @@
     <string name="remove_item">Remove Item</string>
     <string name="remove_customer">Remove Customer</string>
     <string name="all_items">All Items</string>
+    <string name="unit_undefined">Unit Undefined</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -178,6 +180,10 @@
     <string name="name">Name</string>
     <string name="edit">Edit</string>
     <string name="edit_personal_information">Edit Personal Information</string>
+    <string name="system_taxes">SYSTEM TAXES</string>
+    <string name="user_defined_taxes">USER DEFINED TAXES</string>
+    <string name="system_units">SYSTEM UNITS</string>
+    <string name="user_defined_units">USER DEFINED UNITS</string>
 
 
 
@@ -216,12 +222,25 @@
     <string name="sure_to_delete_dynamic_box">Are you sure you want to delete the dynamic box?</string>
     <string name="sure_to_delete_customer">Are you sure you want to delete the customer?</string>
     <string name="sure_to_delete_selected_customers">Are you sure to delete selected customers?</string>
+    <string name="category_delete_question_description1">There are</string>
+    <string name="category_delete_question_description2">products under this category. This operation cannot be done.</string>
+    <string name="unit_delete_question_description1">There are</string>
+    <string name="unit_delete_question_description2">products under this unit. This operation cannot be done.</string>
+    <string name="tax_delete_question_description1">There are</string>
+    <string name="tax_delete_question_description2">products under this tax. This operation cannot be done.</string>
+
 
 
     <string name="select_picture">Select Picture</string>
     <string name="open_camera">Open Camera</string>
     <string name="open_gallery">Open Gallery</string>
     <string name="remove_photo">Remove photo</string>
+
+    <string name="choose_label_color">CHOOSE LABEL COLOR</string>
+    <string name="photo_label">PHOTO LABEL</string>
+
+    <string name="edit_category_tile">Edit Category Tile</string>
+    <string name="edit_item_tile">Edit Item Tile</string>
 
     <string name="error_upper">ERROR</string>
     <string name="yes_upper">YES</string>

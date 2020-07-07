@@ -98,11 +98,12 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
         }
 
         private void setShortenNameColor() {
-            int colorCode = CommonUtils.getDarkRandomColor(context);
-            GradientDrawable imageShape = ShapeUtil.getShape(context.getResources().getColor(colorCode, null),
-                    context.getResources().getColor(colorCode, null),
-                    GradientDrawable.OVAL, 50, 0);
-            shortCustomerNameTv.setBackground(imageShape);
+            if(customer.getColorId() != 0){
+                GradientDrawable imageShape = ShapeUtil.getShape(context.getResources().getColor(customer.getColorId(), null),
+                        context.getResources().getColor(customer.getColorId(), null),
+                        GradientDrawable.OVAL, 50, 0);
+                shortCustomerNameTv.setBackground(imageShape);
+            }
         }
 
         private void setCustomerInfo() {

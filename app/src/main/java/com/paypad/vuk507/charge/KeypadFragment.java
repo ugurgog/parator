@@ -24,6 +24,8 @@ import com.paypad.vuk507.charge.dynamicStruct.StructSelectFragment;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.payment.CashSelectFragment;
 import com.paypad.vuk507.charge.payment.CreditCardSelectFragment;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
@@ -124,6 +126,7 @@ public class KeypadFragment extends BaseFragment implements
     private SaleCalculateCallback saleCalculateCallback;
 
     private Transaction mTransaction;
+    private IOrderManager orderManager;
 
     public KeypadFragment() {
 
@@ -189,6 +192,7 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     private void initVariables() {
+        orderManager = new OrderManager();
         realm = Realm.getDefaultInstance();
         keypad = mView.findViewById(R.id.keypad);
         saleAmountTv.setHint("0,00".concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
@@ -214,7 +218,7 @@ public class KeypadFragment extends BaseFragment implements
                         saleCalculateCallback.onRemoveCustomAmount(amount);
                         clearAmountFields();
 
-                        if(SaleModelInstance.getInstance().getSaleModel().getSaleCount() == 0){
+                        if(orderManager.getOrderItemCount() == 0){
                             saleCalculateCallback.onItemsCleared();
                         }
 
@@ -378,7 +382,7 @@ public class KeypadFragment extends BaseFragment implements
                     if(amount > 0d){
                         CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
                     }else {
-                        SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
+                        orderManager.setRemainAmountByDiscountedAmount();
                         createInitialTransaction();
                         initCashSelectFragment();
                         mFragmentNavigation.pushFragment(cashSelectFragment);
@@ -389,7 +393,7 @@ public class KeypadFragment extends BaseFragment implements
                     if(amount > 0d){
                         CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
                     }else {
-                        SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
+                        orderManager.setRemainAmountByDiscountedAmount();
                         createInitialTransaction();
                         initCreditCardSelectFragment();
                         mFragmentNavigation.pushFragment(creditCardSelectFragment);
@@ -439,14 +443,8 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     private void createInitialTransaction() {
-        mTransaction = new Transaction();
-        mTransaction.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
-        mTransaction.setTransactionUuid(UUID.randomUUID().toString());
-        mTransaction.setSeqNumber(SaleModelInstance.getInstance().getSaleModel().getMaxSplitId() + 1);
-        mTransaction.setTransactionAmount(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount());
-        SaleModelInstance.getInstance().getSaleModel().getTransactions().add(mTransaction);
+        mTransaction = orderManager.addTransactionToOrder(orderManager.getRemainAmount());
     }
-
 
     private void deleteDynamicBox(DynamicBoxModel dynamicBoxModel){
         new CustomDialogBox.Builder((Activity) getContext())
@@ -609,5 +607,9 @@ public class KeypadFragment extends BaseFragment implements
         }
 
         paymentStatusCallback.OnPaymentReturn(status);
+    }
+
+    public TextView getSaleAmountTv() {
+        return saleAmountTv;
     }
 }

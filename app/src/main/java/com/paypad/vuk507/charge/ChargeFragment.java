@@ -1,22 +1,32 @@
 package com.paypad.vuk507.charge;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
@@ -26,13 +36,17 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.adapter.ChargeViewPagerAdapter;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.payment.SelectChargePaymentFragment;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
+import com.paypad.vuk507.charge.utils.AnimationUtil;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.interfaces.ReturnViewCallback;
 import com.paypad.vuk507.login.InitialActivity;
 import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.menu.customer.CustomerFragment;
@@ -64,7 +78,8 @@ import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 public class ChargeFragment extends BaseFragment implements
         SaleCalculateCallback,
         PaymentStatusCallback,
-        ItemListFragment.DiscountUpdateCallback {
+        ItemListFragment.DiscountUpdateCallback,
+        ReturnViewCallback {
 
     View mView;
 
@@ -85,6 +100,10 @@ public class ChargeFragment extends BaseFragment implements
     LinearLayout chargell;
     @BindView(R.id.chargeAmountTv)
     TextView chargeAmountTv;
+    @BindView(R.id.mainll)
+    LinearLayout mainll;
+    @BindView(R.id.mainFl)
+    FrameLayout mainFl;
 
     @BindView(R.id.toolbarTitleTv)
     AppCompatTextView toolbarTitleTv;
@@ -113,6 +132,9 @@ public class ChargeFragment extends BaseFragment implements
     private SaleItem saleItem = null;
     //private OrderItemTax orderItemTax = null;
     private TaxModel mTaxModel = null;
+    private IOrderManager orderManager;
+
+    private TextView animationTextView;
 
     //private List<Discount> discountList;
 
@@ -171,6 +193,7 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void initVariables() {
+        orderManager = new OrderManager();
         chargeAmountTv.setHint("0,00".concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
         chargell.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.DodgerBlue, null),
                 getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 20, 0));
@@ -187,12 +210,11 @@ public class ChargeFragment extends BaseFragment implements
                         CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
                         return ;
                     }else {
-                        if(!SaleModelInstance.getInstance().getSaleModel().isSaleItemInSale(saleItem)){
+                        if(!orderManager.isSaleItemInSale(saleItem)){
                             OnCustomItemAdd();
                         }
                     }
                 }
-
                 startSaleListFragment();
             }
         });
@@ -215,13 +237,17 @@ public class ChargeFragment extends BaseFragment implements
                         CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
                         return ;
                     }else {
-                        if(!SaleModelInstance.getInstance().getSaleModel().isSaleItemInSale(saleItem)){
+                        if(!orderManager.isSaleItemInSale(saleItem)){
                             OnCustomItemAdd();
                         }
+
+                        /*if(!SaleModelInstance.getInstance().getSaleModel().isSaleItemInSale(saleItem)){
+                            OnCustomItemAdd();
+                        }*/
                     }
                 }
 
-                SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
+                orderManager.setRemainAmountByDiscountedAmount();
                 initSelectChargePaymentFragment();
                 mFragmentNavigation.pushFragment(selectChargePaymentFragment);
             }
@@ -262,6 +288,7 @@ public class ChargeFragment extends BaseFragment implements
 
         libraryFragment = new LibraryFragment();
         libraryFragment.setSaleCalculateCallback(this);
+        libraryFragment.setReturnViewCallback(this);
 
         chargeViewPagerAdapter = new ChargeViewPagerAdapter(getFragmentManager());
         chargeViewPagerAdapter.addFrag(keypadFragment, getContext().getResources().getString(R.string.keypad));
@@ -410,7 +437,8 @@ public class ChargeFragment extends BaseFragment implements
 
     @Override
     public void onProductSelected(Product product, double amount, boolean isDynamicAmount) {
-        SaleModelInstance.getInstance().getSaleModel().addProduct(product, amount, isDynamicAmount);
+        orderManager.addProductToOrder(product, amount, isDynamicAmount);
+        //SaleModelInstance.getInstance().getSaleModel().addProduct(product, amount, isDynamicAmount);
         addUserUUIDToSale();
 
         setChargeAmountTv();
@@ -426,9 +454,11 @@ public class ChargeFragment extends BaseFragment implements
     @Override
     public void onDiscountSelected(Discount discount) {
         if(discount.getRate() > 0){
-            SaleModelInstance.getInstance().getSaleModel().addDiscountRateToAllSaleItems(discount);
+            orderManager.addDiscountRateToAllSaleItems(discount);
+            //SaleModelInstance.getInstance().getSaleModel().addDiscountRateToAllSaleItems(discount);
         }else if(discount.getAmount() > 0){
-            SaleModelInstance.getInstance().getSaleModel().addDiscountAmount(discount);
+            orderManager.addDiscountToOrder(discount);
+            //SaleModelInstance.getInstance().getSaleModel().addDiscountAmount(discount);
         }
         addUserUUIDToSale();
 
@@ -445,7 +475,8 @@ public class ChargeFragment extends BaseFragment implements
         if(saleItem != null){
             mTaxModel = taxModel;
 
-            totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount2(saleItem);
+            totalAmount = orderManager.getDiscountedAmountByAddingCustomItem(saleItem);
+            //totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount2(saleItem);
 
             totalAmount = totalAmount + ((totalAmount / 100d) * mTaxModel.getTaxRate());
             String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
@@ -493,9 +524,14 @@ public class ChargeFragment extends BaseFragment implements
             return;
         }
 
-        SaleModelInstance.getInstance().getSaleModel().addCustomItem(saleItem, mTaxModel);
+        if(saleNote != null)
+            saleItem.setNote(saleNote);
 
-        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
+        orderManager.addCustomItemToOrder(saleItem, mTaxModel);
+        //SaleModelInstance.getInstance().getSaleModel().addCustomItem(saleItem, mTaxModel);
+
+        currentSaleCount = orderManager.getOrderItemCount();
+        //currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
         addUserUUIDToSale();
 
         setCurrentSaleCount();
@@ -506,6 +542,8 @@ public class ChargeFragment extends BaseFragment implements
         saleItem = null;
         mTaxModel = null;
         keypadFragment.clearAmountFields();
+
+        startAnimation(keypadFragment.getSaleAmountTv());
     }
 
     @Override
@@ -520,7 +558,9 @@ public class ChargeFragment extends BaseFragment implements
         saleItem.setNote(saleNote != null ? saleNote : "");
         saleItem.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
 
-        totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount2(saleItem);
+        //totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount2(saleItem);
+        totalAmount = orderManager.getDiscountedAmountByAddingCustomItem(saleItem);
+
         String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
 
         if(totalAmount <= 0d)
@@ -565,7 +605,8 @@ public class ChargeFragment extends BaseFragment implements
 
     @Override
     public void onSaleItemEditted() {
-        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
+        //currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
+        currentSaleCount = orderManager.getOrderItemCount();
         setCurrentSaleCount();
         setChargeAmountTv();
     }
@@ -573,7 +614,8 @@ public class ChargeFragment extends BaseFragment implements
     @Override
     public void onSaleItemDeleted() {
 
-        currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
+        //currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
+        currentSaleCount = orderManager.getOrderItemCount();
         setCurrentSaleCount();
         setChargeAmountTv();
     }
@@ -591,7 +633,9 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void setChargeAmountTv(){
-        SaleModelInstance.getInstance().getSaleModel().setDiscountedAmountOfSale();
+        //SaleModelInstance.getInstance().getSaleModel().setDiscountedAmountOfSale();
+        orderManager.setDiscountedAmountOfSale();
+
         double amountx = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount();
         String amountStr = CommonUtils.getDoubleStrValueForView(amountx, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
 
@@ -621,7 +665,8 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void addUserUUIDToSale(){
-        SaleModelInstance.getInstance().getSaleModel().setSaleUserUuid(user.getUuid());
+        orderManager.setUserIdToOrder(user.getUuid());
+        //SaleModelInstance.getInstance().getSaleModel().setSaleUserUuid(user.getUuid());
     }
 
     @Override
@@ -644,5 +689,74 @@ public class ChargeFragment extends BaseFragment implements
     private void updateDiscountAdapter() {
         if(libraryFragment != null && libraryFragment.getDiscountListAdapter() != null)
             libraryFragment.setDiscountAdapter();
+    }
+
+    private void startAnimation(View startView){
+
+
+        AnimationUtil.startAnimation(startView, saleCountTv, mainFl, (Activity) getContext());
+
+        if(1 == 1)
+            return;
+
+        int[] location = new int[2];
+        startView.getLocationOnScreen(location);
+        int x1 = location[0];
+        int y1 = location[1];
+
+        location = new int[2];
+        saleCountTv.getLocationOnScreen(location);
+        int x2 = location[0];
+        int y2 = location[1];
+
+        TranslateAnimation anim = null;
+        if(startView instanceof TextView){
+            anim = new TranslateAnimation(x1 + startView.getWidth()/2,
+                    x2, y1 - startView.getHeight()
+                    , y2 - saleCountTv.getHeight() + 13);
+        }else if(startView instanceof FrameLayout){
+            anim = new TranslateAnimation(x1 + startView.getWidth()/2,
+                    x2, y1  , y2 - saleCountTv.getHeight() + 13);
+        }
+
+        if(anim == null) return;
+
+        anim.setDuration(300);
+
+        anim.setAnimationListener(new TranslateAnimation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) { }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) { }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mainFl.removeView(animationTextView);
+            }
+        });
+
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.layout_sale_count, null);
+
+        animationTextView = (TextView) view;
+
+        animationTextView.setVisibility(View.VISIBLE);
+        animationTextView.setText("1");
+
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        animationTextView.setLayoutParams(params);
+
+        params.height = CommonUtils.getPaddingInPixels(getContext(), 30f);
+        params.width = CommonUtils.getPaddingInPixels(getContext(), 30f);
+        animationTextView.setLayoutParams(params);
+
+        mainFl.addView(animationTextView);
+        view.startAnimation(anim);
+    }
+
+    @Override
+    public void OnViewCallback(View view) {
+        startAnimation(view);
     }
 }

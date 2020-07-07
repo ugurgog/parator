@@ -2,6 +2,7 @@ package com.paypad.vuk507.charge.payment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import com.paypad.vuk507.charge.payment.utils.SendMail;
 import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
 import com.paypad.vuk507.db.SaleDBHelper;
+import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
@@ -46,6 +48,7 @@ import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
+import com.paypad.vuk507.utils.LogUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -158,6 +161,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
         btnReceipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                cancelCounter();
                 handleMailResponse(null, "");
             }
         });
@@ -165,6 +169,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
         btnEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                cancelCounter();
                 initSendReceiptEmailFragment();
                 mFragmentNavigation.pushFragment(sendReceiptEmailFragment);
             }
@@ -173,6 +178,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
         continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                cancelCounter();
                 paymentStatusCallback.OnPaymentReturn(paymentStatus);
                 //Objects.requireNonNull(getActivity()).onBackPressed();
             }
@@ -182,15 +188,19 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
             @Override
             public void onClick(View view) {
 
+                cancelCounter();
+
                 if(SaleModelInstance.getInstance().getSaleModel().getSale().getCustomerId() == 0){
                     mFragmentNavigation.pushFragment(new CustomerFragment(PaymentCompletedFragment.class.getName(), new ReturnCustomerCallback() {
                         @Override
                         public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
                             addCustomerToSale(customer);
+                            startCounter();
                         }
                     }));
                 }else {
                     removeCustomerFromSale();
+                    startCounter();
                 }
             }
         });
@@ -200,6 +210,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
         if(mProcessDirectionType == ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED){
             paymentStatus = STATUS_NEW_SALE;
             continueBtn.setText(getResources().getString(R.string.new_sale));
+            startCounter();
         }else{
             paymentStatus = STATUS_CONTINUE;
             continueBtn.setText(getResources().getString(R.string.continue_text));
@@ -223,6 +234,24 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
                     .concat(getResources().getString(R.string.change)));
         }
     }
+
+    private void startCounter(){
+        myCountDown.start();
+    }
+
+    private void cancelCounter(){
+        myCountDown.cancel();
+    }
+
+    private CountDownTimer myCountDown = new CountDownTimer(10000, 1000) {
+        public void onTick(long millisUntilFinished) {
+            Log.i("Info", "::myCountDown millisUntilFinished:" + String.valueOf(millisUntilFinished));
+        }
+
+        public void onFinish() {
+            paymentStatusCallback.OnPaymentReturn(paymentStatus);
+        }
+    };
 
     private void setPaymentInfoTv() {
 
@@ -291,7 +320,13 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     public void OnMailSendResponse(BaseResponse baseResponse, String email) {
         if(sendReceiptEmailFragment != null)
             Objects.requireNonNull(sendReceiptEmailFragment.getActivity()).onBackPressed();
+
         handleMailResponse(baseResponse, email);
+    }
+
+    @Override
+    public void OnBackPressed() {
+        startCounter();
     }
 
     private void handleMailResponse(BaseResponse baseResponse, String email) {
@@ -302,8 +337,19 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
                 .addToBackStack(null)
                 .commit();
 
+        if(baseResponse != null && baseResponse.isSuccess()){
+            mTransaction.setMailSend(true);
+            mTransaction.setMailAdress(email);
+        }else
+            mTransaction.setMailSend(false);
+
+        BaseResponse mailSendresponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
+        DataUtils.showBaseResponseMessage(getContext(),mailSendresponse);
+
+        LogUtil.logTransaction(mTransaction);
+
         btnEmail.setVisibility(View.GONE);
         btnReceipt.setVisibility(View.GONE);
-
+        startCounter();
     }
 }

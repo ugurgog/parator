@@ -191,21 +191,32 @@ public class TaxSelectFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
-
         taxModelList = new ArrayList<>();
+        addDefaultTaxTitle(getResources().getString(R.string.system_taxes));
         fillItems();
 
         taxModels = TaxDBHelper.getAllTaxes(user.getUsername());
+
+        if(taxModels != null && taxModels.size() > 0)
+            addDefaultTaxTitle(getResources().getString(R.string.user_defined_taxes));
+
         taxModelList.addAll( new ArrayList(taxModels));
 
-        taxSelectListAdapter = new TaxSelectListAdapter(getContext(), taxModelList, mFragmentNavigation, new ReturnTaxCallback() {
+        taxSelectListAdapter = new TaxSelectListAdapter(taxModelList, mFragmentNavigation, new ReturnTaxCallback() {
             @Override
             public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
                 returnTaxCallback.OnReturn(taxModel, ItemProcessEnum.SELECTED);
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
-        });
+        }, ItemProcessEnum.SELECTED);
         taxRv.setAdapter(taxSelectListAdapter);
+    }
+
+    private void addDefaultTaxTitle(String taxName){
+        TaxModel taxModel = new TaxModel();
+        taxModel.setId(0);
+        taxModel.setName(taxName);
+        taxModelList.add(taxModel);
     }
 
     private void fillItems() {
@@ -224,7 +235,7 @@ public class TaxSelectFragment extends BaseFragment {
             taxSelectListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0 && taxModelList.size() > 0)
+                    if (size == 0 && (taxModelList != null && taxModelList.size() > 0))
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

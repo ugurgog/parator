@@ -23,6 +23,9 @@ public class Transaction extends RealmObject {
     private boolean paymentCompleted;
     private String cardNumber;
     private String cardExpireDate;
+    private boolean isMailSend;
+    private String mailAdress;
+
     private Date createDate;
     @Index
     private String userUuid;
@@ -137,5 +140,21 @@ public class Transaction extends RealmObject {
 
     public void setSeqNumber(long seqNumber) {
         this.seqNumber = seqNumber;
+    }
+
+    public boolean isMailSend() {
+        return isMailSend;
+    }
+
+    public void setMailSend(boolean mailSend) {
+        isMailSend = mailSend;
+    }
+
+    public String getMailAdress() {
+        return mailAdress;
+    }
+
+    public void setMailAdress(String mailAdress) {
+        this.mailAdress = mailAdress;
     }
 }

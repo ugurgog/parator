@@ -31,12 +31,6 @@
         android:orientation="vertical"
         android:layout_marginBottom="10dp">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.7dp"
-            android:background="@color/fab_color_shadow"
-            android:layout_marginBottom="10dp"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/discountRv"
             android:layout_width="match_parent"

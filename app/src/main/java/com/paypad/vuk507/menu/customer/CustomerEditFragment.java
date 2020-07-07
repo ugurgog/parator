@@ -431,6 +431,7 @@ public class CustomerEditFragment extends BaseFragment
             customer.setCreateDate(new Date());
             customer.setId(CustomerDBHelper.getCustomerCurrentPrimaryKeyId());
             customer.setUserUuid(user.getUuid());
+            customer.setColorId(CommonUtils.getDarkRandomColor(getContext()));
             inserted = true;
         }
 

@@ -24,6 +24,8 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.sale.adapters.SaleItemDiscountListAdapter;
 import com.paypad.vuk507.charge.sale.adapters.SaleListAdapter;
 import com.paypad.vuk507.db.CategoryDBHelper;
@@ -117,6 +119,7 @@ public class SaleItemEditFragment extends BaseFragment {
     private OrderItemTax orderItemTax;
     private boolean isTaxUpdated = false;
     private TaxModel mTaxModel;
+    private IOrderManager orderManager;
 
     SaleItemEditFragment(SaleItem saleItem, ReturnSaleItemCallback callback) {
         this.saleItem = saleItem;
@@ -184,12 +187,12 @@ public class SaleItemEditFragment extends BaseFragment {
                 saleItem.setAmountIncludingTax(saleAmount + ((saleAmount / 100d) * orderItemTax.getTaxRate()));
                 saleItem.setQuantity(quantityCount);
                 saleItem.setNote(noteEt.getText().toString());
-                SaleModelInstance.getInstance().getSaleModel().getSaleCount();
+                orderManager.getOrderItemCount();
 
                 if(isTaxUpdated && mTaxModel != null)
-                    SaleModelInstance.getInstance().getSaleModel().setOrderItemTaxForCustomItem(saleItem, mTaxModel);
+                    orderManager.setOrderItemTaxForCustomItem(saleItem, mTaxModel);
 
-                SaleModelInstance.getInstance().getSaleModel().setDiscountedAmountOfSale();
+                orderManager.setDiscountedAmountOfSale();
 
                 returnSaleItemCallback.onReturn(saleItem, ItemProcessEnum.CHANGED);
                 Objects.requireNonNull(getActivity()).onBackPressed();
@@ -270,6 +273,7 @@ public class SaleItemEditFragment extends BaseFragment {
     }
 
     private void initVariables() {
+        orderManager = new OrderManager();
         discountsRv.setNestedScrollingEnabled(false);
 
         //if(!saleItem.isDynamicAmount())
@@ -294,7 +298,7 @@ public class SaleItemEditFragment extends BaseFragment {
 
         if(saleItem.getNote() != null && !saleItem.getNote().isEmpty())
             noteEt.setText(saleItem.getNote());
-        
+
         quantityCountTv.setText(String.valueOf(quantityCount));
     }
 
@@ -307,8 +311,7 @@ public class SaleItemEditFragment extends BaseFragment {
         else
             priceTv.setTextColor(getResources().getColor(R.color.Gray, null));
 
-        double includingAmount = saleAmount + ((saleAmount / 100d) * orderItemTax.getTaxRate());
-        includingTaxPriceTv.setText(CommonUtils.getDoubleStrValueForView(includingAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
+        setIncludingTaxAmount();
     }
 
     private void setToolbarTitle(double amount) {
@@ -328,7 +331,11 @@ public class SaleItemEditFragment extends BaseFragment {
             taxRateTv.setTextColor(getResources().getColor(R.color.Gray, null));
         }
 
-        double includingAmount = saleItem.getAmount() + ((saleItem.getAmount() / 100d) * orderItemTax.getTaxRate());
+        setIncludingTaxAmount();
+    }
+
+    private void setIncludingTaxAmount(){
+        double includingAmount = saleAmount + ((saleAmount / 100d) * orderItemTax.getTaxRate());
         includingTaxPriceTv.setText(CommonUtils.getDoubleStrValueForView(includingAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
     }
 

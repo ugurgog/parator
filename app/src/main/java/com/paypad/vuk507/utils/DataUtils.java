@@ -5,12 +5,16 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.paypad.vuk507.db.TaxDBHelper;
+import com.paypad.vuk507.db.UnitDBHelper;
+import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
+import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
@@ -114,7 +118,7 @@ public class DataUtils {
     }
 
     public static TaxModel getTaxModelById(long taxId){
-        TaxModel taxModel;
+        TaxModel taxModel = null;
 
         if(taxId < 0){
             TaxRateEnum taxRateEnum = TaxRateEnum.getById(taxId);
@@ -122,9 +126,23 @@ public class DataUtils {
             taxModel.setId(taxRateEnum.getId());
             taxModel.setName(taxRateEnum.getLabel());
             taxModel.setTaxRate(taxRateEnum.getRateValue());
-        }else
+        }else if(taxId > 0)
             taxModel = TaxDBHelper.getTax(taxId);
 
         return taxModel;
+    }
+
+    public static UnitModel getUnitModelById(long unitId){
+        UnitModel unitModel = null;
+
+        if(unitId < 0){
+            ProductUnitTypeEnum unitType = ProductUnitTypeEnum.getById(unitId);
+            unitModel = new UnitModel();
+            unitModel.setId(unitType.getId());
+            unitModel.setName(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? unitType.getLabelTr() : unitType.getLabelEn());
+        }else if(unitId > 0)
+            unitModel = UnitDBHelper.getUnit(unitId);
+
+        return unitModel;
     }
 }

@@ -28,9 +28,9 @@ import com.paypad.vuk507.enums.ItemsEnum;
 import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.unit.adapters.UnitListAdapter;
 import com.paypad.vuk507.menu.unit.adapters.UnitSelectListAdapter;
 import com.paypad.vuk507.menu.unit.interfaces.ReturnUnitCallback;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -198,12 +198,17 @@ public class UnitSelectFragment extends BaseFragment {
     public void updateAdapterWithCurrentList(){
 
         unitModelList = new ArrayList<>();
+        addDefaultUnitTitle(getResources().getString(R.string.system_units));
         fillItems();
 
         unitModels = UnitDBHelper.getAllUnits(user.getUsername());
+
+        if(unitModels != null && unitModels.size() > 0)
+            addDefaultUnitTitle(getResources().getString(R.string.user_defined_units));
+
         unitModelList.addAll(new ArrayList(unitModels));
 
-        unitSelectListAdapter = new UnitSelectListAdapter(getContext(), unitModelList, mFragmentNavigation, new ReturnUnitCallback() {
+        unitSelectListAdapter = new UnitSelectListAdapter(unitModelList, mFragmentNavigation, ItemProcessEnum.SELECTED, new ReturnUnitCallback() {
             @Override
             public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
                 returnUnitCallback.OnReturn(unitModel, processEnum);
@@ -213,17 +218,26 @@ public class UnitSelectFragment extends BaseFragment {
         unitRv.setAdapter(unitSelectListAdapter);
     }
 
+    private void addDefaultUnitTitle(String unitName){
+        UnitModel unitModel = new UnitModel();
+        unitModel.setId(0);
+        unitModel.setName(unitName);
+        unitModelList.add(unitModel);
+    }
+
     private void fillItems() {
         ProductUnitTypeEnum[] values = ProductUnitTypeEnum.values();
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
             for(ProductUnitTypeEnum item : values){
                 UnitModel unitModel = new UnitModel();
+                unitModel.setId(item.getId());
                 unitModel.setName(item.getLabelTr());
                 unitModelList.add(unitModel);
             }
         }else{
             for(ProductUnitTypeEnum item : values){
                 UnitModel unitModel = new UnitModel();
+                unitModel.setId(item.getId());
                 unitModel.setName(item.getLabelEn());
                 unitModelList.add(unitModel);
             }
@@ -235,7 +249,7 @@ public class UnitSelectFragment extends BaseFragment {
             unitSelectListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0 && unitModelList.size() > 0)
+                    if (size == 0 && (unitModelList != null && unitModelList.size() > 0))
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

@@ -1,5 +1,7 @@
 package com.paypad.vuk507.db;
 
+import androidx.annotation.NonNull;
+
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
@@ -19,24 +21,33 @@ public class CategoryDBHelper {
         return categories;
     }
 
-    public static void deleteCategory(long id, CompleteCallback completeCallback){
+    public static BaseResponse deleteCategory(long id){
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
+
         realm.executeTransaction(new Realm.Transaction() {
             @Override
-            public void execute(Realm realm) {
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
+            public void execute(@NonNull Realm realm) {
+
                 try{
                     Category category = realm.where(Category.class).equalTo("id", id).findFirst();
-                    category.deleteFromRealm();
-                    baseResponse.setMessage("Category deleted successfully");
+
+                    try{
+                        category.deleteFromRealm();
+                        baseResponse.setMessage("Category deleted successfully");
+                    }catch (Exception e){
+                        baseResponse.setSuccess(false);
+                        baseResponse.setMessage("Category cannot be deleted");
+                    }
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Category cannot be deleted");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static Category getCategory(long id){

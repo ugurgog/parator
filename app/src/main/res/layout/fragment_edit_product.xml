@@ -32,11 +32,11 @@
                     android:background="@drawable/custom_edittext_bg"
                     android:drawablePadding="20dp"
                     android:hint="Write Product Name"
-                    android:inputType="text"
                     android:paddingLeft="8dp"
                     android:textColor="@color/Black"
                     android:textColorHint="@color/DarkGray"
                     android:layout_marginTop="10dp"
+                    android:inputType="textCapSentences"
                     />
 
                 <View
@@ -250,7 +250,7 @@
                     android:layout_toEndOf="@+id/set"
                     android:layout_toRightOf="@+id/set"
                     android:background="@drawable/custom_edittext_bg"
-                    android:inputType="text"
+                    android:inputType="textCapSentences"
                     android:textColor="#434343"
                     android:hint="@string/description"
                     android:textIsSelectable="true" />

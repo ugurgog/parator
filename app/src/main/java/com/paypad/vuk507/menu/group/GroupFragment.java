@@ -233,7 +233,7 @@ public class GroupFragment extends BaseFragment {
             groupListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0)
+                    if (size == 0 && (groupList != null && groupList.size() > 0))
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

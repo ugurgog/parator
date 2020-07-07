@@ -220,7 +220,7 @@ public class DiscountFragment extends BaseFragment {
             discountListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0 && discountList.size() > 0)
+                    if (size == 0 && (discountList != null && discountList.size() > 0))
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

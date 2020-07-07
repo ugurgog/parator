@@ -192,7 +192,7 @@ public class CategoryFragment extends BaseFragment {
             categoryListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0 && categoryList.size() > 0)
+                    if (size == 0 && (categoryList != null && categoryList.size() > 0))
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

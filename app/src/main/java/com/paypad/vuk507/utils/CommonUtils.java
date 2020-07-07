@@ -218,6 +218,12 @@ public class CommonUtils {
 
     public static int getDarkRandomColor(Context context) {
 
+        int[] colorList = getDarkColors();
+        Random rand = new Random();
+        return colorList[rand.nextInt(colorList.length)];
+    }
+
+    public static int[] getDarkColors(){
         int[] colorList = {
                 R.color.style_color_primary,
                 R.color.style_color_accent,
@@ -245,9 +251,25 @@ public class CommonUtils {
                 R.color.RoyalBlue,
                 R.color.Green
         };
+        return colorList;
+    }
 
-        Random rand = new Random();
-        return colorList[rand.nextInt(colorList.length)];
+    public static int[] getItemColors(){
+        int[] colorList = {
+                R.color.Gray,
+                R.color.style_color_accent,
+                R.color.fab_color_pressed,
+                R.color.blue_color_picker,
+                R.color.brown_color_picker,
+                R.color.green_color_picker,
+                R.color.orange_color_picker,
+                R.color.red_color_picker,
+                R.color.red_orange_color_picker,
+                R.color.violet_color_picker,
+                R.color.dot_dark_screen1,
+                R.color.dot_dark_screen2
+        };
+        return colorList;
     }
 
     public static int getNavigationBarHeight(Context context) {

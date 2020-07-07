@@ -23,7 +23,7 @@
             android:background="@drawable/custom_edittext_bg"
             android:drawablePadding="20dp"
             android:hint="@string/tax_name"
-            android:inputType="text"
+            android:inputType="textCapSentences"
             android:paddingLeft="8dp"
             android:textColor="@color/Black"
             android:textColorHint="@color/DarkGray"

@@ -135,7 +135,7 @@
                 android:id="@+id/noteEt"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/custom_edittext_height_size"
-                android:inputType="text"
+                android:inputType="textCapSentences"
                 android:hint="@string/add_note"
                 android:textColor="@color/Black"
                 android:textColorHint="@color/DarkGray"

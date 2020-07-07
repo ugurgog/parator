@@ -13,7 +13,7 @@
         android:layout_height="@dimen/custom_edittext_height_size"
         android:drawablePadding="20dp"
         android:hint="@string/add_note"
-        android:inputType="text"
+        android:inputType="textCapSentences"
         android:paddingStart="8dp"
         android:textColor="@color/Black"
         android:textColorHint="@color/DarkGray"

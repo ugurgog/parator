@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,12 +19,14 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.interfaces.ReturnViewCallback;
 import com.paypad.vuk507.menu.product.ProductEditFragment;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
 import com.paypad.vuk507.menu.tax.TaxEditFragment;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
+import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 
@@ -40,6 +43,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnItemCallback returnItemCallback;
     private ItemProcessEnum processType;
+    private ReturnViewCallback returnViewCallback;
 
     public ProductListAdapter(Context context, List<Product> products,
                    BaseFragment.FragmentNavigation fragmentNavigation, ItemProcessEnum processType,
@@ -50,6 +54,10 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         this.fragmentNavigation = fragmentNavigation;
         this.processType = processType;
         this.returnItemCallback = returnItemCallback;
+    }
+
+    public void setReturnViewCallback(ReturnViewCallback returnViewCallback) {
+        this.returnViewCallback = returnViewCallback;
     }
 
     @NonNull
@@ -68,6 +76,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         TextView itemDescTv;
         ImageView itemImgv;
         TextView shortNameTv;
+        FrameLayout content_frame;
 
         Product product;
         int position;
@@ -80,6 +89,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
             itemDescTv = view.findViewById(R.id.itemDescTv);
             itemImgv = view.findViewById(R.id.itemImgv);
             shortNameTv = view.findViewById(R.id.shortNameTv);
+            content_frame = view.findViewById(R.id.content_frame);
 
             productItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -87,6 +97,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
 
                     // If process comes from Library step, just product will be selected
                     if(processType != null && (processType == ItemProcessEnum.SELECTED)){
+                        returnViewCallback.OnViewCallback(content_frame);
                         returnItemCallback.OnReturn(product, processType);
                     }else{
                         fragmentNavigation.pushFragment(new ProductEditFragment(product, new ReturnItemCallback() {
@@ -129,12 +140,20 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         }
 
         private void setItemDescription(){
+
+            UnitModel unitModel = null;
+            if(product.getUnitId() != 0)
+                unitModel = DataUtils.getUnitModelById(product.getUnitId());
+
             if(product.getAmount() == 0){
-                itemDescTv.setText(context.getResources().getString(R.string.variable).concat("/").concat(product.getUnitType()));
+                itemDescTv.setText(context.getResources().getString(R.string.variable)
+                        .concat("/")
+                        .concat(unitModel != null ? unitModel.getName() : context.getResources().getString(R.string.unit_undefined)));
             }else {
                 itemDescTv.setText(String.valueOf(product.getAmount()).concat(" ")
                     .concat(CommonUtils.getCurrency().getSymbol())
-                    .concat("/").concat(product.getUnitType()));
+                    .concat("/")
+                        .concat(unitModel != null ? unitModel.getName() : context.getResources().getString(R.string.unit_undefined)));
             }
         }
     }

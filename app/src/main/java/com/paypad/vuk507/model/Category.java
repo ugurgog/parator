@@ -10,6 +10,7 @@ public class Category extends RealmObject {
     @PrimaryKey
     private long id;
     private String name;
+    private int colorId;
     private Date createDate;
     private String createUsername;
 
@@ -43,5 +44,13 @@ public class Category extends RealmObject {
 
     public void setCreateUsername(String createUsername) {
         this.createUsername = createUsername;
+    }
+
+    public int getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
     }
 }

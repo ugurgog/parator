@@ -12,11 +12,12 @@ public class Product extends RealmObject {
     private long id;
     private String name;
     private long categoryId;
-    private String unitType;
+    private long unitId;
     private double amount;
     private long taxId;
     private byte[] productImage;
     private String description;
+    private int colorId;
     private Date createDate;
     private String userUuid;
 
@@ -60,12 +61,12 @@ public class Product extends RealmObject {
         this.categoryId = categoryId;
     }
 
-    public String getUnitType() {
-        return unitType;
+    public long getUnitId() {
+        return unitId;
     }
 
-    public void setUnitType(String unitType) {
-        this.unitType = unitType;
+    public void setUnitId(long unitId) {
+        this.unitId = unitId;
     }
 
     public long getTaxId() {
@@ -98,5 +99,13 @@ public class Product extends RealmObject {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
     }
 }

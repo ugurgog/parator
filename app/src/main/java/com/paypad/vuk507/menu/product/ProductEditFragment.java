@@ -141,6 +141,7 @@ public class ProductEditFragment extends BaseFragment {
     private PermissionModule permissionModule;
     private Uri photoUri;
     private PhotoSelectUtil photoSelectUtil;
+    private UnitModel mUnitModel;
 
     private TaxModel myTaxModel;
     private Category myCategory;
@@ -255,9 +256,8 @@ public class ProductEditFragment extends BaseFragment {
                 mFragmentNavigation.pushFragment(new UnitSelectFragment(new ReturnUnitCallback() {
                     @Override
                     public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
-                        if(unitModel != null && unitModel.getName() != null && !unitModel.getName().isEmpty()){
-                            unitTypeTv.setText(unitModel.getName());
-                        }
+                        mUnitModel = unitModel;
+                        unitTypeTv.setText(mUnitModel.getName());
                     }
                 }));
             }
@@ -417,7 +417,7 @@ public class ProductEditFragment extends BaseFragment {
         }else
             tempProduct.setAmount(0);
 
-        tempProduct.setUnitType(unitTypeTv.getText().toString());
+        tempProduct.setUnitId(mUnitModel.getId());
 
         if(myTaxModel != null)
             tempProduct.setTaxId(myTaxModel.getId());
@@ -434,33 +434,26 @@ public class ProductEditFragment extends BaseFragment {
 
         realm.commitTransaction();
 
-        boolean finalInserted = inserted;
-        ProductDBHelper.createOrUpdateProduct(tempProduct, new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-                CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
-                if(baseResponse.isSuccess()){
-                    deleteButtonStatus = 1;
-                    CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
-                            getContext().getResources().getString(R.string.delete_item));
-                    btnDelete.setEnabled(false);
+        BaseResponse baseResponse = ProductDBHelper.createOrUpdateProduct(tempProduct);
+        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
+        if(baseResponse.isSuccess()){
+            deleteButtonStatus = 1;
+            CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
+                    getContext().getResources().getString(R.string.delete_item));
+            btnDelete.setEnabled(false);
 
-                    Log.i("Info", "ProductEditFragment callback.");
+            ItemProcessEnum processEnum;
+            if(inserted)
+                processEnum = ItemProcessEnum.INSERTED;
+            else
+                processEnum = ItemProcessEnum.CHANGED;
 
-                    ItemProcessEnum processEnum;
-                    if(finalInserted)
-                        processEnum = ItemProcessEnum.INSERTED;
-                    else
-                        processEnum = ItemProcessEnum.CHANGED;
+            returnCallback.OnReturn((Product) baseResponse.getObject(), processEnum);
 
-                    returnCallback.OnReturn((Product) baseResponse.getObject(), processEnum);
-
-                    clearViews();
-                    Objects.requireNonNull(getActivity()).onBackPressed();
-                }
-            }
-        });
+            clearViews();
+            Objects.requireNonNull(getActivity()).onBackPressed();
+        }
     }
 
     private void clearViews(){
@@ -483,10 +476,14 @@ public class ProductEditFragment extends BaseFragment {
 
         if(productXX == null){
             productXX = new Product();
-            String unitType = CommonUtils.getLanguage().equals(LANGUAGE_TR) ?
-                    ProductUnitTypeEnum.values()[0].getLabelTr() : ProductUnitTypeEnum.values()[0].getLabelEn();
-            unitTypeTv.setText(unitType);
-            productXX.setUnitType(unitType);
+            ProductUnitTypeEnum unitType = ProductUnitTypeEnum.PER_ITEM;
+
+            mUnitModel = new UnitModel();
+            mUnitModel.setId(unitType.getId());
+            mUnitModel.setName(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? unitType.getLabelTr() : unitType.getLabelEn());
+
+            unitTypeTv.setText(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? unitType.getLabelTr() : unitType.getLabelEn());
+            productXX.setUnitId(unitType.getId());
         }else {
             setFilledProductVariables();
         }
@@ -525,8 +522,11 @@ public class ProductEditFragment extends BaseFragment {
                 categoryTv.setText(myCategory.getName());
         }
 
-        if(productXX.getUnitType() != null && !productXX.getUnitType().isEmpty()){
-            unitTypeTv.setText(productXX.getUnitType());
+        if(productXX.getUnitId() != 0){
+            mUnitModel = DataUtils.getUnitModelById(productXX.getUnitId());
+
+            if(mUnitModel != null && mUnitModel.getName() != null)
+                unitTypeTv.setText(mUnitModel.getName());
         }
 
         if(productXX.getTaxId() != 0){

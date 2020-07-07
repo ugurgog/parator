@@ -4,8 +4,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,41 +15,84 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.menu.tax.adapters.TaxSelectListAdapter;
 import com.paypad.vuk507.menu.unit.UnitEditFragment;
 import com.paypad.vuk507.menu.unit.interfaces.ReturnUnitCallback;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.UnitModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnitSelectListAdapter extends RecyclerView.Adapter<UnitSelectListAdapter.UnitHolder> {
+public class UnitSelectListAdapter extends RecyclerView.Adapter {
 
-    private Context context;
     private List<UnitModel> unitModels = new ArrayList<>();
     private List<UnitModel> orgUnitModels = new ArrayList<>();
 
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnUnitCallback returnUnitCallback;
+    private ItemProcessEnum processType;
 
-    public UnitSelectListAdapter(Context context, List<UnitModel> unitModels,
-                           BaseFragment.FragmentNavigation fragmentNavigation,
-                           ReturnUnitCallback returnUnitCallback) {
-        this.context = context;
+    private static final int VIEW_ITEM = 0;
+    private static final int VIEW_NONE = 1;
+
+    public UnitSelectListAdapter(List<UnitModel> unitModels,
+                                 BaseFragment.FragmentNavigation fragmentNavigation,
+                                 ItemProcessEnum processType,
+                                ReturnUnitCallback returnUnitCallback) {
         this.unitModels.addAll(unitModels);
         this.orgUnitModels.addAll(unitModels);
-        this.fragmentNavigation = fragmentNavigation;
         this.returnUnitCallback = returnUnitCallback;
+        this.processType = processType;
+        this.fragmentNavigation = fragmentNavigation;
     }
 
     @Override
-    public UnitHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView;
-        itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_unit_list, parent, false);
-        return new UnitHolder(itemView);
+    public int getItemViewType(int position) {
+        if(unitModels.get(position).getId() != 0)
+            return VIEW_ITEM;
+        else
+            return VIEW_NONE;
     }
 
-    public class UnitHolder extends RecyclerView.ViewHolder {
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if(viewType == VIEW_ITEM){
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_unit_list, parent, false);
+            return new UnitHolder(itemView);
+        }else {
+            View v = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.item_custom_list_no_pic_with_arrow, parent, false);
+            return new UnitNoItemHolder(v);
+        }
+    }
+
+    public class UnitNoItemHolder extends RecyclerView.ViewHolder {
+
+        private TextView nameTv;
+        private ImageView arrowImgv;
+
+        UnitModel unitModel;
+        int position;
+
+        UnitNoItemHolder(View view) {
+            super(view);
+
+            nameTv = view.findViewById(R.id.nameTv);
+            arrowImgv = view.findViewById(R.id.arrowImgv);
+        }
+
+        void setData(UnitModel unitModel, int position) {
+            this.unitModel = unitModel;
+            this.position = position;
+            arrowImgv.setVisibility(View.GONE);
+            nameTv.setText(unitModel.getName());
+        }
+    }
+
+    public class UnitHolder extends RecyclerView.ViewHolder{
 
         CardView unitItemCv;
         TextView unitNameTv;
@@ -55,7 +100,7 @@ public class UnitSelectListAdapter extends RecyclerView.Adapter<UnitSelectListAd
 
         int position;
 
-        public UnitHolder(View view) {
+        UnitHolder(View view) {
             super(view);
 
             unitItemCv = view.findViewById(R.id.unitItemCv);
@@ -64,7 +109,19 @@ public class UnitSelectListAdapter extends RecyclerView.Adapter<UnitSelectListAd
             unitItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    returnUnitCallback.OnReturn(unitModel, ItemProcessEnum.SELECTED);
+
+                    if(processType == ItemProcessEnum.SELECTED)
+                        returnUnitCallback.OnReturn(unitModel, ItemProcessEnum.SELECTED);
+                    else{
+                        if(unitModel.getId() > 0){
+                            fragmentNavigation.pushFragment(new UnitEditFragment(unitModel, new ReturnUnitCallback() {
+                                @Override
+                                public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
+                                    returnUnitCallback.OnReturn(unitModel, processEnum);
+                                }
+                            }));
+                        }
+                    }
                 }
             });
         }
@@ -76,29 +133,15 @@ public class UnitSelectListAdapter extends RecyclerView.Adapter<UnitSelectListAd
         }
     }
 
-    public void unitRemoveResult(int position){
-        unitModels.remove(position);
-        this.notifyItemRemoved(position);
-        this.notifyItemRangeChanged(position, getItemCount());
-        //this.notifyDataSetChanged();
-    }
-
-    public void unitChangedResult(int position){
-        this.notifyItemChanged(position);
-    }
-
-    public void addUnit(UnitModel unitModel){
-        if(unitModels != null && unitModel != null){
-            unitModels.add(unitModel);
-            this.notifyItemInserted(unitModels.size() - 1);
-            //this.notifyDataSetChanged();
-        }
-    }
 
     @Override
-    public void onBindViewHolder(final UnitHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         UnitModel unitModel = unitModels.get(position);
-        holder.setData(unitModel, position);
+        if (holder instanceof UnitHolder) {
+            ((UnitHolder) holder).setData(unitModel, position);
+        } else {
+            ((UnitNoItemHolder) holder).setData(unitModel, position);
+        }
     }
 
     @Override

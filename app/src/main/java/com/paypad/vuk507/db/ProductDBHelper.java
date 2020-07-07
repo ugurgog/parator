@@ -25,6 +25,21 @@ public class ProductDBHelper {
         return products;
     }
 
+    public static RealmResults<Product> getProductsByUnitId(long unitId){
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Product> products = realm.where(Product.class)
+                .equalTo("unitId", unitId)
+                .findAll();
+        return products;
+    }
+
+    public static RealmResults<Product> getProductsByTaxId(long taxId){
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Product> products = realm.where(Product.class)
+                .equalTo("taxId", taxId)
+                .findAll();
+        return products;
+    }
 
     public static void deleteProduct(long id, CompleteCallback completeCallback){
         Realm realm = Realm.getDefaultInstance();
@@ -52,16 +67,16 @@ public class ProductDBHelper {
         return product;
     }
 
-    public static void createOrUpdateProduct(Product product, CompleteCallback completeCallback) {
+    public static BaseResponse createOrUpdateProduct(Product product) {
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
         realm.executeTransaction(new Realm.Transaction(){
 
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     realm.insertOrUpdate(product);
 
@@ -71,9 +86,10 @@ public class ProductDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Product cannot be saved!");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+
+        return baseResponse;
     }
 
     public static int getCurrentPrimaryKeyId(){

@@ -147,6 +147,7 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
         backImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mailSendCallback.OnBackPressed();
                 Objects.requireNonNull(getActivity()).onBackPressed();
 
                 //mFragmentNavigation.pushFragment(new HideNavigationBarComponent());
@@ -242,5 +243,10 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
     @Override
     public void OnMailSendResponse(BaseResponse baseResponse, String email) {
         mailSendCallback.OnMailSendResponse(baseResponse, email);
+    }
+
+    @Override
+    public void OnBackPressed() {
+
     }
 }

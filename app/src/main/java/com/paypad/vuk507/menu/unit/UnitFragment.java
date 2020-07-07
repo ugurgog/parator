@@ -24,9 +24,10 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.unit.adapters.UnitListAdapter;
+import com.paypad.vuk507.menu.unit.adapters.UnitSelectListAdapter;
 import com.paypad.vuk507.menu.unit.interfaces.ReturnUnitCallback;
 import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.User;
@@ -44,6 +45,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
+
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 
 public class UnitFragment extends BaseFragment {
 
@@ -67,7 +70,7 @@ public class UnitFragment extends BaseFragment {
     @BindView(R.id.unitRv)
     RecyclerView unitRv;
 
-    private UnitListAdapter unitListAdapter;
+    private UnitSelectListAdapter unitSelectListAdapter;
 
     private Realm realm;
 
@@ -180,7 +183,6 @@ public class UnitFragment extends BaseFragment {
         realm = Realm.getDefaultInstance();
         toolbarTitleTv.setText(getContext().getResources().getString(R.string.units));
         addItemImgv.setVisibility(View.GONE);
-        setShapes();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -190,30 +192,62 @@ public class UnitFragment extends BaseFragment {
         updateAdapterWithCurrentList();
     }
 
+
+
     public void updateAdapterWithCurrentList(){
 
+        unitModelList = new ArrayList<>();
+        addDefaultUnitTitle(getResources().getString(R.string.system_units));
+        fillItems();
+
         unitModels = UnitDBHelper.getAllUnits(user.getUsername());
-        unitModelList = new ArrayList(unitModels);
-        unitListAdapter = new UnitListAdapter(getContext(), unitModelList, mFragmentNavigation, new ReturnUnitCallback() {
+
+        if(unitModels != null && unitModels.size() > 0)
+            addDefaultUnitTitle(getResources().getString(R.string.user_defined_units));
+
+        unitModelList.addAll(new ArrayList(unitModels));
+
+        unitSelectListAdapter = new UnitSelectListAdapter(unitModelList, mFragmentNavigation, null, new ReturnUnitCallback() {
             @Override
             public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
                 updateAdapterWithCurrentList();
             }
         });
-        unitRv.setAdapter(unitListAdapter);
+        unitRv.setAdapter(unitSelectListAdapter);
     }
 
-    private void setShapes() {
-        //createUnitBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-        //        getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
+    private void addDefaultUnitTitle(String unitName){
+        UnitModel unitModel = new UnitModel();
+        unitModel.setId(0);
+        unitModel.setName(unitName);
+        unitModelList.add(unitModel);
+    }
+
+    private void fillItems() {
+        ProductUnitTypeEnum[] values = ProductUnitTypeEnum.values();
+        if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
+            for(ProductUnitTypeEnum item : values){
+                UnitModel unitModel = new UnitModel();
+                unitModel.setId(item.getId());
+                unitModel.setName(item.getLabelTr());
+                unitModelList.add(unitModel);
+            }
+        }else{
+            for(ProductUnitTypeEnum item : values){
+                UnitModel unitModel = new UnitModel();
+                unitModel.setId(item.getId());
+                unitModel.setName(item.getLabelEn());
+                unitModelList.add(unitModel);
+            }
+        }
     }
 
     public void updateAdapter(String searchText) {
-        if (searchText != null && unitListAdapter != null) {
-            unitListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+        if (searchText != null && unitSelectListAdapter != null) {
+            unitSelectListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0 && unitModelList.size() > 0)
+                    if (size == 0 && (unitModelList != null && unitModelList.size() > 0))
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

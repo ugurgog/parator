@@ -14,9 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.ProductDBHelper;
@@ -25,6 +28,7 @@ import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.TaxRateEnum;
+import com.paypad.vuk507.login.InitialActivity;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
@@ -47,6 +51,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnDynamicBoxListener dynamicBoxListener;
     private boolean maxBoxExceeded= false;
+    private IOrderManager orderManager;
 
     public DynamicStructListAdapter(Context context, List<DynamicBoxModel> boxModels,
                                     BaseFragment.FragmentNavigation fragmentNavigation,
@@ -55,6 +60,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
         this.boxModels.addAll(boxModels);
         this.fragmentNavigation = fragmentNavigation;
         this.dynamicBoxListener = listener;
+        orderManager = new OrderManager();
         setMaxBoxExceeded();
     }
 
@@ -77,6 +83,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
 
         private CardView itemCv;
         private TextView itemNameTv;
+        private ImageView iconImgv;
 
         private DynamicBoxModel dynamicBoxModel;
         private int position;
@@ -87,6 +94,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
 
             itemCv = view.findViewById(R.id.itemCv);
             itemNameTv = view.findViewById(R.id.itemNameTv);
+            iconImgv = view.findViewById(R.id.iconImgv);
 
             itemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -121,6 +129,31 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
             this.position = position;
             setItemName();
             setBoxWidth();
+            setIcon();
+        }
+
+        private void setIcon() {
+            if(dynamicBoxModel.getStructId() == DynamicStructEnum.DISCOUNT_SET.getId()){
+                Glide.with(context)
+                        .load(R.drawable.icon_discount_box_white_64dp)
+                        .into(iconImgv);
+            }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.PRODUCT_SET.getId()){
+                Glide.with(context)
+                        .load(R.drawable.icon_product_white_64dp)
+                        .into(iconImgv);
+            }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.CATEGORY_SET.getId()){
+                Glide.with(context)
+                        .load(R.drawable.icon_category_white_64dp)
+                        .into(iconImgv);
+            }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.TAX_SET.getId()){
+                Glide.with(context)
+                        .load(R.drawable.icon_tax_white_64dp)
+                        .into(iconImgv);
+            }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.PAYMENT_SET.getId()){
+                Glide.with(context)
+                        .load(R.drawable.icon_payment_white_64dp)
+                        .into(iconImgv);
+            }
         }
 
         private void setBoxWidth() {
@@ -132,10 +165,10 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
             if(maxBoxExceeded){
                 params = new LinearLayout.LayoutParams(width / 4
                         - CommonUtils.getPaddingInPixels(context, 10f),
-                        (int)context.getResources().getDimension(R.dimen.dynamic_box_heigth));
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
             }else {
                 params = new LinearLayout.LayoutParams(width / 4,
-                        (int)context.getResources().getDimension(R.dimen.dynamic_box_heigth));
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
             }
 
             int margin = CommonUtils.getPaddingInPixels(context, 2f);
@@ -179,12 +212,12 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
         }
 
         private void setEnabilityOfDiscount(Discount discount) {
-            if(SaleModelInstance.getInstance().getSaleModel().isDiscountInSale(discount)){
+            if(orderManager.isDiscountInSale(discount)){
                 itemCv.setEnabled(false);
-                itemNameTv.setTextColor(context.getResources().getColor(R.color.Gray, null));
+                itemNameTv.setTextColor(context.getResources().getColor(R.color.Black, null));
             }else {
                 itemCv.setEnabled(true);
-                itemNameTv.setTextColor(context.getResources().getColor(R.color.Black, null));
+                itemNameTv.setTextColor(context.getResources().getColor(R.color.White, null));
             }
         }
     }

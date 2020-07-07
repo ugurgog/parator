@@ -28,6 +28,8 @@ import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.payment.utils.CancelTransactionManager;
 import com.paypad.vuk507.db.DiscountDBHelper;
@@ -98,6 +100,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     private PaymentStatusCallback paymentStatusCallback;
     private CreditCardSelectFragment creditCardSelectFragment;
     private SaleCalculateCallback saleCalculateCallback;
+    private IOrderManager orderManager;
 
     public SelectChargePaymentFragment() {
 
@@ -164,7 +167,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(SaleModelInstance.getInstance().getSaleModel().isExistPaymentCompletedTransaction())
+                if(orderManager.isExistPaymentCompletedTransaction())
                     handleCancelTransaction();
                 else
                     Objects.requireNonNull(getActivity()).onBackPressed();
@@ -197,6 +200,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
 
 
     private void initVariables() {
+        orderManager = new OrderManager();
         createInitialTransaction();
         //splitAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount();
         setChargeAmount();
@@ -208,12 +212,14 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     }
 
     private void createInitialTransaction() {
-        mTransaction = new Transaction();
+        mTransaction = orderManager.addTransactionToOrder(orderManager.getRemainAmount());
+
+        /*mTransaction = new Transaction();
         mTransaction.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
         mTransaction.setTransactionUuid(UUID.randomUUID().toString());
         mTransaction.setSeqNumber(SaleModelInstance.getInstance().getSaleModel().getMaxSplitId() + 1);
         mTransaction.setTransactionAmount(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount());
-        SaleModelInstance.getInstance().getSaleModel().getTransactions().add(mTransaction);
+        SaleModelInstance.getInstance().getSaleModel().getTransactions().add(mTransaction);*/
     }
 
     private void setPaymentAdapter(){
@@ -352,7 +358,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
             paymentStatusCallback.OnPaymentReturn(status);
             Objects.requireNonNull(getActivity()).onBackPressed();
         }else {
-            mTransaction = SaleModelInstance.getInstance().getSaleModel().getTransactionWillBePaid();
+            mTransaction = orderManager.getTransactionWillBePaid();
             setChargeAmount();
             setSplitInfoTv();
         }

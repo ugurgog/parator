@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -73,6 +74,8 @@ public class CustomerFragment extends BaseFragment {
     RecyclerView customerRv;
     @BindView(R.id.selectionImgv)
     ClickableImageView selectionImgv;
+    @BindView(R.id.createCustomerBtn)
+    Button createCustomerBtn;
 
     private User user;
     private Realm realm;
@@ -217,6 +220,14 @@ public class CustomerFragment extends BaseFragment {
                 popupMenu.show();
             }
         });
+
+        createCustomerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initCustomerCreateFragment();
+                mFragmentNavigation.pushFragment(customerEditFragment);
+            }
+        });
     }
 
     private void initCustomerCreateFragment(){
@@ -258,7 +269,6 @@ public class CustomerFragment extends BaseFragment {
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         customerRv.setLayoutManager(linearLayoutManager);
-        //customerRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
     }
 
@@ -296,7 +306,7 @@ public class CustomerFragment extends BaseFragment {
             customerListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0 && customerList.size() > 0)
+                    if (size == 0 && (customerList != null && customerList.size() > 0))
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

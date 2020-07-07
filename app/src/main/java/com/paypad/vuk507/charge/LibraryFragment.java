@@ -1,17 +1,25 @@
 package com.paypad.vuk507.charge;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,8 +31,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
+import com.paypad.vuk507.charge.interfaces.OnKeyboardVisibilityListener;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
+import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.interfaces.ReturnViewCallback;
 import com.paypad.vuk507.uiUtils.NDSpinner;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
@@ -63,7 +74,8 @@ import io.realm.RealmResults;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 
-public class LibraryFragment extends BaseFragment {
+public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilityListener,
+        ReturnViewCallback {
 
     private View mView;
 
@@ -71,6 +83,8 @@ public class LibraryFragment extends BaseFragment {
     EditText searchEdittext;
     @BindView(R.id.searchCancelImgv)
     ImageView searchCancelImgv;
+    @BindView(R.id.searchResultTv)
+    TextView searchResultTv;
 
     @BindView(R.id.spinner)
     NDSpinner spinner;
@@ -82,6 +96,8 @@ public class LibraryFragment extends BaseFragment {
     AppCompatTextView categoryNameTv;
     @BindView(R.id.itemExistInfoTv)
     AppCompatTextView itemExistInfoTv;
+    @BindView(R.id.mainll)
+    LinearLayout mainll;
 
     private Realm realm;
     private ArrayAdapter<String> spinnerAdapter;
@@ -93,6 +109,12 @@ public class LibraryFragment extends BaseFragment {
 
     private User user;
     private SaleCalculateCallback saleCalculateCallback;
+    private ReturnViewCallback returnViewCallback;
+    private ItemSpinnerEnum spinnerType = ItemSpinnerEnum.PRODUCTS;
+
+    private List<Discount> discountList;
+    private List<Product> productList;
+    private List<Category> categoryList;
 
     public LibraryFragment() {
 
@@ -100,6 +122,10 @@ public class LibraryFragment extends BaseFragment {
 
     public void setSaleCalculateCallback(SaleCalculateCallback saleCalculateCallback) {
         this.saleCalculateCallback = saleCalculateCallback;
+    }
+
+    public void setReturnViewCallback(ReturnViewCallback returnViewCallback) {
+        this.returnViewCallback = returnViewCallback;
     }
 
     @Override
@@ -133,6 +159,7 @@ public class LibraryFragment extends BaseFragment {
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
+        setKeyboardVisibilityListener(this);
         initRecyclerView();
     }
 
@@ -155,6 +182,7 @@ public class LibraryFragment extends BaseFragment {
             user = UserDBHelper.getUserFromCache(getContext());
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initListeners() {
 
         addItemBtn.setOnClickListener(new View.OnClickListener() {
@@ -184,6 +212,55 @@ public class LibraryFragment extends BaseFragment {
                 }
             }
         });
+
+        searchEdittext.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s != null && !s.toString().trim().isEmpty()) {
+                    updateAdapter(s.toString());
+                    searchCancelImgv.setVisibility(View.VISIBLE);
+                } else {
+                    updateAdapter("");
+                    searchCancelImgv.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        searchCancelImgv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchEdittext.setText("");
+                searchCancelImgv.setVisibility(View.GONE);
+                CommonUtils.showKeyboard(getContext(),false, searchEdittext);
+                //Objects.requireNonNull(getActivity()).findViewById(R.id.tablayout).setVisibility(View.VISIBLE);
+            }
+        });
+
+        searchEdittext.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                //Objects.requireNonNull(getActivity()).findViewById(R.id.tablayout).setVisibility(View.GONE);
+                return false;
+            }
+        });
+
+        /*searchEdittext.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(hasFocus){
+                    Objects.requireNonNull(getActivity()).findViewById(R.id.tablayout).setVisibility(View.GONE);
+                }else
+                    Objects.requireNonNull(getActivity()).findViewById(R.id.tablayout).setVisibility(View.VISIBLE);
+            }
+        });*/
     }
 
     private void setSpinnerAdapter() {
@@ -197,6 +274,7 @@ public class LibraryFragment extends BaseFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedSpinner = ItemSpinnerEnum.getById(position);
+                spinnerType = ItemSpinnerEnum.getById(position);
 
                 if(selectedSpinner != null){
                     if(selectedSpinner.getId() == ItemSpinnerEnum.DISCOUNTS.getId()){
@@ -241,9 +319,9 @@ public class LibraryFragment extends BaseFragment {
         itemListRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
     }
 
-    public void setDiscountAdapter(){
+    void setDiscountAdapter(){
         RealmResults<Discount> discounts = DiscountDBHelper.getAllDiscounts(user.getUsername());
-        List<Discount> discountList = new ArrayList(discounts);
+        discountList = new ArrayList(discounts);
 
         if(discountList.size() == 0){
             itemExistInfoTv.setVisibility(View.VISIBLE);
@@ -269,7 +347,7 @@ public class LibraryFragment extends BaseFragment {
         else
             products = ProductDBHelper.getProductsByCategoryId(categoryId);
 
-        List<Product> productList = new ArrayList(products);
+        productList = new ArrayList(products);
 
         if(productList.size() == 0){
             itemExistInfoTv.setVisibility(View.VISIBLE);
@@ -289,28 +367,23 @@ public class LibraryFragment extends BaseFragment {
                     mFragmentNavigation.pushFragment(new DynamicAmountFragment(product, new AmountCallback() {
                         @Override
                         public void OnDynamicAmountReturn(double amount) {
-
-                            Log.i("Info", "dynamic_amount:" + amount);
-
                             saleCalculateCallback.onProductSelected(product, amount, true);
 
                         }
                     }));
-
-
                 }else {
                     saleCalculateCallback.onProductSelected(product, product.getAmount(), false);
                 }
-
             }
         });
+        productListAdapter.setReturnViewCallback(this);
         itemListRv.setAdapter(productListAdapter);
     }
 
     private void setCategoryAdapter(){
         categoryNameTv.setVisibility(View.GONE);
         RealmResults<Category> categories = CategoryDBHelper.getAllCategories(user.getUsername());
-        List<Category> categoryList = new ArrayList(categories);
+        categoryList = new ArrayList(categories);
 
         if(categoryList.size() == 0){
             itemExistInfoTv.setVisibility(View.VISIBLE);
@@ -326,6 +399,7 @@ public class LibraryFragment extends BaseFragment {
                         .concat(" : ")
                         .concat(category.getName()));
                 setProductAdapter(category.getId());
+                spinnerType = ItemSpinnerEnum.PRODUCTS;
             }
         });
         itemListRv.setAdapter(categorySelectListAdapter);
@@ -341,5 +415,85 @@ public class LibraryFragment extends BaseFragment {
 
     public CategorySelectListAdapter getCategorySelectListAdapter() {
         return categorySelectListAdapter;
+    }
+
+    public void updateAdapter(String searchText) {
+        if(spinnerType != null && searchText != null){
+            if(spinnerType.getId() == ItemSpinnerEnum.DISCOUNTS.getId()){
+
+                discountListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+                    @Override
+                    public void OnReturn(int size) {
+                        if(size == 0 && (discountList != null && discountList.size() > 0))
+                            searchResultTv.setVisibility(View.VISIBLE);
+                        else
+                            searchResultTv.setVisibility(View.GONE);
+                    }
+                });
+
+            }else if(spinnerType.getId() == ItemSpinnerEnum.PRODUCTS.getId()){
+
+                productListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+                    @Override
+                    public void OnReturn(int size) {
+                        if(size == 0 && (productList != null && productList.size() > 0))
+                            searchResultTv.setVisibility(View.VISIBLE);
+                        else
+                            searchResultTv.setVisibility(View.GONE);
+                    }
+                });
+
+            }else if(spinnerType.getId() == ItemSpinnerEnum.CATEGORIES.getId()){
+
+                categorySelectListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+                    @Override
+                    public void OnReturn(int size) {
+                        if(size == 0 && (categoryList != null && categoryList.size() > 0))
+                            searchResultTv.setVisibility(View.VISIBLE);
+                        else
+                            searchResultTv.setVisibility(View.GONE);
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void onVisibilityChanged(boolean visible) {
+        if(!visible)
+            Objects.requireNonNull(getActivity()).findViewById(R.id.tablayout).setVisibility(View.VISIBLE);
+        else
+            Objects.requireNonNull(getActivity()).findViewById(R.id.tablayout).setVisibility(View.GONE);
+    }
+
+
+    private void setKeyboardVisibilityListener(final OnKeyboardVisibilityListener onKeyboardVisibilityListener) {
+        final View parentView = ((ViewGroup) mView.findViewById(R.id.mainll)).getChildAt(0);
+        parentView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            private boolean alreadyOpen;
+            private final int defaultKeyboardHeightDP = 100;
+            private final int EstimatedKeyboardDP = defaultKeyboardHeightDP + 48;
+            private final Rect rect = new Rect();
+
+            @Override
+            public void onGlobalLayout() {
+                int estimatedKeyboardHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, EstimatedKeyboardDP, parentView.getResources().getDisplayMetrics());
+                parentView.getWindowVisibleDisplayFrame(rect);
+                int heightDiff = parentView.getRootView().getHeight() - (rect.bottom - rect.top);
+                boolean isShown = heightDiff >= estimatedKeyboardHeight;
+
+                if (isShown == alreadyOpen) {
+                    return;
+                }
+                alreadyOpen = isShown;
+                onKeyboardVisibilityListener.onVisibilityChanged(isShown);
+            }
+        });
+    }
+
+    @Override
+    public void OnViewCallback(View view) {
+        returnViewCallback.OnViewCallback(view);
     }
 }

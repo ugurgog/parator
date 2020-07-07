@@ -22,6 +22,7 @@
     <string name="create_unit">Birim Oluştur</string>
     <string name="edit_unit">Birim Güncelle</string>
     <string name="delete_unit">Birimi Sil</string>
+    <string name="delete_category">Kategoriyi Sil</string>
     <string name="confirm_delete">Silmeyi Onayla</string>
     <string name="delete_tax">Vergiyi Sil</string>
     <string name="create_tax">Vergi Oluştur</string>
@@ -62,6 +63,7 @@
     <string name="remove_item">Satışı Sil</string>
     <string name="remove_customer">Müşteriyi Çıkar</string>
     <string name="all_items">Tüm Ürünler</string>
+    <string name="unit_undefined">Birim Tanımsız</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
@@ -178,7 +180,10 @@
     <string name="name">Ad</string>
     <string name="edit">Güncelle</string>
     <string name="edit_personal_information">Bilgileri Güncelle</string>
-
+    <string name="system_taxes">SİSTEMDE TANIMLI KDV LER</string>
+    <string name="user_defined_taxes">KULLANICI TANIMLI KDV LER</string>
+    <string name="system_units">SİSTEMDE TANIMLI BİRİMLER</string>
+    <string name="user_defined_units">KULLANICI TANIMLI BİRİMLER</string>
 
     <!-- App Messages -->
     <string name="amount_can_not_be_empty">Tutar boş olamaz</string>
@@ -215,11 +220,24 @@
     <string name="sure_to_delete_dynamic_box">Dinamik tanımı silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_customer">Müşteriyi silmek istediğinize emin misiniz?</string>
     <string name="sure_to_delete_selected_customers">Seçilen müşterileri silmek istediğinize emin misiniz?</string>
+    <string name="category_delete_question_description1">Bu kategorinin altında</string>
+    <string name="category_delete_question_description2">adet ürün var. Bu işlem yapılamaz.</string>
+    <string name="unit_delete_question_description1">Bu birimin altında</string>
+    <string name="unit_delete_question_description2">adet ürün var. Bu işlem yapılamaz.</string>
+    <string name="tax_delete_question_description1">Bu KDV nin altında</string>
+    <string name="tax_delete_question_description2">adet ürün var. Bu işlem yapılamaz.</string>
+
 
     <string name="select_picture">Fotoğraf Seçin</string>
     <string name="open_camera">Kamerayı Aç</string>
     <string name="open_gallery">Galeriden Seç</string>
     <string name="remove_photo">Fotoğrafı Kaldır</string>
+
+    <string name="choose_label_color">ETİKET RENGİ SEÇİN</string>
+    <string name="photo_label">FOTOĞRAF ETİKETİ</string>
+
+    <string name="edit_category_tile">Kategori Rengini Düzenle</string>
+    <string name="edit_item_tile">Ürün Rengini/Resmini Düzenle</string>
 
     <string name="error_upper">HATA</string>
     <string name="yes_upper">EVET</string>

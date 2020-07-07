@@ -53,6 +53,8 @@ public class ContactHelper {
                     }
                     contact.setName(name);
                     contact.setPhoneNumber(clearPhoneNum.toString());
+                    contact.setColorId(CommonUtils.getDarkRandomColor(context));
+
                     contactList.add(contact);
                 }
                 previousPhoneNum = phoneNumber;

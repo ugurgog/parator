@@ -61,12 +61,12 @@ public class SaleModel implements Serializable {
         this.transactions = transactions;
     }
 
-    public void setSaleUserUuid(String uuid){
+    /*public void setSaleUserUuid(String uuid){
         if(sale.getUserUuid() == null || sale.getUserUuid().isEmpty())
             sale.setUserUuid(uuid);
-    }
+    }*/
 
-    public String addProduct(Product product, double amount, boolean isDynamicAmount){
+    /*public String addProduct(Product product, double amount, boolean isDynamicAmount){
         SaleItem saleItem = new SaleItem();
         saleItem.setProductId(product.getId());
         saleItem.setName(product.getName());
@@ -88,9 +88,9 @@ public class SaleModel implements Serializable {
         setDiscountedAmountOfSale();
 
         return saleItem.getUuid();
-    }
+    }*/
 
-    public void setOrderItemTaxForCustomItem(SaleItem saleItem,TaxModel taxModel) {
+    /*public void setOrderItemTaxForCustomItem(SaleItem saleItem,TaxModel taxModel) {
 
         if(saleItem.getOrderItemTaxes() != null && saleItem.getOrderItemTaxes().size() > 0)
             saleItem.getOrderItemTaxes().clear();
@@ -102,9 +102,9 @@ public class SaleModel implements Serializable {
 
         saleItem.getOrderItemTaxes().add(orderItemTax);
         saleItem.setAmountIncludingTax(saleItem.getAmount() + ((saleItem.getAmount() / 100d) * taxModel.getTaxRate()));
-    }
+    }*/
 
-    public void setOrderItemTaxForProduct(SaleItem saleItem, Product product) {
+    /*public void setOrderItemTaxForProduct(SaleItem saleItem, Product product) {
 
         if(saleItem.getOrderItemTaxes() != null && saleItem.getOrderItemTaxes().size() > 0)
             saleItem.getOrderItemTaxes().clear();
@@ -119,8 +119,7 @@ public class SaleModel implements Serializable {
         saleItem.getOrderItemTaxes().add(orderItemTax);
 
         saleItem.setAmountIncludingTax(saleItem.getAmount());
-        //saleItem.setAmountIncludingTax(saleItem.getAmount() + ((saleItem.getAmount() / 100d) * taxModel.getTaxRate()));
-    }
+    }*/
 
     /*public OrderItemTax getOrderItemTax(TaxModel taxModelx) {
 
@@ -177,7 +176,7 @@ public class SaleModel implements Serializable {
         return saleItem.getUuid();
     }*/
 
-    public String addCustomItem(SaleItem saleItem, TaxModel taxModel){
+    /*public String addCustomItem(SaleItem saleItem, TaxModel taxModel){
         setOrderItemTaxForCustomItem(saleItem, taxModel);
 
         //saleItem.setAmount(saleItem.getAmount() + ((saleItem.getAmount() / 100d) * taxModel.getTaxRate()));
@@ -193,7 +192,7 @@ public class SaleModel implements Serializable {
         setDiscountedAmountOfSale();
 
         return saleItem.getUuid();
-    }
+    }*/
 
     /* Burada herhangi bir satisa ekleme yapilmaz. Keypad den girilen her tutar degerinde
        Charge butonu uzerinde gorunecek tutar icin bir hesaplama yapilir.
@@ -226,7 +225,7 @@ public class SaleModel implements Serializable {
         return discountedAmount;
     }*/
 
-    public double getDynamicCustomAmount2(SaleItem saleItem){
+    /*public double getDynamicCustomAmount2(SaleItem saleItem){
         double totalAmount = sale.getTotalAmount() + saleItem.getAmount();
         double discountedAmount = 0d;
 
@@ -245,9 +244,9 @@ public class SaleModel implements Serializable {
         }
 
         return discountedAmount;
-    }
+    }*/
 
-    private void addAllDiscountsToSaleItem(SaleItem saleItem) {
+    /*private void addAllDiscountsToSaleItem(SaleItem saleItem) {
         if(sale.getDiscounts() != null){
             for(Discount discount : sale.getDiscounts()){
                 if(discount.getRate() > 0d){
@@ -260,7 +259,7 @@ public class SaleModel implements Serializable {
             }
             setDiscountedAmountOfSale();
         }
-    }
+    }*/
 
     /*public void removeSaleItem(String uuid){
         int index = 0;
@@ -302,7 +301,7 @@ public class SaleModel implements Serializable {
         }
     }
 
-    public void addDiscountRateToAllSaleItems(Discount discount){
+    /*public void addDiscountRateToAllSaleItems(Discount discount){
         for(SaleItem saleItem : saleItems){
 
             if(saleItem.getDiscounts() == null)
@@ -312,22 +311,15 @@ public class SaleModel implements Serializable {
         }
         sale.getDiscounts().add(discount);
         setDiscountedAmountOfSale();
-    }
+    }*/
 
-    public void addDiscountAmount(Discount discount){
+    /*public void addDiscountAmount(Discount discount){
         sale.getDiscounts().add(discount);
         setDiscountedAmountOfSale();
-
-        /*double amount = sale.getTotalAmount() - discount.getAmount();
-
-        if(amount < 0d)
-            amount = 0d;*/
-
-        //sale.setDiscountedAmount(amount);
-    }
+    }*/
 
 
-    public void addDiscountToSaleItem(String saleItemUuid, Discount discount){
+    /*public void addDiscountToSaleItem(String saleItemUuid, Discount discount){
 
         if(saleItems != null){
             for(SaleItem saleItem : saleItems){
@@ -342,9 +334,9 @@ public class SaleModel implements Serializable {
             if(!sale.getDiscounts().contains(discount))
                 sale.getDiscounts().add(discount);
         }
-    }
+    }*/
 
-    public void removeDiscountFromSaleItem(String saleItemUuid, Discount discount){
+    /*public void removeDiscountFromSaleItem(String saleItemUuid, Discount discount){
         if(saleItems != null){
             for(SaleItem saleItem : saleItems){
                 if(saleItem.getUuid().equals(saleItemUuid)){
@@ -366,7 +358,7 @@ public class SaleModel implements Serializable {
                     sale.getDiscounts().remove(discount);
             }
         }
-    }
+    }*/
 
     public void removeDiscountAmount(Discount discount){
         sale.getDiscounts().remove(discount);
@@ -390,7 +382,7 @@ public class SaleModel implements Serializable {
         }
     }
 
-    public double getTotalDiscountAmountOfSale(){
+    /*public double getTotalDiscountAmountOfSale(){
         double totalDiscountAmount = 0;
 
         if(sale.getDiscounts() != null && sale.getDiscounts().size() > 0){
@@ -407,9 +399,9 @@ public class SaleModel implements Serializable {
         }
 
         return totalDiscountAmount;
-    }
+    }*/
 
-    public void setDiscountedAmountOfSale(){
+    /*public void setDiscountedAmountOfSale(){
         double totalAmnt = 0d;
         for(SaleItem saleItem : saleItems)
             totalAmnt = totalAmnt + (saleItem.getAmountIncludingTax() * saleItem.getQuantity());
@@ -423,9 +415,9 @@ public class SaleModel implements Serializable {
 
         if(sale.getDiscountedAmount() <= 0)
             sale.setDiscountedAmount(0d);
-    }
+    }*/
 
-    public double getTotalDiscountAmountOfSaleItem(SaleItem saleItem){
+    /*public double getTotalDiscountAmountOfSaleItem(SaleItem saleItem){
         double totalAmount = saleItem.getAmountIncludingTax() * (double) saleItem.getQuantity();
         double discountAmount = 0d;
 
@@ -436,22 +428,22 @@ public class SaleModel implements Serializable {
             }
         }
         return discountAmount;
-    }
+    }*/
 
-    public int getSaleCount(){
+    /*public int getSaleCount(){
         int totalSaleCount = 0;
         for(SaleItem saleItem : saleItems)
             totalSaleCount = totalSaleCount + saleItem.getQuantity();
 
         sale.setSaleCount(totalSaleCount);
         return totalSaleCount;
-    }
+    }*/
 
-    public void setRemainAmount(){
+    /*public void setRemainAmount(){
         sale.setRemainAmount(sale.getDiscountedAmount());
-    }
+    }*/
 
-    public long getMaxSplitId(){
+    /*public long getMaxSplitId(){
         long maxValue = 0;
 
         if(getTransactions() != null){
@@ -461,19 +453,9 @@ public class SaleModel implements Serializable {
             }
         }
         return maxValue;
+    }*/
 
-
-        /*if(sale.getSplits() != null){
-            for(Split split : sale.getSplits()){
-                if(split.getId() > maxValue)
-                    maxValue = split.getId();
-            }
-        }
-
-        return maxValue;*/
-    }
-
-    public Transaction getTransactionWillBePaid(){
+    /*public Transaction getTransactionWillBePaid(){
         Transaction mTransaction = null;
         long seqNumber = 999;
         for(Transaction transaction : transactions){
@@ -485,43 +467,43 @@ public class SaleModel implements Serializable {
             }
         }
         return mTransaction;
-    }
+    }*/
 
     /*public  double getTotalDiscountedAmount(){
         double amountx = sale.getTotalAmount() - getTotalDiscountAmountOfSale();
         return  amountx;
     }*/
 
-    public boolean isExistNotCompletedTransaction(){
+    /*public boolean isExistNotCompletedTransaction(){
 
         for(Transaction transaction : transactions){
             if(!transaction.isPaymentCompleted())
                 return true;
         }
         return false;
-    }
+    }*/
 
-    public boolean isExistPaymentCompletedTransaction(){
+    /*public boolean isExistPaymentCompletedTransaction(){
         for(Transaction transaction : transactions){
             if(transaction.isPaymentCompleted())
                 return true;
         }
         return false;
-    }
+    }*/
 
-    public boolean isDiscountInSale(Discount discount){
+    /*public boolean isDiscountInSale(Discount discount){
         for(Discount discount1 : sale.getDiscounts()){
             if(discount.getId() == discount1.getId())
                 return true;
         }
         return false;
-    }
+    }*/
 
-    public boolean isSaleItemInSale(SaleItem saleItem){
+    /*public boolean isSaleItemInSale(SaleItem saleItem){
         for(SaleItem saleItem1 : saleItems){
             if(saleItem.getUuid().equals(saleItem1.getUuid()))
                 return true;
         }
         return false;
-    }
+    }*/
 }

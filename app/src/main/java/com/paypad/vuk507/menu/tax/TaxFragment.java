@@ -25,9 +25,10 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.tax.adapters.TaxListAdapter;
+import com.paypad.vuk507.menu.tax.adapters.TaxSelectListAdapter;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
@@ -67,7 +68,7 @@ public class TaxFragment extends BaseFragment {
     @BindView(R.id.taxRv)
     RecyclerView taxRv;
 
-    private TaxListAdapter taxListAdapter;
+    private TaxSelectListAdapter taxSelectListAdapter;
 
     private Realm realm;
 
@@ -191,16 +192,41 @@ public class TaxFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
+        taxModelList = new ArrayList<>();
+        addDefaultTaxTitle(getResources().getString(R.string.system_taxes));
+        fillItems();
 
         taxModels = TaxDBHelper.getAllTaxes(user.getUsername());
-        taxModelList = new ArrayList(taxModels);
-        taxListAdapter = new TaxListAdapter(getContext(), taxModelList, mFragmentNavigation, new ReturnTaxCallback() {
+
+        if(taxModels != null && taxModels.size() > 0)
+            addDefaultTaxTitle(getResources().getString(R.string.user_defined_taxes));
+
+        taxModelList.addAll(new ArrayList(taxModels));
+        taxSelectListAdapter = new TaxSelectListAdapter(taxModelList, mFragmentNavigation, new ReturnTaxCallback() {
             @Override
             public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
                 updateAdapterWithCurrentList();
             }
-        });
-        taxRv.setAdapter(taxListAdapter);
+        }, null);
+        taxRv.setAdapter(taxSelectListAdapter);
+    }
+
+    private void addDefaultTaxTitle(String taxName){
+        TaxModel taxModel = new TaxModel();
+        taxModel.setId(0);
+        taxModel.setName(taxName);
+        taxModelList.add(taxModel);
+    }
+
+    private void fillItems() {
+        TaxRateEnum[] values = TaxRateEnum.values();
+        for(TaxRateEnum item : values){
+            TaxModel taxModel = new TaxModel();
+            taxModel.setName(item.getLabel());
+            taxModel.setTaxRate(item.getRateValue());
+            taxModel.setId(item.getId());
+            taxModelList.add(taxModel);
+        }
     }
 
     private void setShapes() {
@@ -209,11 +235,11 @@ public class TaxFragment extends BaseFragment {
     }
 
     public void updateAdapter(String searchText) {
-        if (searchText != null && taxListAdapter != null) {
-            taxListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+        if (searchText != null && taxSelectListAdapter != null) {
+            taxSelectListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0 && taxModelList.size() > 0)
+                    if (size == 0 && (taxModelList != null && taxModelList.size() > 0))
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

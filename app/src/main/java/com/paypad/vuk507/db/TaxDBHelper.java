@@ -18,24 +18,32 @@ public class TaxDBHelper {
         return taxModels;
     }
 
-    public static void deleteTax(long id, CompleteCallback completeCallback){
+    public static BaseResponse deleteTax(long id){
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
+
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
+
                 try{
                     TaxModel taxModel = realm.where(TaxModel.class).equalTo("id", id).findFirst();
-                    taxModel.deleteFromRealm();
-                    baseResponse.setMessage("Tax deleted successfully");
+
+                    try{
+
+                    }catch (Exception e){
+                        taxModel.deleteFromRealm();
+                        baseResponse.setMessage("Tax deleted successfully");
+                    }
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Tax cannot be deleted");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static TaxModel getTax(long id){

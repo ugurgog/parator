@@ -17,27 +17,35 @@ public class UnitDBHelper {
         return unitModels;
     }
 
-    public static void deleteUnit(long id, CompleteCallback completeCallback){
+    public static BaseResponse deleteUnit(long id){
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
+
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     UnitModel unitModel = realm.where(UnitModel.class).equalTo("id", id).findFirst();
-                    unitModel.deleteFromRealm();
-                    baseResponse.setMessage("Unit deleted successfully");
+                    try{
+                        unitModel.deleteFromRealm();
+                        baseResponse.setMessage("Unit deleted successfully");
+                    }catch (Exception e){
+                        baseResponse.setSuccess(false);
+                        baseResponse.setMessage("Unit cannot be deleted");
+                    }
+
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Unit cannot be deleted");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
-    public static UnitModel getUnit(int id){
+    public static UnitModel getUnit(long id){
         Realm realm = Realm.getDefaultInstance();
         UnitModel unitModel = realm.where(UnitModel.class).equalTo("id", id).findFirst();
         return unitModel;

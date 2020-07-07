@@ -40,6 +40,7 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
 
     public interface MailSendCallback{
         void OnMailSendResponse(BaseResponse baseResponse, String email);
+        void OnBackPressed();
     }
 
     public void setMailSendCallback(MailSendCallback mailSendCallback) {

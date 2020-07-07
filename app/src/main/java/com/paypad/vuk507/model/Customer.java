@@ -21,6 +21,7 @@ public class Customer extends RealmObject {
     private String company;
     private Date birthday;
     private String otherInformation;
+    private int colorId;
     private Date createDate;
     private String userUuid;
 
@@ -138,5 +139,13 @@ public class Customer extends RealmObject {
 
     public String getFullName(){
         return (getName() != null ? getName() : "").concat(" ").concat(getSurname() != null ? getSurname() : "").trim();
+    }
+
+    public int getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
     }
 }

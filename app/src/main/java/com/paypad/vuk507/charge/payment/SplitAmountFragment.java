@@ -20,6 +20,8 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.DynamicStructEnum;
@@ -92,6 +94,7 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
     private CompleteCallback completeCallback;
     private CustomSplitFragment customSplitFragment;
     private NumberFormatWatcher numberFormatWatcher;
+    private IOrderManager orderManager;
 
     public SplitAmountFragment(Transaction transaction, CompleteCallback completeCallback) {
         this.mTransaction = transaction;
@@ -193,12 +196,13 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
                     Objects.requireNonNull(getActivity()).onBackPressed();
                 }else {
                     removeNotPayedSplits();
-                    decideSplitCountByAmount(firstAmount);
+                    orderManager.addTransactionToOrder(firstAmount);
+                    //decideSplitCountByAmount(firstAmount);
 
                     double secondAmount = mTransaction.getTransactionAmount() - firstAmount;
 
                     if(secondAmount > 0)
-                        decideSplitCountByAmount(secondAmount);
+                        orderManager.addTransactionToOrder(secondAmount);
 
                     LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
 
@@ -210,6 +214,7 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
     }
 
     private void initVariables() {
+        orderManager = new OrderManager();
         initNumberFormatWatcher();
         amountEt.addTextChangedListener(numberFormatWatcher);
         amountEt.setHint("0.00 ".concat(CommonUtils.getCurrency().getSymbol()));
@@ -271,12 +276,7 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
         double splitAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount() / (double) splitCount;
 
         for(int count = 0; count < splitCount; count ++){
-            Transaction transaction = new Transaction();
-            transaction.setTransactionUuid(UUID.randomUUID().toString());
-            transaction.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
-            transaction.setTransactionAmount(splitAmount);
-            transaction.setSeqNumber(SaleModelInstance.getInstance().getSaleModel().getMaxSplitId() + 1);
-            SaleModelInstance.getInstance().getSaleModel().getTransactions().add(transaction);
+            orderManager.addTransactionToOrder(splitAmount);
         }
 
         LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
@@ -289,14 +289,14 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
         Objects.requireNonNull(getActivity()).onBackPressed();
     }
 
-    private void decideSplitCountByAmount(double amountx){
+    /*private void decideSplitCountByAmount(double amountx){
         Transaction transaction = new Transaction();
         transaction.setTransactionUuid(UUID.randomUUID().toString());
         transaction.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
         transaction.setTransactionAmount(amountx);
         transaction.setSeqNumber(SaleModelInstance.getInstance().getSaleModel().getMaxSplitId() + 1);
         SaleModelInstance.getInstance().getSaleModel().getTransactions().add(transaction);
-    }
+    }*/
 
     @Override
     public void OnReturnEtValue(String text) {

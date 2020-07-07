@@ -1,8 +1,9 @@
 package com.paypad.vuk507.model.pojo;
 
 public class Contact {
-    String name;
-    String phoneNumber;
+    private String name;
+    private String phoneNumber;
+    private int colorId;
 
     public String getName() {
         return name;
@@ -18,5 +19,13 @@ public class Contact {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public int getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
     }
 }

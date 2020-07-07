@@ -59,7 +59,7 @@ public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter {
     @Override
     public  RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view = null;
+        View view;
         if(directionType == ProcessDirectionEnum.DIRECTION_FAST_MENU){
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dynamic_item_list, parent, false);
             return new DynamicPaymentSelectAdapter.FastMenuHolder(view);

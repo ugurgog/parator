@@ -12,9 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.enums.CurrencyEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.interfaces.ReturnViewCallback;
 import com.paypad.vuk507.menu.discount.DiscountEditFragment;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Discount;
@@ -32,6 +35,7 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnDiscountCallback returnDiscountCallback;
     private ItemProcessEnum processType;
+    private IOrderManager orderManager;
 
     public DiscountListAdapter(Context context, List<Discount> discounts,
                                BaseFragment.FragmentNavigation fragmentNavigation,
@@ -43,6 +47,7 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
         this.fragmentNavigation = fragmentNavigation;
         this.returnDiscountCallback = returnDiscountCallback;
         this.processType = processType;
+        orderManager = new OrderManager();
     }
 
     @NonNull
@@ -103,7 +108,7 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
 
         private void setEnabilityOfDiscount() {
             if(processType == ItemProcessEnum.SELECTED){
-                if(SaleModelInstance.getInstance().getSaleModel().isDiscountInSale(discount)){
+                if(orderManager.isDiscountInSale(discount)){
                     discountItemCv.setEnabled(false);
                     discountNameTv.setTextColor(context.getResources().getColor(R.color.Gray, null));
                     rateOrAmountTv.setTextColor(context.getResources().getColor(R.color.Gray, null));

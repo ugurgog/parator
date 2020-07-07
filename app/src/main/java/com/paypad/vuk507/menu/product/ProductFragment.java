@@ -185,7 +185,7 @@ public class ProductFragment extends BaseFragment {
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         productRv.setLayoutManager(linearLayoutManager);
-        productRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
+        //productRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
     }
 
@@ -212,7 +212,7 @@ public class ProductFragment extends BaseFragment {
             productListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
                 @Override
                 public void OnReturn(int size) {
-                    if (size == 0 && productList.size() > 0)
+                    if (size == 0 && (productList != null && productList.size() > 0))
                         searchResultTv.setVisibility(View.VISIBLE);
                     else
                         searchResultTv.setVisibility(View.GONE);

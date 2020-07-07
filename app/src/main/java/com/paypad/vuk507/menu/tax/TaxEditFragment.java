@@ -1,6 +1,7 @@
 package com.paypad.vuk507.menu.tax;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,17 +20,24 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.db.ProductDBHelper;
 import com.paypad.vuk507.db.TaxDBHelper;
+import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
+import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.CustomDialogBox;
+import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.NumberFormatWatcher;
 
 import org.greenrobot.eventbus.EventBus;
@@ -41,6 +49,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 import static com.paypad.vuk507.constants.CustomConstants.MAX_RATE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
@@ -166,19 +175,55 @@ public class TaxEditFragment extends BaseFragment {
                     CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
                             getContext().getResources().getString(R.string.confirm_delete));
                 }else if(deleteButtonStatus == 2){
-                    TaxDBHelper.deleteTax(taxModel.getId(), new CompleteCallback() {
-                        @Override
-                        public void onComplete(BaseResponse baseResponse) {
-                            CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
-                            if(baseResponse.isSuccess()){
-                                returnTaxCallback.OnReturn((TaxModel) baseResponse.getObject(), ItemProcessEnum.DELETED);
-                                Objects.requireNonNull(getActivity()).onBackPressed();
-                            }
-                        }
-                    });
+
+                    RealmResults<Product> products = ProductDBHelper.getProductsByTaxId(taxModel.getId());
+
+                    if(products != null && products.size() > 0){
+                        showDeleteDialog(products);
+                    }else
+                        deleteTax();
                 }
             }
         });
+    }
+
+    private void showDeleteDialog(RealmResults<Product> products){
+        String deleteMessage = getResources().getString(R.string.tax_delete_question_description1)
+                .concat(" ")
+                .concat(String.valueOf(products.size()))
+                .concat(" ")
+                .concat(getResources().getString(R.string.tax_delete_question_description2));
+
+        new CustomDialogBox.Builder((Activity) getContext())
+                .setTitle(getContext().getResources().getString(R.string.delete_tax))
+                .setMessage(deleteMessage)
+                .setPositiveBtnVisibility(View.VISIBLE)
+                .setNegativeBtnVisibility(View.GONE)
+                .setPositiveBtnText(getContext().getResources().getString(R.string.ok))
+                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                .setDurationTime(0)
+                .isCancellable(true)
+                .setEditTextVisibility(View.GONE)
+                .OnPositiveClicked(new CustomDialogListener() {
+                    @Override
+                    public void OnClick() {
+                        deleteButtonStatus = 1;
+                        CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
+                                getContext().getResources().getString(R.string.delete_tax));
+                    }
+                }).build();
+    }
+
+    private void deleteTax(){
+
+        BaseResponse baseResponse =  TaxDBHelper.deleteTax(taxModel.getId());
+        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+
+        if(!baseResponse.isSuccess())
+            return;
+
+        returnTaxCallback.OnReturn((TaxModel) baseResponse.getObject(), ItemProcessEnum.DELETED);
+        Objects.requireNonNull(getActivity()).onBackPressed();
     }
 
     /*private void checkSaveBtnEnable(){

@@ -15,6 +15,8 @@ import androidx.annotation.Nullable;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.SaleItemDBHelper;
@@ -54,6 +56,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     //private ProgressDialog progressDialog;
     private PaymentCompletedFragment paymentCompletedFragment;
     private PaymentStatusCallback paymentStatusCallback;
+    private IOrderManager orderManager;
 
     public PaymentFragment(Transaction transaction) {
         mTransaction = transaction;
@@ -121,6 +124,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
 
         //thread.start();
 
+        orderManager = new OrderManager();
         completePayment();
     }
 
@@ -168,10 +172,9 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
 
             LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
 
-            SaleModelInstance.getInstance().getSaleModel().getSale().setRemainAmount(
-                    SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount() - mTransaction.getTransactionAmount());
+            orderManager.setRemainAmount(orderManager.getRemainAmount() - mTransaction.getTransactionAmount());
 
-            if(SaleModelInstance.getInstance().getSaleModel().isExistNotCompletedTransaction()){
+            if(orderManager.isExistNotCompletedTransaction()){
                 initPaymentCompletedFragment(ProcessDirectionEnum.PAYMENT_PARTIALLY_COMPLETED);
                 mFragmentNavigation.pushFragment(paymentCompletedFragment);
                 //progressDialog.dismiss();
@@ -182,17 +185,6 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
             //progressDialog.dismiss();
         }
     }
-
-    Thread thread = new Thread() {
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    };
 
     private void initPaymentCompletedFragment(ProcessDirectionEnum processType){
         paymentCompletedFragment = new PaymentCompletedFragment(mTransaction, processType);

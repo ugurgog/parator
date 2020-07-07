@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,39 +14,60 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.menu.tax.TaxEditFragment;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.TaxModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaxSelectListAdapter extends RecyclerView.Adapter<TaxSelectListAdapter.TaxHolder> {
+public class TaxSelectListAdapter extends RecyclerView.Adapter {
 
-    private Context context;
     private List<TaxModel> taxModels = new ArrayList<>();
     private List<TaxModel> orgTaxModels = new ArrayList<>();
 
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnTaxCallback returnTaxCallback;
+    private ItemProcessEnum mProcessType;
 
-    public TaxSelectListAdapter(Context context, List<TaxModel> taxModels,
-                   BaseFragment.FragmentNavigation fragmentNavigation,
-                   ReturnTaxCallback returnTaxCallback) {
-        this.context = context;
+    private static final int VIEW_ITEM = 0;
+    private static final int VIEW_NONE = 1;
+
+    public TaxSelectListAdapter(List<TaxModel> taxModels,
+                                BaseFragment.FragmentNavigation fragmentNavigation,
+                                ReturnTaxCallback returnTaxCallback,
+                                ItemProcessEnum processType) {
         this.taxModels.addAll(taxModels);
         this.orgTaxModels.addAll(taxModels);
         this.fragmentNavigation = fragmentNavigation;
         this.returnTaxCallback = returnTaxCallback;
+        mProcessType = processType;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if(taxModels.get(position).getId() != 0)
+            return VIEW_ITEM;
+        else
+            return VIEW_NONE;
     }
 
     @NonNull
     @Override
-    public TaxHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView;
-        itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_tax_list, parent, false);
-        return new TaxHolder(itemView);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        if(viewType == VIEW_ITEM){
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_tax_list, parent, false);
+            return new TaxHolder(itemView);
+        }else {
+            View v = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.item_custom_list_no_pic_with_arrow, parent, false);
+
+            return new TaxNoItemHolder(v);
+        }
     }
 
     public class TaxHolder extends RecyclerView.ViewHolder {
@@ -67,7 +89,18 @@ public class TaxSelectListAdapter extends RecyclerView.Adapter<TaxSelectListAdap
             taxItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    returnTaxCallback.OnReturn(taxModel, ItemProcessEnum.SELECTED);
+
+                    if(mProcessType == ItemProcessEnum.SELECTED)
+                        returnTaxCallback.OnReturn(taxModel, ItemProcessEnum.SELECTED);
+                    else
+                        if(taxModel.getId() > 0){
+                            fragmentNavigation.pushFragment(new TaxEditFragment(taxModel, new ReturnTaxCallback() {
+                                @Override
+                                public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
+                                    returnTaxCallback.OnReturn(taxModel, processEnum);
+                                }
+                            }));
+                        }
                 }
             });
         }
@@ -80,29 +113,38 @@ public class TaxSelectListAdapter extends RecyclerView.Adapter<TaxSelectListAdap
         }
     }
 
-    public void taxRemoveResult(int position){
-        taxModels.remove(position);
-        this.notifyItemRemoved(position);
-        this.notifyItemRangeChanged(position, getItemCount());
-        //this.notifyDataSetChanged();
-    }
+    public class TaxNoItemHolder extends RecyclerView.ViewHolder {
 
-    public void taxChangedResult(int position){
-        this.notifyItemChanged(position);
-    }
+        private TextView nameTv;
+        private ImageView arrowImgv;
 
-    public void addTax(TaxModel taxModel){
-        if(taxModels != null && taxModel != null){
-            taxModels.add(taxModel);
-            this.notifyItemInserted(taxModels.size() - 1);
-            //this.notifyDataSetChanged();
+        TaxModel taxModel;
+        int position;
+
+        TaxNoItemHolder(View view) {
+            super(view);
+
+            nameTv = view.findViewById(R.id.nameTv);
+            arrowImgv = view.findViewById(R.id.arrowImgv);
+        }
+
+        void setData(TaxModel taxModel, int position) {
+            this.taxModel = taxModel;
+            this.position = position;
+            arrowImgv.setVisibility(View.GONE);
+            nameTv.setText(taxModel.getName());
+
         }
     }
 
     @Override
-    public void onBindViewHolder(final TaxHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         TaxModel taxModel = taxModels.get(position);
-        holder.setData(taxModel, position);
+        if (holder instanceof TaxHolder) {
+            ((TaxHolder) holder).setData(taxModel, position);
+        } else {
+            ((TaxNoItemHolder) holder).setData(taxModel, position);
+        }
     }
 
     @Override

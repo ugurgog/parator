@@ -63,7 +63,9 @@ public class LogUtil {
                     ", CreateDate:" + transaction.getCreateDate() +
                     ", ChangeAmount:" + transaction.getChangeAmount() +
                     ", CashAmount:" + transaction.getCashAmount() +
-                    ", UserUuid:" + transaction.getUserUuid());
+                    ", UserUuid:" + transaction.getUserUuid() +
+                    ", isMailSend:" + transaction.isMailSend() +
+                    ", mailAddress:" + transaction.getMailAdress());
         }catch (Exception e){
 
         }

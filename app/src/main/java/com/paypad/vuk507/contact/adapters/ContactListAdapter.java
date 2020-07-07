@@ -89,6 +89,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
         private void setShortenNameColor() {
             int colorCode = CommonUtils.getDarkRandomColor(context);
+
+            if(contact.getColorId() != 0)
+                colorCode = contact.getColorId();
+
             GradientDrawable imageShape = ShapeUtil.getShape(context.getResources().getColor(colorCode, null),
                     context.getResources().getColor(colorCode, null),
                     GradientDrawable.OVAL, 50, 0);

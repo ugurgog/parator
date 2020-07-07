@@ -40,7 +40,8 @@
                 android:gravity="start"
                 android:layout_weight="2"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_keyboard_arrow_right_gray_24dp"/>
+                android:src="@drawable/ic_keyboard_arrow_right_gray_24dp"
+                android:id="@+id/arrowImgv"/>
 
         </LinearLayout>
 
