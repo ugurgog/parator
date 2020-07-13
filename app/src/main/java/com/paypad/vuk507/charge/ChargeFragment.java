@@ -52,6 +52,7 @@ import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.item.ItemListFragment;
+import com.paypad.vuk507.menu.transactions.TransactionsFragment;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.order.OrderItemTax;
@@ -79,6 +80,8 @@ public class ChargeFragment extends BaseFragment implements
         SaleCalculateCallback,
         PaymentStatusCallback,
         ItemListFragment.DiscountUpdateCallback,
+        ItemListFragment.ProductUpdateCallback,
+        ItemListFragment.CategoryUpdateCallback,
         ReturnViewCallback {
 
     View mView;
@@ -111,9 +114,15 @@ public class ChargeFragment extends BaseFragment implements
     TextView saleCountTv;
     @BindView(R.id.toolbarll)
     LinearLayout toolbarll;
+    @BindView(R.id.saleCountRL)
+    RelativeLayout saleCountRL;
 
     private static final int TAB_KEYPAD = 0;
     private static final int TAB_LIBRARY = 1;
+
+    static final int CUSTOM_ITEM_ADD_FROM_KEYPAD = 0;
+    private static final int CUSTOM_ITEM_ADD_FROM_SALELIST = 1;
+    private static final int CUSTOM_ITEM_ADD_FROM_CHARGE = 2;
 
     private int selectedTabPosition = TAB_KEYPAD;
     private boolean mDrawerState;
@@ -211,7 +220,7 @@ public class ChargeFragment extends BaseFragment implements
                         return ;
                     }else {
                         if(!orderManager.isSaleItemInSale(saleItem)){
-                            OnCustomItemAdd();
+                            OnCustomItemAdd(CUSTOM_ITEM_ADD_FROM_SALELIST);
                         }
                     }
                 }
@@ -238,7 +247,7 @@ public class ChargeFragment extends BaseFragment implements
                         return ;
                     }else {
                         if(!orderManager.isSaleItemInSale(saleItem)){
-                            OnCustomItemAdd();
+                            OnCustomItemAdd(CUSTOM_ITEM_ADD_FROM_CHARGE);
                         }
 
                         /*if(!SaleModelInstance.getInstance().getSaleModel().isSaleItemInSale(saleItem)){
@@ -285,6 +294,7 @@ public class ChargeFragment extends BaseFragment implements
         keypadFragment = new KeypadFragment();
         keypadFragment.setSaleCalculateCallback(this);
         keypadFragment.setPaymentStatusCallback(this);
+        keypadFragment.setReturnViewCallback(this);
 
         libraryFragment = new LibraryFragment();
         libraryFragment.setSaleCalculateCallback(this);
@@ -417,6 +427,8 @@ public class ChargeFragment extends BaseFragment implements
     private void startItemsFragment() {
         ItemListFragment itemListFragment = new ItemListFragment();
         itemListFragment.setDiscountUpdateCallback(this);
+        itemListFragment.setProductUpdateCallback(this);
+        itemListFragment.setCategoryUpdateCallback(this);
         mFragmentNavigation.pushFragment(itemListFragment);
     }
 
@@ -433,6 +445,7 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void startTransactionsFragment() {
+        mFragmentNavigation.pushFragment(new TransactionsFragment());
     }
 
     @Override
@@ -465,7 +478,7 @@ public class ChargeFragment extends BaseFragment implements
         setChargeAmountTv();
         //totalAmount = 0d;
 
-        updateDiscountAdapter();
+        updateLibraryDiscountAdapter();
         updateDynamicBoxAdapter();
         //keypadFragment.clearAmountFields();
     }
@@ -476,15 +489,8 @@ public class ChargeFragment extends BaseFragment implements
             mTaxModel = taxModel;
 
             totalAmount = orderManager.getDiscountedAmountByAddingCustomItem(saleItem);
-            //totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount2(saleItem);
+            OnCustomItemAdd(CUSTOM_ITEM_ADD_FROM_KEYPAD);
 
-            totalAmount = totalAmount + ((totalAmount / 100d) * mTaxModel.getTaxRate());
-            String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-
-            if(totalAmount <= 0d)
-                chargeAmountTv.setText("");
-            else
-                chargeAmountTv.setText(amountStr);
         }else {
             CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_custom_amount_first));
         }
@@ -499,7 +505,7 @@ public class ChargeFragment extends BaseFragment implements
         totalAmount = 0;
         saleNote = "";
         setChargeAmountTv();
-        updateDiscountAdapter();
+        updateLibraryDiscountAdapter();
         updateDynamicBoxAdapter();
         mTaxModel = null;
         saleItem = null;
@@ -512,7 +518,7 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     @Override
-    public void OnCustomItemAdd() {
+    public void OnCustomItemAdd(int addFromValue) {
 
         if(saleItem == null){
             CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_type_custom_amount));
@@ -543,7 +549,8 @@ public class ChargeFragment extends BaseFragment implements
         mTaxModel = null;
         keypadFragment.clearAmountFields();
 
-        startAnimation(keypadFragment.getSaleAmountTv());
+        if(addFromValue == CUSTOM_ITEM_ADD_FROM_KEYPAD)
+            startAnimation(keypadFragment.getSaleAmountTv());
     }
 
     @Override
@@ -558,7 +565,6 @@ public class ChargeFragment extends BaseFragment implements
         saleItem.setNote(saleNote != null ? saleNote : "");
         saleItem.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
 
-        //totalAmount = SaleModelInstance.getInstance().getSaleModel().getDynamicCustomAmount2(saleItem);
         totalAmount = orderManager.getDiscountedAmountByAddingCustomItem(saleItem);
 
         String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
@@ -623,7 +629,7 @@ public class ChargeFragment extends BaseFragment implements
     @Override
     public void OnDiscountRemoved() {
         setChargeAmountTv();
-        updateDiscountAdapter();
+        updateLibraryDiscountAdapter();
         updateDynamicBoxAdapter();
     }
 
@@ -666,7 +672,6 @@ public class ChargeFragment extends BaseFragment implements
 
     private void addUserUUIDToSale(){
         orderManager.setUserIdToOrder(user.getUuid());
-        //SaleModelInstance.getInstance().getSaleModel().setSaleUserUuid(user.getUuid());
     }
 
     @Override
@@ -677,7 +682,19 @@ public class ChargeFragment extends BaseFragment implements
     @Override
     public void OnDiscountUpdated() {
         setChargeAmountTv();
-        updateDiscountAdapter();
+        updateLibraryDiscountAdapter();
+        updateDynamicBoxAdapter();
+    }
+
+    @Override
+    public void OnProductUpdated() {
+        updateLibraryProductAdapter();
+        updateDynamicBoxAdapter();
+    }
+
+    @Override
+    public void OnCategoryUpdated() {
+        updateLibraryCategoryAdapter();
         updateDynamicBoxAdapter();
     }
 
@@ -686,77 +703,29 @@ public class ChargeFragment extends BaseFragment implements
             keypadFragment.setDynamicBoxAdapter();
     }
 
-    private void updateDiscountAdapter() {
+    private void updateLibraryDiscountAdapter() {
         if(libraryFragment != null && libraryFragment.getDiscountListAdapter() != null)
             libraryFragment.setDiscountAdapter();
     }
 
+    private void updateLibraryProductAdapter() {
+        if(libraryFragment != null && libraryFragment.getProductListAdapter() != null)
+            libraryFragment.setProductAdapter(0);
+    }
+
+    private void updateLibraryCategoryAdapter() {
+        if(libraryFragment != null && libraryFragment.getCategorySelectListAdapter() != null)
+            libraryFragment.setCategoryAdapter();
+    }
+
     private void startAnimation(View startView){
-
-
         AnimationUtil.startAnimation(startView, saleCountTv, mainFl, (Activity) getContext());
-
-        if(1 == 1)
-            return;
-
-        int[] location = new int[2];
-        startView.getLocationOnScreen(location);
-        int x1 = location[0];
-        int y1 = location[1];
-
-        location = new int[2];
-        saleCountTv.getLocationOnScreen(location);
-        int x2 = location[0];
-        int y2 = location[1];
-
-        TranslateAnimation anim = null;
-        if(startView instanceof TextView){
-            anim = new TranslateAnimation(x1 + startView.getWidth()/2,
-                    x2, y1 - startView.getHeight()
-                    , y2 - saleCountTv.getHeight() + 13);
-        }else if(startView instanceof FrameLayout){
-            anim = new TranslateAnimation(x1 + startView.getWidth()/2,
-                    x2, y1  , y2 - saleCountTv.getHeight() + 13);
-        }
-
-        if(anim == null) return;
-
-        anim.setDuration(300);
-
-        anim.setAnimationListener(new TranslateAnimation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) { }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) { }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mainFl.removeView(animationTextView);
-            }
-        });
-
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.layout_sale_count, null);
-
-        animationTextView = (TextView) view;
-
-        animationTextView.setVisibility(View.VISIBLE);
-        animationTextView.setText("1");
-
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        animationTextView.setLayoutParams(params);
-
-        params.height = CommonUtils.getPaddingInPixels(getContext(), 30f);
-        params.width = CommonUtils.getPaddingInPixels(getContext(), 30f);
-        animationTextView.setLayoutParams(params);
-
-        mainFl.addView(animationTextView);
-        view.startAnimation(anim);
     }
 
     @Override
     public void OnViewCallback(View view) {
         startAnimation(view);
     }
+
+
 }

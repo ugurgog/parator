@@ -63,6 +63,16 @@
     <string name="remove_customer">Remove Customer</string>
     <string name="all_items">All Items</string>
     <string name="unit_undefined">Unit Undefined</string>
+    <string name="tax_amount">TAX AMOUNT</string>
+    <string name="new_receipt">New Receipt</string>
+    <string name="issue_refund">Issue Refund</string>
+    <string name="items_and_services">ITEMS AND SERVICES</string>
+    <string name="cash_payment">CASH PAYMENT</string>
+    <string name="card_payment">CARD PAYMENT</string>
+    <string name="card">Card</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="sales_tax">Sales Tax</string>
+    <string name="included">Included</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -235,6 +245,9 @@
     <string name="open_camera">Open Camera</string>
     <string name="open_gallery">Open Gallery</string>
     <string name="remove_photo">Remove photo</string>
+
+    <string name="choose_photo">Choose Photo</string>
+    <string name="take_photo">Take Photo</string>
 
     <string name="choose_label_color">CHOOSE LABEL COLOR</string>
     <string name="photo_label">PHOTO LABEL</string>

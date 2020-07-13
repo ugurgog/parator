@@ -23,6 +23,8 @@ import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.interfaces.ReturnViewCallback;
 import com.paypad.vuk507.menu.product.ProductEditFragment;
+import com.paypad.vuk507.menu.product.SelectColorFragment;
+import com.paypad.vuk507.menu.product.interfaces.ColorImageReturnCallback;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.UnitModel;
@@ -36,16 +38,12 @@ public class ColorSelectAdapter extends RecyclerView.Adapter<ColorSelectAdapter.
 
     private Context context;
     private int[] colors;
-    private ColorReturnCallback colorReturnCallback;
+    private ColorImageReturnCallback colorReturnCallback;
     private Integer selectedColorId;
     private Integer mColorId;
     private int previousSelectedPosition = -1;
 
-    public interface ColorReturnCallback{
-        void OnColorReturn(int colorId);
-    }
-
-    public void setColorReturnCallback(ColorReturnCallback colorReturnCallback) {
+    public void setColorReturnCallback(ColorImageReturnCallback colorReturnCallback) {
         this.colorReturnCallback = colorReturnCallback;
     }
 

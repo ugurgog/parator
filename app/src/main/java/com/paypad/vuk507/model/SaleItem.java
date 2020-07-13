@@ -1,6 +1,7 @@
 package com.paypad.vuk507.model;
 
 import com.paypad.vuk507.model.order.OrderItemTax;
+import com.paypad.vuk507.utils.CommonUtils;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -8,18 +9,20 @@ import io.realm.annotations.PrimaryKey;
 
 public class SaleItem extends RealmObject {
 
+    @PrimaryKey
+    private String uuid;
+    private String saleUuid;
     private String name;
     private double amount;
-    private double amountIncludingTax;
+    private double taxAmount;
     private int quantity;
     private String note;
     private RealmList<Discount> discounts;
     private long productId;
     private boolean isDynamicAmount;
-    private String uuid;
-    private String saleUuid;
     private RealmList<OrderItemTax> orderItemTaxes;
-
+    private int colorId;
+    private byte[] itemImage;
 
     public String getName() {
         return name;
@@ -30,19 +33,19 @@ public class SaleItem extends RealmObject {
     }
 
     public double getAmount() {
-        return amount;
+        return CommonUtils.round(amount, 2);
     }
 
     public void setAmount(double amount) {
         this.amount = amount;
     }
 
-    public double getAmountIncludingTax() {
-        return amountIncludingTax;
+    public double getTaxAmount() {
+        return CommonUtils.round(taxAmount, 2);
     }
 
-    public void setAmountIncludingTax(double amountIncludingTax) {
-        this.amountIncludingTax = amountIncludingTax;
+    public void setTaxAmount(double taxAmount) {
+        this.taxAmount = taxAmount;
     }
 
     public int getQuantity() {
@@ -107,5 +110,21 @@ public class SaleItem extends RealmObject {
 
     public void setOrderItemTaxes(RealmList<OrderItemTax> orderItemTaxes) {
         this.orderItemTaxes = orderItemTaxes;
+    }
+
+    public int getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
+    }
+
+    public byte[] getItemImage() {
+        return itemImage;
+    }
+
+    public void setItemImage(byte[] itemImage) {
+        this.itemImage = itemImage;
     }
 }

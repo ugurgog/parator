@@ -7,8 +7,6 @@
     android:textSize="9sp"
     android:textStyle="bold"
     android:id="@+id/saleCountTv"
-    android:layout_marginStart="10dp"
     android:visibility="gone"
-    android:text="2"
     android:padding="3dp"
     xmlns:android="http://schemas.android.com/apk/res/android" />

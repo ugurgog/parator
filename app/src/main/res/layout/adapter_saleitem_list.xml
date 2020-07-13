@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:id="@+id/itemCv">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/White"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
+            <include layout="@layout/layout_item_picture" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="@color/Black"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp"
+                    android:id="@+id/itemNameTv">
+                </TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/Gray"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_11sp"
+                    android:id="@+id/itemNoteTv"
+                    android:visibility="gone">
+                </TextView>
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/itemAmountTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/custom_description_tv_size"
+                android:textColor="@color/Gray"
+                android:gravity="end"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:layout_weight="5"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/fab_color_shadow" />
+
+    </LinearLayout>
+
+
+
+</androidx.cardview.widget.CardView>

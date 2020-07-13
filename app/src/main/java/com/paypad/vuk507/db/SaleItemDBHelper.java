@@ -1,10 +1,12 @@
 package com.paypad.vuk507.db;
 
+import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModel;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class SaleItemDBHelper {
 
@@ -29,6 +31,14 @@ public class SaleItemDBHelper {
         });
 
         return baseResponse;
+    }
+
+    public static RealmResults<SaleItem> getSaleItemsBySaleId(String saleId){
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<SaleItem> saleItems = realm.where(SaleItem.class)
+                .equalTo("saleUuid", saleId)
+                .findAll();
+        return saleItems;
     }
 
 }

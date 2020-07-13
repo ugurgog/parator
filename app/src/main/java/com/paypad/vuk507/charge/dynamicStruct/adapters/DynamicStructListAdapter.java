@@ -5,6 +5,7 @@ import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -28,6 +29,7 @@ import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.TaxRateEnum;
+import com.paypad.vuk507.interfaces.ReturnViewCallback;
 import com.paypad.vuk507.login.InitialActivity;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
@@ -43,6 +45,8 @@ import java.util.Objects;
 
 import static com.paypad.vuk507.constants.CustomConstants.DYNAMIC_BOX_COUNT;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
 public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStructListAdapter.StructListHolder> {
 
@@ -52,6 +56,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
     private ReturnDynamicBoxListener dynamicBoxListener;
     private boolean maxBoxExceeded= false;
     private IOrderManager orderManager;
+    private ReturnViewCallback returnViewCallback;
 
     public DynamicStructListAdapter(Context context, List<DynamicBoxModel> boxModels,
                                     BaseFragment.FragmentNavigation fragmentNavigation,
@@ -62,6 +67,10 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
         this.dynamicBoxListener = listener;
         orderManager = new OrderManager();
         setMaxBoxExceeded();
+    }
+
+    public void setReturnViewCallback(ReturnViewCallback returnViewCallback) {
+        this.returnViewCallback = returnViewCallback;
     }
 
     private void setMaxBoxExceeded(){
@@ -83,7 +92,10 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
 
         private CardView itemCv;
         private TextView itemNameTv;
+        private TextView itemValueTv;
         private ImageView iconImgv;
+        private LinearLayout mainll;
+        private FrameLayout content_frame;
 
         private DynamicBoxModel dynamicBoxModel;
         private int position;
@@ -95,6 +107,9 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
             itemCv = view.findViewById(R.id.itemCv);
             itemNameTv = view.findViewById(R.id.itemNameTv);
             iconImgv = view.findViewById(R.id.iconImgv);
+            mainll = view.findViewById(R.id.mainll);
+            itemValueTv = view.findViewById(R.id.itemValueTv);
+            content_frame = view.findViewById(R.id.content_frame);
 
             itemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -104,6 +119,12 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
                     }
                     mLastClickTime = SystemClock.elapsedRealtime();
                     dynamicBoxListener.onReturn(dynamicBoxModel, ItemProcessEnum.SELECTED);
+
+                    if(dynamicBoxModel.getStructId() == DynamicStructEnum.PRODUCT_SET.getId()){
+                        Product product = ProductDBHelper.getProduct(dynamicBoxModel.getItemId());
+                        if(product.getAmount() > 0d)
+                            returnViewCallback.OnViewCallback(content_frame);
+                    }
                 }
             });
 
@@ -179,29 +200,26 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
         private void setItemName() {
             if(dynamicBoxModel.getStructId() == 0){
                 itemNameTv.setText("+");
+                itemValueTv.setVisibility(View.GONE);
             }else {
                 if(dynamicBoxModel.getStructId() == DynamicStructEnum.DISCOUNT_SET.getId()){
                     Discount discount = DiscountDBHelper.getDiscount(dynamicBoxModel.getItemId());
-                    itemNameTv.setText(discount.getName());
-                    setEnabilityOfDiscount(discount);
+                    setDiscountNameText(discount);
                 }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.PRODUCT_SET.getId()){
                     Product product = ProductDBHelper.getProduct(dynamicBoxModel.getItemId());
-                    itemNameTv.setText(product.getName());
+
+                    if(product != null)
+                        setProductNameText(product);
                 }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.CATEGORY_SET.getId()){
                     Category category = CategoryDBHelper.getCategory(dynamicBoxModel.getItemId());
+                    mainll.setBackgroundColor(context.getResources().getColor(category.getColorId(), null));
                     itemNameTv.setText(category.getName());
+                    itemValueTv.setVisibility(View.GONE);
                 }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.TAX_SET.getId()){
-
-                    if(dynamicBoxModel.getItemId() < 0){
-                        TaxRateEnum taxRateEnum = TaxRateEnum.getById(dynamicBoxModel.getItemId());
-                        itemNameTv.setText(Objects.requireNonNull(taxRateEnum).getLabel());
-
-                    }else {
-                        TaxModel taxModel = TaxDBHelper.getTax(dynamicBoxModel.getItemId());
-                        itemNameTv.setText(taxModel.getName());
-                    }
-
+                    setTaxNameText(dynamicBoxModel);
                 }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.PAYMENT_SET.getId()){
+                    itemValueTv.setVisibility(View.GONE);
+
                     if(dynamicBoxModel.getItemId() < 0){
                         PaymentTypeEnum paymentType = PaymentTypeEnum.getById(dynamicBoxModel.getItemId());
                         itemNameTv.setText(CommonUtils.getLanguage().equals(LANGUAGE_TR) ?
@@ -211,13 +229,57 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
             }
         }
 
+        private void setDiscountNameText(Discount discount){
+            String value;
+            if(discount.getAmount() > 0d)
+                value = CommonUtils.getDoubleStrValueForView(discount.getAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+            else
+                value = "% ".concat(CommonUtils.getDoubleStrValueForView(discount.getRate(), TYPE_RATE));
+
+            itemValueTv.setVisibility(View.VISIBLE);
+            itemNameTv.setText(discount.getName());
+            itemValueTv.setText(value);
+            setEnabilityOfDiscount(discount);
+        }
+
+        private void setProductNameText(Product product){
+            if(product!= null && product.getColorId() > 0)
+                mainll.setBackgroundColor(context.getResources().getColor(product.getColorId(), null));
+
+            if(product != null && product.getAmount() > 0d){
+                itemValueTv.setVisibility(View.VISIBLE);
+                itemNameTv.setText(product.getName());
+                itemValueTv.setText(CommonUtils.getDoubleStrValueForView(product.getAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
+            } else{
+                itemValueTv.setVisibility(View.GONE);
+                itemNameTv.setText(product.getName());
+            }
+        }
+
+        private void setTaxNameText(DynamicBoxModel dynamicBoxModel){
+            itemValueTv.setVisibility(View.VISIBLE);
+
+            if(dynamicBoxModel.getItemId() < 0){
+                TaxRateEnum taxRateEnum = TaxRateEnum.getById(dynamicBoxModel.getItemId());
+                itemNameTv.setText(Objects.requireNonNull(taxRateEnum).getLabel());
+                itemValueTv.setText("% ".concat(CommonUtils.getDoubleStrValueForView(taxRateEnum.getRateValue(), TYPE_RATE)));
+
+            }else {
+                TaxModel taxModel = TaxDBHelper.getTax(dynamicBoxModel.getItemId());
+                itemNameTv.setText(taxModel.getName());
+                itemValueTv.setText("% ".concat(CommonUtils.getDoubleStrValueForView(taxModel.getTaxRate(), TYPE_RATE)));
+            }
+        }
+
         private void setEnabilityOfDiscount(Discount discount) {
             if(orderManager.isDiscountInSale(discount)){
                 itemCv.setEnabled(false);
                 itemNameTv.setTextColor(context.getResources().getColor(R.color.Black, null));
+                itemValueTv.setTextColor(context.getResources().getColor(R.color.Black, null));
             }else {
                 itemCv.setEnabled(true);
                 itemNameTv.setTextColor(context.getResources().getColor(R.color.White, null));
+                itemValueTv.setTextColor(context.getResources().getColor(R.color.White, null));
             }
         }
     }

@@ -23,17 +23,12 @@
         android:layout_height="0dp"
         android:layout_width="match_parent"/>
 
-    <com.paypad.vuk507.uiUtils.keypad.KeyPad
+    <com.paypad.vuk507.uiUtils.keypad.KeyPadWithoutAdd
         android:id="@+id/keypad"
         android:layout_width="match_parent"
         android:layout_weight="12"
         android:layout_height="0dp">
 
-    </com.paypad.vuk507.uiUtils.keypad.KeyPad>
-
-    <!--include layout="@layout/keypad_layout"
-        android:layout_weight="12"
-        android:layout_height="0dp"
-        android:layout_width="match_parent"/-->
+    </com.paypad.vuk507.uiUtils.keypad.KeyPadWithoutAdd>
 
 </LinearLayout>

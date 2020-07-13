@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    card_view:cardElevation="0dp"
+    app:cardElevation="0dp"
+    android:id="@+id/itemCv">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="30dp">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/Black"
+            android:maxLines="1"
+            android:textSize="@dimen/default_size_15sp"
+            android:id="@+id/paymentTypeTv"
+            android:text="@string/card_payment">
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/Gray"
+            android:maxLines="1"
+            android:textSize="@dimen/default_size_13sp"
+            android:id="@+id/paymentDateTv"
+            android:text="10 07 2020 10:45"
+            android:layout_marginTop="5dp">
+        </TextView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/fab_color_shadow"
+            android:layout_marginTop="10dp"/>
+
+        <!-- Amount layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/amountll">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_paym_item_amount"
+                    card_view:ignore="ContentDescription">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="@string/amount"
+                    android:textColor="@color/Black"
+                    android:layout_marginStart="10dp"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp">
+                </TextView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount"
+                    android:textColor="@color/Black"
+                    android:layout_marginStart="10dp"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp"
+                    android:gravity="end"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:id="@+id/amountTv">
+                </TextView>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/fab_color_shadow" />
+
+        </LinearLayout>
+
+        <!-- Tip layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/tipll">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_paym_item_tip"
+                    card_view:ignore="ContentDescription">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="@string/tip"
+                    android:textColor="@color/Black"
+                    android:layout_marginStart="10dp"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp">
+                </TextView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount"
+                    android:textColor="@color/Black"
+                    android:layout_marginStart="10dp"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp"
+                    android:gravity="end"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:id="@+id/tipAmountTv">
+                </TextView>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/fab_color_shadow" />
+
+        </LinearLayout>
+
+        <!-- Card layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/cardll">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_paym_item_card"
+                    card_view:ignore="ContentDescription">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="@string/card"
+                    android:textColor="@color/Black"
+                    android:layout_marginStart="10dp"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp">
+                </TextView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount"
+                    android:textColor="@color/Black"
+                    android:layout_marginStart="10dp"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp"
+                    android:gravity="end"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:id="@+id/cardAmountTv">
+                </TextView>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/fab_color_shadow" />
+
+        </LinearLayout>
+
+        <!-- Receipt layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/receiptll">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="start"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_paym_item_receipt"
+                    card_view:ignore="ContentDescription">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="@color/Black"
+                    android:layout_marginStart="10dp"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp"
+                    android:text="Receipt #wh3T"
+                    android:id="@+id/receiptDescTv"
+                      android:layout_gravity="center">
+                </TextView>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/fab_color_shadow" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

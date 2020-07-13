@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
@@ -43,8 +44,11 @@ import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.PhotoChosenCallback;
+import com.paypad.vuk507.menu.category.CategoryEditFragment;
 import com.paypad.vuk507.menu.category.CategorySelectFragment;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
+import com.paypad.vuk507.menu.product.adapters.ColorSelectAdapter;
+import com.paypad.vuk507.menu.product.interfaces.ColorImageReturnCallback;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
 import com.paypad.vuk507.menu.tax.TaxSelectFragment;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
@@ -89,7 +93,8 @@ import static com.paypad.vuk507.constants.CustomConstants.MAX_IMAGE_SIZE_1MB;
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class ProductEditFragment extends BaseFragment {
+public class ProductEditFragment extends BaseFragment implements
+        ColorImageReturnCallback {
 
     private View mView;
 
@@ -105,6 +110,8 @@ public class ProductEditFragment extends BaseFragment {
     LinearLayout productMainll;
     @BindView(R.id.productDescriptionEt)
     EditText productDescriptionEt;
+    @BindView(R.id.toolbarTitleTv)
+    AppCompatTextView toolbarTitleTv;
 
     @BindView(R.id.categoryll)
     LinearLayout categoryll;
@@ -137,18 +144,17 @@ public class ProductEditFragment extends BaseFragment {
     private int deleteButtonStatus = 1;
     private ReturnItemCallback returnCallback;
     private boolean photoExist = false;
-    private String galleryOrCameraSelect = "";
-    private PermissionModule permissionModule;
-    private Uri photoUri;
+
     private PhotoSelectUtil photoSelectUtil;
     private UnitModel mUnitModel;
 
     private TaxModel myTaxModel;
     private Category myCategory;
     private byte[] itemPictureByteArray = null;
+    private SelectColorFragment selectColorFragment;
 
-    private static final int ACTIVITY_REQUEST_CODE_OPEN_GALLERY = 385;
-    private static final int ACTIVITY_REQUEST_CODE_OPEN_CAMERA = 85;
+    private int mColorId;
+    private String itemName = "";
 
     public ProductEditFragment(@Nullable Product product, ReturnItemCallback returnItemCallback) {
         this.productXX = product;
@@ -288,7 +294,12 @@ public class ProductEditFragment extends BaseFragment {
         imageRl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chooseImageProcess();
+
+                initSelectColorFragment();
+                mFragmentNavigation.pushFragment(selectColorFragment);
+
+
+                //chooseImageProcess();
             }
         });
 
@@ -306,66 +317,20 @@ public class ProductEditFragment extends BaseFragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 if(editable != null && !editable.toString().isEmpty() && !photoExist){
-                    itemShortNameTv.setText(DataUtils.getProductNameShortenName(editable.toString()));
-                }else
+                    itemName = editable.toString();
+                    itemShortNameTv.setText(DataUtils.getProductNameShortenName(itemName));
+                }else{
+                    itemName = "";
                     itemShortNameTv.setText("");
+                }
             }
         });
     }
 
-    private void chooseImageProcess() {
-        PhotoChosenCallback photoChosenCallback = new PhotoChosenCallback() {
-            @Override
-            public void onGallerySelected() {
-                galleryOrCameraSelect = GALLERY_TEXT;
-                checkGalleryPermission();
-            }
-
-            @Override
-            public void onCameraSelected() {
-                galleryOrCameraSelect = CAMERA_TEXT;
-                checkCameraProcess();
-            }
-
-            @Override
-            public void onPhotoRemoved() {
-                photoSelectUtil = null;
-                photoExist = false;
-                editItemImgv.setImageDrawable(null);
-                itemPictureByteArray = null;
-                setProductPhoto();
-            }
-        };
-
-        DialogBoxUtil.photoChosenDialogBox(getContext(), getActivity().getResources().getString(R.string.select_picture),
-                photoExist, photoChosenCallback);
-    }
-
-    private void checkGalleryPermission() {
-        if (!permissionModule.checkWriteExternalStoragePermission())
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PermissionModule.PERMISSION_WRITE_EXTERNAL_STORAGE);
-        else
-            startActivityForResult(Intent.createChooser(IntentSelectUtil.getGalleryIntent(),
-                    getResources().getString(R.string.select_picture)), ACTIVITY_REQUEST_CODE_OPEN_GALLERY);
-    }
-
-    private void checkCameraProcess() {
-        if (!CommonUtils.checkCameraHardware(getContext())) {
-            CommonUtils.showToastShort(getContext(), getContext().getResources().getString(R.string.device_has_no_camera));
-            return;
-        }
-
-        if (permissionModule.checkCameraPermission() && permissionModule.checkWriteExternalStoragePermission())
-            launchCamera();
-        else if (permissionModule.checkCameraPermission())
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PermissionModule.PERMISSION_WRITE_EXTERNAL_STORAGE);
-        else if (permissionModule.checkWriteExternalStoragePermission())
-            requestPermissions(new String[]{Manifest.permission.CAMERA},
-                    PermissionModule.PERMISSION_CAMERA);
-        else
-            requestPermissions(new String[]{Manifest.permission.CAMERA},
-                    PermissionModule.PERMISSION_CAMERA);
+    private void initSelectColorFragment(){
+        selectColorFragment = new SelectColorFragment(ProductEditFragment.class.getName(), itemName, mColorId,
+                ((productXX != null && productXX.getProductImage() != null) ? productXX.getProductImage() : null));
+        selectColorFragment.setColorReturnCallback(this);
     }
 
 
@@ -428,6 +393,8 @@ public class ProductEditFragment extends BaseFragment {
 
         tempProduct.setName(productNameEt.getText().toString());
 
+        tempProduct.setColorId(mColorId);
+
         tempProduct.setProductImage(itemPictureByteArray);
 
         tempProduct.setDescription(productDescriptionEt.getText().toString());
@@ -472,10 +439,13 @@ public class ProductEditFragment extends BaseFragment {
             realm = Realm.getDefaultInstance();
 
         amountRateEt.setHint("0.00 ".concat(CommonUtils.getCurrency().getSymbol()));
-        permissionModule = new PermissionModule(getContext());
+
+        mColorId = R.color.Gray;
 
         if(productXX == null){
             productXX = new Product();
+            toolbarTitleTv.setText(getResources().getString(R.string.create_item));
+            imageRl.setBackgroundColor(getResources().getColor(mColorId, null));
             ProductUnitTypeEnum unitType = ProductUnitTypeEnum.PER_ITEM;
 
             mUnitModel = new UnitModel();
@@ -485,12 +455,14 @@ public class ProductEditFragment extends BaseFragment {
             unitTypeTv.setText(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? unitType.getLabelTr() : unitType.getLabelEn());
             productXX.setUnitId(unitType.getId());
         }else {
+            toolbarTitleTv.setText(getResources().getString(R.string.edit_item));
             setFilledProductVariables();
         }
     }
 
     private void setFilledProductVariables() {
-        productNameEt.setText(productXX.getName());
+        itemName = productXX.getName();
+        productNameEt.setText(itemName);
 
         if(productXX.getProductImage() != null){
             photoExist = true;
@@ -512,6 +484,12 @@ public class ProductEditFragment extends BaseFragment {
                 }
             });
         }else {
+            photoExist = false;
+            mColorId = productXX.getColorId();
+
+            if(mColorId != 0)
+                imageRl.setBackgroundColor(getResources().getColor(mColorId, null));
+
             itemShortNameTv.setText(DataUtils.getProductShortenName(productXX));
         }
 
@@ -555,49 +533,6 @@ public class ProductEditFragment extends BaseFragment {
             productDescriptionEt.setText(productXX.getDescription());
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        if (requestCode == PermissionModule.PERMISSION_WRITE_EXTERNAL_STORAGE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                if (galleryOrCameraSelect.equals(CAMERA_TEXT)) {
-                    if (permissionModule.checkCameraPermission())
-                        launchCamera();
-                    else
-                        requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                PermissionModule.PERMISSION_CAMERA);
-                } else if (galleryOrCameraSelect.equals(GALLERY_TEXT)) {
-                    startActivityForResult(Intent.createChooser(IntentSelectUtil.getGalleryIntent(),
-                            Objects.requireNonNull(getContext()).getResources().getString(R.string.select_picture)), ACTIVITY_REQUEST_CODE_OPEN_GALLERY);
-                }
-            }
-        } else if (requestCode == PermissionModule.PERMISSION_CAMERA) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                if (permissionModule.checkWriteExternalStoragePermission())
-                    launchCamera();
-                else
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            PermissionModule.PERMISSION_WRITE_EXTERNAL_STORAGE);
-            }
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == ACTIVITY_REQUEST_CODE_OPEN_GALLERY) {
-                photoSelectUtil = new PhotoSelectUtil(getContext(), data, GALLERY_TEXT);
-                setProductPhoto();
-            } else if (requestCode == ACTIVITY_REQUEST_CODE_OPEN_CAMERA) {
-                photoSelectUtil = new PhotoSelectUtil(getContext(), photoUri, FROM_FILE_TEXT);
-                setProductPhoto();
-            }
-        }
-    }
-
     private void setProductPhoto() {
         if (photoSelectUtil != null && photoSelectUtil.getBitmap() != null) {
             photoExist = true;
@@ -607,36 +542,23 @@ public class ProductEditFragment extends BaseFragment {
                     .into(editItemImgv);
             itemPictureByteArray = BitmapUtils.getByteArrayFromBitmap(photoSelectUtil.getBitmap());
             itemShortNameTv.setText("");
-            //product.setProductImage(BitmapUtils.getByteArrayFromBitmap(photoSelectUtil.getBitmap()));
         } else if (productXX.getName() != null && !productXX.getName().trim().isEmpty()) {
             photoExist = false;
             editItemImgv.setImageDrawable(null);
             itemPictureByteArray = null;
-            //product.setProductImage(null);
         }
     }
 
-    private void launchCamera() {
+    @Override
+    public void OnColorReturn(int colorId) {
+        mColorId = colorId;
+        imageRl.setBackgroundColor(getResources().getColor(colorId, null));
+    }
 
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        if (takePictureIntent.resolveActivity(Objects.requireNonNull(getContext()).getPackageManager()) != null) {
-
-            File photoFile = null;
-            try {
-                photoFile = BitmapUtils.createTempImageFile(getContext());
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            if (photoFile != null) {
-
-                String authority = Objects.requireNonNull(getContext()).getPackageName() + ".provider";
-
-                photoUri = FileProvider.getUriForFile(getContext(), authority, photoFile);
-
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                startActivityForResult(takePictureIntent, ACTIVITY_REQUEST_CODE_OPEN_CAMERA);
-            }
-        }
+    @Override
+    public void OnImageReturn(byte[] itemPictureByteArray, PhotoSelectUtil photoSelectUtil) {
+        this.itemPictureByteArray = itemPictureByteArray;
+        this.photoSelectUtil = photoSelectUtil;
+        setProductPhoto();
     }
 }

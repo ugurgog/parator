@@ -29,6 +29,7 @@ import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
@@ -118,42 +119,12 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     }
 
     private void initVariables() {
-        //progressDialog = new ProgressDialog(getActivity());
-        //progressDialog.setMessage("Please wait until payment completed...");
-        //progressDialog.show();
-
-        //thread.start();
-
         orderManager = new OrderManager();
         completePayment();
     }
 
     private void completePayment() {
-
-        if(SaleDBHelper.getSaleById(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid()) != null){
-            saveTransaction();
-        }else {
-            SaleModelInstance.getInstance().getSaleModel().getSale().setCreateDate(new Date());
-
-            LogUtil.logSale(SaleModelInstance.getInstance().getSaleModel().getSale());
-
-            BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel());
-            DataUtils.showBaseResponseMessage(getContext(), saleBaseResponse);
-
-            if(saleBaseResponse.isSuccess()){
-
-                BaseResponse baseResponse = SaleItemDBHelper.saveSaleItems(SaleModelInstance.getInstance().getSaleModel());
-                DataUtils.showBaseResponseMessage(getContext(), baseResponse);
-
-                if(baseResponse.isSuccess()){
-                    saveTransaction();
-                }
-                //else
-                //    progressDialog.dismiss();
-            }
-            //else
-            //    progressDialog.dismiss();
-        }
+        saveTransaction();
     }
 
     public void saveTransaction(){
@@ -177,12 +148,28 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
             if(orderManager.isExistNotCompletedTransaction()){
                 initPaymentCompletedFragment(ProcessDirectionEnum.PAYMENT_PARTIALLY_COMPLETED);
                 mFragmentNavigation.pushFragment(paymentCompletedFragment);
-                //progressDialog.dismiss();
             }else {
-                showCompletedScreen();
+                saveSaleAndItems();
             }
-        }else {
-            //progressDialog.dismiss();
+        }
+    }
+
+    private void saveSaleAndItems(){
+        SaleModelInstance.getInstance().getSaleModel().getSale().setCreateDate(new Date());
+        SaleModelInstance.getInstance().getSaleModel().getSale().setPaymentCompleted(true);
+
+        LogUtil.logSale(SaleModelInstance.getInstance().getSaleModel().getSale());
+
+        BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel());
+        DataUtils.showBaseResponseMessage(getContext(), saleBaseResponse);
+
+        if(saleBaseResponse.isSuccess()){
+
+            BaseResponse baseResponse = SaleItemDBHelper.saveSaleItems(SaleModelInstance.getInstance().getSaleModel());
+            DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+
+            if(baseResponse.isSuccess())
+                showCompletedScreen();
         }
     }
 
@@ -192,9 +179,6 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     }
 
     private void showCompletedScreen(){
-
-        //BaseResponse baseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel());
-
 
         View child = getLayoutInflater().inflate(R.layout.layout_payment_fully_completed, null);
 

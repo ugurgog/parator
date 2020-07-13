@@ -44,7 +44,8 @@ public class LogUtil {
                     ", SaleUuid:" + sale.getSaleUuid() +
                     ", RemainAmount:" + sale.getRemainAmount() +
                     ", UserUuid:" + sale.getUserUuid() +
-                    ", CreateDate:" + sale.getCreateDate());
+                    ", CreateDate:" + sale.getCreateDate() +
+                    ", PaymentCompleted:" + sale.isPaymentCompleted());
         }catch (Exception e){
 
         }

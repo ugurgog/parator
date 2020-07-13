@@ -76,35 +76,6 @@ public class CategorySelectListAdapter extends RecyclerView.Adapter<CategorySele
             this.category = category;
             this.position = position;
             categoryTv.setText(category.getName());
-
-            Log.i("Info", "Category_position:" + position);
-            try{
-
-                Log.i("Info", "Category_name:" + category.getName());
-            }catch (Exception e){
-
-            }
-        }
-    }
-
-    public void categoryRemoveResult(int position){
-        categories.remove(position);
-        //this.notifyItemRemoved(position);
-        //this.notifyItemRangeChanged(position, getItemCount());
-        this.notifyDataSetChanged();
-    }
-
-    public void categoryChangedResult(int position){
-        this.notifyItemChanged(position);
-        //notifyDataSetChanged();
-    }
-
-    public void addCategory(Category category){
-        //TODO - categories listesi sorunlu bakacagiz
-        if(categories != null && category != null){
-            categories.add(category);
-            //this.notifyItemInserted(categories.size() - 1);
-            this.notifyDataSetChanged();
         }
     }
 

@@ -2,6 +2,7 @@ package com.paypad.vuk507.db;
 
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModel;
@@ -55,5 +56,13 @@ public class TransactionDBHelper {
             }
         });
         return baseResponse;
+    }
+
+    public static RealmResults<Transaction> getTransactionsBySaleId(String saleId){
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Transaction> transactions = realm.where(Transaction.class)
+                .equalTo("saleUuid", saleId)
+                .findAll();
+        return transactions;
     }
 }

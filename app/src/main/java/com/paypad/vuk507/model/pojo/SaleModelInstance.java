@@ -3,6 +3,7 @@ package com.paypad.vuk507.model.pojo;
 import com.paypad.vuk507.model.Sale;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class SaleModelInstance {
 
@@ -13,6 +14,7 @@ public class SaleModelInstance {
 
         if(instance == null) {
             saleModel = new SaleModel();
+            saleModel.getSale().setSaleUuid(UUID.randomUUID().toString());
             instance = new SaleModelInstance();
         }
         return instance;

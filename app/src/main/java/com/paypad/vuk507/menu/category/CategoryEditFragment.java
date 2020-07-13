@@ -2,6 +2,7 @@ package com.paypad.vuk507.menu.category;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,11 +31,13 @@ import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.menu.product.SelectColorFragment;
 import com.paypad.vuk507.menu.product.adapters.ColorSelectAdapter;
+import com.paypad.vuk507.menu.product.interfaces.ColorImageReturnCallback;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.PhotoSelectUtil;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
@@ -52,7 +55,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class CategoryEditFragment extends BaseFragment
-    implements ColorSelectAdapter.ColorReturnCallback {
+    implements ColorImageReturnCallback {
 
     private View mView;
 
@@ -78,6 +81,7 @@ public class CategoryEditFragment extends BaseFragment
     private int deleteButtonStatus = 1;
     private SelectColorFragment selectColorFragment;
     private int mColorId;
+    private String itemName = "";
 
     public CategoryEditFragment(@Nullable Category category, ReturnCategoryCallback returnCategoryCallback) {
         this.category = category;
@@ -153,8 +157,12 @@ public class CategoryEditFragment extends BaseFragment
             public void afterTextChanged(Editable editable) {
                 if (editable != null && !editable.toString().isEmpty()) {
                     CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
+                    itemName = editable.toString();
+                    itemShortNameTv.setText(DataUtils.getProductNameShortenName(itemName));
                 } else {
                     CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+                    itemName = "";
+                    itemShortNameTv.setText(itemName);
                 }
             }
         });
@@ -195,9 +203,7 @@ public class CategoryEditFragment extends BaseFragment
     }
 
     private void initSelectColorFragment(){
-        selectColorFragment = new SelectColorFragment(CategoryEditFragment.class.getName(),
-                ((category != null && category.getName() != null) ? category.getName() : "" ),
-                mColorId);
+        selectColorFragment = new SelectColorFragment(CategoryEditFragment.class.getName(), itemName, mColorId, null);
         selectColorFragment.setColorReturnCallback(this);
     }
 
@@ -252,9 +258,11 @@ public class CategoryEditFragment extends BaseFragment
             btnDelete.setEnabled(false);
             toolbarTitleTv.setText(getContext().getResources().getString(R.string.create_category));
         } else{
-            categoryNameEt.setText(category.getName());
+            itemName = category.getName();
+            categoryNameEt.setText(itemName);
             toolbarTitleTv.setText(getContext().getResources().getString(R.string.edit_category));
             mColorId = category.getColorId();
+            itemShortNameTv.setText(DataUtils.getProductNameShortenName(itemName));
         }
         imageRl.setBackgroundColor(getResources().getColor(mColorId, null));
     }
@@ -313,5 +321,10 @@ public class CategoryEditFragment extends BaseFragment
     public void OnColorReturn(int colorId) {
         mColorId = colorId;
         imageRl.setBackgroundColor(getResources().getColor(colorId, null));
+    }
+
+    @Override
+    public void OnImageReturn(byte[] itemPictureByteArray, PhotoSelectUtil photoSelectUtil) {
+
     }
 }

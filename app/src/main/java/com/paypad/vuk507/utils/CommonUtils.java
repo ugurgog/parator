@@ -19,6 +19,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.CurrencyEnum;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -197,7 +199,8 @@ public class CommonUtils {
     public static String getDoubleStrValueForView(double doubleVal, int inputType){
         DecimalFormat decimalFormat = new DecimalFormat("###,##0.00");
         Number x = null;
-        try {
+
+        /*try {
             x = decimalFormat.parse(String.valueOf(doubleVal));
         } catch (ParseException e) {
             e.printStackTrace();
@@ -210,6 +213,17 @@ public class CommonUtils {
 
         if(doubleVal != 0d)
             value = decimalFormat.format(x);
+        else
+            value = "0.00";*/
+
+
+        if(inputType == TYPE_RATE && doubleVal > 100d)
+            doubleVal = 100d;
+
+        String value;
+
+        if(doubleVal != 0d)
+            value = decimalFormat.format(doubleVal);
         else
             value = "0.00";
 
@@ -303,5 +317,13 @@ public class CommonUtils {
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         return height;
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

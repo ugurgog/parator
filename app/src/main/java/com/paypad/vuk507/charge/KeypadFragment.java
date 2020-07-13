@@ -44,6 +44,7 @@ import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
+import com.paypad.vuk507.interfaces.ReturnViewCallback;
 import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
@@ -55,6 +56,7 @@ import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.uiUtils.keypad.KeyPad;
 import com.paypad.vuk507.uiUtils.keypad.KeyPadClick;
 import com.paypad.vuk507.uiUtils.keypad.KeyPadSingleNumberListener;
+import com.paypad.vuk507.uiUtils.keypad.KeyPadWithoutAdd;
 import com.paypad.vuk507.uiUtils.keypad.keyPadClickListener;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
@@ -77,6 +79,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static com.paypad.vuk507.charge.ChargeFragment.CUSTOM_ITEM_ADD_FROM_KEYPAD;
 import static com.paypad.vuk507.constants.CustomConstants.DYNAMIC_BOX_COUNT;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
@@ -85,7 +88,8 @@ import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 public class KeypadFragment extends BaseFragment implements
         StructSelectFragment.StructSelectListener,
         DynamicItemSelectFragmant.DynamicItemSelectListener ,
-        PaymentStatusCallback{
+        PaymentStatusCallback,
+        ReturnViewCallback {
 
     View mView;
 
@@ -104,7 +108,7 @@ public class KeypadFragment extends BaseFragment implements
     @BindView(R.id.saleAmountTv)
     TextView saleAmountTv;
 
-    private KeyPad keypad;
+    private KeyPadWithoutAdd keypad;
     private User user;
     private DynamicStructListAdapter dynamicStructListAdapter;
 
@@ -119,7 +123,11 @@ public class KeypadFragment extends BaseFragment implements
     private CashSelectFragment cashSelectFragment;
     private CreditCardSelectFragment creditCardSelectFragment;
 
+    private ReturnViewCallback returnViewCallback;
 
+
+    static final int PRODUCT_SELECT_FROM_DYNAMIC_BOX = 0;
+    static final int PRODUCT_SELECT_FROM_CATEGORY_LIST = 1;
 
     private double amount = 0d;
 
@@ -138,6 +146,10 @@ public class KeypadFragment extends BaseFragment implements
 
     public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
         this.paymentStatusCallback = paymentStatusCallback;
+    }
+
+    public void setReturnViewCallback(ReturnViewCallback returnViewCallback) {
+        this.returnViewCallback = returnViewCallback;
     }
 
     @Override
@@ -232,11 +244,9 @@ public class KeypadFragment extends BaseFragment implements
                     }
                 }else if(number == -2){
 
-                    if(amount > 0){
-                        saleCalculateCallback.OnCustomItemAdd();
-                        //saleCalculateCallback.onCustomAmountAdded(amount, saleNoteTv.getText().toString());
-                        //clearAmountFields();
-                    }
+                    /*if(amount > 0){
+                        saleCalculateCallback.OnCustomItemAdd(CUSTOM_ITEM_ADD_FROM_KEYPAD);
+                    }*/
 
                 }else {
                     if(amount == 0){
@@ -358,6 +368,7 @@ public class KeypadFragment extends BaseFragment implements
                 }
             }
         });
+        dynamicStructListAdapter.setReturnViewCallback(this);
         taxTypeRv.setAdapter(dynamicStructListAdapter);
     }
 
@@ -371,7 +382,7 @@ public class KeypadFragment extends BaseFragment implements
 
             if(dynamicBoxModel.getStructId() == DynamicStructEnum.PRODUCT_SET.getId()){
                 Product product = ProductDBHelper.getProduct(dynamicBoxModel.getItemId());
-                handleProductSelect(product);
+                handleProductSelect(product, PRODUCT_SELECT_FROM_DYNAMIC_BOX);
             }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.DISCOUNT_SET.getId()){
                 Discount discount = DiscountDBHelper.getDiscount(dynamicBoxModel.getItemId());
                 saleCalculateCallback.onDiscountSelected(discount);
@@ -383,6 +394,9 @@ public class KeypadFragment extends BaseFragment implements
                         CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
                     }else {
                         orderManager.setRemainAmountByDiscountedAmount();
+
+                        Log.i("Info", KeypadFragment.class.getName() + " getRemainAmount:" + orderManager.getRemainAmount());
+
                         createInitialTransaction();
                         initCashSelectFragment();
                         mFragmentNavigation.pushFragment(cashSelectFragment);
@@ -417,20 +431,8 @@ public class KeypadFragment extends BaseFragment implements
 
                 saleCalculateCallback.OnTaxSelected(taxModel);
             }
-
-
         }
-
     }
-
-    /*private boolean fillSaleInfo(){
-
-        if(saleCalculateCallback.OnCustomItemAdd()){
-            SaleModelInstance.getInstance().getSaleModel().setRemainAmount();
-            return true;
-        }else
-            return false;
-    }*/
 
     private void initCashSelectFragment(){
         cashSelectFragment = new CashSelectFragment(mTransaction);
@@ -566,7 +568,7 @@ public class KeypadFragment extends BaseFragment implements
 
     @Override
     public void onCategoryProductSelected(Product product) {
-        handleProductSelect(product);
+        handleProductSelect(product, PRODUCT_SELECT_FROM_CATEGORY_LIST);
         dismissDynamicFragment();
     }
 
@@ -574,7 +576,7 @@ public class KeypadFragment extends BaseFragment implements
         return dynamicStructListAdapter;
     }
 
-    private void handleProductSelect(Product product){
+    private void handleProductSelect(Product product, int productSelectFrom){
         if(product.getAmount() == 0){
 
             mFragmentNavigation.pushFragment(new DynamicAmountFragment(product, new AmountCallback() {
@@ -611,5 +613,10 @@ public class KeypadFragment extends BaseFragment implements
 
     public TextView getSaleAmountTv() {
         return saleAmountTv;
+    }
+
+    @Override
+    public void OnViewCallback(View view) {
+        returnViewCallback.OnViewCallback(view);
     }
 }

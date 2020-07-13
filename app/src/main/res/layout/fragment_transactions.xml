@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/mainll">
+
+    <include layout="@layout/toolbar_including_back_view"/>
+
+    <include layout="@layout/library_search_layout" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/transactionsRv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+</LinearLayout>

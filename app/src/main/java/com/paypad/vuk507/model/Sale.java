@@ -1,5 +1,7 @@
 package com.paypad.vuk507.model;
 
+import com.paypad.vuk507.utils.CommonUtils;
+
 import java.util.Date;
 
 import io.realm.RealmList;
@@ -8,6 +10,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class Sale extends RealmObject {
 
+    @PrimaryKey
     private String saleUuid;
     private int saleCount;
     private long customerId;
@@ -45,7 +48,7 @@ public class Sale extends RealmObject {
     }
 
     public double getTotalAmount() {
-        return totalAmount;
+        return CommonUtils.round(totalAmount, 2);
     }
 
     public void setTotalAmount(double totalAmount) {
@@ -77,7 +80,7 @@ public class Sale extends RealmObject {
     }
 
     public double getDiscountedAmount() {
-        return discountedAmount;
+        return CommonUtils.round(discountedAmount, 2);
     }
 
     public void setDiscountedAmount(double discountedAmount) {
@@ -85,7 +88,7 @@ public class Sale extends RealmObject {
     }
 
     public double getRemainAmount() {
-        return remainAmount;
+        return CommonUtils.round(remainAmount, 2);
     }
 
     public void setRemainAmount(double remainAmount) {

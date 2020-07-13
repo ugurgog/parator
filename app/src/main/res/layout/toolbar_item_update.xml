@@ -3,7 +3,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/toolbarWithClose">
 
     <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -49,7 +50,6 @@
                     android:layout_weight="5"
                     android:fontFamily="@font/lato_family"
                     android:gravity="center|left"
-                    android:text="@string/edit_item"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/toolbarTextSize" />
 

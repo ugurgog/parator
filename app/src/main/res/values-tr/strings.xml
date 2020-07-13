@@ -64,6 +64,16 @@
     <string name="remove_customer">Müşteriyi Çıkar</string>
     <string name="all_items">Tüm Ürünler</string>
     <string name="unit_undefined">Birim Tanımsız</string>
+    <string name="tax_amount">KDV TUTARI</string>
+    <string name="new_receipt">Yeni Makbuz</string>
+    <string name="issue_refund">İade Et</string>
+    <string name="items_and_services">ÜRÜNLER</string>
+    <string name="cash_payment">NAKİT ÖDEME</string>
+    <string name="card_payment">KARTLI ÖDEME</string>
+    <string name="card">Kart</string>
+    <string name="subtotal">Alt Toplam</string>
+    <string name="sales_tax">KDV</string>
+    <string name="included">Dahil</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
@@ -232,6 +242,9 @@
     <string name="open_camera">Kamerayı Aç</string>
     <string name="open_gallery">Galeriden Seç</string>
     <string name="remove_photo">Fotoğrafı Kaldır</string>
+
+    <string name="choose_photo">Fotoğraf Seçin</string>
+    <string name="take_photo">Kamerayı Aç</string>
 
     <string name="choose_label_color">ETİKET RENGİ SEÇİN</string>
     <string name="photo_label">FOTOĞRAF ETİKETİ</string>

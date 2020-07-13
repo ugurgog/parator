@@ -19,6 +19,7 @@
         android:layout_gravity="center"
         android:textColor="@color/White"
         android:textSize="@dimen/item_image_text_size"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:textStyle="bold"/>
 
 </FrameLayout>

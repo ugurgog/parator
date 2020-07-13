@@ -50,21 +50,15 @@ public class NumberFormatWatcher implements TextWatcher {
                 editText.setHint("0.00 ".concat(CommonUtils.getCurrency().getSymbol()));
             }
 
-            String numberStr = s.toString()
-                    .replaceAll("\\.", "")
-                    .replaceAll(",", "");
-
-            double num = Double.parseDouble(numberStr) / 100;
+            double num = DataUtils.getDoubleValueFromFormattedString(s.toString());
 
             if(num > mMaxValue && mMaxValue != 0)
                 num = mMaxValue;
 
-            Number x = decimalFormat.parse(String.valueOf(num));
-
             if(num == 0)
                 editText.setText("");
             else{
-                editText.setText(decimalFormat.format(x));
+                editText.setText(decimalFormat.format(num));
             }
 
             editText.setSelection(editText.getText().length());
@@ -72,7 +66,7 @@ public class NumberFormatWatcher implements TextWatcher {
             if(returnEtTextCallback != null)
                 returnEtTextCallback.OnReturnEtValue(editText.getText().toString());
 
-        } catch (NumberFormatException | ParseException nfe) {
+        } catch (Exception e) {
             //TODO - hata loglamasi yapilacak mi?
         }
 

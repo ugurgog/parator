@@ -29,7 +29,6 @@ public class SaleModel implements Serializable {
 
     public SaleModel() {
         sale = new Sale();
-        sale.setSaleUuid(UUID.randomUUID().toString());
         sale.setDiscounts(new RealmList<>());
         setTransactions(new ArrayList<>());
         setSaleItems(new ArrayList<>());

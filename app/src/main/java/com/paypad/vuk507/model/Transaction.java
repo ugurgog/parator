@@ -4,12 +4,14 @@ import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmModule;
 import io.realm.annotations.RealmNamingPolicy;
 
 public class Transaction extends RealmObject {
 
     @Index
+    @PrimaryKey
     private String transactionUuid;
     @Index
     private String saleUuid;

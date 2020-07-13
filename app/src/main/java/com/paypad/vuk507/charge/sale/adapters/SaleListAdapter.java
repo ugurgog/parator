@@ -95,7 +95,7 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
                 if(saleItem.getUuid() == null || saleItem.getUuid().isEmpty()){ //Bu indirimlerdir
                     amountStr = amountStr.concat("- ").concat(CommonUtils.getDoubleStrValueForView(saleItem.getAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
                 }else
-                    amountStr = CommonUtils.getDoubleStrValueForView(saleItem.getAmountIncludingTax() * (double) saleItem.getQuantity(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                    amountStr = CommonUtils.getDoubleStrValueForView(saleItem.getAmount() * (double) saleItem.getQuantity(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
                 saleAmountTv.setText(amountStr);
             }
         }

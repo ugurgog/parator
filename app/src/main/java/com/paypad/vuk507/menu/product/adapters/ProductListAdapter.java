@@ -97,7 +97,10 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
 
                     // If process comes from Library step, just product will be selected
                     if(processType != null && (processType == ItemProcessEnum.SELECTED)){
-                        returnViewCallback.OnViewCallback(content_frame);
+
+                        if(product.getAmount() > 0d)
+                            returnViewCallback.OnViewCallback(content_frame);
+
                         returnItemCallback.OnReturn(product, processType);
                     }else{
                         fragmentNavigation.pushFragment(new ProductEditFragment(product, new ReturnItemCallback() {
@@ -124,6 +127,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         private void setItemPicture() {
             if(product.getProductImage() != null){
                 shortNameTv.setText("");
+
                 itemImgv.post(new Runnable() {
                     @Override
                     public void run() {
@@ -136,6 +140,9 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
             }else {
                 shortNameTv.setText(DataUtils.getProductShortenName(product));
                 itemImgv.setImageDrawable(null);
+
+                if(product.getColorId() != 0)
+                    itemImgv.setBackgroundColor(context.getResources().getColor(product.getColorId(), null));
             }
         }
 

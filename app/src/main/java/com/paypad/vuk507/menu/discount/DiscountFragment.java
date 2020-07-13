@@ -198,7 +198,6 @@ public class DiscountFragment extends BaseFragment {
         discountListAdapter = new DiscountListAdapter(getContext(), discountList, mFragmentNavigation, new ReturnDiscountCallback() {
             @Override
             public void OnReturn(Discount discount, ItemProcessEnum processType) {
-                //updateAdapterWithCurrentList();
                 startDiscountEditFragment(discount);
             }
         }, null);

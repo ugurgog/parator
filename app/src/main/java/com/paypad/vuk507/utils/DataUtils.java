@@ -1,11 +1,16 @@
 package com.paypad.vuk507.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UnitDBHelper;
+import com.paypad.vuk507.enums.DayEnum;
+import com.paypad.vuk507.enums.MonthEnum;
 import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.model.Customer;
@@ -13,6 +18,17 @@ import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
@@ -28,6 +44,9 @@ public class DataUtils {
     }
 
     public static String getProductNameShortenName(String name){
+
+        if(name == null) return "";
+
         if(name.length() > 2)
             return name.substring(0, 2);
         else
@@ -50,7 +69,8 @@ public class DataUtils {
     }
 
     public static double getDoubleValueFromFormattedString(String rateOrAmountStr){
-        return Double.valueOf(rateOrAmountStr.replaceAll(",", ""));
+        String numberStr = rateOrAmountStr.replaceAll("\\.", "").replaceAll(",", "");
+        return Double.parseDouble(numberStr) / 100d;
     }
 
     public static String getContactShortName(String name) {
@@ -145,4 +165,79 @@ public class DataUtils {
 
         return unitModel;
     }
+
+    public static int getDifferenceDays(Date d1, Date d2) {
+        if(d1 != null && d2 != null){
+            @SuppressLint("SimpleDateFormat") LocalDate localDate1 = LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(d1) );
+            @SuppressLint("SimpleDateFormat") LocalDate localDate2 = LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(d2) );
+            return Days.daysBetween(localDate1, localDate2).getDays();
+        }else
+            return -1;
+    }
+
+    public static String getHourOfOrder(Date d1) {
+        @SuppressLint("SimpleDateFormat") String time = new SimpleDateFormat("HH:mm").format(d1);
+        return time;
+    }
+
+    public static int getMonthNumFromDate(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int month = cal.get(Calendar.MONTH);
+        return month;
+    }
+
+    public static int getDateNumFromDate(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int dateNum = cal.get(Calendar.DATE);
+        return dateNum;
+    }
+
+    public static int getYearFromDate(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int year = cal.get(Calendar.YEAR);
+        return year;
+    }
+
+    public static String getTransactionFullDateName(Date date){
+
+        @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateformat = new SimpleDateFormat("EEEE");
+
+
+        String dayCode = simpleDateformat.format(date);
+
+        String dayVal = "";
+
+        if(CommonUtils.getLanguage().equals(LANGUAGE_TR))
+            dayVal = DayEnum.getByCode(dayCode).getLabelTr();
+        else
+            dayVal = DayEnum.getByCode(dayCode).getLabelEn();
+
+
+        int monthNum = getMonthNumFromDate(date);
+        String monthNumStr = "";
+
+        if(CommonUtils.getLanguage().equals(LANGUAGE_TR))
+            monthNumStr = MonthEnum.getById(monthNum).getLabelTr();
+        else
+            monthNumStr = MonthEnum.getById(monthNum).getLabelEn();
+
+
+        StringBuilder returnValue = new StringBuilder();
+
+        returnValue.append(dayVal).append(", ")
+                .append(getDateNumFromDate(date))
+                .append(" ")
+                .append(monthNumStr)
+                .append(" ")
+                .append(getYearFromDate(date));
+
+
+
+        return returnValue.toString();
+    }
+
 }

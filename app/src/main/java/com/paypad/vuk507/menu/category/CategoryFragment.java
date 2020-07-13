@@ -70,12 +70,17 @@ public class CategoryFragment extends BaseFragment {
 
     private Realm realm;
 
+    private ReturnCategoryCallback returnCategoryCallback;
     private RealmResults<Category> categories;
     private List<Category> categoryList;
     private User user;
 
     public CategoryFragment() {
 
+    }
+
+    public void setReturnCategoryCallback(ReturnCategoryCallback returnCategoryCallback) {
+        this.returnCategoryCallback = returnCategoryCallback;
     }
 
     @Override
@@ -182,6 +187,7 @@ public class CategoryFragment extends BaseFragment {
             @Override
             public void OnReturn(Category category) {
                 updateAdapterWithCurrentList();
+                returnCategoryCallback.OnReturn(category);
             }
         });
         categoryRv.setAdapter(categoryListAdapter);

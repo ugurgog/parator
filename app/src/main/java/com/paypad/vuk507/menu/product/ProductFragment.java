@@ -69,6 +69,7 @@ public class ProductFragment extends BaseFragment {
     public ProductListAdapter productListAdapter;
 
     private Realm realm;
+    private ReturnItemCallback returnItemCallback;
 
     private RealmResults<Product> products;
     private List<Product> productList;
@@ -76,6 +77,10 @@ public class ProductFragment extends BaseFragment {
 
     public ProductFragment() {
 
+    }
+
+    public void setReturnItemCallback(ReturnItemCallback returnItemCallback) {
+        this.returnItemCallback = returnItemCallback;
     }
 
     @Override
@@ -185,7 +190,6 @@ public class ProductFragment extends BaseFragment {
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         productRv.setLayoutManager(linearLayoutManager);
-        //productRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
     }
 
@@ -197,6 +201,9 @@ public class ProductFragment extends BaseFragment {
             @Override
             public void OnReturn(Product product, ItemProcessEnum processEnum) {
                 updateAdapterWithCurrentList();
+
+                if(processEnum != ItemProcessEnum.SELECTED)
+                    returnItemCallback.OnReturn(product, processEnum);
             }
         });
         productRv.setAdapter(productListAdapter);

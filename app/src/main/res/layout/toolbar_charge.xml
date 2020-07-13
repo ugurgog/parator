@@ -58,7 +58,19 @@
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/toolbarTextSize" />
 
-                <include layout="@layout/layout_sale_count"/>
+                <RelativeLayout
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/saleCountRL">
+
+                    <include layout="@layout/layout_sale_count"/>
+
+                </RelativeLayout>
+
+
 
                 <!--TextView
                     android:layout_width="wrap_content"

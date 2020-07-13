@@ -101,18 +101,6 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         void onCategoryProductSelected(Product product);
     }
 
-    /*public interface DiscountSelectListener{
-        void onDiscountClick(Discount discount);
-    }
-
-    public interface CategorySelectListener{
-        void onCategoryClick(Category category);
-    }
-
-    public interface PaymentSelectListener{
-        void onPaymentClick(PaymentTypeEnum paymentType);
-    }*/
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

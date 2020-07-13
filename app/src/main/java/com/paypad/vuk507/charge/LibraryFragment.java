@@ -251,16 +251,6 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
                 return false;
             }
         });
-
-        /*searchEdittext.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if(hasFocus){
-                    Objects.requireNonNull(getActivity()).findViewById(R.id.tablayout).setVisibility(View.GONE);
-                }else
-                    Objects.requireNonNull(getActivity()).findViewById(R.id.tablayout).setVisibility(View.VISIBLE);
-            }
-        });*/
     }
 
     private void setSpinnerAdapter() {
@@ -339,7 +329,7 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
         itemListRv.setAdapter(discountListAdapter);
     }
 
-    private void setProductAdapter(long categoryId){
+    void setProductAdapter(long categoryId){
 
         RealmResults<Product> products;
         if(categoryId == 0)
@@ -380,7 +370,7 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
         itemListRv.setAdapter(productListAdapter);
     }
 
-    private void setCategoryAdapter(){
+    void setCategoryAdapter(){
         categoryNameTv.setVisibility(View.GONE);
         RealmResults<Category> categories = CategoryDBHelper.getAllCategories(user.getUsername());
         categoryList = new ArrayList(categories);
@@ -412,6 +402,8 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
     public DiscountListAdapter getDiscountListAdapter() {
         return discountListAdapter;
     }
+
+
 
     public CategorySelectListAdapter getCategorySelectListAdapter() {
         return categorySelectListAdapter;
