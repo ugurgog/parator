@@ -1,5 +1,7 @@
 package com.paypad.vuk507.charge.order;
 
+import android.content.Context;
+
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
@@ -8,7 +10,7 @@ import com.paypad.vuk507.model.Transaction;
 
 public interface IOrderManager {
 
-    String addProductToOrder(Product product, double amount, boolean isDynamicAmount);
+    String addProductToOrder(Context context, Product product, double amount, boolean isDynamicAmount);
     String addCustomItemToOrder(SaleItem saleItem, TaxModel taxModel);
     void setOrderItemTaxForProduct(SaleItem saleItem, Product product);
     void setOrderItemTaxForCustomItem(SaleItem saleItem, TaxModel taxModel);
@@ -23,6 +25,7 @@ public interface IOrderManager {
     void setRemainAmount(double amount);
     void addDiscountToOrder(Discount discount);
     void setUserIdToOrder(String userId);
+    void setDeviceIdToOrder(Context context);
     void setRemainAmountByDiscountedAmount();
     void addDiscountRateToAllSaleItems(Discount discount);
     void setDiscountedAmountOfSale();

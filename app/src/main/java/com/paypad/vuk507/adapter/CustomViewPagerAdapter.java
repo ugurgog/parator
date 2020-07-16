@@ -7,11 +7,11 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChargeViewPagerAdapter extends FragmentPagerAdapter {
+public class CustomViewPagerAdapter extends FragmentPagerAdapter {
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
 
-    public ChargeViewPagerAdapter(FragmentManager manager) {
+    public CustomViewPagerAdapter(FragmentManager manager) {
         super(manager);
     }
 
@@ -33,5 +33,10 @@ public class ChargeViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return mFragmentTitleList.get(position);
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 }

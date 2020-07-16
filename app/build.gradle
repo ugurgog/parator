@@ -81,6 +81,10 @@ dependencies {
 
     implementation "joda-time:joda-time:2.10.6"
 
+    implementation 'com.squareup:android-times-square:1.7.10'
+
+    implementation 'com.github.PhilJay:MPAndroidChart:v2.2.4'
+
     //Trial
     //implementation 'com.github.wRorsjakz:Android-NumPad:1.0.1'
 

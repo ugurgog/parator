@@ -30,7 +30,7 @@ import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 public class NewReceiptAdapter extends RecyclerView.Adapter<NewReceiptAdapter.ReceiptHolder> {
 
     private Context context;
-    private List<Transaction> transactions;
+    private List<Transaction> transactions = new ArrayList<>();
     private ReturnTransactionCallback returnTransactionCallback;
 
     public NewReceiptAdapter(Context context, List<Transaction> transactions) {

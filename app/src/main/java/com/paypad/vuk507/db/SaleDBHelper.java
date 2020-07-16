@@ -1,5 +1,8 @@
 package com.paypad.vuk507.db;
 
+import android.annotation.SuppressLint;
+import android.util.Log;
+
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.Sale;
@@ -11,7 +14,9 @@ import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.LogUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
@@ -52,11 +57,21 @@ public class SaleDBHelper {
         return saleList;
     }
 
-    public static List<SaleModel> getSaleModelsByUserId(String userId){
+    public static RealmResults<Sale> getOrdersByUserIdAndDeviceId(String userId, String deviceId){
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Sale> saleList = realm.where(Sale.class)
+                .equalTo("userUuid", userId)
+                .equalTo("deviceId", deviceId)
+                .findAll();
+        return saleList;
+    }
+
+    public static List<SaleModel> getSaleModelsForTransactionList(String userId){
 
         List<SaleModel> saleModels = new ArrayList<>();
+        List<Sale> sales = getOrdersByUserId(userId);
 
-        for(Sale sale : getOrdersByUserId(userId)){
+        for(Sale sale : sales){
 
             LogUtil.logSale(sale);
 
@@ -76,10 +91,94 @@ public class SaleDBHelper {
                 saleModels.add(saleModel);
             }
         }
-
         return saleModels;
     }
 
+    public static List<SaleModel> getSaleModelsForReport(String userId, String deviceId, Date startDate, Date endDate){
+
+        List<SaleModel> saleModels = new ArrayList<>();
+
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Sale> saleList;
+
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        Log.i("Info", "getSaleModelsForReport   "
+                + simpleDateFormat.format(startDate) + "  " + simpleDateFormat.format(endDate) );
+
+        if(deviceId != null){
+            saleList = realm.where(Sale.class)
+                    .equalTo("userUuid", userId)
+                    .equalTo("deviceId", deviceId)
+                    .between("createDate", startDate, endDate)
+                    .findAll();
+        }else{
+            saleList = realm.where(Sale.class)
+                    .equalTo("userUuid", userId)
+                    .between("createDate", startDate, endDate)
+                    .findAll();
+        }
+
+        for(Sale sale : saleList){
+
+            LogUtil.logSale(sale);
+
+            if(sale.isPaymentCompleted()){
+                SaleModel saleModel = new SaleModel();
+
+                String saleId = sale.getSaleUuid();
+
+                saleModel.setSale(sale);
+
+                List<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
+                saleModel.setSaleItems(saleItems);
+
+                List<Transaction> transactions = TransactionDBHelper.getTransactionsBySaleId(saleId);
+                saleModel.setTransactions(transactions);
+
+                saleModels.add(saleModel);
+            }
+        }
+        return saleModels;
+    }
+
+    public static void deleteAllOrders(){
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                try{
+                    RealmResults<Sale> sales = realm.where(Sale.class).findAll();
+                    sales.deleteAllFromRealm();
+                }catch (Exception e){
+
+                }
+            }
+        });
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                try{
+                    RealmResults<SaleItem> saleItems = realm.where(SaleItem.class).findAll();
+                    saleItems.deleteAllFromRealm();
+                }catch (Exception e){
+
+                }
+            }
+        });
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                try{
+                    RealmResults<Transaction> transactions = realm.where(Transaction.class).findAll();
+                    transactions.deleteAllFromRealm();
+                }catch (Exception e){
+
+                }
+            }
+        });
+    }
 
 
 

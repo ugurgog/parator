@@ -9,7 +9,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-    <uses-feature android:name="android.hardware.camera"
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
 
     <application
@@ -21,6 +22,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <activity android:name=".square.SampleTimesSquareActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -47,7 +50,6 @@
         <activity
             android:name=".JsonExampleActivity"
             android:screenOrientation="portrait" />
-
     </application>
 
 </manifest>

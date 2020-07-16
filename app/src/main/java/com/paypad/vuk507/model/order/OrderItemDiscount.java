@@ -4,35 +4,18 @@ import io.realm.RealmObject;
 
 public class OrderItemDiscount extends RealmObject {
 
-    private String orderItemDiscountId;
-    private String orderItemId;
-    private long discountId;
+    private long id;
     private String name;
     private double rate;
-    private double amount;
+    private double discountAmount;
+    private long seqNumber;
 
-    public String getOrderItemDiscountId() {
-        return orderItemDiscountId;
+    public long getId() {
+        return id;
     }
 
-    public void setOrderItemDiscountId(String orderItemDiscountId) {
-        this.orderItemDiscountId = orderItemDiscountId;
-    }
-
-    public String getOrderItemId() {
-        return orderItemId;
-    }
-
-    public void setOrderItemId(String orderItemId) {
-        this.orderItemId = orderItemId;
-    }
-
-    public long getDiscountId() {
-        return discountId;
-    }
-
-    public void setDiscountId(long discountId) {
-        this.discountId = discountId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -51,11 +34,19 @@ public class OrderItemDiscount extends RealmObject {
         this.rate = rate;
     }
 
-    public double getAmount() {
-        return amount;
+    public double getDiscountAmount() {
+        return discountAmount;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setDiscountAmount(double discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    public long getSeqNumber() {
+        return seqNumber;
+    }
+
+    public void setSeqNumber(long seqNumber) {
+        this.seqNumber = seqNumber;
     }
 }

@@ -19,6 +19,7 @@ import com.paypad.vuk507.charge.order.IOrderManager;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.order.OrderItemDiscount;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;

@@ -27,6 +27,7 @@ public class Transaction extends RealmObject {
     private String cardExpireDate;
     private boolean isMailSend;
     private String mailAdress;
+    private Date mailSendDate;
 
     private Date createDate;
     @Index
@@ -158,5 +159,13 @@ public class Transaction extends RealmObject {
 
     public void setMailAdress(String mailAdress) {
         this.mailAdress = mailAdress;
+    }
+
+    public Date getMailSendDate() {
+        return mailSendDate;
+    }
+
+    public void setMailSendDate(Date mailSendDate) {
+        this.mailSendDate = mailSendDate;
     }
 }

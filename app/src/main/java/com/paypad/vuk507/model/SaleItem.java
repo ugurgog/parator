@@ -15,6 +15,7 @@ public class SaleItem extends RealmObject {
     private String name;
     private double amount;
     private double taxAmount;
+    private double grossAmount;
     private int quantity;
     private String note;
     private RealmList<Discount> discounts;
@@ -23,6 +24,7 @@ public class SaleItem extends RealmObject {
     private RealmList<OrderItemTax> orderItemTaxes;
     private int colorId;
     private byte[] itemImage;
+    private String categoryName;
 
     public String getName() {
         return name;
@@ -46,6 +48,14 @@ public class SaleItem extends RealmObject {
 
     public void setTaxAmount(double taxAmount) {
         this.taxAmount = taxAmount;
+    }
+
+    public double getGrossAmount() {
+        return grossAmount;
+    }
+
+    public void setGrossAmount(double grossAmount) {
+        this.grossAmount = grossAmount;
     }
 
     public int getQuantity() {
@@ -126,5 +136,13 @@ public class SaleItem extends RealmObject {
 
     public void setItemImage(byte[] itemImage) {
         this.itemImage = itemImage;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

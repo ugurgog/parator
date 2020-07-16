@@ -1,8 +1,5 @@
 package com.paypad.vuk507.model.pojo;
 
-import com.paypad.vuk507.model.Sale;
-
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class SaleModelInstance {

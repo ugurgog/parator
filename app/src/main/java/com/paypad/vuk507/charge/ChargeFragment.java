@@ -3,20 +3,14 @@ package com.paypad.vuk507.charge;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,7 +20,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
@@ -34,7 +27,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.adapter.ChargeViewPagerAdapter;
+import com.paypad.vuk507.adapter.CustomViewPagerAdapter;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.order.IOrderManager;
 import com.paypad.vuk507.charge.order.OrderManager;
@@ -42,6 +35,7 @@ import com.paypad.vuk507.charge.payment.SelectChargePaymentFragment;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
 import com.paypad.vuk507.charge.utils.AnimationUtil;
+import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
@@ -52,10 +46,10 @@ import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.item.ItemListFragment;
+import com.paypad.vuk507.menu.reports.ReportsFragment;
 import com.paypad.vuk507.menu.transactions.TransactionsFragment;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.order.OrderItemTax;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
@@ -63,6 +57,7 @@ import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -128,7 +123,7 @@ public class ChargeFragment extends BaseFragment implements
     private boolean mDrawerState;
     private int currentSaleCount = 0;
 
-    private ChargeViewPagerAdapter chargeViewPagerAdapter;
+    private CustomViewPagerAdapter customViewPagerAdapter;
     private User user;
     private KeypadFragment keypadFragment;
     private LibraryFragment libraryFragment;
@@ -300,10 +295,10 @@ public class ChargeFragment extends BaseFragment implements
         libraryFragment.setSaleCalculateCallback(this);
         libraryFragment.setReturnViewCallback(this);
 
-        chargeViewPagerAdapter = new ChargeViewPagerAdapter(getFragmentManager());
-        chargeViewPagerAdapter.addFrag(keypadFragment, getContext().getResources().getString(R.string.keypad));
-        chargeViewPagerAdapter.addFrag(libraryFragment, getContext().getResources().getString(R.string.library));
-        htab_viewpager.setAdapter(chargeViewPagerAdapter);
+        customViewPagerAdapter = new CustomViewPagerAdapter(getFragmentManager());
+        customViewPagerAdapter.addFrag(keypadFragment, getContext().getResources().getString(R.string.keypad));
+        customViewPagerAdapter.addFrag(libraryFragment, getContext().getResources().getString(R.string.library));
+        htab_viewpager.setAdapter(customViewPagerAdapter);
     }
 
     private void setTabListener() {
@@ -351,9 +346,10 @@ public class ChargeFragment extends BaseFragment implements
 
             switch (item.getItemId()) {
                 case R.id.checkout:
+
                     drawerLayout.closeDrawer(Gravity.LEFT);
 
-                    boolean commit = LoginUtils.deleteSharedPreferences(getContext());
+                    /*boolean commit = LoginUtils.deleteSharedPreferences(getContext());
 
                     if(commit){
                         UserDBHelper.updateUserLoggedInStatus(user.getUsername(), false, new CompleteCallback() {
@@ -367,7 +363,10 @@ public class ChargeFragment extends BaseFragment implements
                             }
                         });
                     }else
-                        CommonUtils.showToastShort(getContext(), "cache delete error!");
+                        CommonUtils.showToastShort(getContext(), "cache delete error!");*/
+
+                    SaleDBHelper.deleteAllOrders();
+
                     break;
 
                 case R.id.transactions:
@@ -442,6 +441,7 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void startReportsFragment() {
+        mFragmentNavigation.pushFragment(new ReportsFragment());
     }
 
     private void startTransactionsFragment() {
@@ -450,9 +450,9 @@ public class ChargeFragment extends BaseFragment implements
 
     @Override
     public void onProductSelected(Product product, double amount, boolean isDynamicAmount) {
-        orderManager.addProductToOrder(product, amount, isDynamicAmount);
+        orderManager.addProductToOrder(getContext(), product, amount, isDynamicAmount);
         //SaleModelInstance.getInstance().getSaleModel().addProduct(product, amount, isDynamicAmount);
-        addUserUUIDToSale();
+        addDefaultValuesToOrder();
 
         setChargeAmountTv();
         totalAmount = 0d;
@@ -473,7 +473,7 @@ public class ChargeFragment extends BaseFragment implements
             orderManager.addDiscountToOrder(discount);
             //SaleModelInstance.getInstance().getSaleModel().addDiscountAmount(discount);
         }
-        addUserUUIDToSale();
+        addDefaultValuesToOrder();
 
         setChargeAmountTv();
         //totalAmount = 0d;
@@ -538,7 +538,7 @@ public class ChargeFragment extends BaseFragment implements
 
         currentSaleCount = orderManager.getOrderItemCount();
         //currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
-        addUserUUIDToSale();
+        addDefaultValuesToOrder();
 
         setCurrentSaleCount();
         setChargeAmountTv();
@@ -563,6 +563,7 @@ public class ChargeFragment extends BaseFragment implements
         saleItem.setQuantity(1);
         saleItem.setDynamicAmount(true);
         saleItem.setNote(saleNote != null ? saleNote : "");
+        saleItem.setCategoryName(DataUtils.getCategoryName(getContext(), 0));
         saleItem.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
 
         totalAmount = orderManager.getDiscountedAmountByAddingCustomItem(saleItem);
@@ -642,7 +643,7 @@ public class ChargeFragment extends BaseFragment implements
         //SaleModelInstance.getInstance().getSaleModel().setDiscountedAmountOfSale();
         orderManager.setDiscountedAmountOfSale();
 
-        double amountx = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount();
+        double amountx = SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount();
         String amountStr = CommonUtils.getDoubleStrValueForView(amountx, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
 
         if(amountx <= 0d)
@@ -670,8 +671,9 @@ public class ChargeFragment extends BaseFragment implements
         }
     }
 
-    private void addUserUUIDToSale(){
+    private void addDefaultValuesToOrder(){
         orderManager.setUserIdToOrder(user.getUuid());
+        orderManager.setDeviceIdToOrder(getContext());
     }
 
     @Override

@@ -48,6 +48,7 @@ import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.order.OrderItemDiscount;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -214,7 +215,7 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
     }
 
     private void setToolbarTitle() {
-        double totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount();
+        double totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount();
         String amountStr;
 
         if(totalAmount == 0d)
@@ -234,7 +235,7 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
         double totalDiscountAmount = orderManager.getTotalDiscountAmountOfSale();
 
         //Indirim tutar toplamnin toplam tutar dan buyuk olmasi durumu
-        if(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount() == 0)
+        if(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount() == 0)
             totalDiscountAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount();
 
         if(totalDiscountAmount > 0){

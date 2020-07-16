@@ -18,6 +18,7 @@ import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.order.OrderItemDiscount;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 

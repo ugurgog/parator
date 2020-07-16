@@ -54,6 +54,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -340,6 +341,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
         if(baseResponse != null && baseResponse.isSuccess()){
             mTransaction.setMailSend(true);
             mTransaction.setMailAdress(email);
+            mTransaction.setMailSendDate(new Date());
         }else
             mTransaction.setMailSend(false);
 

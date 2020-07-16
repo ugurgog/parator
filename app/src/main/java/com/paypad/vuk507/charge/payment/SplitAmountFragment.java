@@ -238,14 +238,14 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
         double remainAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount() - amount;
 
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
-            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" toplam tutardan, ödeme sonrası kalacak tutar ")
                     .concat(CommonUtils.getDoubleStrValueForView(remainAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
                     .concat(".");
         }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
             infoText = CommonUtils.getDoubleStrValueForView(remainAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" of ")
-                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
+                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
                     .concat(" will remain after this transaction.");
         }
         splitInfoTv.setText(infoText);
@@ -256,6 +256,10 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
             @Override
             public void OnReturnSplitCount(int splitCount) {
                 removeNotPayedSplits();
+
+                if(customSplitFragment != null)
+                    Objects.requireNonNull(customSplitFragment.getActivity()).onBackPressed();
+
                 decideSplitCount(splitCount);
             }
         });
@@ -282,10 +286,6 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
         LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
 
         completeCallback.onComplete(null);
-
-        if(customSplitFragment != null)
-            Objects.requireNonNull(customSplitFragment.getActivity()).onBackPressed();
-
         Objects.requireNonNull(getActivity()).onBackPressed();
     }
 

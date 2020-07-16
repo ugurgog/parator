@@ -1,6 +1,7 @@
 package com.paypad.vuk507.menu.transactions;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.OrderManager;
@@ -43,6 +44,15 @@ public class PaymentTotalManager {
     }
 
     private void addDiscountItems(){
+        List<SaleItem> saleItems = new ArrayList<>();
+
+        for(SaleItem saleItem : mSaleModel.getSaleItems()){
+            SaleItem saleItem1 = new SaleItem();
+            saleItem1.setDiscounts(saleItem.getDiscounts());
+            saleItem1.setAmount(saleItem.getAmount() * saleItem.getQuantity());
+            saleItems.add(saleItem1);
+        }
+
         for(Discount discount : mSaleModel.getSale().getDiscounts()){
 
             PaymentDetailModel paymentDetailModel = new PaymentDetailModel();
@@ -58,11 +68,37 @@ public class PaymentTotalManager {
                         .concat(" (%").concat(CommonUtils.getDoubleStrValueForView(discount.getRate(), TYPE_RATE)).concat(")"));
 
                 double discountAmount = 0d;
-                for(SaleItem saleItem : mSaleModel.getSaleItems()){
-                    discountAmount = discountAmount + orderManager.getTotalDiscountAmountOfSaleItemByDiscountId(saleItem, discount.getId());
+
+                //for(SaleItem saleItem : mSaleModel.getSaleItems()){
+                //    discountAmount = discountAmount + orderManager.getTotalDiscountAmountOfSaleItemByDiscountId(saleItem, discount.getId());
+                //}
+
+                //String amountStr = CommonUtils.getDoubleStrValueForView(discountAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                //paymentDetailModel.setItemDesc("-".concat(amountStr));
+
+
+
+
+                double totalDiscAmount = 0d;
+                for(SaleItem saleItem : saleItems){
+                    if(saleItem.getDiscounts() != null && saleItem.getDiscounts().size() > 0){
+                        for(Discount discount1 : saleItem.getDiscounts()){
+
+                            if(discount.getId() == discount1.getId()){
+                                discountAmount = discountAmount + ((saleItem.getAmount() / 100d)  * discount.getRate());
+
+                                saleItem.setAmount(CommonUtils.round(saleItem.getAmount() - discountAmount, 2));
+
+                                totalDiscAmount = totalDiscAmount + discountAmount;
+
+                                break;
+                            }
+                        }
+                        discountAmount = 0d;
+                    }
                 }
 
-                String amountStr = CommonUtils.getDoubleStrValueForView(discountAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                String amountStr = CommonUtils.getDoubleStrValueForView(totalDiscAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
                 paymentDetailModel.setItemDesc("-".concat(amountStr));
             }
 
@@ -75,7 +111,7 @@ public class PaymentTotalManager {
         paymentDetailModel.setDescBold(false);
         paymentDetailModel.setDrawableId(R.drawable.icon_paym_total_subtotal);
         paymentDetailModel.setItemName(mContext.getResources().getString(R.string.subtotal));
-        String amountStr = CommonUtils.getDoubleStrValueForView(mSaleModel.getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+        String amountStr = CommonUtils.getDoubleStrValueForView(mSaleModel.getSale().getSubTotalAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
         paymentDetailModel.setItemDesc(amountStr);
         paymentDetailModels.add(paymentDetailModel);
     }
@@ -121,7 +157,7 @@ public class PaymentTotalManager {
         paymentDetailModel.setDescBold(true);
         paymentDetailModel.setDrawableId(R.drawable.icon_paym_total_subtotal);
         paymentDetailModel.setItemName(mContext.getResources().getString(R.string.total));
-        double totalAmount = CommonUtils.round(mSaleModel.getSale().getDiscountedAmount() + totalTipAmount, 2);
+        double totalAmount = CommonUtils.round(mSaleModel.getSale().getSubTotalAmount() + totalTipAmount, 2);
         String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
         paymentDetailModel.setItemDesc(amountStr);
         paymentDetailModels.add(paymentDetailModel);

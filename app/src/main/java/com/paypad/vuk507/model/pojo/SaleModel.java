@@ -359,28 +359,6 @@ public class SaleModel implements Serializable {
         }
     }*/
 
-    public void removeDiscountAmount(Discount discount){
-        sale.getDiscounts().remove(discount);
-    }
-
-    public void addDiscountRateToSingleSaleItems(String uuid, Discount discount){
-        for(SaleItem saleItem : saleItems){
-            if(saleItem.getUuid().equals(uuid)){
-                saleItem.getDiscounts().add(discount);
-                break;
-            }
-        }
-    }
-
-    public void removeDiscountRateFromSingleSaleItems(String uuid, Discount discount){
-        for(SaleItem saleItem : saleItems){
-            if(saleItem.getUuid().equals(uuid)){
-                saleItem.getDiscounts().remove(discount);
-                break;
-            }
-        }
-    }
-
     /*public double getTotalDiscountAmountOfSale(){
         double totalDiscountAmount = 0;
 

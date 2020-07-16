@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/White">
+
+
+    <LinearLayout
+        android:id="@+id/mainll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:background="@color/White"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Overview"
+                android:textColor="@color/Black"
+                android:textStyle="bold"
+                android:id="@+id/salesSummaryTv"
+                android:layout_centerVertical="true">
+
+
+            </TextView>
+
+            <ImageView
+                android:layout_width="@dimen/report_menu_icon_size"
+                android:layout_height="@dimen/report_menu_icon_size"
+                android:src="@drawable/ic_more_horiz_white_24dp"
+                android:tint="@color/DodgerBlue"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:id="@+id/salesSummaryMenuImgv">
+
+            </ImageView>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/oneWeekSalesSummaryRl">
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 MONTHS SALES COUNT"
+                android:textColor="@color/Black"
+                android:textStyle="bold"
+                android:id="@+id/graphicSummaryTv"
+                android:layout_centerVertical="true">
+
+
+            </TextView>
+
+            <ImageView
+                android:layout_width="@dimen/report_menu_icon_size"
+                android:layout_height="@dimen/report_menu_icon_size"
+                android:src="@drawable/ic_more_horiz_white_24dp"
+                android:tint="@color/DodgerBlue"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:id="@+id/graphicSummaryMenuImgv">
+
+            </ImageView>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/graphicSummaryFrag">
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sales_by_payment_types"
+                android:textColor="@color/Black"
+                android:textStyle="bold"
+                android:layout_centerVertical="true">
+
+
+            </TextView>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/paymentTypeSummaryFrag">
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/top_items"
+                android:textColor="@color/Black"
+                android:textStyle="bold"
+                android:layout_centerVertical="true">
+
+
+            </TextView>
+
+            <ImageView
+                android:layout_width="@dimen/report_menu_icon_size"
+                android:layout_height="@dimen/report_menu_icon_size"
+                android:src="@drawable/ic_more_horiz_white_24dp"
+                android:tint="@color/DodgerBlue"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:id="@+id/topItemsMenuImgv">
+
+            </ImageView>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/topItemsFrag">
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/top_categories"
+                android:textColor="@color/Black"
+                android:textStyle="bold"
+                android:layout_centerVertical="true">
+
+
+            </TextView>
+
+            <ImageView
+                android:layout_width="@dimen/report_menu_icon_size"
+                android:layout_height="@dimen/report_menu_icon_size"
+                android:src="@drawable/ic_more_horiz_white_24dp"
+                android:tint="@color/DodgerBlue"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:id="@+id/topCategoriesMenuImgv">
+
+            </ImageView>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/topCategoriesFrag">
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</androidx.core.widget.NestedScrollView>

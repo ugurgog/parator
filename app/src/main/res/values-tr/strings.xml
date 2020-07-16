@@ -156,9 +156,44 @@
     <string name="cancel_transaction_description">Bu işlem önceden onaylanmış ödemeleri içerir. İptal etmek istediğinizden emin misin?</string>
     <string name="keep">Devam Et</string>
     <string name="cancel_transaction">İşlemi İptal Et</string>
+    <string name="refunded_items_desc">Ürün tutarı uygulanabilir KDV ve indirimleri içerir</string>
+    <string name="sales">Satışlar</string>
+    <string name="sale">Satış</string>
+    <string name="customize_report">Raporu Özelleştir</string>
+    <string name="all_devices">Tüm Cihazlar</string>
+    <string name="this_device_only">Sadece Bu Cihaz</string>
+    <string name="filter_by_device">CİHAZA GÖRE FİLTRELE</string>
 
     <string name="select_all">Tümünü Seç</string>
     <string name="de_select_all">Tümünü Bırak</string>
+
+    <!-- Report strings -->
+    <string name="sales_by_payment_types">ÖDEME TİPİNE GÖRE SATIŞLAR</string>
+    <string name="top_items">ÇOK SATILANLAR</string>
+    <string name="top_categories">TOP KATEGORİLER</string>
+    <string name="uncategorized">Kategori Yok</string>
+    <string name="gross_sales">Brüt Satışlar</string>
+    <string name="net_sales">Net Satışlar</string>
+    <string name="average_sale">Ortalama Satış</string>
+    <string name="refunds">İadeler</string>
+    <string name="discounts_and_comps">İndirim ve Kampanyalar</string>
+    <string name="sales_summary_overview">SATIŞ ÖZETİ: GENEL</string>
+    <string name="sales_summary_details">SATIŞ ÖZETİ: DETAYLI</string>
+    <string name="show_overview">Genel Gösterim</string>
+    <string name="show_details">Detaylı Göster</string>
+    <string name="dismiss">Kapat</string>
+    <string name="tax">KDV</string>
+    <string name="tips">Bahşişler</string>
+    <string name="refunds_by_amount">Tutara göre iade</string>
+    <string name="sales_count">Satış Adedi</string>
+    <string name="daily_gross_sales">GÜNLÜK BRÜT SATIŞ</string>
+    <string name="daily_net_sales">GÜNLÜK NET SATIŞ</string>
+    <string name="daily_sales_count">GÜNLÜK BRÜT SAYISI</string>
+    <string name="fees">Ücretler</string>
+    <string name="net_total">Net Toplam</string>
+    <string name="total_collected">Toplam Tutar</string>
+    <string name="gross">Brüt</string>
+    <string name="count">Adet</string>
 
     <!-- Main menu items -->
     <string name="checkout">Çıkış</string>

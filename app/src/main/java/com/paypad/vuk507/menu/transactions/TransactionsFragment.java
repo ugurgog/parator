@@ -5,11 +5,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,28 +15,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.contact.ContactHelper;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.db.SaleDBHelper;
-import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.ItemProcessEnum;
-import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.tax.TaxEditFragment;
-import com.paypad.vuk507.menu.tax.adapters.TaxSelectListAdapter;
-import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
-import com.paypad.vuk507.menu.transactions.adapters.TransactionsListAdapter;
+import com.paypad.vuk507.menu.transactions.adapters.SaleModelListAdapter;
 import com.paypad.vuk507.model.Sale;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
-import com.paypad.vuk507.model.pojo.Contact;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -47,7 +35,6 @@ import com.paypad.vuk507.utils.DataUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,10 +44,10 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmResults;
 
-public class TransactionsFragment extends BaseFragment implements TransactionsListAdapter.ReturnSaleModelCallback {
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
+
+public class TransactionsFragment extends BaseFragment implements SaleModelListAdapter.ReturnSaleModelCallback {
 
     private View mView;
 
@@ -82,7 +69,7 @@ public class TransactionsFragment extends BaseFragment implements TransactionsLi
     RecyclerView transactionsRv;
 
     private User user;
-    private TransactionsListAdapter transactionsListAdapter;
+    private SaleModelListAdapter saleModelListAdapter;
 
     public TransactionsFragment() {
 
@@ -187,14 +174,14 @@ public class TransactionsFragment extends BaseFragment implements TransactionsLi
     public static class DateComparator implements Comparator<SaleModel> {
         @Override
         public int compare(SaleModel o1, SaleModel o2) {
-            return o1.getSale().getCreateDate().compareTo(o2.getSale().getCreateDate());
+            return o2.getSale().getCreateDate().compareTo(o1.getSale().getCreateDate());
         }
     }
 
     @SuppressLint("SimpleDateFormat")
     public void updateAdapterWithCurrentList(){
 
-        List<SaleModel> saleModels = SaleDBHelper.getSaleModelsByUserId(user.getUuid());
+        List<SaleModel> saleModels = SaleDBHelper.getSaleModelsForTransactionList(user.getUuid());
         Collections.sort(saleModels, new DateComparator());
 
         List<SaleModel> adapterModel = new ArrayList<>();
@@ -212,9 +199,9 @@ public class TransactionsFragment extends BaseFragment implements TransactionsLi
             adapterModel.add(saleModel);
             previousDate = saleModel.getSale().getCreateDate();
         }
-        transactionsListAdapter = new TransactionsListAdapter(getContext(), adapterModel);
-        transactionsListAdapter.setReturnSaleModelCallback(this);
-        transactionsRv.setAdapter(transactionsListAdapter);
+        saleModelListAdapter = new SaleModelListAdapter(getContext(), adapterModel);
+        saleModelListAdapter.setReturnSaleModelCallback(this);
+        transactionsRv.setAdapter(saleModelListAdapter);
     }
 
     public void updateAdapter(String searchText) {

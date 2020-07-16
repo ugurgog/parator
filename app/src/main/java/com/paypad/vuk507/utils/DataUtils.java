@@ -7,12 +7,15 @@ import android.net.Uri;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.paypad.vuk507.R;
+import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.enums.DayEnum;
 import com.paypad.vuk507.enums.MonthEnum;
 import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.enums.TaxRateEnum;
+import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
@@ -166,6 +169,14 @@ public class DataUtils {
         return unitModel;
     }
 
+    public static String getCategoryName(Context context, long categoryId){
+        if(categoryId == 0)
+            return context.getResources().getString(R.string.uncategorized);
+        else
+            return CategoryDBHelper.getCategory(categoryId).getName();
+    }
+
+
     public static int getDifferenceDays(Date d1, Date d2) {
         if(d1 != null && d2 != null){
             @SuppressLint("SimpleDateFormat") LocalDate localDate1 = LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(d1) );
@@ -178,6 +189,13 @@ public class DataUtils {
     public static String getHourOfOrder(Date d1) {
         @SuppressLint("SimpleDateFormat") String time = new SimpleDateFormat("HH:mm").format(d1);
         return time;
+    }
+
+    public static long getHourNumOfDate(Date d1) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d1);
+        long hour = cal.get(Calendar.HOUR_OF_DAY);
+        return hour;
     }
 
     public static int getMonthNumFromDate(Date date){

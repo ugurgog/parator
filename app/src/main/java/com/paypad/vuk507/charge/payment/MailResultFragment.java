@@ -34,7 +34,7 @@ public class MailResultFragment extends BaseFragment{
     private BaseResponse baseResponse;
     private String email;
 
-    MailResultFragment(BaseResponse baseResponse, String email) {
+    public MailResultFragment(BaseResponse baseResponse, String email) {
         this.baseResponse = baseResponse;
         this.email = email;
     }

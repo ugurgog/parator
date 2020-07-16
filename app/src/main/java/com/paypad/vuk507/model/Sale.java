@@ -6,21 +6,25 @@ import java.util.Date;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class Sale extends RealmObject {
 
     @PrimaryKey
+    @Index
     private String saleUuid;
     private int saleCount;
     private long customerId;
     private RealmList<Discount> discounts;
     private double totalAmount;         // Split dahil edilmemis Total Amount
-    private double discountedAmount;    // Indirimlerin uygulanmis tutarin son hali
+    private double subTotalAmount;    // Indirimlerin uygulanmis tutarin son hali
     private boolean paymentCompleted;
     private double remainAmount;          // Parcali odeme sonrasi kalan tutar
     private Date createDate;
     private String userUuid;
+    @Index
+    private String deviceId;
 
     public int getSaleCount() {
         return saleCount;
@@ -79,12 +83,12 @@ public class Sale extends RealmObject {
         this.userUuid = userUuid;
     }
 
-    public double getDiscountedAmount() {
-        return CommonUtils.round(discountedAmount, 2);
+    public double getSubTotalAmount() {
+        return subTotalAmount;
     }
 
-    public void setDiscountedAmount(double discountedAmount) {
-        this.discountedAmount = discountedAmount;
+    public void setSubTotalAmount(double subTotalAmount) {
+        this.subTotalAmount = subTotalAmount;
     }
 
     public double getRemainAmount() {
@@ -101,5 +105,13 @@ public class Sale extends RealmObject {
 
     public void setSaleUuid(String saleUuid) {
         this.saleUuid = saleUuid;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 }

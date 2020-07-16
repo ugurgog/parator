@@ -251,7 +251,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
 
         String infoText = "";
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
-            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE)
+            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount(), TYPE_PRICE)
                     .concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" Toplam, Ödeme ")
                     .concat(String.valueOf(mTransaction.getSeqNumber()))
@@ -259,7 +259,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
                     .concat(String.valueOf(SaleModelInstance.getInstance().getSaleModel().getTransactions().size()));
         }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
             infoText = "Out of "
-                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE))
+                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount(), TYPE_PRICE))
                     .concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" Total, Payment ")
                     .concat(String.valueOf(mTransaction.getSeqNumber()))

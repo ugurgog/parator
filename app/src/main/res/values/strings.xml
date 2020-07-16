@@ -156,9 +156,44 @@
     <string name="cancel_transaction_description">This transaction includes previously authorized payments. Are you sure you want to cancel?</string>
     <string name="keep">Keep</string>
     <string name="cancel_transaction">Cancel Transaction</string>
+    <string name="refunded_items_desc">Item amount includes taxes and discounts where applicable</string>
+    <string name="sales">Sales</string>
+    <string name="sale">Sale</string>
+    <string name="customize_report">Customize Report</string>
+    <string name="all_devices">All Devices</string>
+    <string name="this_device_only">This Device Only</string>
+    <string name="filter_by_device">FILTER BY DEVICE</string>
 
     <string name="select_all">Select All</string>
     <string name="de_select_all">Deselect All</string>
+
+    <!-- Report strings -->
+    <string name="sales_by_payment_types">SALES BY PAYMENT TYPES</string>
+    <string name="top_items">TOP ITEMS</string>
+    <string name="top_categories">TOP CATEGORIES</string>
+    <string name="uncategorized">Uncategorized</string>
+    <string name="gross_sales">Gross Sales</string>
+    <string name="net_sales">Net Sales</string>
+    <string name="average_sale">Average Sale</string>
+    <string name="refunds">Refunds</string>
+    <string name="discounts_and_comps">Discounts and Comps</string>
+    <string name="sales_summary_overview">SALES SUMMARY: OVERVIEW</string>
+    <string name="sales_summary_details">SALES SUMMARY: DETAILS</string>
+    <string name="show_overview">Show Overview</string>
+    <string name="show_details">Show Details</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="tax">Tax</string>
+    <string name="tips">Tips</string>
+    <string name="refunds_by_amount">Refunds by Amount</string>
+    <string name="sales_count">Sales Count</string>
+    <string name="daily_gross_sales">DAILY GROSS SALES</string>
+    <string name="daily_net_sales">DAILY NET SALES</string>
+    <string name="daily_sales_count">DAILY SALES COUNT</string>
+    <string name="fees">Fees</string>
+    <string name="net_total">Net Total</string>
+    <string name="total_collected">Total Collected</string>
+    <string name="gross">Gross</string>
+    <string name="count">Count</string>
 
     <!-- Main menu items -->
     <string name="checkout">Checkout</string>
@@ -194,7 +229,6 @@
     <string name="user_defined_taxes">USER DEFINED TAXES</string>
     <string name="system_units">SYSTEM UNITS</string>
     <string name="user_defined_units">USER DEFINED UNITS</string>
-
 
 
     <!-- App Messages -->
@@ -238,7 +272,6 @@
     <string name="unit_delete_question_description2">products under this unit. This operation cannot be done.</string>
     <string name="tax_delete_question_description1">There are</string>
     <string name="tax_delete_question_description2">products under this tax. This operation cannot be done.</string>
-
 
 
     <string name="select_picture">Select Picture</string>

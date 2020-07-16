@@ -33,6 +33,7 @@ import java.util.TimeZone;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
 public class CommonUtils {
@@ -198,24 +199,6 @@ public class CommonUtils {
 
     public static String getDoubleStrValueForView(double doubleVal, int inputType){
         DecimalFormat decimalFormat = new DecimalFormat("###,##0.00");
-        Number x = null;
-
-        /*try {
-            x = decimalFormat.parse(String.valueOf(doubleVal));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        if(inputType == TYPE_RATE && doubleVal > 100d)
-            doubleVal = 100d;
-
-        String value;
-
-        if(doubleVal != 0d)
-            value = decimalFormat.format(x);
-        else
-            value = "0.00";*/
-
 
         if(inputType == TYPE_RATE && doubleVal > 100d)
             doubleVal = 100d;
@@ -228,6 +211,10 @@ public class CommonUtils {
             value = "0.00";
 
         return value;
+    }
+
+    public static String getAmountTextWithCurrency(double amount){
+        return getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
     }
 
     public static int getDarkRandomColor(Context context) {

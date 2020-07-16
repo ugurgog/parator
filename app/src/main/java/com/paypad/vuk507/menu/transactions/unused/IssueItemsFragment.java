@@ -1,4 +1,4 @@
-package com.paypad.vuk507.menu.transactions;
+package com.paypad.vuk507.menu.transactions.unused;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -23,11 +23,8 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.menu.transactions.adapters.NewReceiptAdapter;
-import com.paypad.vuk507.menu.transactions.adapters.TransactionsListAdapter;
-import com.paypad.vuk507.menu.transactions.interfaces.ReturnTransactionCallback;
+import com.paypad.vuk507.menu.transactions.adapters.SaleModelListAdapter;
 import com.paypad.vuk507.model.Sale;
-import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -36,7 +33,6 @@ import com.paypad.vuk507.utils.DataUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.joda.time.DateTimeComparator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,27 +43,18 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 
-public class NewReceiptFragment extends BaseFragment implements ReturnTransactionCallback {
+public class IssueItemsFragment extends BaseFragment{
 
     private View mView;
 
-    @BindView(R.id.cancelImgv)
-    ClickableImageView cancelImgv;
-    @BindView(R.id.toolbarTitleTv)
-    AppCompatTextView toolbarTitleTv;
-    @BindView(R.id.saveBtn)
-    EditText saveBtn;
     @BindView(R.id.itemRv)
     RecyclerView itemRv;
 
     private User user;
-    private NewReceiptAdapter newReceiptAdapter;
-    private List<Transaction> transactions;
 
-    public NewReceiptFragment(List<Transaction> transactions) {
-        this.transactions = transactions;
+    public IssueItemsFragment() {
+
     }
 
     @Override
@@ -103,10 +90,9 @@ public class NewReceiptFragment extends BaseFragment implements ReturnTransactio
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
-            mView = inflater.inflate(R.layout.fragment_new_receipt, container, false);
+            mView = inflater.inflate(R.layout.fragment_refund_items, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
-            initListeners();
         }
         return mView;
     }
@@ -116,19 +102,7 @@ public class NewReceiptFragment extends BaseFragment implements ReturnTransactio
 
     }
 
-    private void initListeners() {
-        cancelImgv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
-            }
-        });
-    }
-
     private void initVariables() {
-        saveBtn.setVisibility(View.GONE);
-        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.new_receipt));
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
@@ -136,25 +110,11 @@ public class NewReceiptFragment extends BaseFragment implements ReturnTransactio
         updateAdapterWithCurrentList();
     }
 
-    public static class DateComparator implements Comparator<Transaction> {
-        @Override
-        public int compare(Transaction o1, Transaction o2) {
-            return o1.getCreateDate().compareTo(o2.getCreateDate());
-        }
-    }
-
     public void updateAdapterWithCurrentList(){
-        Realm realm = Realm.getDefaultInstance();
-        List<Transaction> trxlist = realm.copyFromRealm(transactions);
-        Collections.sort(trxlist, new DateComparator());
 
-        newReceiptAdapter = new NewReceiptAdapter(getContext(), trxlist);
-        newReceiptAdapter.setReturnTransactionCallback(this);
-        itemRv.setAdapter(newReceiptAdapter);
-    }
 
-    @Override
-    public void OnTransactionReturn(Transaction transaction) {
 
     }
+
+
 }

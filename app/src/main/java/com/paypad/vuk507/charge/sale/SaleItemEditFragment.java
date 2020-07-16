@@ -184,7 +184,10 @@ public class SaleItemEditFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 saleItem.setAmount(saleAmount);
-                saleItem.setTaxAmount(CommonUtils.round((saleAmount / 100d) * orderItemTax.getTaxRate(), 2));
+                //saleItem.setTaxAmount(CommonUtils.round((saleAmount / 100d) * orderItemTax.getTaxRate(), 2));
+                saleItem.setTaxAmount(OrderManager.getTaxAmount(saleAmount, orderItemTax));
+                saleItem.setGrossAmount(OrderManager.getGrossAmount(saleAmount, orderItemTax));
+
                 saleItem.setQuantity(quantityCount);
                 saleItem.setNote(noteEt.getText().toString());
                 orderManager.getOrderItemCount();
@@ -335,7 +338,8 @@ public class SaleItemEditFragment extends BaseFragment {
     }
 
     private void setIncludingTaxAmount(){
-        double taxAmount = CommonUtils.round(((saleAmount / 100d) * orderItemTax.getTaxRate()), 2);
+        //double taxAmount = CommonUtils.round(((saleAmount / 100d) * orderItemTax.getTaxRate()), 2);
+        double taxAmount = OrderManager.getTaxAmount(saleAmount, orderItemTax);
         includingTaxPriceTv.setText(CommonUtils.getDoubleStrValueForView(taxAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
     }
 

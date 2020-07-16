@@ -1,17 +1,11 @@
 package com.paypad.vuk507.menu.transactions;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,36 +15,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.IOrderManager;
 import com.paypad.vuk507.charge.order.OrderManager;
-import com.paypad.vuk507.contact.ContactHelper;
-import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.transactions.adapters.ItemsServicesAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentDetailAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentTotalAdapter;
-import com.paypad.vuk507.menu.transactions.adapters.TransactionsListAdapter;
-import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.Sale;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
-import com.paypad.vuk507.model.order.OrderItemTax;
-import com.paypad.vuk507.model.pojo.Contact;
 import com.paypad.vuk507.model.pojo.PaymentDetailModel;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.DataUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,7 +41,6 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
 public class TransactionDetailFragment extends BaseFragment {
 
@@ -153,18 +134,25 @@ public class TransactionDetailFragment extends BaseFragment {
         newReceiptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new NewReceiptFragment(saleModel.getTransactions()));
+                mFragmentNavigation.pushFragment(new SelectNewReceiptFragment(saleModel.getTransactions()));
             }
         });
     }
 
     private void initVariables() {
         orderManager = new OrderManager();
-        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.transactions));
+        setToolbarTitle();
 
         setPaymentDetailAdapter();
         setItemsServicesAdapter();
         setPaymentTotalAdapter();
+    }
+
+    private void setToolbarTitle(){
+        double amount = CommonUtils.round((saleModel.getSale().getSubTotalAmount() + OrderManager.getTotalTipAmountOfSale(saleModel)), 2);
+        String amountStr = CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()).concat(" ")
+                .concat(getResources().getString(R.string.sale));
+        toolbarTitleTv.setText(amountStr);
     }
 
     public static class TrxSeqNumComparator implements Comparator<Transaction> {

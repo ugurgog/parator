@@ -1,7 +1,6 @@
 package com.paypad.vuk507.menu.transactions.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,20 +12,13 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.login.InitialActivity;
-import com.paypad.vuk507.menu.tax.TaxEditFragment;
-import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
-import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.SaleModel;
-import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 
@@ -35,7 +27,7 @@ import java.util.List;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class TransactionsListAdapter extends RecyclerView.Adapter {
+public class SaleModelListAdapter extends RecyclerView.Adapter {
 
     private List<SaleModel> saleModels = new ArrayList<>();
     private List<SaleModel> orgSaleModels = new ArrayList<>();
@@ -55,7 +47,7 @@ public class TransactionsListAdapter extends RecyclerView.Adapter {
         void OnReturnSaleModel(SaleModel saleModel);
     }
 
-    public TransactionsListAdapter(Context context, List<SaleModel> saleModels) {
+    public SaleModelListAdapter(Context context, List<SaleModel> saleModels) {
         this.saleModels.addAll(saleModels);
         this.orgSaleModels.addAll(saleModels);
         mContext = context;
@@ -80,12 +72,12 @@ public class TransactionsListAdapter extends RecyclerView.Adapter {
         if(viewType == VIEW_ITEM){
             View itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.adapter_item_transaction, parent, false);
-            return new TransactionsListAdapter.TransactionHolder(itemView);
+            return new SaleModelListAdapter.TransactionHolder(itemView);
         }else {
             View v = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.adapter_no_transaction_title, parent, false);
 
-            return new TransactionsListAdapter.NoTransactionHolder(v);
+            return new SaleModelListAdapter.NoTransactionHolder(v);
         }
     }
 
@@ -150,7 +142,8 @@ public class TransactionsListAdapter extends RecyclerView.Adapter {
         }
 
         private void setSaleAmount() {
-            String amountStr = CommonUtils.getDoubleStrValueForView(saleModel.getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+            double amount = CommonUtils.round((saleModel.getSale().getSubTotalAmount() + OrderManager.getTotalTipAmountOfSale(saleModel)), 2);
+            String amountStr = CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
             amountTv.setText(amountStr);
         }
 

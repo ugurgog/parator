@@ -1,5 +1,10 @@
 package com.paypad.vuk507.charge.order;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.provider.Settings;
+
+import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.Sale;
@@ -7,6 +12,7 @@ import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.order.OrderItemTax;
+import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ConversionHelper;
@@ -20,7 +26,7 @@ import io.realm.RealmList;
 public class OrderManager implements IOrderManager{
 
     @Override
-    public String addProductToOrder(Product product, double amount, boolean isDynamicAmount) {
+    public String addProductToOrder(Context context, Product product, double amount, boolean isDynamicAmount) {
         Sale sale = SaleModelInstance.getInstance().getSaleModel().getSale();
         List<SaleItem> saleItems = SaleModelInstance.getInstance().getSaleModel().getSaleItems();
 
@@ -34,6 +40,7 @@ public class OrderManager implements IOrderManager{
         saleItem.setSaleUuid(sale.getSaleUuid());
         saleItem.setColorId(product.getColorId());
         saleItem.setItemImage(product.getProductImage());
+        saleItem.setCategoryName(DataUtils.getCategoryName(context, product.getCategoryId()));
 
         setOrderItemTaxForProduct(saleItem, product);
 
@@ -73,14 +80,8 @@ public class OrderManager implements IOrderManager{
             saleItem.getOrderItemTaxes().clear();
 
         TaxModel taxModel = DataUtils.getTaxModelById(product.getTaxId());
-
         OrderItemTax orderItemTax = ConversionHelper.convertTaxModelToOrderItemTax(taxModel);
-
-        if(saleItem.getOrderItemTaxes() == null)
-            saleItem.setOrderItemTaxes(new RealmList<>());
-
-        saleItem.getOrderItemTaxes().add(orderItemTax);
-        saleItem.setTaxAmount(CommonUtils.round((saleItem.getAmount() / 100d) * orderItemTax.getTaxRate(), 2));
+        addTaxAmount(saleItem, orderItemTax);
     }
 
     @Override
@@ -89,12 +90,32 @@ public class OrderManager implements IOrderManager{
             saleItem.getOrderItemTaxes().clear();
 
         OrderItemTax orderItemTax = ConversionHelper.convertTaxModelToOrderItemTax(taxModel);
+        addTaxAmount(saleItem, orderItemTax);
+    }
 
+    private void addTaxAmount(SaleItem saleItem, OrderItemTax orderItemTax){
         if(saleItem.getOrderItemTaxes() == null)
             saleItem.setOrderItemTaxes(new RealmList<>());
 
         saleItem.getOrderItemTaxes().add(orderItemTax);
-        saleItem.setTaxAmount(CommonUtils.round((saleItem.getAmount() / 100d) * orderItemTax.getTaxRate(), 2));
+
+        //saleItem.setTaxAmount(CommonUtils.round((saleItem.getAmount() / 100d) * orderItemTax.getTaxRate(), 2));
+
+        saleItem.setGrossAmount(getGrossAmount(saleItem.getAmount(), orderItemTax));
+        saleItem.setTaxAmount(getTaxAmount(saleItem.getAmount(), orderItemTax));
+    }
+
+    public static double getTaxAmount(double amount, OrderItemTax orderItemTax){
+        double taxAmount = CommonUtils.round(amount - getGrossAmount(amount, orderItemTax), 2);
+        return taxAmount;
+    }
+
+    public static double getGrossAmount(double amount, OrderItemTax orderItemTax){
+        double totalAmount = CommonUtils.round( amount + (amount * (orderItemTax.getTaxRate() / 100d)), 2);
+
+        double grossAmount = CommonUtils.round(((100d * amount) / (100d + orderItemTax.getTaxRate())), 2);
+
+        return grossAmount ;
     }
 
     @Override
@@ -229,10 +250,17 @@ public class OrderManager implements IOrderManager{
             sale.setUserUuid(userId);
     }
 
+    @SuppressLint("HardwareIds")
+    @Override
+    public void setDeviceIdToOrder(Context context) {
+        Sale sale = SaleModelInstance.getInstance().getSaleModel().getSale();
+        sale.setDeviceId(Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));
+    }
+
     @Override
     public void setRemainAmountByDiscountedAmount() {
         Sale sale = SaleModelInstance.getInstance().getSaleModel().getSale();
-        sale.setRemainAmount(CommonUtils.round(sale.getDiscountedAmount(), 2));
+        sale.setRemainAmount(CommonUtils.round(sale.getSubTotalAmount(), 2));
     }
 
     @Override
@@ -263,12 +291,12 @@ public class OrderManager implements IOrderManager{
         sale.setTotalAmount(CommonUtils.round(totalAmnt, 2));
 
         if(sale.getTotalAmount() > 0)
-            sale.setDiscountedAmount(CommonUtils.round(sale.getTotalAmount() - getTotalDiscountAmountOfSale(), 2));
+            sale.setSubTotalAmount(CommonUtils.round(sale.getTotalAmount() - getTotalDiscountAmountOfSale(), 2));
         else
-            sale.setDiscountedAmount(0d);
+            sale.setSubTotalAmount(0d);
 
-        if(sale.getDiscountedAmount() <= 0)
-            sale.setDiscountedAmount(0d);
+        if(sale.getSubTotalAmount() <= 0)
+            sale.setSubTotalAmount(0d);
     }
 
     @Override
@@ -378,7 +406,7 @@ public class OrderManager implements IOrderManager{
         }
     }
 
-    public double getTotalDiscountAmountOfSaleItem(SaleItem saleItem){
+    public static double getTotalDiscountAmountOfSaleItem(SaleItem saleItem){
         double totalAmount = saleItem.getAmount() * (double) saleItem.getQuantity();
         double discountAmount = 0d;
 
@@ -405,5 +433,33 @@ public class OrderManager implements IOrderManager{
             }
         }
         return CommonUtils.round(discountAmount, 2);
+    }
+
+    public static double getTotalTipAmountOfSale(SaleModel saleModel){
+        double totalTipAmount = 0d;
+        for(Transaction transaction : saleModel.getTransactions())
+            totalTipAmount = CommonUtils.round(totalTipAmount + transaction.getTipAmount(), 2);
+
+        return totalTipAmount;
+    }
+
+    public static double getTotalDiscountAmountOfSale(Sale sale, List<SaleItem> saleItems){
+
+        double totalDiscountAmount = 0;
+
+        if(sale.getDiscounts() != null && sale.getDiscounts().size() > 0){
+            for(Discount discount : sale.getDiscounts()){
+                if(discount.getAmount() > 0)
+                    totalDiscountAmount = totalDiscountAmount + discount.getAmount();
+            }
+        }
+
+        if(saleItems != null && saleItems.size() > 0){
+            for(SaleItem saleItem : saleItems){
+                totalDiscountAmount = totalDiscountAmount + getTotalDiscountAmountOfSaleItem(saleItem);
+            }
+        }
+
+        return CommonUtils.round(totalDiscountAmount, 2);
     }
 }
