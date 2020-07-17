@@ -48,7 +48,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/oneDaySalesSummaryRl">
+            android:id="@+id/oneYearSalesSummaryRl">
         </RelativeLayout>
 
 
@@ -116,7 +116,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/oneDayPaymentTypeRl">
+            android:id="@+id/oneYearPaymentTypeRl">
 
 
         </RelativeLayout>
@@ -144,7 +144,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/oneDayTopItemsRl">
+            android:id="@+id/oneYearTopItemsRl">
         </RelativeLayout>
 
 
@@ -172,7 +172,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/oneDayTopCategoriesRl">
+            android:id="@+id/oneYearTopCategoriesRl">
 
 
         </RelativeLayout>

@@ -1,7 +1,6 @@
 package com.paypad.vuk507.menu.reports;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,9 +18,7 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.adapter.CustomViewPagerAdapter;
 import com.paypad.vuk507.enums.ReportSelectionEnum;
-import com.paypad.vuk507.menu.reports.saleReport.OneDaySaleFragment;
-import com.paypad.vuk507.menu.reports.saleReport.OneMonthSaleFragment;
-import com.paypad.vuk507.menu.reports.saleReport.OneWeekSaleFragment;
+import com.paypad.vuk507.menu.reports.saleReport.SalesDetailFragment;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 
 import java.text.SimpleDateFormat;
@@ -117,7 +114,6 @@ public class SaleReportsFragment extends BaseFragment{
 
     private void initVariables() {
         setUpPager();
-
     }
 
     private void setUpPager() {
@@ -127,19 +123,21 @@ public class SaleReportsFragment extends BaseFragment{
     }
 
     private void setupViewPager() {
-
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         customViewPagerAdapter = new CustomViewPagerAdapter(getChildFragmentManager());
 
         initSaleSummaryReportFragment(ReportSelectionEnum.ONE_D, new Date(), new Date());
-        initSaleSummaryReportFragment(ReportSelectionEnum.ONE_W, new Date(), new Date());
-        initSaleSummaryReportFragment(ReportSelectionEnum.ONE_M, new Date(), new Date());
 
+        ReportDate oneWeekDates = getOneWeekDates();
+        initSaleSummaryReportFragment(ReportSelectionEnum.ONE_W, oneWeekDates.getStartDate(), oneWeekDates.getEndDate());
 
+        ReportDate currentMonthDates = getCurrentMonthDates();
+        initSaleSummaryReportFragment(ReportSelectionEnum.ONE_M, currentMonthDates.getStartDate(), currentMonthDates.getEndDate());
 
-        customViewPagerAdapter.addFrag(new SaleSummaryReportFragment(new Date(), new Date(), false), ReportSelectionEnum.THREE_M.getLabel());
-        customViewPagerAdapter.addFrag(new SaleSummaryReportFragment(new Date(), new Date(), false), ReportSelectionEnum.ONE_Y.getLabel());
+        ReportDate threeMonthDates = getThreeMonthsDates();
+        initSaleSummaryReportFragment(ReportSelectionEnum.THREE_M, threeMonthDates.getStartDate(), threeMonthDates.getEndDate());
+
+        ReportDate oneYearDates = getOneYearDates();
+        initSaleSummaryReportFragment(ReportSelectionEnum.ONE_Y, oneYearDates.getStartDate(), oneYearDates.getEndDate());
 
         viewPager.setAdapter(customViewPagerAdapter);
     }
@@ -170,12 +168,7 @@ public class SaleReportsFragment extends BaseFragment{
         Log.i("Info", "initSaleSummaryReportFragment  " + reportSelectionEnum.getLabel() + " "
                 + simpleDateFormat.format(getStartDate(startDate)) + "  " + simpleDateFormat.format(getEndDate(endDate)) );
 
-        if(reportSelectionEnum == ReportSelectionEnum.ONE_D)
-            customViewPagerAdapter.addFrag(new OneDaySaleFragment(getStartDate(startDate), getEndDate(endDate), false), reportSelectionEnum.getLabel());
-        else if(reportSelectionEnum == ReportSelectionEnum.ONE_W)
-            customViewPagerAdapter.addFrag(new OneWeekSaleFragment(getStartDate(startDate), getEndDate(endDate), false), reportSelectionEnum.getLabel());
-        else if(reportSelectionEnum == ReportSelectionEnum.ONE_M)
-            customViewPagerAdapter.addFrag(new OneMonthSaleFragment(getStartDate(startDate), getEndDate(endDate), false), reportSelectionEnum.getLabel());
+        customViewPagerAdapter.addFrag(new SalesDetailFragment(getStartDate(startDate), getEndDate(endDate), false, reportSelectionEnum), reportSelectionEnum.getLabel());
     }
 
     private Date getStartDate(Date startDate){
@@ -196,6 +189,88 @@ public class SaleReportsFragment extends BaseFragment{
         cal.set(Calendar.SECOND, 59);
         cal.set(Calendar.MILLISECOND, 999);
         return cal.getTime();
+    }
+
+    private ReportDate getOneWeekDates(){
+        ReportDate reportDate = new ReportDate();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_WEEK,  cal.getActualMinimum(Calendar.DAY_OF_WEEK));
+        Date startDate = cal.getTime();
+
+        reportDate.setStartDate(startDate);
+
+        cal.add(Calendar.DATE, 6);
+
+        Date endDate = cal.getTime();
+        reportDate.setEndDate(endDate);
+
+        return reportDate;
+    }
+
+    private ReportDate getCurrentMonthDates(){
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, 1);
+        Date startdate = cal.getTime();
+
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE)); // changed calendar to cal
+        Date endDate = cal.getTime();
+
+        ReportDate reportDate = new ReportDate();
+        reportDate.setStartDate(startdate);
+        reportDate.setEndDate(endDate);
+        return reportDate;
+    }
+
+    private ReportDate getThreeMonthsDates(){
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, 1);
+        cal.add(Calendar.MONTH, -2);
+        Date startdate = cal.getTime();
+
+        cal.add(Calendar.MONTH, 2);
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE)); // changed calendar to cal
+        Date endDate = cal.getTime();
+
+        ReportDate reportDate = new ReportDate();
+        reportDate.setStartDate(startdate);
+        reportDate.setEndDate(endDate);
+        return reportDate;
+    }
+
+    private ReportDate getOneYearDates(){
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_YEAR, 1);
+        Date startdate = cal.getTime();
+
+        cal.set(Calendar.MONTH, 12);
+        cal.set(Calendar.DAY_OF_MONTH, 31);
+        Date endDate = cal.getTime();
+
+        ReportDate reportDate = new ReportDate();
+        reportDate.setStartDate(startdate);
+        reportDate.setEndDate(endDate);
+        return reportDate;
+    }
+
+    public class ReportDate{
+        private Date startDate;
+        private Date endDate;
+
+        public Date getStartDate() {
+            return startDate;
+        }
+
+        public void setStartDate(Date startDate) {
+            this.startDate = startDate;
+        }
+
+        public Date getEndDate() {
+            return endDate;
+        }
+
+        public void setEndDate(Date endDate) {
+            this.endDate = endDate;
+        }
     }
 
 }

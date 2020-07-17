@@ -21,7 +21,7 @@ import butterknife.ButterKnife;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class SaleOverviewFragment extends BaseFragment {
+public class SalesSummaryOverviewFragment extends BaseFragment {
 
     private View mView;
 
@@ -41,7 +41,7 @@ public class SaleOverviewFragment extends BaseFragment {
 
     private ReportModel reportModel;
 
-    public SaleOverviewFragment(ReportModel reportModel) {
+    public SalesSummaryOverviewFragment(ReportModel reportModel) {
         this.reportModel = reportModel;
     }
 

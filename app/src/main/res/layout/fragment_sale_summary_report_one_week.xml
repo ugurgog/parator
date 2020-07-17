@@ -27,8 +27,6 @@
                 android:textStyle="bold"
                 android:id="@+id/salesSummaryTv"
                 android:layout_centerVertical="true">
-
-
             </TextView>
 
             <ImageView
@@ -49,15 +47,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/oneWeekSalesSummaryRl">
-
-
         </RelativeLayout>
 
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="30dp"
             android:layout_marginBottom="5dp">
 
             <TextView
@@ -86,19 +82,20 @@
 
         </RelativeLayout>
 
+        <com.github.mikephil.charting.charts.BarChart
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:id="@+id/graphicSummaryChart">
+
+
+        </com.github.mikephil.charting.charts.BarChart>
+
+
+        <!-- PAYMENT TYPES -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/graphicSummaryFrag">
-
-
-        </RelativeLayout>
-
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="30dp"
             android:layout_marginBottom="10dp">
 
             <TextView
@@ -117,16 +114,17 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/paymentTypeSummaryFrag">
+            android:id="@+id/oneWeekPaymentTypeRl">
 
 
         </RelativeLayout>
 
+        <!-- TOP ITEMS -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="5dp">
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -139,31 +137,21 @@
 
             </TextView>
 
-            <ImageView
-                android:layout_width="@dimen/report_menu_icon_size"
-                android:layout_height="@dimen/report_menu_icon_size"
-                android:src="@drawable/ic_more_horiz_white_24dp"
-                android:tint="@color/DodgerBlue"
-                android:layout_alignParentEnd="true"
-                android:layout_centerInParent="true"
-                android:id="@+id/topItemsMenuImgv">
-
-            </ImageView>
-
-
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/topItemsFrag">
+            android:id="@+id/oneWeekTopItemsRl">
         </RelativeLayout>
 
+
+        <!-- TOP CATEGORIES -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="5dp">
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -176,24 +164,13 @@
 
             </TextView>
 
-            <ImageView
-                android:layout_width="@dimen/report_menu_icon_size"
-                android:layout_height="@dimen/report_menu_icon_size"
-                android:src="@drawable/ic_more_horiz_white_24dp"
-                android:tint="@color/DodgerBlue"
-                android:layout_alignParentEnd="true"
-                android:layout_centerInParent="true"
-                android:id="@+id/topCategoriesMenuImgv">
-
-            </ImageView>
-
 
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/topCategoriesFrag">
+            android:id="@+id/oneWeekTopCategoriesRl">
 
 
         </RelativeLayout>

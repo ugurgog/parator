@@ -48,7 +48,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/oneDaySalesSummaryRl">
+            android:id="@+id/threeMonthSalesSummaryRl">
         </RelativeLayout>
 
 
@@ -84,13 +84,13 @@
 
         </RelativeLayout>
 
-        <com.github.mikephil.charting.charts.BarChart
+        <com.github.mikephil.charting.charts.LineChart
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:id="@+id/graphicSummaryChart">
+            android:id="@+id/graphicSummaryLineChart">
 
 
-        </com.github.mikephil.charting.charts.BarChart>
+        </com.github.mikephil.charting.charts.LineChart>
 
 
         <!-- PAYMENT TYPES -->
@@ -116,7 +116,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/oneDayPaymentTypeRl">
+            android:id="@+id/threeMonthPaymentTypeRl">
 
 
         </RelativeLayout>
@@ -144,7 +144,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/oneDayTopItemsRl">
+            android:id="@+id/threeMonthTopItemsRl">
         </RelativeLayout>
 
 
@@ -162,8 +162,6 @@
                 android:textColor="@color/Black"
                 android:textStyle="bold"
                 android:layout_centerVertical="true">
-
-
             </TextView>
 
 
@@ -172,7 +170,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/oneDayTopCategoriesRl">
+            android:id="@+id/threeMonthTopCategoriesRl">
 
 
         </RelativeLayout>

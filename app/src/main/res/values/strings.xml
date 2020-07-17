@@ -186,14 +186,36 @@
     <string name="tips">Tips</string>
     <string name="refunds_by_amount">Refunds by Amount</string>
     <string name="sales_count">Sales Count</string>
+
     <string name="daily_gross_sales">DAILY GROSS SALES</string>
     <string name="daily_net_sales">DAILY NET SALES</string>
     <string name="daily_sales_count">DAILY SALES COUNT</string>
+
+    <string name="weekly_gross_sales">WEEKLY GROSS SALES</string>
+    <string name="weekly_net_sales">WEEKLY NET SALES</string>
+    <string name="weekly_sales_count">WEEKLY SALES COUNT</string>
+
+    <string name="monthly_gross_sales">MONTHLY GROSS SALES</string>
+    <string name="monthly_net_sales">MONTHLY NET SALES</string>
+    <string name="monthly_sales_count">MONTHLY SALES COUNT</string>
+
+    <string name="three_monthly_gross_sales">3 MONTHLY GROSS SALES</string>
+    <string name="three_monthly_net_sales">3 MONTHLY NET SALES</string>
+    <string name="three_monthly_sales_count">3 MONTHLY SALES COUNT</string>
+
+    <string name="yearly_gross_sales">YEARLY GROSS SALES</string>
+    <string name="yearly_net_sales">YEARLY NET SALES</string>
+    <string name="yearly_sales_count">YEARLY SALES COUNT</string>
+
     <string name="fees">Fees</string>
     <string name="net_total">Net Total</string>
     <string name="total_collected">Total Collected</string>
     <string name="gross">Gross</string>
     <string name="count">Count</string>
+
+    <string name="hour">Hour</string>
+    <string name="week">Week</string>
+    <string name="month">Ay</string>
 
     <!-- Main menu items -->
     <string name="checkout">Checkout</string>

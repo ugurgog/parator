@@ -186,14 +186,36 @@
     <string name="tips">Bahşişler</string>
     <string name="refunds_by_amount">Tutara göre iade</string>
     <string name="sales_count">Satış Adedi</string>
+
     <string name="daily_gross_sales">GÜNLÜK BRÜT SATIŞ</string>
     <string name="daily_net_sales">GÜNLÜK NET SATIŞ</string>
-    <string name="daily_sales_count">GÜNLÜK BRÜT SAYISI</string>
+    <string name="daily_sales_count">GÜNLÜK SATIŞ ADEDİ</string>
+
+    <string name="weekly_gross_sales">HAFTALIK BRÜT SATIŞ</string>
+    <string name="weekly_net_sales">HAFTALIK NET SATIŞ</string>
+    <string name="weekly_sales_count">HAFTALIK SATIŞ ADEDİ</string>
+
+    <string name="monthly_gross_sales">AYLIK BRÜT SATIŞ</string>
+    <string name="monthly_net_sales">AYLIK NET SATIŞ</string>
+    <string name="monthly_sales_count">AYLIK SATIŞ ADEDİ</string>
+
+    <string name="three_monthly_gross_sales">3 AYLIK BRÜT SATIŞ</string>
+    <string name="three_monthly_net_sales">3 AYLIK NET SATIŞ</string>
+    <string name="three_monthly_sales_count">3 AYLIK SATIŞ ADEDİ</string>
+
+    <string name="yearly_gross_sales">YILLIK BRÜT SATIŞ</string>
+    <string name="yearly_net_sales">YILLIK NET SATIŞ</string>
+    <string name="yearly_sales_count">YILLIK SATIŞ ADEDİ</string>
+
     <string name="fees">Ücretler</string>
     <string name="net_total">Net Toplam</string>
     <string name="total_collected">Toplam Tutar</string>
     <string name="gross">Brüt</string>
     <string name="count">Adet</string>
+
+    <string name="hour">Saat</string>
+    <string name="week">Hafta</string>
+    <string name="month">Month</string>
 
     <!-- Main menu items -->
     <string name="checkout">Çıkış</string>

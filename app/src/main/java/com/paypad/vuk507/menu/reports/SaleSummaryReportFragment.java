@@ -15,24 +15,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.payment.MailResultFragment;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.menu.group.GroupFragment;
-import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
-import com.paypad.vuk507.menu.reports.saleReport.SaleDetailsFragment;
-import com.paypad.vuk507.menu.reports.saleReport.SaleOverviewFragment;
-import com.paypad.vuk507.model.Group;
+import com.paypad.vuk507.menu.reports.saleReport.SalesSummaryDetailFragment;
+import com.paypad.vuk507.menu.reports.saleReport.SalesSummaryOverviewFragment;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.ReportModel;
 import com.paypad.vuk507.model.pojo.SaleModel;
-import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.LogUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -192,18 +185,18 @@ public class SaleSummaryReportFragment extends BaseFragment {
     private void addSaleOverviewFragment(){
         if(isSaleOverviewDisplayed){
 
-            SaleOverviewFragment saleOverviewFragment = new SaleOverviewFragment(reportModel);
+            SalesSummaryOverviewFragment salesSummaryOverviewFragment = new SalesSummaryOverviewFragment(reportModel);
             getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.salesSummaryRl, saleOverviewFragment, SaleOverviewFragment.class.getName())
+                    .replace(R.id.salesSummaryRl, salesSummaryOverviewFragment, SalesSummaryOverviewFragment.class.getName())
                     //.addToBackStack(null)
                     .commit();
 
             salesSummaryTv.setText(getResources().getString(R.string.sales_summary_overview));
         }else {
 
-            SaleDetailsFragment saleDetailsFragment = new SaleDetailsFragment(reportModel);
+            SalesSummaryDetailFragment salesSummaryDetailFragment = new SalesSummaryDetailFragment(reportModel);
             getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.salesSummaryRl, saleDetailsFragment, SaleDetailsFragment.class.getName())
+                    .replace(R.id.salesSummaryRl, salesSummaryDetailFragment, SalesSummaryDetailFragment.class.getName())
                     //.addToBackStack(null)
                     .commit();
 

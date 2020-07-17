@@ -39,7 +39,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TopItemsFragment extends BaseFragment {
+public class SalesTopItemsFragment extends BaseFragment {
 
     private View mView;
 
@@ -58,7 +58,7 @@ public class TopItemsFragment extends BaseFragment {
 
     private static final int TOP_ITEM_MAX_COUNT = 5;
 
-    public TopItemsFragment(ReportModel reportModel) {
+    public SalesTopItemsFragment(ReportModel reportModel) {
         this.reportModel = reportModel;
     }
 

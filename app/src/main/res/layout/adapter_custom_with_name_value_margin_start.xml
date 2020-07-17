@@ -26,8 +26,8 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:textSize="@dimen/default_size_15sp"
-                android:id="@+id/discountNameTv"
-                android:text="%10"
+                android:id="@+id/nameTv"
+                android:text="LoremIpsum"
                 android:layout_marginStart="50dp">
             </TextView>
 
@@ -36,9 +36,9 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:textSize="@dimen/default_size_15sp"
-                android:id="@+id/discountAmountTv"
+                android:id="@+id/valueTv"
                 android:layout_alignParentEnd="true"
-                android:text="10.79 TL">
+                android:text="LoremIpsum">
             </TextView>
 
         </RelativeLayout>

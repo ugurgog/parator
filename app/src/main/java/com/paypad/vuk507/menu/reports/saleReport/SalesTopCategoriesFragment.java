@@ -2,6 +2,7 @@ package com.paypad.vuk507.menu.reports.saleReport;
 
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +15,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.menu.reports.saleReport.adapter.TopCategoryAdapter;
 import com.paypad.vuk507.menu.reports.saleReport.adapter.TopItemsAdapter;
+import com.paypad.vuk507.model.pojo.ReportDiscountModel;
 import com.paypad.vuk507.model.pojo.ReportModel;
 import com.paypad.vuk507.model.pojo.ReportOrderItem;
 import com.paypad.vuk507.utils.ShapeUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TopCategoriesFragment extends BaseFragment {
+public class SalesTopCategoriesFragment extends BaseFragment {
 
     private View mView;
 
@@ -40,12 +45,12 @@ public class TopCategoriesFragment extends BaseFragment {
     private ReportModel reportModel;
 
     private boolean isGrossSelected = true;
-    private TopItemsAdapter topItemsAdapter;
-    private List<ReportOrderItem> orderItems;
+    private TopCategoryAdapter topCategoryAdapter;
+    private List<TopCategory> topCategories;
 
     private static final int TOP_ITEM_MAX_COUNT = 5;
 
-    public TopCategoriesFragment(ReportModel reportModel) {
+    public SalesTopCategoriesFragment(ReportModel reportModel) {
         this.reportModel = reportModel;
     }
 
@@ -121,25 +126,47 @@ public class TopCategoriesFragment extends BaseFragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         topItemsRv.setLayoutManager(linearLayoutManager);
-        Collections.sort(reportModel.getTopItems(), new SaleCountComparator());
 
-        if(reportModel.getTopItems().size() < TOP_ITEM_MAX_COUNT)
-            orderItems = reportModel.getTopItems();
-        else
-            orderItems = reportModel.getTopItems().subList(0, TOP_ITEM_MAX_COUNT);
-
+        fillTopCategoriesList();
         updateAdapter();
     }
 
-    private void updateAdapter() {
-        topItemsAdapter = new TopItemsAdapter(orderItems, isGrossSelected);
-        topItemsRv.setAdapter(topItemsAdapter);
+    private void fillTopCategoriesList(){
+        topCategories = new ArrayList<>();
+
+        for (Map.Entry<String, List<ReportOrderItem>> entry : reportModel.getReportOrderItems().entrySet()) {
+
+            List<ReportOrderItem> reportOrderItems = entry.getValue();
+            String categoryName = entry.getKey();
+
+            double totalGrossAmount = 0d;
+            long totalSaleCount = 0;
+            for(ReportOrderItem reportOrderItem : reportOrderItems){
+                totalGrossAmount = totalGrossAmount + reportOrderItem.getGrossAmount();
+                totalSaleCount = totalSaleCount + reportOrderItem.getSaleCount();
+            }
+
+            TopCategory topCategory = new TopCategory(categoryName, reportOrderItems);
+            topCategory.setTotalGrossAmount(totalGrossAmount);
+            topCategory.setTotalSaleCount(totalSaleCount);
+            topCategories.add(topCategory);
+        }
+
+        Collections.sort(topCategories, new SaleCountComparator());
+
+        if(topCategories.size() > TOP_ITEM_MAX_COUNT)
+            topCategories = topCategories.subList(0, TOP_ITEM_MAX_COUNT);
     }
 
-    public static class SaleCountComparator implements Comparator<ReportOrderItem> {
+    private void updateAdapter() {
+        topCategoryAdapter = new TopCategoryAdapter(getContext(), topCategories, isGrossSelected);
+        topItemsRv.setAdapter(topCategoryAdapter);
+    }
+
+    public static class SaleCountComparator implements Comparator<TopCategory> {
         @Override
-        public int compare(ReportOrderItem o1, ReportOrderItem o2) {
-            return (int) (o2.getSaleCount() - o1.getSaleCount());
+        public int compare(TopCategory o1, TopCategory o2) {
+            return (int) (o2.getTotalSaleCount() - o1.getTotalSaleCount());
         }
     }
 

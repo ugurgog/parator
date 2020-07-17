@@ -1,9 +1,11 @@
 package com.paypad.vuk507.menu.reports.saleReport;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
@@ -79,6 +81,7 @@ public class SalesByPaymentTypeFragment extends BaseFragment {
         setSeekbars(totalCollected);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setSeekbars(double totalCollected){
         cashSeekBar.setMax((int) totalCollected);
         cardSeekBar.setMax((int) totalCollected);
@@ -92,7 +95,18 @@ public class SalesByPaymentTypeFragment extends BaseFragment {
         cashSeekBar.setProgress((int) reportModel.getCashAmount());
         cardSeekBar.setProgress((int) reportModel.getCardAmount());
 
-        cashSeekBar.setEnabled(false);
-        cardSeekBar.setEnabled(false);
+        cashSeekBar.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
+        cardSeekBar.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
     }
 }

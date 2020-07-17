@@ -27,7 +27,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SaleDetailsFragment extends BaseFragment {
+public class SalesSummaryDetailFragment extends BaseFragment {
 
     private View mView;
 
@@ -53,7 +53,7 @@ public class SaleDetailsFragment extends BaseFragment {
     private ReportModel reportModel;
     private SaleDetailDiscountAdapter saleDetailDiscountAdapter;
 
-    public SaleDetailsFragment(ReportModel reportModel) {
+    public SalesSummaryDetailFragment(ReportModel reportModel) {
         this.reportModel = reportModel;
     }
 

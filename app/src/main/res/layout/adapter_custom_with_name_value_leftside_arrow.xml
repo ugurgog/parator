@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    card_view:cardElevation="0dp"
+    app:cardElevation="0dp"
+    android:id="@+id/itemCv">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_keyboard_arrow_right_gray_24dp"
+                    android:tint="@color/Black"
+                    android:id="@+id/arrowImgv">
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp"
+                    android:id="@+id/nameTv"
+                    android:text="LoremIpsum"
+                    android:textColor="@color/Black"
+                    android:gravity="center"
+                    android:layout_marginStart="10dp">
+                </TextView>
+
+            </LinearLayout>
+
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textSize="@dimen/default_size_15sp"
+                android:id="@+id/valueTv"
+                android:layout_alignParentEnd="true"
+                android:text="LoremIpsum"
+                android:textColor="@color/Black">
+            </TextView>
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/fab_color_shadow" />
+
+    </LinearLayout>
+
+
+
+</androidx.cardview.widget.CardView>
