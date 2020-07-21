@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/toolbar_item_update" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/saleReportEmailRl">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="40dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/email_address"
+                android:textColor="@color/Black"
+                android:textStyle="bold">
+
+            </TextView>
+
+            <EditText
+                android:id="@+id/emailEt"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_edittext_height_size"
+                android:background="@drawable/custom_edittext_bg"
+                android:drawablePadding="20dp"
+                android:hint="@string/email_address"
+                android:inputType="textEmailAddress"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textColor="@color/Black"
+                android:textColorHint="@color/DarkGray"
+                android:layout_marginTop="10dp"
+                android:importantForAutofill="no" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/fab_color_shadow"
+                android:layout_marginTop="10dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/include_items"
+                    android:textColor="@color/Black"
+                    android:gravity="center">
+
+
+                </TextView>
+
+                <Switch
+                    android:id="@+id/includeItemsSwitch"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true">
+
+                </Switch>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/fab_color_shadow" />
+
+
+            <Button
+                android:id="@+id/btnSend"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_button_length_size"
+                android:layout_marginTop="30dp"
+                android:background="@color/DodgerBlue"
+                android:text="@string/send"
+                android:textAllCaps="false"
+                android:textColor="@color/White" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+
+</LinearLayout>

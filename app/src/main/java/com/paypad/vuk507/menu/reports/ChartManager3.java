@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -17,17 +16,16 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.formatter.XAxisValueFormatter;
+import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.IOrderManager;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.enums.ChartSaleSelectionEnum;
 import com.paypad.vuk507.enums.DayEnum;
 import com.paypad.vuk507.enums.MonthEnum;
 import com.paypad.vuk507.enums.ReportSelectionEnum;
-import com.paypad.vuk507.menu.reports.saleReport.SalesTopCategoriesFragment;
-import com.paypad.vuk507.menu.reports.saleReport.TopCategory;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -35,126 +33,139 @@ import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.LogUtil;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class ChartManager {
+public class ChartManager3 {
 
-    /*private Context mContext;
+    private Context mContext;
     private List<SaleModel> saleModels;
 
     private ArrayList<BarEntry> BARENTRY ;
     private BarDataSet Bardataset ;
     private BarData BARDATA ;
-    private LineData lineData;
     private BarChart barChart;
-    private LineChart lineChart;
+    ArrayList<String> BarEntryLabels ;
 
     private Date startDate;
     private Date endDate;
     private ReportSelectionEnum reportSelectionEnum;
+    private ChartSaleSelectionEnum chartSaleSelectionEnum;
 
-    public ChartManager(Context context, List<SaleModel> saleModels) {
+    public ChartManager3(Context context, List<SaleModel> saleModels, ChartSaleSelectionEnum chartSaleSelectionEnum) {
         mContext = context;
         this.saleModels = saleModels;
+        this.chartSaleSelectionEnum = chartSaleSelectionEnum;
     }
 
-    public void fillOneDayChartVariables(ChartSaleSelectionEnum chartSaleSelectionEnum){
+    public void fillOneDayChartVariables(){
         List<ChartSales> chartOneDaySalesList = getOneDaySalesList();
 
         BARENTRY = new ArrayList<>();
 
+        setBarEntryLabelsWithOneDayHours();
+
         if (chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES) {
-
-            //for(int i=0; i<24; i++){
-            //    BARENTRY.add(new BarEntry((int) i, (float) 0f));
-            //}
-
-            for (ChartSales chartOneDaySales : chartOneDaySalesList)
-
-                //BARENTRY.set((int) chartOneDaySales.getHour(), new BarEntry((int) chartOneDaySales.getHour(), (float) chartOneDaySales.getGrossAmount()));
-
-                BARENTRY.add(new BarEntry((int) chartOneDaySales.getHour(), (float) chartOneDaySales.getGrossAmount()));
 
             Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.gross_sales).concat("/").concat(mContext.getResources().getString(R.string.hour)));
 
+            for (ChartSales chartOneDaySales : chartOneDaySalesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getGrossAmount(), (int) chartOneDaySales.getHour()));
+
         } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.NET_SALES) {
 
-            for (ChartSales chartOneDaySales : chartOneDaySalesList)
-                BARENTRY.add(new BarEntry((int) chartOneDaySales.getHour(), (float) chartOneDaySales.getNetAmount()));
-
             Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.net_sales).concat("/").concat(mContext.getResources().getString(R.string.hour)));
+
+            for (ChartSales chartOneDaySales : chartOneDaySalesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getNetAmount(), (int) chartOneDaySales.getHour()));
+
+
         } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.SALES_COUNT) {
 
-            for (ChartSales chartOneDaySales : chartOneDaySalesList)
-                BARENTRY.add(new BarEntry((int) chartOneDaySales.getHour(), (float) chartOneDaySales.getSaleCount()));
-
             Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.sales_count).concat("/").concat(mContext.getResources().getString(R.string.hour)));
+
+            for (ChartSales chartOneDaySales : chartOneDaySalesList)
+                BARENTRY.add(new BarEntry( (float) chartOneDaySales.getSaleCount(),(int) chartOneDaySales.getHour()));
         }
 
-        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-        dataSets.add(Bardataset);
+        XAxis xAxis = getBarChart().getXAxis();
+        XAxisValueFormatter xAxisValueFormatter = new XAxisValueFormatter() {
+            @Override
+            public String getXValue(String original, int index, ViewPortHandler viewPortHandler) {
+                String hourLabel = CommonUtils.getLanguage().equals(LANGUAGE_TR) ? " s" : " h";
 
-        setOneDayXYAxisValues();
+                if(!original.trim().isEmpty())
+                    return original.concat(hourLabel);
+                else
+                    return original;
+            }
+        };
+        xAxis.setValueFormatter(xAxisValueFormatter);
 
-        BARDATA = new BarData(dataSets);
-        BARDATA.setBarWidth(0.9f);
+        setDefaultXYAxisValuesForBarChart();
+
+        BARDATA = new BarData(BarEntryLabels, Bardataset);
         Bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
     }
 
-    public void fillOneWeekChartVariables(ChartSaleSelectionEnum chartSaleSelectionEnum){
+    //----------------------------------------------------------
+
+    public void fillOneWeekChartVariables(){
         List<ChartSales> chartOneDaySalesList = getOneWeekSalesList();
 
         BARENTRY = new ArrayList<>();
+        setBarEntryLabelsWithWeekDays();
 
         if (chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES) {
 
-            for (ChartSales chartOneDaySales : chartOneDaySalesList)
-                BARENTRY.add(new BarEntry(chartOneDaySales.getDay(), (float) chartOneDaySales.getGrossAmount()));
-
             Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.gross_sales).concat("/").concat(mContext.getResources().getString(R.string.week)));
+
+            for (ChartSales chartOneDaySales : chartOneDaySalesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getGrossAmount(), chartOneDaySales.getDay()));
 
         } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.NET_SALES) {
 
-            for (ChartSales chartOneDaySales : chartOneDaySalesList)
-                BARENTRY.add(new BarEntry(chartOneDaySales.getDay(), (float) chartOneDaySales.getNetAmount()));
-
             Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.net_sales).concat("/").concat(mContext.getResources().getString(R.string.week)));
+
+            for (ChartSales chartOneDaySales : chartOneDaySalesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getNetAmount(), chartOneDaySales.getDay()));
+
         } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.SALES_COUNT) {
 
-            for (ChartSales chartOneDaySales : chartOneDaySalesList)
-                BARENTRY.add(new BarEntry(chartOneDaySales.getDay(), (float) chartOneDaySales.getSaleCount()));
-
             Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.sales_count).concat("/").concat(mContext.getResources().getString(R.string.week)));
+
+            for (ChartSales chartOneDaySales : chartOneDaySalesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getSaleCount(), chartOneDaySales.getDay()));
         }
 
-        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-        dataSets.add(Bardataset);
+        setDefaultXYAxisValuesForBarChart();
 
-        setOneWeekXYAxisValues();
-
-        BARDATA = new BarData(dataSets);
+        BARDATA = new BarData(BarEntryLabels, Bardataset);
         Bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
     }
 
-    public void fillOneMonthChartVariables(ChartSaleSelectionEnum chartSaleSelectionEnum){
+    //----------------------------------------------------------
+
+    public void fillOneMonthChartVariables(){
         List<ChartSales> salesList = getOneMonthSalesList();
 
-        Collections.sort(salesList, new DayComparator());
+        BARENTRY = new ArrayList<>();
 
-        LineDataSet dataSet = null;
 
-        ArrayList<Entry> entries = new ArrayList<>();
+        if(reportSelectionEnum == ReportSelectionEnum.ONE_M)
+            setBarEntryLabelsWithOneMonthDays();
+        else if(reportSelectionEnum == ReportSelectionEnum.THREE_M)
+            setBarEntryLabelsWithThreeMonthDays();
 
         String monthStr = "";
         if(reportSelectionEnum == ReportSelectionEnum.ONE_M)
@@ -164,146 +175,71 @@ public class ChartManager {
 
         if (chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES) {
 
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.gross_sales).concat("/").concat(monthStr));
             for (ChartSales chartOneDaySales : salesList)
-                entries.add(new Entry(chartOneDaySales.getDay(), (float) chartOneDaySales.getGrossAmount()));
-
-            dataSet = new LineDataSet(entries, mContext.getResources().getString(R.string.gross_sales).concat("/").concat(monthStr));
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getGrossAmount(), chartOneDaySales.getDay()));
 
         } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.NET_SALES) {
 
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.net_sales).concat("/").concat(monthStr));
             for (ChartSales chartOneDaySales : salesList)
-                entries.add(new Entry(chartOneDaySales.getDay(), (float) chartOneDaySales.getNetAmount()));
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getNetAmount(), chartOneDaySales.getDay()));
 
-            dataSet = new LineDataSet(entries, mContext.getResources().getString(R.string.net_sales).concat("/").concat(monthStr));
         } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.SALES_COUNT) {
 
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.sales_count).concat("/").concat(monthStr));
             for (ChartSales chartOneDaySales : salesList)
-                entries.add(new Entry(chartOneDaySales.getDay(), (float) chartOneDaySales.getSaleCount()));
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getSaleCount(), chartOneDaySales.getDay()));
 
-            dataSet = new LineDataSet(entries, mContext.getResources().getString(R.string.sales_count).concat("/").concat(monthStr));
         }
 
-        dataSet.setColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
-        dataSet.setValueTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark));
-
-        if(reportSelectionEnum == ReportSelectionEnum.ONE_M)
-            setOneMonthXYAxisValues();
-        else if(reportSelectionEnum == ReportSelectionEnum.THREE_M)
-            setThreeMonthXYAxisValues();
-
-        lineData = new LineData(dataSet);
-        dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-    }
-
-    public static class DayComparator implements Comparator<ChartSales> {
-        @Override
-        public int compare(ChartSales o1, ChartSales o2) {
-            return (int) (o2.getDay() - o1.getDay());
+        if(reportSelectionEnum == ReportSelectionEnum.THREE_M){
+            XAxis xAxis = getBarChart().getXAxis();
+            xAxis.setAxisMaxValue(BarEntryLabels.size());
         }
+
+
+        setDefaultXYAxisValuesForBarChart();
+
+        BARDATA = new BarData(BarEntryLabels, Bardataset);
+        Bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
     }
 
-    private void setOneDayXYAxisValues(){
-        XAxis xAxis = getBarChart().getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+    public void setBarEntryLabelsWithOneDayHours(){
+        BarEntryLabels = new ArrayList<String>();
 
-        final String[] hours = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+        for (int i = 0; i < 24; i++)
+            BarEntryLabels.add((i % 3 == 0 || i == 0) ? String.valueOf(i) : " ");
 
-
-        Log.i("Info", "hours----------");
-
-
-        IAxisValueFormatter formatter = new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                Log.i("Info", "hours[(int) value]:" + hours[(int) value]);
-
-                return hours[(int) value];
-            }
-        };
-
-
-
-        //xAxis.setGranularityEnabled(true);
-        xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
-        //xAxis.setLabelCount(hours.length, true);
-
-        xAxis.setValueFormatter(formatter);
-
-        getBarChart().setVisibleXRangeMaximum(hours.length);
-        getBarChart().setVisibleXRangeMinimum(hours.length);
-        getBarChart().getDescription().setEnabled(false);
-
-
-        YAxis yAxisRight = getBarChart().getAxisRight();
-        yAxisRight.setEnabled(false);
-
-        YAxis yAxisLeft = getBarChart().getAxisLeft();
-        yAxisLeft.setGranularity(1f);
-
-        getBarChart().setFitBars(true); // make the x-axis fit exactly all bars
     }
 
-    private void setOneWeekXYAxisValues(){
-        XAxis xAxis = getBarChart().getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+    public void setBarEntryLabelsWithWeekDays(){
+        BarEntryLabels = new ArrayList<String>();
 
-        String[] days = new String[]{"Sub", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"};
+        String[] days = new String[]{"Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"};
 
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR))
             days = new String[]{"Pzt", "Sal", "Çar", "Per", "Cum", "Ctes", "Paz"};
 
-        String[] finalDays = days;
-
-        IAxisValueFormatter formatter = new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return finalDays[(int) value];
-            }
-        };
-        xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
-        xAxis.setValueFormatter(formatter);
-        xAxis.setLabelCount(7);
-
-        YAxis yAxisRight = getBarChart().getAxisRight();
-        yAxisRight.setEnabled(false);
-
-        YAxis yAxisLeft = getBarChart().getAxisLeft();
-        yAxisLeft.setGranularity(1f);
+        BarEntryLabels.addAll(Arrays.asList(days).subList(0, 7));
     }
 
-    private void setOneMonthXYAxisValues(){
-        XAxis xAxis = getLineChart().getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+    public void setBarEntryLabelsWithOneMonthDays(){
+        BarEntryLabels = new ArrayList<String>();
 
-        final String[] months = new String[]{"1", "", "", "4", "", "",
-                "7", "", "", "10", "", "",
-                "13", "", "", "16", "", "",
-                "19", "", "", "22", "", "",
-                "25", "", "", "28", "", "",
-                "31"};
+        final String[] months = new String[]{"1", " ", " ", "4", " ", " ", "7", " ", " ", "10", " ", " ",
+                "13", " ", " ", "16", " ", " ", "19", " ", " ", "22", " ", " ", "25", " ", " ", "28", " ", " ", "31"};
 
-        IAxisValueFormatter formatter = new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return months[(int) value];
-            }
-        };
-        xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
-        xAxis.setValueFormatter(formatter);
-        xAxis.setLabelCount(31);
-
-        YAxis yAxisRight = getLineChart().getAxisRight();
-        yAxisRight.setEnabled(false);
-
-        YAxis yAxisLeft = getLineChart().getAxisLeft();
-        yAxisLeft.setGranularity(1f);
+        BarEntryLabels.addAll(Arrays.asList(months));
     }
 
-    private void setThreeMonthXYAxisValues(){
-        XAxis xAxis = getLineChart().getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+    public void setBarEntryLabelsWithThreeMonthDays(){
+        BarEntryLabels = new ArrayList<String>();
 
         List<String> dates = new ArrayList<>();
+
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        Log.i("Info", "setBarEntryLabelsWithThreeMonthDays  startDate:" + startDate);
 
         int monthNum = DataUtils.getMonthNumFromDate(startDate);
 
@@ -313,41 +249,91 @@ public class ChartManager {
 
         dates.add("1" + monthEnum1.getEngCode());
         for(int i=0; i<13; i++)
-            dates.add(" ");
+            dates.add("x");
         dates.add("15" + monthEnum1.getEngCode());
         for(int i=0; i<17; i++)
-            dates.add(" ");
+            dates.add("x");
 
         dates.add("1" + monthEnum2.getEngCode());
         for(int i=0; i<13; i++)
-            dates.add(" ");
+            dates.add("x");
         dates.add("15" + monthEnum2.getEngCode());
         for(int i=0; i<17; i++)
-            dates.add(" ");
+            dates.add("x");
 
         dates.add("1" + monthEnum3.getEngCode());
         for(int i=0; i<13; i++)
-            dates.add(" ");
+            dates.add("x");
         dates.add("15" + monthEnum3.getEngCode());
         for(int i=0; i<30; i++)
             dates.add(" ");
 
-        IAxisValueFormatter formatter = new IAxisValueFormatter() {
+        BarEntryLabels.addAll(dates);
+    }
+
+    public static class DayComparator implements Comparator<ChartSales> {
+        @Override
+        public int compare(ChartSales o1, ChartSales o2) {
+            return (int) (o2.getDay() - o1.getDay());
+        }
+    }
+
+
+    private void setDefaultXYAxisValuesForBarChart(){
+        XAxis xAxis = getBarChart().getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setAxisMinValue(0f);
+
+        getBarChart().getLegend().setEnabled(false);
+
+        YAxis yAxisRight = getBarChart().getAxisRight();
+        yAxisRight.setEnabled(false);
+
+        YAxis yAxisLeft = getBarChart().getAxisLeft();
+        yAxisLeft.setGranularity(1f);
+        yAxisLeft.setAxisMinValue(0f);
+
+        YAxisValueFormatter valueFormatter = new YAxisValueFormatter() {
             @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return dates.get((int) value);
+            public String getFormattedValue(float value, YAxis yAxis) {
+                NumberFormat nf = new DecimalFormat("#.####");
+                return nf.format(value).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
             }
         };
-        xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
-        xAxis.setValueFormatter(formatter);
-        xAxis.setLabelCount(31);
+
+        if(chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES || chartSaleSelectionEnum == ChartSaleSelectionEnum.NET_SALES)
+            yAxisLeft.setValueFormatter(valueFormatter);
+        else
+            yAxisLeft.setValueFormatter(null);
+    }
+
+    /*private void setDefaultXYAxisValuesForLineChart(){
+        XAxis xAxis = getLineChart().getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setAxisMinValue(0f);
+
+        getLineChart().getLegend().setEnabled(false);
 
         YAxis yAxisRight = getLineChart().getAxisRight();
         yAxisRight.setEnabled(false);
 
         YAxis yAxisLeft = getLineChart().getAxisLeft();
         yAxisLeft.setGranularity(1f);
-    }
+        yAxisLeft.setAxisMinValue(0f);
+
+        YAxisValueFormatter valueFormatter = new YAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, YAxis yAxis) {
+                NumberFormat nf = new DecimalFormat("#.####");
+                return nf.format(value).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+            }
+        };
+
+        if(chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES || chartSaleSelectionEnum == ChartSaleSelectionEnum.NET_SALES)
+            yAxisLeft.setValueFormatter(valueFormatter);
+        else
+            yAxisLeft.setValueFormatter(null);
+    }*/
 
     private List<ChartSales> getOneDaySalesList(){
         List<ChartSales> chartOneDaySalesList = new ArrayList<>();
@@ -485,21 +471,10 @@ public class ChartManager {
         this.barChart = barChart;
     }
 
-    public LineChart getLineChart() {
-        return lineChart;
-    }
-
-    public void setLineChart(LineChart lineChart) {
-        this.lineChart = lineChart;
-    }
-
     public BarData getBARDATA() {
         return BARDATA;
     }
 
-    public LineData getLineData() {
-        return lineData;
-    }
 
     public Date getStartDate() {
         return startDate;
@@ -523,6 +498,10 @@ public class ChartManager {
 
     public void setReportSelectionEnum(ReportSelectionEnum reportSelectionEnum) {
         this.reportSelectionEnum = reportSelectionEnum;
+    }
+
+    public void setChartSaleSelectionEnum(ChartSaleSelectionEnum chartSaleSelectionEnum) {
+        this.chartSaleSelectionEnum = chartSaleSelectionEnum;
     }
 
     class ChartSales{
@@ -581,7 +560,7 @@ public class ChartManager {
         public void setSaleCount(long saleCount) {
             this.saleCount = saleCount;
         }
-    }*/
+    }
 }
 
 

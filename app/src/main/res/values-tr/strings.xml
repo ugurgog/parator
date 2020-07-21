@@ -216,6 +216,25 @@
     <string name="hour">Saat</string>
     <string name="week">Hafta</string>
     <string name="month">Month</string>
+    <string name="today">Bugün</string>
+    <string name="this_week">Bu Hafta</string>
+    <string name="this_month">Bu Ay</string>
+    <string name="current_three_month">Son 3 Ay</string>
+    <string name="this_year">Bu Yıl</string>
+
+    <string name="no_transaction_time_period">Bu zaman dilimi için işlem yok</string>
+    <string name="no_transaction_time_period_desc">Seçtiğiniz süre içinde herhangi bir işlem yapılmadı. Farklı bir zaman aralığı seçmeyi deneyin.</string>
+    <string name="select_time_frame">Zaman Aralığı Seçin</string>
+    <string name="start_time">Başlangıç Zamanı</string>
+    <string name="end_time">Bitiş Zamanı</string>
+    <string name="end_time_must_be_bigger_than_start_time">Bitiş Zamanı Başlangıç Zamanından büyük olmak zorunda</string>
+    <string name="include_items">Ürünler Dahil</string>
+    <string name="send">Gönder</string>
+    <string name="email_report">Email Raporu</string>
+    <string name="sales_report">Satış Raporu</string>
+    <string name="email_sent">Mail Gönderildi</string>
+    <string name="email_sent_unsuccessful">Mail gönderimi başarısız</string>
+    <string name="mail_cannot_send_these_users">Rapor şu adreslere gönderilemedi</string>
 
     <!-- Main menu items -->
     <string name="checkout">Çıkış</string>

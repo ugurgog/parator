@@ -199,10 +199,13 @@ public class DataUtils {
     }
 
     public static int getMonthNumFromDate(Date date){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int month = cal.get(Calendar.MONTH);
-        return month;
+        //Calendar cal = Calendar.getInstance();
+        //cal.setTime(date);
+        //int month = cal.get(Calendar.MONTH);
+        //return month;
+
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM");
+        return Integer.parseInt(dateFormat.format(date));
     }
 
     public static int getDateNumFromDate(Date date){

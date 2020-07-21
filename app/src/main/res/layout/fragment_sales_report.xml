@@ -55,19 +55,18 @@
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
                     android:padding="15dp"
-                    android:src="@drawable/ic_publish_white_24dp"
-                    android:tint="@color/Black"
-                    android:visibility="visible" />
+                    android:src="@drawable/ic_email_white_24dp"
+                    android:tint="@android:color/black"/>
+
 
                 <com.paypad.vuk507.utils.ClickableImage.ClickableImageView
-                    android:id="@+id/arrangeDateImgv"
+                    android:id="@+id/printImgv"
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
                     android:padding="15dp"
-                    android:src="@drawable/ic_show_chart_white_24dp"
-                    android:tint="@color/Black"
-                    android:visibility="visible" />
-
+                    android:src="@drawable/ic_print_white_24dp"
+                    android:tint="@android:color/black"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -85,16 +84,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="?attr/colorPrimary">
+        android:background="?attr/colorPrimary"
+        android:id="@+id/selectPeriodLL"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="This Month, Tem, 2020"
-            android:paddingTop="4dp"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
-            android:paddingBottom="2dp"
             android:gravity="center"
             android:textColor="@color/DodgerBlue"
             android:textStyle="bold"
@@ -102,25 +102,12 @@
 
         </TextView>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="All Devices, vs previous Month"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:paddingBottom="5dp"
-            android:gravity="center"
-            android:textColor="@color/Black"
-            android:id="@+id/deviceFilterTv">
-
-        </TextView>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.3dp"
-            android:background="@color/fab_color_shadow" />
-
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="@color/fab_color_shadow" />
 
     <!--com.google.android.material.tabs.TabLayout
         android:layout_width="match_parent"
@@ -148,14 +135,18 @@
         android:layout_height="0.3dp"
         android:background="@color/fab_color_shadow" />
 
-    <androidx.viewpager.widget.ViewPager
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/viewPager">
+        android:layout_height="match_parent"
+        android:id="@+id/viewPagerRl">
 
+        <androidx.viewpager.widget.ViewPager
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/viewPager">
+        </androidx.viewpager.widget.ViewPager>
 
-
-    </androidx.viewpager.widget.ViewPager>
+    </RelativeLayout>
 
 
 </LinearLayout>

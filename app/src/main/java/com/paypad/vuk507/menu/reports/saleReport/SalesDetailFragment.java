@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -25,8 +26,14 @@ import com.paypad.vuk507.enums.ChartSaleSelectionEnum;
 import com.paypad.vuk507.enums.ReportSelectionEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.reports.ChartManager;
+import com.paypad.vuk507.menu.reports.ChartManager2;
+import com.paypad.vuk507.menu.reports.ChartManager3;
+import com.paypad.vuk507.menu.reports.NoSalesFragment;
 import com.paypad.vuk507.menu.reports.SaleReportManager;
+import com.paypad.vuk507.menu.reports.interfaces.ReturnReportDateCallback;
+import com.paypad.vuk507.menu.reports.interfaces.ReturnReportSelectionCallback;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.ReportDate;
 import com.paypad.vuk507.model.pojo.ReportModel;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.LogUtil;
@@ -47,6 +54,8 @@ public class SalesDetailFragment extends BaseFragment {
     private View mView;
 
     //Sales Summary
+    @BindView(R.id.mainll)
+    LinearLayout mainll;
     @BindView(R.id.salesSummaryTv)
     TextView salesSummaryTv;
     @BindView(R.id.salesSummaryMenuImgv)
@@ -68,7 +77,8 @@ public class SalesDetailFragment extends BaseFragment {
 
     private boolean isSaleOverviewDisplayed = true;
 
-    private ChartManager chartManager;
+    //private ChartManager chartManager;
+    private ChartManager3 chartManager;
 
     private List<SaleModel> saleModels = new ArrayList<>();
     private ReportModel reportModel;
@@ -79,14 +89,22 @@ public class SalesDetailFragment extends BaseFragment {
     private int salePaymentTypeId;
     private int saleTopItemsId;
     private int saleTopCategoriesId;
+    private int saleMainRelLayoutId;
+    private ReturnReportModelCallback returnReportModelCallback;
 
-
+    public interface ReturnReportModelCallback{
+        void OnReturnReportModel(ReportModel reportModel);
+    }
 
     public SalesDetailFragment(Date startDate, Date endDate, boolean isThisDevice, ReportSelectionEnum reportSelectionType) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.isThisDevice = isThisDevice;
         this.reportSelectionType = reportSelectionType;
+    }
+
+    public void setReturnReportModelCallback(ReturnReportModelCallback returnReportModelCallback) {
+        this.returnReportModelCallback = returnReportModelCallback;
     }
 
     @Override
@@ -143,12 +161,12 @@ public class SalesDetailFragment extends BaseFragment {
         }else if(reportSelectionType == ReportSelectionEnum.ONE_M){
 
             mView = inflater.inflate(R.layout.fragment_sale_summary_report_one_month, container, false);
-            graphicSummaryLineChart = mView.findViewById(R.id.graphicSummaryLineChart);
+            graphicSummaryChart = mView.findViewById(R.id.graphicSummaryChart);
 
         }else if(reportSelectionType == ReportSelectionEnum.THREE_M){
 
             mView = inflater.inflate(R.layout.fragment_sale_summary_report_three_month, container, false);
-            graphicSummaryLineChart = mView.findViewById(R.id.graphicSummaryLineChart);
+            graphicSummaryChart = mView.findViewById(R.id.graphicSummaryChart);
 
         }else if(reportSelectionType == ReportSelectionEnum.ONE_Y){
             mView = inflater.inflate(R.layout.fragment_sale_summary_report_one_year, container, false);
@@ -249,11 +267,21 @@ public class SalesDetailFragment extends BaseFragment {
     private void initVariables() {
         setViewIds();
         getSaleModels();
-        addSaleOverviewFragment();
-        setInitialChartData();
-        addSalesPaymTypeFragment();
-        addTopItemsFragment();
-        addTopCategoriesFragment();
+        checkDataExistance();
+    }
+
+    private void checkDataExistance(){
+        if(reportModel.getSaleCount() == 0){
+            mainll.setVisibility(View.GONE);
+            addNoSalesFragment();
+        }else {
+            mainll.setVisibility(View.VISIBLE);
+            addSaleOverviewFragment();
+            setInitialChartData();
+            addSalesPaymTypeFragment();
+            addTopItemsFragment();
+            addTopCategoriesFragment();
+        }
     }
 
     private void setViewIds() {
@@ -264,6 +292,7 @@ public class SalesDetailFragment extends BaseFragment {
             salePaymentTypeId = R.id.oneDayPaymentTypeRl;
             saleTopItemsId = R.id.oneDayTopItemsRl;
             saleTopCategoriesId = R.id.oneDayTopCategoriesRl;
+            saleMainRelLayoutId = R.id.oneDayMainRl;
 
         }else if(reportSelectionType == ReportSelectionEnum.ONE_W){
 
@@ -271,6 +300,7 @@ public class SalesDetailFragment extends BaseFragment {
             salePaymentTypeId = R.id.oneWeekPaymentTypeRl;
             saleTopItemsId = R.id.oneWeekTopItemsRl;
             saleTopCategoriesId = R.id.oneWeekTopCategoriesRl;
+            saleMainRelLayoutId = R.id.oneWeekMainRl;
 
         }else if(reportSelectionType == ReportSelectionEnum.ONE_M){
 
@@ -278,6 +308,7 @@ public class SalesDetailFragment extends BaseFragment {
             salePaymentTypeId = R.id.oneMonthPaymentTypeRl;
             saleTopItemsId = R.id.oneMonthTopItemsRl;
             saleTopCategoriesId = R.id.oneMonthTopCategoriesRl;
+            saleMainRelLayoutId = R.id.oneMonthMainRl;
 
         }else if(reportSelectionType == ReportSelectionEnum.THREE_M){
 
@@ -285,6 +316,7 @@ public class SalesDetailFragment extends BaseFragment {
             salePaymentTypeId = R.id.threeMonthPaymentTypeRl;
             saleTopItemsId = R.id.threeMonthTopItemsRl;
             saleTopCategoriesId = R.id.threeMonthTopCategoriesRl;
+            saleMainRelLayoutId = R.id.threeMonthMainRl;
 
         }else if(reportSelectionType == ReportSelectionEnum.ONE_Y){
 
@@ -292,6 +324,7 @@ public class SalesDetailFragment extends BaseFragment {
             salePaymentTypeId = R.id.oneYearPaymentTypeRl;
             saleTopItemsId = R.id.oneYearTopItemsRl;
             saleTopCategoriesId = R.id.oneYearTopCategoriesRl;
+            saleMainRelLayoutId = R.id.oneYearMainRl;
 
         }else if(reportSelectionType == ReportSelectionEnum.NOT_DEFINED){
 
@@ -299,33 +332,37 @@ public class SalesDetailFragment extends BaseFragment {
             salePaymentTypeId = R.id.notDefPaymentTypeRl;
             saleTopItemsId = R.id.notDefTopItemsRl;
             saleTopCategoriesId = R.id.notDefTopCategoriesRl;
+            saleMainRelLayoutId = R.id.notDefMainRl;
         }
     }
 
     private void setInitialChartData(){
-        chartManager = new ChartManager(getContext(), saleModels);
+        chartManager = new ChartManager3(getContext(), saleModels, chartSaleSelectionType);
         chartManager.setBarChart(graphicSummaryChart);
-        chartManager.setLineChart(graphicSummaryLineChart);
+        //chartManager.setLineChart(graphicSummaryLineChart);
         chartRoute();
     }
 
 
     private void chartRoute(){
+        chartManager.setChartSaleSelectionEnum(chartSaleSelectionType);
+
         if(reportSelectionType == ReportSelectionEnum.ONE_D){
-            chartManager.fillOneDayChartVariables(chartSaleSelectionType);
+            chartManager.fillOneDayChartVariables();
             setBarChartData();
         }else if(reportSelectionType == ReportSelectionEnum.ONE_W){
-            chartManager.fillOneWeekChartVariables(chartSaleSelectionType);
+            chartManager.fillOneWeekChartVariables();
             setBarChartData();
         }else if(reportSelectionType == ReportSelectionEnum.ONE_M){
-            chartManager.fillOneMonthChartVariables(chartSaleSelectionType);
-            setlineChartData();
+            chartManager.setReportSelectionEnum(reportSelectionType);
+            chartManager.fillOneMonthChartVariables();
+            setBarChartData();
         }else if(reportSelectionType == ReportSelectionEnum.THREE_M){
 
             chartManager.setStartDate(startDate);
             chartManager.setReportSelectionEnum(reportSelectionType);
-            chartManager.fillOneMonthChartVariables(chartSaleSelectionType);
-            setlineChartData();
+            chartManager.fillOneMonthChartVariables();
+            setBarChartData();
 
         }else if(reportSelectionType == ReportSelectionEnum.ONE_Y){
 
@@ -340,11 +377,15 @@ public class SalesDetailFragment extends BaseFragment {
     private void setBarChartData(){
         graphicSummaryChart.setData(chartManager.getBARDATA());
         graphicSummaryChart.animateY(2500);
+        graphicSummaryChart.notifyDataSetChanged();
+        graphicSummaryChart.invalidate();
     }
 
     private void setlineChartData(){
-        graphicSummaryLineChart.setData(chartManager.getLineData());
+        /*graphicSummaryLineChart.setData(chartManager.getLineData());
         graphicSummaryLineChart.animateY(2500);
+        graphicSummaryLineChart.notifyDataSetChanged();
+        graphicSummaryLineChart.invalidate();*/
     }
 
     private void setChartTitle(){
@@ -409,6 +450,8 @@ public class SalesDetailFragment extends BaseFragment {
                 startDate, endDate);
         reportModel = saleReportManager.getReportModel();
 
+        returnReportModelCallback.OnReturnReportModel(reportModel);
+
         LogUtil.logReportModel(reportModel);
     }
 
@@ -447,4 +490,23 @@ public class SalesDetailFragment extends BaseFragment {
                 .commit();
     }
 
+    private void addNoSalesFragment(){
+        NoSalesFragment noSalesFragment = new NoSalesFragment();
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(saleMainRelLayoutId, noSalesFragment, NoSalesFragment.class.getName())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public ReportSelectionEnum getReportSelectionType() {
+        return reportSelectionType;
+    }
 }

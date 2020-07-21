@@ -21,64 +21,86 @@
             android:orientation="vertical"
             android:background="@color/White"
             android:paddingTop="16dp"
-            android:paddingBottom="16dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_by_device">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/fab_color_shadow"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
 
-            </TextView>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/start_time"
+                    android:textSize="@dimen/default_size_17sp"
+                    android:textColor="@android:color/black">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/startTimeTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="@dimen/default_size_17sp"
+                    android:textColor="@color/DodgerBlue"
+                    android:textStyle="bold">
+                </TextView>
+
+
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"
                 android:background="@color/fab_color_shadow"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
 
-            <RadioGroup
-                android:id="@+id/radios"
-                android:layout_width="fill_parent"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_gravity="right"
-                android:inputType="text"
-                android:orientation="vertical" >
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
 
-                <RadioButton
-                    android:id="@+id/first"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:background="@color/white"
-                    android:drawablePadding="30dp"
-                    android:text="@string/all_devices"
-                    android:textColor="@color/Black"
+                    android:text="@string/end_time"
                     android:textSize="@dimen/default_size_17sp"
-                    android:layoutDirection="rtl" />
+                    android:textColor="@android:color/black">
 
-                <RadioButton
-                    android:id="@+id/second"
-                    android:layout_width="fill_parent"
+                </TextView>
+
+                <TextView
+                    android:id="@+id/endTimeTv"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawablePadding="30dp"
-                    android:background="@color/white"
-                    android:text="@string/this_device_only"
-                    android:textColor="@color/Black"
+                    android:text="00:00"
+                    android:layout_alignParentEnd="true"
                     android:textSize="@dimen/default_size_17sp"
-                    android:layoutDirection="rtl"
-                    android:layout_gravity="start"/>
+                    android:textColor="@color/DodgerBlue"
+                    android:textStyle="bold">
+                </TextView>
 
-            </RadioGroup>
+
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"
                 android:background="@color/fab_color_shadow"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"/>
 
         </LinearLayout>

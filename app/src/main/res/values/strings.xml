@@ -216,6 +216,25 @@
     <string name="hour">Hour</string>
     <string name="week">Week</string>
     <string name="month">Ay</string>
+    <string name="today">Today</string>
+    <string name="this_week">This Week</string>
+    <string name="this_month">This Month</string>
+    <string name="current_three_month">Current 3 Months</string>
+    <string name="this_year">This Year</string>
+
+    <string name="no_transaction_time_period">No transactions for time period</string>
+    <string name="no_transaction_time_period_desc">No transactions took place in the time period you selected. Try selecting a different time frame.</string>
+    <string name="select_time_frame">Select Time Frame</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
+    <string name="end_time_must_be_bigger_than_start_time">End Time must be bigger than Start Time</string>
+    <string name="include_items">Include Items</string>
+    <string name="send">Send</string>
+    <string name="email_report">Email Report</string>
+    <string name="sales_report">Sales Report</string>
+    <string name="email_sent">Email Sent</string>
+    <string name="email_sent_unsuccessful">Email can not be sended</string>
+    <string name="mail_cannot_send_these_users">Report can not be sended these email addresses</string>
 
     <!-- Main menu items -->
     <string name="checkout">Checkout</string>
