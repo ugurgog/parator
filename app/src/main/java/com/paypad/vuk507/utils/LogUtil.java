@@ -61,11 +61,11 @@ public class LogUtil {
         }
     }
 
-    public static void logTransaction(Transaction transaction){
+    public static void logTransaction(String methodName, Transaction transaction){
         try{
 
-            Log.i("Info", "::logTransaction +++++++++++++++++++++++++");
-            Log.i("Info", "::logTransaction SaleUuid:" + transaction.getSaleUuid() +
+            Log.i("Info", methodName + "+++++++++++++++++++++++++");
+            Log.i("Info", methodName + " SaleUuid:" + transaction.getSaleUuid() +
                     ", TransactionUuid:" + transaction.getTransactionUuid() +
                     ", SeqNumber:" + transaction.getSeqNumber() +
                     ", TransactionAmount:" + transaction.getTransactionAmount() +

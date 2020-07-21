@@ -66,6 +66,20 @@ public class SaleDBHelper {
         return saleList;
     }
 
+    public static SaleModel getSaleModelBySaleId(String saleId){
+        SaleModel saleModel = new SaleModel();
+
+        saleModel.setSale(getSaleById(saleId));
+
+        List<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
+        saleModel.setSaleItems(saleItems);
+
+        List<Transaction> transactions = TransactionDBHelper.getTransactionsBySaleId(saleId);
+        saleModel.setTransactions(transactions);
+
+        return saleModel;
+    }
+
     public static List<SaleModel> getSaleModelsForTransactionList(String userId){
 
         List<SaleModel> saleModels = new ArrayList<>();

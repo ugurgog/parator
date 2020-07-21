@@ -1,4 +1,4 @@
-package com.paypad.vuk507.menu.transactions;
+package com.paypad.vuk507.menu.transactions.util;
 
 import android.content.Context;
 import android.util.Log;
@@ -68,18 +68,8 @@ public class PaymentTotalManager {
                         .concat(" (%").concat(CommonUtils.getDoubleStrValueForView(discount.getRate(), TYPE_RATE)).concat(")"));
 
                 double discountAmount = 0d;
-
-                //for(SaleItem saleItem : mSaleModel.getSaleItems()){
-                //    discountAmount = discountAmount + orderManager.getTotalDiscountAmountOfSaleItemByDiscountId(saleItem, discount.getId());
-                //}
-
-                //String amountStr = CommonUtils.getDoubleStrValueForView(discountAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-                //paymentDetailModel.setItemDesc("-".concat(amountStr));
-
-
-
-
                 double totalDiscAmount = 0d;
+
                 for(SaleItem saleItem : saleItems){
                     if(saleItem.getDiscounts() != null && saleItem.getDiscounts().size() > 0){
                         for(Discount discount1 : saleItem.getDiscounts()){

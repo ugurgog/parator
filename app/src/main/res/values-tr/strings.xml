@@ -143,6 +143,11 @@
     <string name="no_change">Para Üstü Yok</string>
     <string name="how_like_your_receipt">Makbuzunuzu nasıl istersiniz?</string>
     <string name="no_receipt">Makbuz İstemiyorum</string>
+    <string name="print_receipt">Makbuz Yazdır</string>
+    <string name="receipt">Makbuz</string>
+    <string name="purchase_subtotal">Alt Toplam</string>
+    <string name="payment_type">Ödeme Yöntemi</string>
+
     <string name="change">Para üstü</string>
     <string name="credit_card_payment_info">Bu miktar (bahşiş dahil) yalnızca izleme amaçlı kullanılır. Bu işlem için depozito almayacaksınız.</string>
     <string name="credit_card_tip_info">Bahşiş tutarları satış raporlarınızda ayrı olarak listelenir.</string>
@@ -245,6 +250,12 @@
     <string name="settings">Ayarlar</string>
     <string name="support">Destek</string>
     <string name="notifications">Bildirimler</string>
+
+    <!-- Printer messages -->
+    <string name="bluetooth_device_unavailable">Bluetooth cihazı kullanılamıyor</string>
+    <string name="please_open_bluetooth">Bluetooth cihazı algılanmadı. Lütfen Bluetooth\'u açın!</string>
+    <string name="not_found_innterprinter">Bulunamadı InnterPrinter!</string>
+    <string name="bluetooth_connect_failed">Bluetooth bağlantısı başarısız!</string>
 
     <!-- Customer Information -->
     <string name="add_from_address_book">Rehberden Ekle</string>

@@ -1,18 +1,16 @@
-package com.paypad.vuk507.utils.dialogBoxUtil;
+package com.paypad.vuk507.utils.dialogboxutil;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Handler;
 import android.widget.ArrayAdapter;
 
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.interfaces.PhotoChosenCallback;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.dialogBoxUtil.interfaces.InfoDialogBoxCallback;
-import com.paypad.vuk507.utils.dialogBoxUtil.interfaces.YesNoDialogBoxCallback;
+import com.paypad.vuk507.utils.dialogboxutil.interfaces.InfoDialogBoxCallback;
+import com.paypad.vuk507.utils.dialogboxutil.interfaces.YesNoDialogBoxCallback;
 
 import static com.paypad.vuk507.constants.CustomConstants.CODE_CAMERA_POSITION;
 import static com.paypad.vuk507.constants.CustomConstants.CODE_GALLERY_POSITION;

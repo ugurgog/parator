@@ -1,18 +1,11 @@
 package com.paypad.vuk507.menu.product;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +20,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -36,18 +28,14 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.ProductDBHelper;
 import com.paypad.vuk507.db.TaxDBHelper;
-import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.interfaces.PhotoChosenCallback;
-import com.paypad.vuk507.menu.category.CategoryEditFragment;
 import com.paypad.vuk507.menu.category.CategorySelectFragment;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
-import com.paypad.vuk507.menu.product.adapters.ColorSelectAdapter;
 import com.paypad.vuk507.menu.product.interfaces.ColorImageReturnCallback;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
 import com.paypad.vuk507.menu.tax.TaxSelectFragment;
@@ -65,18 +53,12 @@ import com.paypad.vuk507.utils.BitmapUtils;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
-import com.paypad.vuk507.utils.FileAdapter;
-import com.paypad.vuk507.utils.IntentSelectUtil;
 import com.paypad.vuk507.utils.NumberFormatWatcher
         ;
-import com.paypad.vuk507.utils.PermissionModule;
-import com.paypad.vuk507.utils.dialogBoxUtil.DialogBoxUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 
@@ -84,12 +66,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 
-import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
-import static com.paypad.vuk507.constants.CustomConstants.CAMERA_TEXT;
-import static com.paypad.vuk507.constants.CustomConstants.FROM_FILE_TEXT;
-import static com.paypad.vuk507.constants.CustomConstants.GALLERY_TEXT;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
-import static com.paypad.vuk507.constants.CustomConstants.MAX_IMAGE_SIZE_1MB;
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 

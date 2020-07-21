@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.paypad.vuk507.db.CustomRealmHelper;
 import com.paypad.vuk507.utils.RealmMigrations;
+import com.paypad.vuk507.utils.sunmiutils.SunmiPrintHelper;
 
 import io.realm.DynamicRealm;
 import io.realm.Realm;
@@ -17,7 +18,7 @@ public class Vuk507Application extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Realm.init(this);
+        init();
 
         /*final RealmConfiguration config = new RealmConfiguration.Builder()
                 .name(REALM_DB_NAME)
@@ -33,5 +34,10 @@ public class Vuk507Application extends Application {
     public void onTerminate() {
         Realm.getDefaultInstance().close();
         super.onTerminate();
+    }
+
+    private void init(){
+        Realm.init(this);
+        SunmiPrintHelper.getInstance().initSunmiPrinterService(this);
     }
 }

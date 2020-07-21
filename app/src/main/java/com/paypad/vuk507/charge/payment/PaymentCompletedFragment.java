@@ -1,8 +1,10 @@
 package com.paypad.vuk507.charge.payment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
+import com.paypad.vuk507.charge.payment.utils.PrintReceiptManager;
 import com.paypad.vuk507.charge.payment.utils.SendMail;
 import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
@@ -49,6 +52,7 @@ import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.LogUtil;
+import com.sunmi.peripheral.printer.InnerResultCallbcak;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -68,7 +72,7 @@ import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class PaymentCompletedFragment extends BaseFragment implements SendMail.MailSendCallback {
+public class PaymentCompletedFragment extends BaseFragment implements SendMail.MailSendCallback  {
 
     private View mView;
 
@@ -86,6 +90,8 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     Button btnEmail;
     @BindView(R.id.btnReceipt)
     Button btnReceipt;
+    @BindView(R.id.btnPrintReceipt)
+    Button btnPrintReceipt;
     @BindView(R.id.receiptInfoll)
     RelativeLayout receiptInfoll;
     @BindView(R.id.mainll)
@@ -98,6 +104,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     private int paymentStatus = 0;
     private PaymentStatusCallback paymentStatusCallback;
     private SendReceiptEmailFragment sendReceiptEmailFragment;
+    private PrintReceiptManager printReceiptManager;
 
     PaymentCompletedFragment(Transaction transaction, ProcessDirectionEnum processDirectionType) {
         mTransaction = transaction;
@@ -205,9 +212,20 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
                 }
             }
         });
+
+        btnPrintReceipt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelCounter();
+                printReceiptManager.printReceipt(getContext());
+            }
+        });
     }
 
     private void initVariables() {
+        printReceiptManager = new PrintReceiptManager(SaleModelInstance.getInstance().getSaleModel(), mTransaction);
+        printReceiptManager.setCallback(mCallback);
+
         if(mProcessDirectionType == ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED){
             paymentStatus = STATUS_NEW_SALE;
             continueBtn.setText(getResources().getString(R.string.new_sale));
@@ -348,10 +366,47 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
         BaseResponse mailSendresponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
         DataUtils.showBaseResponseMessage(getContext(),mailSendresponse);
 
-        LogUtil.logTransaction(mTransaction);
+        LogUtil.logTransaction("handleMailResponse", mTransaction);
 
         btnEmail.setVisibility(View.GONE);
         btnReceipt.setVisibility(View.GONE);
         startCounter();
     }
+
+
+    InnerResultCallbcak mCallback = new InnerResultCallbcak() {
+        @Override
+        public void onRunResult(boolean isSuccess) throws RemoteException {
+
+        }
+
+        @Override
+        public void onReturnString(String result) throws RemoteException {
+
+        }
+
+        @Override
+        public void onRaiseException(int code, String msg) throws RemoteException {
+
+        }
+
+        @Override
+        public void onPrintResult(int code, String msg) throws RemoteException {
+            final int res = code;
+            ((Activity)getContext()).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(res == 0){
+                        CommonUtils.showToastShort(getContext(), "Print successful");
+                        //TODO Follow-up after successful
+                        startCounter();
+                    }else{
+                        CommonUtils.showToastShort(getContext(), "Print failed");
+                        //TODO Follow-up after failed, such as reprint
+                        startCounter();
+                    }
+                }
+            });
+        }
+    };
 }

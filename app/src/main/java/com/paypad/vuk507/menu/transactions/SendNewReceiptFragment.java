@@ -1,8 +1,10 @@
 package com.paypad.vuk507.menu.transactions;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +22,9 @@ import androidx.annotation.Nullable;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.payment.MailResultFragment;
+import com.paypad.vuk507.charge.payment.utils.PrintReceiptManager;
 import com.paypad.vuk507.charge.payment.utils.SendMail;
+import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
@@ -31,9 +35,11 @@ import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
+import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.LogUtil;
+import com.sunmi.peripheral.printer.InnerResultCallbcak;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -62,10 +68,13 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     Button btnSend;
     @BindView(R.id.mainRl)
     RelativeLayout mainRl;
+    @BindView(R.id.printReceiptImgv)
+    ClickableImageView printReceiptImgv;
 
     private User user;
     private Transaction mTransaction;
     private String email;
+    private PrintReceiptManager printReceiptManager;
 
     SendNewReceiptFragment(Transaction transaction) {
         mTransaction = transaction;
@@ -137,6 +146,14 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
+
+        printReceiptImgv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelCounter();
+                printReceiptManager.printReceipt(getContext());
+            }
+        });
     }
 
     private void sendMail(){
@@ -149,7 +166,8 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     }
 
     private void initVariables() {
-
+        printReceiptManager = new PrintReceiptManager(SaleDBHelper.getSaleModelBySaleId(mTransaction.getSaleUuid()), mTransaction);
+        printReceiptManager.setCallback(mCallback);
     }
 
     private void checkValidEmail() {
@@ -184,10 +202,10 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
         }else
             mTransaction.setMailSend(false);
 
-        BaseResponse mailSendresponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
-        DataUtils.showBaseResponseMessage(getContext(),mailSendresponse);
+        BaseResponse mailSendResponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
+        DataUtils.showBaseResponseMessage(getContext(), mailSendResponse);
 
-        LogUtil.logTransaction(mTransaction);
+        LogUtil.logTransaction("handleMailResponse", mTransaction);
 
         startCounter();
     }
@@ -201,9 +219,13 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
         myCountDown.start();
     }
 
+    private void cancelCounter(){
+        myCountDown.cancel();
+    }
+
     private CountDownTimer myCountDown = new CountDownTimer(7000, 1000) {
         public void onTick(long millisUntilFinished) {
-            Log.i("Info", "::myCountDown millisUntilFinished:" + String.valueOf(millisUntilFinished));
+            Log.i("Info", "::myCountDown millisUntilFinished:" + millisUntilFinished);
         }
 
         public void onFinish() {
@@ -211,4 +233,40 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
         }
     };
 
+    InnerResultCallbcak mCallback = new InnerResultCallbcak() {
+        @Override
+        public void onRunResult(boolean isSuccess) throws RemoteException {
+
+        }
+
+        @Override
+        public void onReturnString(String result) throws RemoteException {
+
+            Log.i("Info", "::onReturnString result:" + result);
+        }
+
+        @Override
+        public void onRaiseException(int code, String msg) throws RemoteException {
+
+        }
+
+        @Override
+        public void onPrintResult(int code, String msg) throws RemoteException {
+            final int res = code;
+            ((Activity) Objects.requireNonNull(getContext())).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(res == 0){
+                        CommonUtils.showToastShort(getContext(), "Print successful");
+                        //TODO Follow-up after successful
+                        startCounter();
+                    }else{
+                        CommonUtils.showToastShort(getContext(), "Print failed");
+                        //TODO Follow-up after failed, such as reprint
+                        startCounter();
+                    }
+                }
+            });
+        }
+    };
 }

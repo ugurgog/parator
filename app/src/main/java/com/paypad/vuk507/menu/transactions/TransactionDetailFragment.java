@@ -21,6 +21,7 @@ import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.transactions.adapters.ItemsServicesAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentDetailAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentTotalAdapter;
+import com.paypad.vuk507.menu.transactions.util.PaymentTotalManager;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.PaymentDetailModel;

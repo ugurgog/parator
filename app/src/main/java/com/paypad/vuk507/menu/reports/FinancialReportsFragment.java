@@ -1,6 +1,8 @@
 package com.paypad.vuk507.menu.reports;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.FinancialReportsEnum;
-import com.paypad.vuk507.enums.ReportsEnum;
 import com.paypad.vuk507.menu.reports.adapters.FinancialReportAdapter;
-import com.paypad.vuk507.menu.reports.adapters.ReportAdapter;
+import com.paypad.vuk507.menu.reports.util.FinancialReportManager;
 import com.paypad.vuk507.menu.reports.interfaces.ReturnFinancialReportItemCallback;
-import com.paypad.vuk507.menu.reports.interfaces.ReturnReportItemCallback;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
+import com.paypad.vuk507.utils.CommonUtils;
+import com.sunmi.peripheral.printer.InnerResultCallbcak;
 
 import java.util.Objects;
 
@@ -37,6 +39,8 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
     AppCompatTextView toolbarTitleTv;
     @BindView(R.id.backImgv)
     ClickableImageView backImgv;
+
+    private FinancialReportManager financialReportManager;
 
     public FinancialReportsFragment() {
 
@@ -81,6 +85,7 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
 
     private void initVariables() {
         toolbarTitleTv.setText(getContext().getResources().getString(R.string.reports));
+        financialReportManager = new FinancialReportManager();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -99,5 +104,42 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
     public void OnReturnReportItem(FinancialReportsEnum reportsEnum) {
 
 
+        if(reportsEnum == FinancialReportsEnum.Z_REPORT){
+            financialReportManager.printZReport(getContext(), mCallback);
+        }
     }
+
+    InnerResultCallbcak mCallback = new InnerResultCallbcak() {
+        @Override
+        public void onRunResult(boolean isSuccess) throws RemoteException {
+
+        }
+
+        @Override
+        public void onReturnString(String result) throws RemoteException {
+
+        }
+
+        @Override
+        public void onRaiseException(int code, String msg) throws RemoteException {
+
+        }
+
+        @Override
+        public void onPrintResult(int code, String msg) throws RemoteException {
+            final int res = code;
+            ((Activity)getContext()).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(res == 0){
+                        CommonUtils.showToastShort(getContext(), "Print successful");
+                        //TODO Follow-up after successful
+                    }else{
+                        CommonUtils.showToastShort(getContext(), "Print failed");
+                        //TODO Follow-up after failed, such as reprint
+                    }
+                }
+            });
+        }
+    };
 }

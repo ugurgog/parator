@@ -133,7 +133,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
         mTransaction.setUserUuid(user.getUuid());
         mTransaction.setTotalAmount(mTransaction.getTransactionAmount() + mTransaction.getTipAmount());
 
-        LogUtil.logTransaction(mTransaction);
+        LogUtil.logTransaction("saveTransaction", mTransaction);
 
         BaseResponse transactionSaveResponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
 

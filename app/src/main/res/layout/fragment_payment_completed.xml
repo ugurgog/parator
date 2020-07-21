@@ -57,7 +57,6 @@
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
                     android:textSize="@dimen/default_size_20sp">
-
                 </Button>
 
             </RelativeLayout>
@@ -156,6 +155,17 @@
                     android:background="@color/DodgerBlue"
                     android:textAllCaps="false"
                     android:layout_below="@id/btnEmail"/>
+
+                <Button
+                    android:id="@+id/btnPrintReceipt"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/custom_button_length_size"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/print_receipt"
+                    android:textColor="@color/White"
+                    android:background="@color/DodgerBlue"
+                    android:textAllCaps="false"
+                    android:layout_below="@id/btnReceipt"/>
 
             </RelativeLayout>
 

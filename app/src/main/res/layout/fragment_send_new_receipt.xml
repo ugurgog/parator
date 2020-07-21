@@ -49,14 +49,22 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/toolbarTitleTv"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_weight="5"
                         android:fontFamily="@font/lato_family"
-                        android:gravity="center"
+                        android:gravity="left|center"
                         android:text="@string/new_receipt"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/toolbarTextSize" />
 
+                    <com.paypad.vuk507.utils.ClickableImage.ClickableImageView
+                        android:id="@+id/printReceiptImgv"
+                        android:layout_width="?attr/actionBarSize"
+                        android:layout_height="?attr/actionBarSize"
+                        android:padding="15dp"
+                        android:src="@drawable/ic_print_white_24dp"
+                        android:tint="@android:color/black"/>
 
                 </LinearLayout>
 
@@ -163,7 +171,6 @@
                         android:layout_gravity="start">
 
                     </TextView>
-
 
                 </LinearLayout>
 

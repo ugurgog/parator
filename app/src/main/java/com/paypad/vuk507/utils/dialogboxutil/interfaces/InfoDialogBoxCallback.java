@@ -1,4 +1,4 @@
-package com.paypad.vuk507.utils.dialogBoxUtil.interfaces;
+package com.paypad.vuk507.utils.dialogboxutil.interfaces;
 
 public interface InfoDialogBoxCallback {
     void okClick();

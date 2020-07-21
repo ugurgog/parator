@@ -143,6 +143,11 @@
     <string name="no_change">No Change</string>
     <string name="how_like_your_receipt">How would you like your receipt?</string>
     <string name="no_receipt">No Receipt</string>
+    <string name="print_receipt">Print Receipt</string>
+    <string name="receipt">Receipt</string>
+    <string name="purchase_subtotal">Purchase Subtotal</string>
+    <string name="payment_type">Payment Type</string>
+
     <string name="change">Change</string>
     <string name="credit_card_payment_info">This amount (including tip) is used for tracking purposes only. You will not receive a deposit for this transaction.</string>
     <string name="credit_card_tip_info">Tip amounts are listed seperately in your sales reports.</string>
@@ -245,6 +250,12 @@
     <string name="settings">Settings</string>
     <string name="support">Support</string>
     <string name="notifications">Notifications</string>
+
+    <!-- Printer messages -->
+    <string name="bluetooth_device_unavailable">Bluetooth device is unavailable</string>
+    <string name="please_open_bluetooth">Bluetooth device not detected. Please open Bluetooth!</string>
+    <string name="not_found_innterprinter">Not Found InnterPrinter!</string>
+    <string name="bluetooth_connect_failed">Bluetooth connect failed!</string>
 
     <!-- Customer Information -->
     <string name="add_from_address_book">Add From Address Book</string>
