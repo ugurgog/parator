@@ -28,6 +28,8 @@ public class PaymentTotalManager {
     private double totalTipAmount = 0d;
     private List<Long> taxes = new ArrayList<>();
 
+    private static final String TAX_TYPE = "tax";
+
     public PaymentTotalManager(Context context, SaleModel saleModel) {
         mContext = context;
         mSaleModel = saleModel;
@@ -111,17 +113,34 @@ public class PaymentTotalManager {
         for(SaleItem saleItem : mSaleModel.getSaleItems()){
             OrderItemTax orderItemTax = saleItem.getOrderItemTaxes().get(0);
 
-            if(!taxes.contains(orderItemTax.getTaxId())){
+
+            boolean isExist = false;
+
+            for(PaymentDetailModel paymentDetailModel : paymentDetailModels){
+                if(paymentDetailModel.getItemId() == orderItemTax.getTaxId() && paymentDetailModel.getItemType().equals(TAX_TYPE)){
+                    paymentDetailModel.setAmount(CommonUtils.round(paymentDetailModel.getAmount() + saleItem.getTaxAmount(), 2));
+                    isExist = true;
+                    break;
+                }
+            }
+
+            if(!isExist){
                 PaymentDetailModel paymentDetailModel = new PaymentDetailModel();
                 paymentDetailModel.setDescBold(false);
                 paymentDetailModel.setDrawableId(R.drawable.icon_paym_total_tax);
                 paymentDetailModel.setItemName(mContext.getResources().getString(R.string.sales_tax)
                         .concat(" (").concat(CommonUtils.getDoubleStrValueForView(orderItemTax.getTaxRate(), TYPE_RATE))
                         .concat("%)"));
-                paymentDetailModel.setItemDesc(mContext.getResources().getString(R.string.included));
+                paymentDetailModel.setItemType(TAX_TYPE);
+                paymentDetailModel.setItemId((int)orderItemTax.getTaxId());
+                paymentDetailModel.setAmount(saleItem.getTaxAmount());
                 paymentDetailModels.add(paymentDetailModel);
-                taxes.add(orderItemTax.getTaxId());
             }
+        }
+
+        for(PaymentDetailModel paymentDetailModel : paymentDetailModels){
+            if(paymentDetailModel.getItemType() != null && paymentDetailModel.getItemType().equals(TAX_TYPE))
+                paymentDetailModel.setItemDesc(CommonUtils.getAmountTextWithCurrency(paymentDetailModel.getAmount()));
         }
     }
 

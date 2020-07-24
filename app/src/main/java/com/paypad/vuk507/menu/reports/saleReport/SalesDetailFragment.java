@@ -25,7 +25,7 @@ import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ChartSaleSelectionEnum;
 import com.paypad.vuk507.enums.ReportSelectionEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.menu.reports.ChartManager3;
+import com.paypad.vuk507.menu.reports.util.ChartManager3;
 import com.paypad.vuk507.menu.reports.NoSalesFragment;
 import com.paypad.vuk507.menu.reports.util.SaleReportManager;
 import com.paypad.vuk507.model.User;
@@ -165,8 +165,12 @@ public class SalesDetailFragment extends BaseFragment {
 
         }else if(reportSelectionType == ReportSelectionEnum.ONE_Y){
             mView = inflater.inflate(R.layout.fragment_sale_summary_report_one_year, container, false);
+            graphicSummaryChart = mView.findViewById(R.id.graphicSummaryChart);
+
         }else if(reportSelectionType == ReportSelectionEnum.NOT_DEFINED){
             mView = inflater.inflate(R.layout.fragment_sale_summary_report_not_defined, container, false);
+            graphicSummaryChart = mView.findViewById(R.id.graphicSummaryChart);
+
         }
 
         ButterKnife.bind(this, mView);
@@ -356,14 +360,22 @@ public class SalesDetailFragment extends BaseFragment {
 
             chartManager.setStartDate(startDate);
             chartManager.setReportSelectionEnum(reportSelectionType);
-            chartManager.fillOneMonthChartVariables();
+            chartManager.fillThreeMonthChartVariables();
             setBarChartData();
 
         }else if(reportSelectionType == ReportSelectionEnum.ONE_Y){
 
+            chartManager.setReportSelectionEnum(reportSelectionType);
+            chartManager.fillOneYearChartVariables();
+            setBarChartData();
 
         }else if(reportSelectionType == ReportSelectionEnum.NOT_DEFINED){
 
+            chartManager.setStartDate(startDate);
+            chartManager.setEndDate(endDate);
+            chartManager.setReportSelectionEnum(reportSelectionType);
+            chartManager.fillUndefinedSalesList();
+            setBarChartData();
 
         }
         setChartTitle();
@@ -431,7 +443,12 @@ public class SalesDetailFragment extends BaseFragment {
 
         }else if(reportSelectionType == ReportSelectionEnum.NOT_DEFINED){
 
-
+            if(chartSaleSelectionType == ChartSaleSelectionEnum.GROSS_SALES)
+                graphicSummaryTv.setText(getResources().getString(R.string.gross_sales));
+            else if(chartSaleSelectionType == ChartSaleSelectionEnum.NET_SALES)
+                graphicSummaryTv.setText(getResources().getString(R.string.net_sales));
+            else if(chartSaleSelectionType == ChartSaleSelectionEnum.SALES_COUNT)
+                graphicSummaryTv.setText(getResources().getString(R.string.sales_count));
         }
     }
 

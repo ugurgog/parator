@@ -38,6 +38,7 @@ import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -215,6 +216,9 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
                     mainll.setBackgroundColor(context.getResources().getColor(category.getColorId(), null));
                     itemNameTv.setText(category.getName());
                     itemValueTv.setVisibility(View.GONE);
+
+                    LogUtil.logCategory("setItemName", category);
+
                 }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.TAX_SET.getId()){
                     setTaxNameText(dynamicBoxModel);
                 }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.PAYMENT_SET.getId()){

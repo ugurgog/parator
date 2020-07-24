@@ -121,7 +121,7 @@ public class DataUtils {
         }
     }
 
-    public static String getTotalAmount(double totalAmount, int number){
+    /*public static String getTotalAmount(double totalAmount, int number){
         if(totalAmount == 0){
             totalAmount = (totalAmount  + number) / 100;
         }else {
@@ -133,7 +133,7 @@ public class DataUtils {
         }
 
         return CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-    }
+    }*/
 
     public static void showBaseResponseMessage(Context context, BaseResponse baseResponse){
         if(baseResponse.getMessage() != null && !baseResponse.getMessage().isEmpty())
@@ -213,6 +213,13 @@ public class DataUtils {
         cal.setTime(date);
         int dateNum = cal.get(Calendar.DATE);
         return dateNum;
+    }
+
+    public static int getDayOfYearFromDate(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int dayCount = cal.get(Calendar.DAY_OF_YEAR);
+        return dayCount;
     }
 
     public static int getYearFromDate(Date date){

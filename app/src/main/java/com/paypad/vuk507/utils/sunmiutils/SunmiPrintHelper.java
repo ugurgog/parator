@@ -669,6 +669,7 @@ public class SunmiPrintHelper {
             //TODO Service disconnection processing
             return ;
         }
+
         String result = "Interface is too low to implement interface";
         try {
             int res = sunmiPrinterService.updatePrinterState();
@@ -710,6 +711,20 @@ public class SunmiPrintHelper {
             e.printStackTrace();
         }
         Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+    }
+
+    public int getPrinterStatus(){
+        int status = 0;
+        if(sunmiPrinterService == null){
+            return status;
+        }
+
+        try {
+            status = sunmiPrinterService.updatePrinterState();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return status;
     }
 
     /**

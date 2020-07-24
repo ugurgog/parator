@@ -3,6 +3,7 @@ package com.paypad.vuk507.utils;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Sale;
@@ -78,6 +79,20 @@ public class LogUtil {
                     ", UserUuid:" + transaction.getUserUuid() +
                     ", isMailSend:" + transaction.isMailSend() +
                     ", mailAddress:" + transaction.getMailAdress());
+        }catch (Exception e){
+
+        }
+    }
+
+    public static void logCategory(String methodName, Category category){
+        try{
+
+            Log.i("Info", methodName + " logCategory +++++++++++++++++++++++++");
+            Log.i("Info", methodName + " logCategory Id:" + category.getId() +
+                    ", Name:" + category.getName() +
+                    ", ColorId:" + category.getColorId() +
+                    ", CreateDate:" + category.getCreateDate() +
+                    ", userName:" + category.getCreateUsername());
         }catch (Exception e){
 
         }

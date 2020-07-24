@@ -24,7 +24,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="179.45 TL"
                 android:textColor="@color/Black"
                 android:textSize="@dimen/default_size_17sp"
                 android:id="@+id/grossSalesTv">
@@ -52,7 +51,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="179.45 TL"
                 android:textColor="@color/Black"
                 android:textSize="@dimen/default_size_17sp"
                 android:id="@+id/netSalesTv">
@@ -95,7 +93,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1"
                 android:textColor="@color/Black"
                 android:textSize="@dimen/default_size_17sp"
                 android:id="@+id/salesCountTv">
@@ -123,7 +120,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="179.45 TL"
                 android:textColor="@color/Black"
                 android:textSize="@dimen/default_size_17sp"
                 android:id="@+id/averageSaleTv">
@@ -166,7 +162,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0,00 TL"
                 android:textColor="@color/Black"
                 android:textSize="@dimen/default_size_17sp"
                 android:id="@+id/refundsTv">
@@ -194,7 +189,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="(47,55) TL"
                 android:textColor="@color/Black"
                 android:textSize="@dimen/default_size_17sp"
                 android:id="@+id/discountsAmountTv">

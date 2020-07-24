@@ -1,7 +1,8 @@
-package com.paypad.vuk507.menu.reports;
+package com.paypad.vuk507.menu.reports.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 
 import androidx.core.content.ContextCompat;
@@ -18,6 +19,8 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.XAxisValueFormatter;
 import com.github.mikephil.charting.formatter.YAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.paypad.vuk507.R;
@@ -36,11 +39,15 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -112,10 +119,11 @@ public class ChartManager3 {
         };
         xAxis.setValueFormatter(xAxisValueFormatter);
 
-        setDefaultXYAxisValuesForBarChart();
-
+        Bardataset.setDrawValues(false);
+        Bardataset.setColors(new int[]{Color.rgb(0, 128, 255)});
         BARDATA = new BarData(BarEntryLabels, Bardataset);
-        Bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
+
+        setDefaultXYAxisValuesForBarChart();
     }
 
     //----------------------------------------------------------
@@ -148,10 +156,11 @@ public class ChartManager3 {
                 BARENTRY.add(new BarEntry((float) chartOneDaySales.getSaleCount(), chartOneDaySales.getDay()));
         }
 
-        setDefaultXYAxisValuesForBarChart();
-
+        Bardataset.setDrawValues(false);
+        Bardataset.setColors(new int[]{Color.rgb(0, 128, 255)});
         BARDATA = new BarData(BarEntryLabels, Bardataset);
-        Bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
+
+        setDefaultXYAxisValuesForBarChart();
     }
 
     //----------------------------------------------------------
@@ -161,17 +170,42 @@ public class ChartManager3 {
 
         BARENTRY = new ArrayList<>();
 
+        setBarEntryLabelsWithOneMonthDays();
 
-        if(reportSelectionEnum == ReportSelectionEnum.ONE_M)
-            setBarEntryLabelsWithOneMonthDays();
-        else if(reportSelectionEnum == ReportSelectionEnum.THREE_M)
-            setBarEntryLabelsWithThreeMonthDays();
+        if (chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES) {
 
-        String monthStr = "";
-        if(reportSelectionEnum == ReportSelectionEnum.ONE_M)
-            monthStr = mContext.getResources().getString(R.string.month);
-        else if(reportSelectionEnum == ReportSelectionEnum.THREE_M)
-            monthStr = "3 ".concat(mContext.getResources().getString(R.string.month));
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.gross_sales).concat("/").concat(mContext.getResources().getString(R.string.month)));
+            for (ChartSales chartOneDaySales : salesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getGrossAmount(), chartOneDaySales.getDay()));
+
+        } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.NET_SALES) {
+
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.net_sales).concat("/").concat(mContext.getResources().getString(R.string.month)));
+            for (ChartSales chartOneDaySales : salesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getNetAmount(), chartOneDaySales.getDay()));
+
+        } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.SALES_COUNT) {
+
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.sales_count).concat("/").concat(mContext.getResources().getString(R.string.month)));
+            for (ChartSales chartOneDaySales : salesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getSaleCount(), chartOneDaySales.getDay()));
+        }
+
+        Bardataset.setDrawValues(false);
+        Bardataset.setColors(new int[]{Color.rgb(0, 128, 255)});
+        BARDATA = new BarData(BarEntryLabels, Bardataset);
+
+        setDefaultXYAxisValuesForBarChart();
+    }
+
+    public void fillThreeMonthChartVariables(){
+        List<ChartSales> salesList = getThreeMonthSalesList();
+
+        BARENTRY = new ArrayList<>();
+
+        setBarEntryLabelsWithThreeMonthDays();
+
+        String monthStr = "3 ".concat(mContext.getResources().getString(R.string.month));
 
         if (chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES) {
 
@@ -190,38 +224,100 @@ public class ChartManager3 {
             Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.sales_count).concat("/").concat(monthStr));
             for (ChartSales chartOneDaySales : salesList)
                 BARENTRY.add(new BarEntry((float) chartOneDaySales.getSaleCount(), chartOneDaySales.getDay()));
-
         }
 
-        if(reportSelectionEnum == ReportSelectionEnum.THREE_M){
-            XAxis xAxis = getBarChart().getXAxis();
-            xAxis.setAxisMaxValue(BarEntryLabels.size());
-        }
-
+        Bardataset.setDrawValues(false);
+        Bardataset.setColors(new int[]{Color.rgb(0, 128, 255)});
+        BARDATA = new BarData(BarEntryLabels, Bardataset);
 
         setDefaultXYAxisValuesForBarChart();
+    }
 
+    public void fillOneYearChartVariables(){
+        List<ChartSales> salesList = getOneYearSalesList();
+
+        BARENTRY = new ArrayList<>();
+
+        setBarEntryLabelsWithOneYear();
+
+        if (chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES) {
+
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.gross_sales).concat("/")
+                    .concat(mContext.getResources().getString(R.string.year)));
+
+            for (ChartSales chartOneDaySales : salesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getGrossAmount(), chartOneDaySales.getMonth()));
+
+        } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.NET_SALES) {
+
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.net_sales).concat("/").concat(mContext.getResources().getString(R.string.year)));
+            for (ChartSales chartOneDaySales : salesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getNetAmount(), chartOneDaySales.getMonth()));
+
+        } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.SALES_COUNT) {
+
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.sales_count).concat("/").concat(mContext.getResources().getString(R.string.year)));
+            for (ChartSales chartOneDaySales : salesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getSaleCount(), chartOneDaySales.getMonth()));
+        }
+
+        Bardataset.setDrawValues(false);
+        Bardataset.setColors(new int[]{Color.rgb(0, 128, 255)});
         BARDATA = new BarData(BarEntryLabels, Bardataset);
-        Bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
+
+        setDefaultXYAxisValuesForBarChart();
+    }
+
+
+    public void fillUndefinedChartVariables(){
+        List<ChartSales> salesList = getUndefinedSalesList();
+
+        BARENTRY = new ArrayList<>();
+
+        setBarEntryLabelsWithUndefined(salesList);
+
+        if (chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES) {
+
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.gross_sales).concat("/")
+                    .concat(mContext.getResources().getString(R.string.year)));
+
+            for (ChartSales chartOneDaySales : salesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getGrossAmount(), chartOneDaySales.getMonth()));
+
+        } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.NET_SALES) {
+
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.net_sales).concat("/").concat(mContext.getResources().getString(R.string.year)));
+            for (ChartSales chartOneDaySales : salesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getNetAmount(), chartOneDaySales.getMonth()));
+
+        } else if (chartSaleSelectionEnum == ChartSaleSelectionEnum.SALES_COUNT) {
+
+            Bardataset = new BarDataSet(BARENTRY, mContext.getResources().getString(R.string.sales_count).concat("/").concat(mContext.getResources().getString(R.string.year)));
+            for (ChartSales chartOneDaySales : salesList)
+                BARENTRY.add(new BarEntry((float) chartOneDaySales.getSaleCount(), chartOneDaySales.getMonth()));
+        }
+
+        Bardataset.setDrawValues(false);
+        Bardataset.setColors(new int[]{Color.rgb(0, 128, 255)});
+        BARDATA = new BarData(BarEntryLabels, Bardataset);
+
+        setDefaultXYAxisValuesForBarChart();
     }
 
     public void setBarEntryLabelsWithOneDayHours(){
         BarEntryLabels = new ArrayList<String>();
 
         for (int i = 0; i < 24; i++)
-            BarEntryLabels.add((i % 3 == 0 || i == 0) ? String.valueOf(i) : " ");
-
+            BarEntryLabels.add(i % 3 == 0 ? String.valueOf(i) : " ");
     }
 
     public void setBarEntryLabelsWithWeekDays(){
         BarEntryLabels = new ArrayList<String>();
 
-        String[] days = new String[]{"Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"};
-
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR))
-            days = new String[]{"Pzt", "Sal", "Çar", "Per", "Cum", "Ctes", "Paz"};
-
-        BarEntryLabels.addAll(Arrays.asList(days).subList(0, 7));
+            BarEntryLabels.addAll(DayEnum.getTrCodeList());
+        else
+            BarEntryLabels.addAll(DayEnum.getEnCodeList());
     }
 
     public void setBarEntryLabelsWithOneMonthDays(){
@@ -233,41 +329,58 @@ public class ChartManager3 {
         BarEntryLabels.addAll(Arrays.asList(months));
     }
 
-    public void setBarEntryLabelsWithThreeMonthDays(){
+    public void setBarEntryLabelsWithOneYear(){
         BarEntryLabels = new ArrayList<String>();
 
-        List<String> dates = new ArrayList<>();
+        if(CommonUtils.getLanguage().equals(LANGUAGE_TR))
+            BarEntryLabels.addAll(MonthEnum.getTrCodeList());
+        else
+            BarEntryLabels.addAll(MonthEnum.getEnCodeList());
+    }
+
+    public void setBarEntryLabelsWithUndefined(List<ChartSales> salesList){
+        BarEntryLabels = new ArrayList<String>();
+
+        for(ChartSales chartSales : salesList){
+            int len = String.valueOf(chartSales.getMonth()).length();
+            int monthNum = Integer.parseInt(String.valueOf(chartSales.getMonth()).substring(4, len));
+            BarEntryLabels.add(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? MonthEnum.getById(monthNum).getTrCode() : MonthEnum.getById(monthNum).getEngCode());
+        }
+    }
+
+    public void setBarEntryLabelsWithThreeMonthDays(){
+        BarEntryLabels = new ArrayList<String>();
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         Log.i("Info", "setBarEntryLabelsWithThreeMonthDays  startDate:" + startDate);
 
         int monthNum = DataUtils.getMonthNumFromDate(startDate);
+        setMonthLabels(monthNum);
 
-        MonthEnum monthEnum1 = MonthEnum.getById(monthNum);
-        MonthEnum monthEnum2 = MonthEnum.getById(monthNum + 1);
-        MonthEnum monthEnum3 = MonthEnum.getById(monthNum + 2);
+        monthNum++;
+        setMonthLabels(monthNum);
 
-        dates.add("1" + monthEnum1.getEngCode());
-        for(int i=0; i<13; i++)
-            dates.add("x");
-        dates.add("15" + monthEnum1.getEngCode());
-        for(int i=0; i<17; i++)
-            dates.add("x");
+        monthNum++;
+        setMonthLabels(monthNum);
+    }
+    private void setMonthLabels(int monthNum){
+        List<String> dates = new ArrayList<>();
 
-        dates.add("1" + monthEnum2.getEngCode());
-        for(int i=0; i<13; i++)
-            dates.add("x");
-        dates.add("15" + monthEnum2.getEngCode());
-        for(int i=0; i<17; i++)
-            dates.add("x");
+        Calendar mycal = new GregorianCalendar(DataUtils.getYearFromDate(startDate), monthNum , 1);
+        int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        dates.add("1" + monthEnum3.getEngCode());
-        for(int i=0; i<13; i++)
-            dates.add("x");
-        dates.add("15" + monthEnum3.getEngCode());
-        for(int i=0; i<30; i++)
-            dates.add(" ");
+        for (int i = 1; i <= daysInMonth; i++) {
+            int dayNum = DataUtils.getDateNumFromDate(mycal.getTime());
 
+            MonthEnum monthEnum = MonthEnum.getById(monthNum);
+
+            if(i==1 || i==15)
+                dates.add(String.valueOf(dayNum).concat(" ").concat(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? monthEnum.getTrCode() : monthEnum.getEngCode()));
+            else
+                dates.add(" ");
+
+            mycal.add(Calendar.DATE, 1);
+        }
         BarEntryLabels.addAll(dates);
     }
 
@@ -278,11 +391,13 @@ public class ChartManager3 {
         }
     }
 
-
     private void setDefaultXYAxisValuesForBarChart(){
         XAxis xAxis = getBarChart().getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
         xAxis.setAxisMinValue(0f);
+
+        getBarChart().getXAxis().setDrawGridLines(false);
 
         getBarChart().getLegend().setEnabled(false);
 
@@ -296,44 +411,34 @@ public class ChartManager3 {
         YAxisValueFormatter valueFormatter = new YAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, YAxis yAxis) {
-                NumberFormat nf = new DecimalFormat("#.####");
-                return nf.format(value).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                //NumberFormat xx = new DecimalFormat("###,##0.00");
+                NumberFormat xx = new DecimalFormat("###,##0");
+                return xx.format(value).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
             }
         };
+
+        getBarChart().setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+                //float x = e.getXIndex();
+                //float y = e.getVal();
+                getBarChart().getBarData().getDataSets().get(dataSetIndex).setDrawValues(true);
+            }
+
+            @Override
+            public void onNothingSelected() {
+                getBarChart().getBarData().setDrawValues(false);
+            }
+        });
+
+        //xAxis.setAxisMaxValue(BarEntryLabels.size());
+        //getBarChart().getAxisLeft().setLabelCount(BarEntryLabels.size(), true);
 
         if(chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES || chartSaleSelectionEnum == ChartSaleSelectionEnum.NET_SALES)
             yAxisLeft.setValueFormatter(valueFormatter);
         else
             yAxisLeft.setValueFormatter(null);
     }
-
-    /*private void setDefaultXYAxisValuesForLineChart(){
-        XAxis xAxis = getLineChart().getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setAxisMinValue(0f);
-
-        getLineChart().getLegend().setEnabled(false);
-
-        YAxis yAxisRight = getLineChart().getAxisRight();
-        yAxisRight.setEnabled(false);
-
-        YAxis yAxisLeft = getLineChart().getAxisLeft();
-        yAxisLeft.setGranularity(1f);
-        yAxisLeft.setAxisMinValue(0f);
-
-        YAxisValueFormatter valueFormatter = new YAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, YAxis yAxis) {
-                NumberFormat nf = new DecimalFormat("#.####");
-                return nf.format(value).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-            }
-        };
-
-        if(chartSaleSelectionEnum == ChartSaleSelectionEnum.GROSS_SALES || chartSaleSelectionEnum == ChartSaleSelectionEnum.NET_SALES)
-            yAxisLeft.setValueFormatter(valueFormatter);
-        else
-            yAxisLeft.setValueFormatter(null);
-    }*/
 
     private List<ChartSales> getOneDaySalesList(){
         List<ChartSales> chartOneDaySalesList = new ArrayList<>();
@@ -453,6 +558,156 @@ public class ChartManager3 {
             previousDay = currentDay;
         }
         return chartOneDaySalesList;
+    }
+
+
+    private List<ChartSales> getThreeMonthSalesList(){
+        List<ChartSales> chartOneDaySalesList = new ArrayList<>();
+
+        int previousDay = -1;
+
+        for(SaleModel saleModel: saleModels){
+
+            LogUtil.logSale(saleModel.getSale());
+
+            int currentDay = DataUtils.getDayOfYearFromDate(saleModel.getSale().getCreateDate());
+
+            if(currentDay != previousDay){
+                ChartSales chartOneDaySales1 = new ChartSales();
+                chartOneDaySales1.setDay(currentDay);
+
+                double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+
+                chartOneDaySales1.setGrossAmount(grossSalesAmount);
+                chartOneDaySales1.setNetAmount(grossSalesAmount - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                chartOneDaySales1.setSaleCount(1);
+                chartOneDaySalesList.add(chartOneDaySales1);
+            }else {
+                for(ChartSales chartOneDaySales : chartOneDaySalesList){
+                    if(chartOneDaySales.getDay() == currentDay){
+
+                        double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+
+                        chartOneDaySales.setGrossAmount(chartOneDaySales.getGrossAmount() + grossSalesAmount);
+                        chartOneDaySales.setNetAmount(chartOneDaySales.getGrossAmount() - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                        chartOneDaySales.setSaleCount(chartOneDaySales.getSaleCount() + 1);
+                        break;
+                    }
+                }
+            }
+            previousDay = currentDay;
+        }
+
+        Collections.sort(chartOneDaySalesList, new DayComparator());
+
+        int dayOfYear = chartOneDaySalesList.get(0).getDay();
+        int startDayOfYear = DataUtils.getDayOfYearFromDate(startDate);
+
+        if(dayOfYear > startDayOfYear){
+            for(ChartSales chartSales : chartOneDaySalesList)
+                chartSales.setDay(chartSales.getDay() - startDayOfYear);
+        }
+
+        return chartOneDaySalesList;
+    }
+
+    private List<ChartSales> getOneYearSalesList(){
+        List<ChartSales> chartOneDaySalesList = new ArrayList<>();
+
+        int previousMonth = -1;
+
+        for(SaleModel saleModel: saleModels){
+
+            LogUtil.logSale(saleModel.getSale());
+
+            int currentMonth = DataUtils.getMonthNumFromDate(saleModel.getSale().getCreateDate());
+
+            if(currentMonth != previousMonth){
+                ChartSales chartOneDaySales1 = new ChartSales();
+                chartOneDaySales1.setMonth(currentMonth);
+
+                double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+
+                chartOneDaySales1.setGrossAmount(grossSalesAmount);
+                chartOneDaySales1.setNetAmount(grossSalesAmount - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                chartOneDaySales1.setSaleCount(1);
+                chartOneDaySalesList.add(chartOneDaySales1);
+            }else {
+                for(ChartSales chartOneDaySales : chartOneDaySalesList){
+                    if(chartOneDaySales.getMonth() == currentMonth){
+
+                        double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+
+                        chartOneDaySales.setGrossAmount(chartOneDaySales.getGrossAmount() + grossSalesAmount);
+                        chartOneDaySales.setNetAmount(chartOneDaySales.getGrossAmount() - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                        chartOneDaySales.setSaleCount(chartOneDaySales.getSaleCount() + 1);
+                        break;
+                    }
+                }
+            }
+            previousMonth = currentMonth;
+        }
+
+        return chartOneDaySalesList;
+    }
+
+    private List<ChartSales> getUndefinedSalesList(){
+        List<ChartSales> chartOneDaySalesList = new ArrayList<>();
+
+        int previousMonth = -1;
+
+        for(SaleModel saleModel: saleModels){
+
+            LogUtil.logSale(saleModel.getSale());
+
+            int currentMonth = Integer.parseInt(String.valueOf(DataUtils.getYearFromDate(saleModel.getSale().getCreateDate()))
+                    .concat(String.valueOf(DataUtils.getMonthNumFromDate(saleModel.getSale().getCreateDate()))));
+
+            if(currentMonth != previousMonth){
+                ChartSales chartOneDaySales1 = new ChartSales();
+                chartOneDaySales1.setMonth(currentMonth);
+
+                double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+
+                chartOneDaySales1.setGrossAmount(grossSalesAmount);
+                chartOneDaySales1.setNetAmount(grossSalesAmount - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                chartOneDaySales1.setSaleCount(1);
+                chartOneDaySalesList.add(chartOneDaySales1);
+            }else {
+                for(ChartSales chartOneDaySales : chartOneDaySalesList){
+                    if(chartOneDaySales.getMonth() == currentMonth){
+
+                        double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+
+                        chartOneDaySales.setGrossAmount(chartOneDaySales.getGrossAmount() + grossSalesAmount);
+                        chartOneDaySales.setNetAmount(chartOneDaySales.getGrossAmount() - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                        chartOneDaySales.setSaleCount(chartOneDaySales.getSaleCount() + 1);
+                        break;
+                    }
+                }
+            }
+            previousMonth = currentMonth;
+        }
+
+        return chartOneDaySalesList;
+    }
+
+    public void fillUndefinedSalesList(){
+        int differenceDayNum = DataUtils.getDifferenceDays(startDate, endDate);
+
+        if(differenceDayNum == 0)
+            fillOneDayChartVariables();
+        else if(differenceDayNum <= 7)
+            fillOneWeekChartVariables();
+        else if(differenceDayNum <= 31)
+            fillOneMonthChartVariables();
+        else if(differenceDayNum <= 92)
+            fillThreeMonthChartVariables();
+        else if(differenceDayNum <= 365)
+            fillOneYearChartVariables();
+        else
+            fillUndefinedChartVariables();
+
     }
 
     private double getGrossAmount(List<SaleItem> saleItems){

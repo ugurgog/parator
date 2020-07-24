@@ -1,5 +1,9 @@
 package com.paypad.vuk507.enums;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public enum  MonthEnum {
 
     JANUARY(1,"OCAK", "JANUARY", "Jan", "Oca"),
@@ -55,5 +59,29 @@ public enum  MonthEnum {
 
     public String getTrCode() {
         return trCode;
+    }
+
+    public static List<String> getEnCodeList(){
+        List<String> enCodeList = new ArrayList<>();
+
+        String[] enCodes = new String[]{MonthEnum.JANUARY.getEngCode(), MonthEnum.FEBRUARY.getEngCode(), MonthEnum.MARCH.getEngCode(),
+                MonthEnum.APRIL.getEngCode(), MonthEnum.MAY.getEngCode(), MonthEnum.JUNE.getEngCode(),
+                MonthEnum.JULY.getEngCode(), MonthEnum.AUGUST.getEngCode(), MonthEnum.SEPTEMBER.getEngCode(),
+                MonthEnum.OCTOBER.getEngCode(), MonthEnum.NOVEMBER.getEngCode(), MonthEnum.DECEMBER.getEngCode()};
+
+        enCodeList.addAll(Arrays.asList(enCodes));
+        return enCodeList;
+    }
+
+    public static List<String> getTrCodeList(){
+        List<String> trCodeList = new ArrayList<>();
+
+        String[] trCodes = new String[]{MonthEnum.JANUARY.getTrCode(), MonthEnum.FEBRUARY.getTrCode(), MonthEnum.MARCH.getTrCode(),
+                MonthEnum.APRIL.getTrCode(), MonthEnum.MAY.getTrCode(), MonthEnum.JUNE.getTrCode(),
+                MonthEnum.JULY.getTrCode(), MonthEnum.AUGUST.getTrCode(), MonthEnum.SEPTEMBER.getTrCode(),
+                MonthEnum.OCTOBER.getTrCode(), MonthEnum.NOVEMBER.getTrCode(), MonthEnum.DECEMBER.getTrCode()};
+
+        trCodeList.addAll(Arrays.asList(trCodes));
+        return trCodeList;
     }
 }

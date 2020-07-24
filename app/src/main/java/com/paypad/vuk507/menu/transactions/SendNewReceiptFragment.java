@@ -151,7 +151,7 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
             @Override
             public void onClick(View view) {
                 cancelCounter();
-                printReceiptManager.printReceipt(getContext());
+                printReceiptManager.printReceipt();
             }
         });
     }
@@ -166,7 +166,7 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     }
 
     private void initVariables() {
-        printReceiptManager = new PrintReceiptManager(SaleDBHelper.getSaleModelBySaleId(mTransaction.getSaleUuid()), mTransaction);
+        printReceiptManager = new PrintReceiptManager(getContext(), SaleDBHelper.getSaleModelBySaleId(mTransaction.getSaleUuid()), false);
         printReceiptManager.setCallback(mCallback);
     }
 
@@ -229,7 +229,11 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
         }
 
         public void onFinish() {
-            Objects.requireNonNull(getActivity()).onBackPressed();
+            try{
+                Objects.requireNonNull(getActivity()).onBackPressed();
+            }catch (NullPointerException e){
+
+            }
         }
     };
 
@@ -237,6 +241,7 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
         @Override
         public void onRunResult(boolean isSuccess) throws RemoteException {
 
+            Log.i("Info", "::onReturnString isSuccess:" + isSuccess);
         }
 
         @Override

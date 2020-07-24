@@ -313,17 +313,32 @@ public class SaleReportsFragment extends BaseFragment implements ReturnReportDat
     }
 
     private ReportDate getThreeMonthsDates(){
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DATE, 1);
-        cal.add(Calendar.MONTH, -2);
-        Date startdate = cal.getTime();
 
-        cal.add(Calendar.MONTH, 2);
-        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE)); // changed calendar to cal
-        Date endDate = cal.getTime();
+        int monthNum = DataUtils.getMonthNumFromDate(new Date());
+        Date startDate, endDate;
+
+        if(monthNum < 3){
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.DATE, 1);
+            cal.set(Calendar.MONTH, 1);
+            startDate = cal.getTime();
+
+            cal.add(Calendar.MONTH, 2);
+            cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE)); // changed calendar to cal
+            endDate = cal.getTime();
+        }else {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.DATE, 1);
+            cal.add(Calendar.MONTH, -2);
+            startDate = cal.getTime();
+
+            cal.add(Calendar.MONTH, 2);
+            cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE)); // changed calendar to cal
+            endDate = cal.getTime();
+        }
 
         ReportDate reportDate = new ReportDate();
-        reportDate.setStartDate(startdate);
+        reportDate.setStartDate(startDate);
         reportDate.setEndDate(endDate);
         return reportDate;
     }

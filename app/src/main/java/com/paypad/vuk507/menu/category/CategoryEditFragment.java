@@ -251,7 +251,7 @@ public class CategoryEditFragment extends BaseFragment
         CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
         CommonUtils.setBtnFirstCondition(getContext(), btnDelete, getContext().getResources().getString(R.string.delete_unit));
 
-        mColorId = R.color.Gray;
+        mColorId = CommonUtils.getItemColors()[0];
 
         if (category == null) {
             category = new Category();

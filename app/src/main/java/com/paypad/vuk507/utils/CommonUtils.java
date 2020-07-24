@@ -52,6 +52,14 @@ public class CommonUtils {
         return paddingPixel;
     }
 
+    public static String padRight(String s, int n) {
+        return String.format("%-" + n + "s", s);
+    }
+
+    public static String padLeft(String s, int n) {
+        return String.format("%" + n + "s", s);
+    }
+
     public static boolean isEmptyCheck(String text) {
         if(text != null && !text.isEmpty()){
             if(text.trim().equals("null"))
@@ -210,11 +218,17 @@ public class CommonUtils {
         else
             value = "0.00";
 
-        return value;
+        return value.replaceAll("\\.", " ")
+                .replaceAll(",", "\\.")
+                .replaceAll(" ", ",");
     }
 
     public static String getAmountTextWithCurrency(double amount){
         return getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+    }
+
+    public static String getAmountText(double amount){
+        return getDoubleStrValueForView(amount, TYPE_PRICE);
     }
 
     public static int getDarkRandomColor(Context context) {

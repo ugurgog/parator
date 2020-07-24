@@ -217,13 +217,13 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
             @Override
             public void onClick(View view) {
                 cancelCounter();
-                printReceiptManager.printReceipt(getContext());
+                printReceiptManager.printReceipt();
             }
         });
     }
 
     private void initVariables() {
-        printReceiptManager = new PrintReceiptManager(SaleModelInstance.getInstance().getSaleModel(), mTransaction);
+        printReceiptManager = new PrintReceiptManager(getContext(), SaleModelInstance.getInstance().getSaleModel(), true);
         printReceiptManager.setCallback(mCallback);
 
         if(mProcessDirectionType == ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED){

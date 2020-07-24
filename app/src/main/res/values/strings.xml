@@ -220,12 +220,38 @@
 
     <string name="hour">Hour</string>
     <string name="week">Week</string>
-    <string name="month">Ay</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
     <string name="today">Today</string>
     <string name="this_week">This Week</string>
     <string name="this_month">This Month</string>
     <string name="current_three_month">Current 3 Months</string>
     <string name="this_year">This Year</string>
+    <string name="date_upper">DATE</string>
+    <string name="hour_upper">HOUR</string>
+    <string name="receipt_no_upper">RECEIPT NO</string>
+    <string name="per">Adt</string>
+    <string name="toptax_upper">TOTAL TAX</string>
+    <string name="total_upper">TOTAL</string>
+    <string name="cash_upper">CASH</string>
+    <string name="card_upper">CARD</string>
+    <string name="cheque_upper">CHEQUE NO</string>
+    <string name="table_no_upper">TABLE NO</string>
+    <string name="mersis_upper">CRS NO</string>
+    <string name="eku_no_upper">EKU NO</string>
+    <string name="z_no_upper">Z NO</string>
+    <string name="sale_upper">SALE</string>
+    <string name="merchant_no_upper">MERC. NO</string>
+    <string name="terminal_upper">TERMINAL</string>
+    <string name="approve_code_upper">APP. CODE</string>
+    <string name="batch_upper">BATCH</string>
+    <string name="stan_upper">STAN</string>
+    <string name="goods_and_services_received">GOODS OR SERVICES RECEIVED</string>
+    <string name="keep_this_receipt">KEEP THIS RECEIPT</string>
+    <string name="belongs_to_card_holder">BELONGS TO CARD HOLDER</string>
+    <string name="first_copy">1.COPY</string>
+    <string name="test_device">** TEST DEVICE **</string>
+
 
     <string name="no_transaction_time_period">No transactions for time period</string>
     <string name="no_transaction_time_period_desc">No transactions took place in the time period you selected. Try selecting a different time frame.</string>

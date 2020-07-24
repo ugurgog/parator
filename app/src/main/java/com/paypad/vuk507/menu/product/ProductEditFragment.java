@@ -417,7 +417,7 @@ public class ProductEditFragment extends BaseFragment implements
 
         amountRateEt.setHint("0.00 ".concat(CommonUtils.getCurrency().getSymbol()));
 
-        mColorId = R.color.Gray;
+        mColorId = CommonUtils.getItemColors()[0];
 
         if(productXX == null){
             productXX = new Product();
