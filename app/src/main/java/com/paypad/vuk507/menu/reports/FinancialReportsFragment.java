@@ -85,7 +85,7 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
 
     private void initVariables() {
         toolbarTitleTv.setText(getContext().getResources().getString(R.string.reports));
-        financialReportManager = new FinancialReportManager();
+        financialReportManager = new FinancialReportManager(   );
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
