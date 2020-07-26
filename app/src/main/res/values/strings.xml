@@ -251,6 +251,11 @@
     <string name="belongs_to_card_holder">BELONGS TO CARD HOLDER</string>
     <string name="first_copy">1.COPY</string>
     <string name="test_device">** TEST DEVICE **</string>
+    <string name="no_financial_receipt">** NO FINANCIAL VALUE **</string>
+    <string name="copy_of_sale_receipt">SALES RECEIPT COPY</string>
+    <string name="belongs_to_contracted_merchant">BELONGS TO CONTRACTED MERCHANT</string>
+    <string name="second_copy">2.COPY</string>
+    <string name="print_merchant_receipt">Print Merchant Receipt</string>
 
 
     <string name="no_transaction_time_period">No transactions for time period</string>

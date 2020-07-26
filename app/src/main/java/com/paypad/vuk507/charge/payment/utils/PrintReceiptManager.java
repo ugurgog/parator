@@ -215,7 +215,7 @@ public class PrintReceiptManager {
     }
 
     @SuppressLint("DefaultLocale")
-    public void printReceipt(){
+    public void printCustomerReceipt(){
         if(sunmiPrinterService == null){
             return ;
         }
@@ -236,6 +236,12 @@ public class PrintReceiptManager {
             //sunmiPrinterService.printBitmap(bitmap, null);
 
             //sunmiPrinterService.printText("\n\n", null);
+
+
+            if(!isFinancialReceipt){
+                sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.no_financial_receipt) + "\b" + "\n", null, 25, null);
+                sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.copy_of_sale_receipt) + "\b" + "\n\n", null, 25, null);
+            }
 
             //PRINT TEST DEVICE
             sunmiPrinterService.setAlignment(1, null);
@@ -277,6 +283,8 @@ public class PrintReceiptManager {
             } catch (RemoteException e) {
                 sunmiPrinterService.sendRAWData(new byte[]{0x1B, 0x33, 0x00}, null);
             }
+
+            sunmiPrinterService.printTextWithFont(" " + "\n", null, 20, null);
 
 
             String txts[] = new String[2];
@@ -335,6 +343,9 @@ public class PrintReceiptManager {
             }
 
             //TOPKDV
+            width = new int[]{1, 1};
+            align = new int[]{0, 2};
+            sunmiPrinterService.setFontSize(20, null);
             txts[0] = mContext.getResources().getString(R.string.toptax_upper) + "\b";
             txts[1] = "*" + CommonUtils.getAmountText(printReceiptModel.getTotalTaxAmount()) + "\b";
             sunmiPrinterService.printColumnsString(txts, width, align, null);
@@ -366,7 +377,6 @@ public class PrintReceiptManager {
                     String maskedCardNum = PrintHelper.getMaskedCardNumber(receiptPaymentModel.getCardNumber());
                     sunmiPrinterService.printTextWithFont("  " + maskedCardNum + "\n", null, 20, null);
                 }
-
             }
 
             //PRINT BARCODE
@@ -419,6 +429,7 @@ public class PrintReceiptManager {
                     .concat(String.valueOf(printReceiptModel.getBatchNum()))
                     .concat("/")
                     .concat(mContext.getResources().getString(R.string.stan_upper))
+                    .concat(":")
                     .concat(String.valueOf(printReceiptModel.getStanNum()));
 
             sunmiPrinterService.printColumnsString(txts, width, align, null);
@@ -439,17 +450,26 @@ public class PrintReceiptManager {
 
             for(PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel : printReceiptModel.getReceiptPaymentModels()){
 
-                String maskedCardNumber = PrintHelper.getMaskedCardNumber(receiptPaymentModel.getCardNumber());
-                sunmiPrinterService.printTextWithFont(maskedCardNumber + "\b" + "\n", null, 25, null);
+                if(receiptPaymentModel.getPaymentType() == PaymentTypeEnum.CREDIT_CARD.getId()){
+                    String maskedCardNumber = PrintHelper.getMaskedCardNumber(receiptPaymentModel.getCardNumber());
 
-                String amountStr = mContext.getResources().getString(R.string.total_upper)
-                        .concat(":")
-                        .concat(CommonUtils.getAmountText(receiptPaymentModel.getAmount()));
-                sunmiPrinterService.printTextWithFont(amountStr + "\b" + "\n\n", null, 25, null);
+                    if(maskedCardNumber != null && !maskedCardNumber.isEmpty()){
+                        sunmiPrinterService.printTextWithFont(maskedCardNumber + "\b" + "\n", null, 25, null);
+
+                        String amountStr = mContext.getResources().getString(R.string.price)
+                                .concat(":")
+                                .concat(CommonUtils.getAmountText(receiptPaymentModel.getAmount()));
+                        sunmiPrinterService.printTextWithFont(amountStr + "\b" + "\n\n", null, 25, null);
+                    }
+                }
             }
 
-            sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.goods_and_services_received) + "\n", null, 20, null);
-            sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.keep_this_receipt) + "\n", null, 20, null);
+            PrintHelper.setBold(sunmiPrinterService, WoyouConsts.ENABLE);
+
+            //PRINT GOOD AND SERVICES
+            PrintHelper.printGoodServicesInfo(mContext, sunmiPrinterService);
+
+            PrintHelper.setBold(sunmiPrinterService, WoyouConsts.DISABLE);
 
             sunmiPrinterService.setAlignment(0, null);
 
@@ -459,6 +479,8 @@ public class PrintReceiptManager {
                     .concat(mContext.getResources().getString(R.string.first_copy))
                     .concat(")")+ "\n\n", null, 20, null);
 
+            sunmiPrinterService.printTextWithFont(" " + "\n", null, 25, null);
+
             //PRINT EKU AND ZNO
             txts[0] = mContext.getResources().getString(R.string.eku_no_upper)
                     .concat(": ")
@@ -466,14 +488,13 @@ public class PrintReceiptManager {
             txts[1] = mContext.getResources().getString(R.string.z_no_upper)
                     .concat(":")
                     .concat(String.valueOf(printReceiptModel.getzNo()));
-
             sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+            sunmiPrinterService.printTextWithFont(" " + "\n", null, 25, null);
 
             //PRINT TEST DEVICE
             sunmiPrinterService.setAlignment(1, null);
             sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.test_device) + "\b" + "\n", null, 25, null);
-            sunmiPrinterService.printTextWithFont(" " + "\n", null, 25, null);
 
             sunmiPrinterService.printTextWithFont(printReceiptModel.getDeviceRegisterId() + "\b" + "\n", null, 25, null);
 
@@ -518,6 +539,56 @@ public class PrintReceiptManager {
         }
     }
 
+
+    public void printMerchantReceipt(){
+        if(sunmiPrinterService == null){
+            return ;
+        }
+
+        try {
+            sunmiPrinterService.enterPrinterBuffer(true);
+
+            int paper = sunmiPrinterService.getPrinterPaper();
+            sunmiPrinterService.printerInit(null);
+            sunmiPrinterService.setAlignment(1, null);
+
+            sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.no_financial_receipt) + "\b" + "\n", null, 25, null);
+
+            //PRINT MERCHANT AND TERMINAL
+            PrintHelper.printMerchantAndTerminalRow(mContext, sunmiPrinterService, printReceiptModel.getMerchantNum(), printReceiptModel.getTerminalNum());
+
+            //APPCODE, BATCH, STAN
+            PrintHelper.printAppCodeBatchAndStan(mContext, sunmiPrinterService, printReceiptModel.getApproveCode(), printReceiptModel.getBatchNum(), printReceiptModel.getStanNum());
+
+            //SALE DATE
+            PrintHelper.printSaleDateRow(mContext, sunmiPrinterService, printReceiptModel.getReceiptDate());
+
+            //PRINT CARD INFOS
+            PrintHelper.printCardTypeAndAmountRows(mContext, sunmiPrinterService, printReceiptModel);
+
+            //PRINT GOOD AND SERVICES
+            PrintHelper.printGoodServicesInfo(mContext, sunmiPrinterService);
+
+            //PRINT BELONGS TO INFO
+            PrintHelper.printBelongsToMerchant(mContext, sunmiPrinterService);
+
+            //PRINT RECEIPT NO
+            PrintHelper.printReceiptNo(mContext, sunmiPrinterService, printReceiptModel.getfNo());
+
+            //PRINT EKU AND ZNO
+            PrintHelper.printEkuAndZNo(mContext, sunmiPrinterService, printReceiptModel.getEkuNo(), printReceiptModel.getzNo());
+
+            sunmiPrinterService.setAlignment(1, null);
+            sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.no_financial_receipt) + "\b" + "\n", null, 25, null);
+
+            sunmiPrinterService.printTextWithFont(printReceiptModel.getDeviceRegisterId() + "\b" + "\n", null, 25, null);
+            sunmiPrinterService.autoOutPaper(null);
+
+            sunmiPrinterService.exitPrinterBufferWithCallback(true, callback);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     /*public void printReceiptOld(){
         if(sunmiPrinterService == null){

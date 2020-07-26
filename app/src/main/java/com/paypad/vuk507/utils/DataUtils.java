@@ -29,8 +29,10 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
@@ -227,6 +229,22 @@ public class DataUtils {
         cal.setTime(date);
         int year = cal.get(Calendar.YEAR);
         return year;
+    }
+
+    public static List<TaxModel> getAllTaxes(String userName){
+        List<TaxModel> taxModels = new ArrayList<>();
+
+        TaxRateEnum[] taxRateEnums = TaxRateEnum.values();
+
+        for(TaxRateEnum taxRateEnum : taxRateEnums){
+            TaxModel taxModel = new TaxModel();
+            taxModel.setId(taxRateEnum.getId());
+            taxModel.setTaxRate(taxRateEnum.getRateValue());
+            taxModels.add(taxModel);
+        }
+
+        taxModels.addAll(TaxDBHelper.getAllTaxes(userName));
+        return taxModels;
     }
 
     public static String getTransactionFullDateName(Date date){

@@ -251,6 +251,11 @@
     <string name="belongs_to_card_holder">KART SAHİBİNE AİT</string>
     <string name="first_copy">1.KOPYA</string>
     <string name="test_device">** TEST CİHAZIDIR **</string>
+    <string name="no_financial_receipt">** MALİ DEĞERİ YOKTUR **</string>
+    <string name="copy_of_sale_receipt">SATIŞ FİŞİ KOPYASI</string>
+    <string name="belongs_to_contracted_merchant">İŞYERİNE AİT</string>
+    <string name="second_copy">2.KOPYA</string>
+    <string name="print_merchant_receipt">İşyeri Makbuzuu Yazdır</string>
 
     <string name="no_transaction_time_period">Bu zaman dilimi için işlem yok</string>
     <string name="no_transaction_time_period_desc">Seçtiğiniz süre içinde herhangi bir işlem yapılmadı. Farklı bir zaman aralığı seçmeyi deneyin.</string>

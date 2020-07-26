@@ -1,7 +1,10 @@
 package com.paypad.vuk507.menu.transactions;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.payment.utils.PrintReceiptManager;
+import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.transactions.adapters.ItemsServicesAdapter;
@@ -28,6 +33,7 @@ import com.paypad.vuk507.model.pojo.PaymentDetailModel;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.sunmi.peripheral.printer.InnerResultCallbcak;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -63,6 +69,8 @@ public class TransactionDetailFragment extends BaseFragment {
     RecyclerView saleItemsRv;
     @BindView(R.id.totalRv)
     RecyclerView totalRv;
+    @BindView(R.id.printReceiptBtn)
+    Button printReceiptBtn;
 
 
     private User user;
@@ -73,6 +81,8 @@ public class TransactionDetailFragment extends BaseFragment {
 
     private SaleModel saleModel;
     private OrderManager orderManager;
+
+    private PrintReceiptManager printReceiptManager;
 
     public TransactionDetailFragment(SaleModel saleModel) {
         this.saleModel = saleModel;
@@ -138,15 +148,28 @@ public class TransactionDetailFragment extends BaseFragment {
                 mFragmentNavigation.pushFragment(new SelectNewReceiptFragment(saleModel.getTransactions()));
             }
         });
+
+        printReceiptBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                printReceiptManager.printCustomerReceipt();
+            }
+        });
     }
 
     private void initVariables() {
         orderManager = new OrderManager();
         setToolbarTitle();
+        initPrinter();
 
         setPaymentDetailAdapter();
         setItemsServicesAdapter();
         setPaymentTotalAdapter();
+    }
+
+    private void initPrinter() {
+        printReceiptManager = new PrintReceiptManager(getContext(), saleModel, false);
+        printReceiptManager.setCallback(mCallback);
     }
 
     private void setToolbarTitle(){
@@ -211,4 +234,38 @@ public class TransactionDetailFragment extends BaseFragment {
             });
         }*/
     }
+
+    InnerResultCallbcak mCallback = new InnerResultCallbcak() {
+        @Override
+        public void onRunResult(boolean isSuccess) throws RemoteException {
+
+            Log.i("Info", "::onReturnString isSuccess:" + isSuccess);
+        }
+
+        @Override
+        public void onReturnString(String result) throws RemoteException {
+
+            Log.i("Info", "::onReturnString result:" + result);
+        }
+
+        @Override
+        public void onRaiseException(int code, String msg) throws RemoteException {
+
+        }
+
+        @Override
+        public void onPrintResult(int code, String msg) throws RemoteException {
+            final int res = code;
+            ((Activity) Objects.requireNonNull(getContext())).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(res == 0){
+                        CommonUtils.showToastShort(getContext(), "Print successful");
+                    }else{
+                        CommonUtils.showToastShort(getContext(), "Print failed");
+                    }
+                }
+            });
+        }
+    };
 }

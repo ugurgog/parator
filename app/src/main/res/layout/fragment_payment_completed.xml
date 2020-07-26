@@ -144,6 +144,16 @@
                     android:textAllCaps="false"
                     android:layout_below="@id/howToDescTv"/>
 
+                <Button
+                    android:id="@+id/btnPrintReceipt"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/custom_button_length_size"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/print_receipt"
+                    android:textColor="@color/White"
+                    android:background="@color/DodgerBlue"
+                    android:textAllCaps="false"
+                    android:layout_below="@id/btnEmail"/>
 
                 <Button
                     android:id="@+id/btnReceipt"
@@ -154,18 +164,7 @@
                     android:textColor="@color/White"
                     android:background="@color/DodgerBlue"
                     android:textAllCaps="false"
-                    android:layout_below="@id/btnEmail"/>
-
-                <Button
-                    android:id="@+id/btnPrintReceipt"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_button_length_size"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/print_receipt"
-                    android:textColor="@color/White"
-                    android:background="@color/DodgerBlue"
-                    android:textAllCaps="false"
-                    android:layout_below="@id/btnReceipt"/>
+                    android:layout_below="@id/btnPrintReceipt"/>
 
             </RelativeLayout>
 

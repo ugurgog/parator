@@ -105,6 +105,10 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     private PaymentStatusCallback paymentStatusCallback;
     private SendReceiptEmailFragment sendReceiptEmailFragment;
     private PrintReceiptManager printReceiptManager;
+    private int receiptType = CUSTOMER_RECEIPT;
+
+    private static final int CUSTOMER_RECEIPT = 1;
+    private static final int MERCHANT_RECEIPT = 2;
 
     PaymentCompletedFragment(Transaction transaction, ProcessDirectionEnum processDirectionType) {
         mTransaction = transaction;
@@ -217,7 +221,11 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
             @Override
             public void onClick(View view) {
                 cancelCounter();
-                printReceiptManager.printReceipt();
+
+                if(receiptType == CUSTOMER_RECEIPT)
+                    printReceiptManager.printCustomerReceipt();
+                else
+                    printReceiptManager.printMerchantReceipt();
             }
         });
     }
@@ -229,12 +237,15 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
         if(mProcessDirectionType == ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED){
             paymentStatus = STATUS_NEW_SALE;
             continueBtn.setText(getResources().getString(R.string.new_sale));
+            receiptInfoll.setVisibility(View.VISIBLE);
             startCounter();
         }else{
             paymentStatus = STATUS_CONTINUE;
             continueBtn.setText(getResources().getString(R.string.continue_text));
+            receiptInfoll.setVisibility(View.GONE);
         }
 
+        btnPrintReceipt.setText(getContext().getResources().getString(R.string.print_receipt));
         setChargeAmountTv();
         setPaymentInfoTv();
     }
@@ -399,7 +410,12 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
                     if(res == 0){
                         CommonUtils.showToastShort(getContext(), "Print successful");
                         //TODO Follow-up after successful
-                        startCounter();
+
+                        if(receiptType == CUSTOMER_RECEIPT){
+                            receiptType = MERCHANT_RECEIPT;
+                            btnPrintReceipt.setText(getContext().getResources().getString(R.string.print_merchant_receipt));
+                        }else
+                            startCounter();
                     }else{
                         CommonUtils.showToastShort(getContext(), "Print failed");
                         //TODO Follow-up after failed, such as reprint

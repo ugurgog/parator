@@ -68,13 +68,10 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     Button btnSend;
     @BindView(R.id.mainRl)
     RelativeLayout mainRl;
-    @BindView(R.id.printReceiptImgv)
-    ClickableImageView printReceiptImgv;
 
     private User user;
     private Transaction mTransaction;
     private String email;
-    private PrintReceiptManager printReceiptManager;
 
     SendNewReceiptFragment(Transaction transaction) {
         mTransaction = transaction;
@@ -146,14 +143,6 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
-
-        printReceiptImgv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cancelCounter();
-                printReceiptManager.printReceipt();
-            }
-        });
     }
 
     private void sendMail(){
@@ -166,8 +155,7 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     }
 
     private void initVariables() {
-        printReceiptManager = new PrintReceiptManager(getContext(), SaleDBHelper.getSaleModelBySaleId(mTransaction.getSaleUuid()), false);
-        printReceiptManager.setCallback(mCallback);
+
     }
 
     private void checkValidEmail() {
@@ -234,44 +222,6 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
             }catch (NullPointerException e){
 
             }
-        }
-    };
-
-    InnerResultCallbcak mCallback = new InnerResultCallbcak() {
-        @Override
-        public void onRunResult(boolean isSuccess) throws RemoteException {
-
-            Log.i("Info", "::onReturnString isSuccess:" + isSuccess);
-        }
-
-        @Override
-        public void onReturnString(String result) throws RemoteException {
-
-            Log.i("Info", "::onReturnString result:" + result);
-        }
-
-        @Override
-        public void onRaiseException(int code, String msg) throws RemoteException {
-
-        }
-
-        @Override
-        public void onPrintResult(int code, String msg) throws RemoteException {
-            final int res = code;
-            ((Activity) Objects.requireNonNull(getContext())).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(res == 0){
-                        CommonUtils.showToastShort(getContext(), "Print successful");
-                        //TODO Follow-up after successful
-                        startCounter();
-                    }else{
-                        CommonUtils.showToastShort(getContext(), "Print failed");
-                        //TODO Follow-up after failed, such as reprint
-                        startCounter();
-                    }
-                }
-            });
         }
     };
 }

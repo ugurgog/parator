@@ -30,7 +30,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/custom_button_bg"
-                android:text="@string/new_receipt"
+                android:text="@string/receipt_send"
+                android:textAllCaps="false"
+                android:textColor="@color/DodgerBlue">
+
+            </Button>
+
+            <Button
+                android:id="@+id/printReceiptBtn"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/custom_button_bg"
+                android:text="@string/print_receipt"
                 android:textAllCaps="false"
                 android:textColor="@color/DodgerBlue">
 

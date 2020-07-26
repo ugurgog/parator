@@ -6,12 +6,29 @@ import android.graphics.BitmapFactory;
 import android.os.RemoteException;
 
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.enums.FinancialReportsEnum;
+import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.TaxModel;
+import com.paypad.vuk507.model.order.OrderItemTax;
+import com.paypad.vuk507.model.pojo.PrintReportModel;
+import com.paypad.vuk507.model.pojo.SaleModel;
+import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.sunmiutils.ESCUtil;
 import com.paypad.vuk507.utils.sunmiutils.SunmiPrintHelper;
 import com.sunmi.peripheral.printer.InnerPrinterCallback;
 import com.sunmi.peripheral.printer.InnerResultCallbcak;
 import com.sunmi.peripheral.printer.SunmiPrinterService;
 import com.sunmi.peripheral.printer.WoyouConsts;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
 public class FinancialReportManager {
 
@@ -23,12 +40,91 @@ public class FinancialReportManager {
     private int sunmiPrinter = CheckSunmiPrinter;
     private SunmiPrinterService sunmiPrinterService;
     private static SunmiPrintHelper helper;
+    private Context context;
+    private FinancialReportsEnum financialReportsType;
+    private List<SaleModel> saleModels;
+    private String userName;
+    private PrintReportModel printReportModel;
 
-
-    public FinancialReportManager() {
+    public FinancialReportManager(Context context, FinancialReportsEnum financialReportsType, List<SaleModel> saleModels, String userName) {
         this.helper = SunmiPrintHelper.getInstance();
         this.sunmiPrinterService = helper.getSunmiPrinterService();
-        this.sunmiPrinter = helper.getLostSunmiPrinter();
+        this.sunmiPrinter = SunmiPrintHelper.getLostSunmiPrinter();
+        this.context = context;
+        this.financialReportsType = financialReportsType;
+        this.saleModels = saleModels;
+        this.userName = userName;
+        fillReportModel();
+    }
+
+    private void fillReportModel() {
+        printReportModel = new PrintReportModel();
+        printReportModel.setFileTypeModels(new ArrayList<>());
+        printReportModel.setReportTaxModels(new ArrayList<>());
+        printReportModel.setInformationReceiptModels(new ArrayList<>());
+
+        printReportModel.setMerchantName("BODRUM BELEDIYE TUR.");                              //TODO
+        printReportModel.setFirmName("INS GIDA ENERJI SAN. VE TIC. A.S.");                     //TODO
+        printReportModel.setAddress("TORBA MAH. M.KEMAL ATATURK CD. No: 153 BODRUM MUGLA");    //TODO
+        printReportModel.setPhoneNumber("0 252 317 37 37");                                    //TODO
+        printReportModel.setTaxOffice("BODRUM V.D. 1800028646");
+
+        printReportModel.setReportId(UUID.randomUUID().toString());
+        printReportModel.setReportDate(new Date());
+        printReportModel.setReportTitle(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? financialReportsType.getLabelTr().toUpperCase()
+                : financialReportsType.getLabelEn().toUpperCase());
+        printReportModel.setReportNum(1);                                                       //TODO
+
+        setReportTaxModels();
+        setSaleInformation();
+        setCumulatives();
+
+
+
+    }
+
+    private void setReportTaxModels() {
+        List<TaxModel> taxModels = DataUtils.getAllTaxes(userName);
+
+        for(TaxModel taxModel : taxModels){
+
+            PrintReportModel.ReportTaxModel reportTaxModel = new PrintReportModel.ReportTaxModel();
+            reportTaxModel.setTaxId(taxModel.getId());
+            reportTaxModel.setTaxName("%" + CommonUtils.getDoubleStrValueForView(taxModel.getTaxRate(), TYPE_RATE));
+
+            for(SaleModel saleModel : saleModels){
+                for(SaleItem saleItem : saleModel.getSaleItems()){
+
+                    OrderItemTax orderItemTax = saleItem.getOrderItemTaxes().get(0);
+
+                    if(taxModel.getId() == orderItemTax.getTaxId()){
+                        reportTaxModel.setTaxAmount(CommonUtils.round(reportTaxModel.getTaxAmount() + saleItem.getTaxAmount(), 2));
+                        reportTaxModel.setTotalAmount(CommonUtils.round(reportTaxModel.getTotalAmount() + saleItem.getGrossAmount(), 2));
+                    }
+                }
+            }
+            printReportModel.getReportTaxModels().add(reportTaxModel);
+        }
+    }
+
+    private void setSaleInformation() {
+        for(PrintReportModel.ReportTaxModel reportTaxModel : printReportModel.getReportTaxModels()){
+            printReportModel.setTotTaxAmount(CommonUtils.round(printReportModel.getTotTaxAmount() + reportTaxModel.getTaxAmount(), 2));
+            printReportModel.setTotSaleAmount(CommonUtils.round(printReportModel.getTotSaleAmount() + reportTaxModel.getTotalAmount(), 2));
+        }
+        printReportModel.setDeclaredTaxAmount(printReportModel.getTotTaxAmount());
+
+        for(SaleModel saleModel : saleModels){
+            double discountAmountOfSale = OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems());
+            printReportModel.setTotDiscountAmount(CommonUtils.round(discountAmountOfSale + printReportModel.getTotDiscountAmount(), 2));
+        }
+
+        printReportModel.setIncreaseAmount(0d);   //TODO
+    }
+
+    private void setCumulatives() {
+        printReportModel.setCumTaxAmount(0d);           //TODO
+        printReportModel.setCumSaleAmount(0d);          //TODO
     }
 
     public void printZReport(Context context, InnerResultCallbcak callbcak){

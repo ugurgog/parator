@@ -149,8 +149,6 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
             public void onClick(View view) {
                 mailSendCallback.OnBackPressed();
                 Objects.requireNonNull(getActivity()).onBackPressed();
-
-                //mFragmentNavigation.pushFragment(new HideNavigationBarComponent());
             }
         });
     }

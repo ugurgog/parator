@@ -5,8 +5,11 @@ import android.content.Context;
 import android.os.RemoteException;
 
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.model.pojo.PrintReceiptModel;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.sunmi.peripheral.printer.SunmiPrinterService;
+import com.sunmi.peripheral.printer.WoyouConsts;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,8 +37,18 @@ public class PrintHelper {
             sunmiPrinterService.printTextWithFont(hourString + hourStr + "\n", null, DATE_FIELDS_FONT_SIZE, null);
 
             //Receipt no
-            String rNoString = CommonUtils.padRight(mContext.getResources().getString(R.string.receipt_no_upper), MAX_DATE_LEN) + ": ";
-            sunmiPrinterService.printTextWithFont(rNoString + String.format("%05d", receiptNo) + "\n\n", null, DATE_FIELDS_FONT_SIZE, null);
+            printReceiptNo(mContext, sunmiPrinterService, receiptNo);
+            sunmiPrinterService.printTextWithFont(" " + "\n\n", null, 20, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    public static void printReceiptNo(Context mContext, SunmiPrinterService sunmiPrinterService, int receiptNo){
+        String rNoString = CommonUtils.padRight(mContext.getResources().getString(R.string.receipt_no_upper), MAX_DATE_LEN) + ": ";
+        try {
+            sunmiPrinterService.printTextWithFont(rNoString + String.format("%05d", receiptNo) + "\n", null, DATE_FIELDS_FONT_SIZE, null);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -99,8 +112,156 @@ public class PrintHelper {
     }
 
     public static String getMaskedCardNumber(String cardNum){
+
+        if(cardNum == null || cardNum.isEmpty())
+            return null;
+
         int maskedCardNumLen = cardNum.trim().length();
         String maskedCardNum = "************************".substring(0, maskedCardNumLen - 4) + cardNum.substring(maskedCardNumLen - 4, maskedCardNumLen);
         return maskedCardNum;
+    }
+
+    public static void printMerchantAndTerminalRow(Context mContext, SunmiPrinterService sunmiPrinterService, String merchantNum, String terminalNum){
+        String txts[] = new String[2];
+        int width[] = new int[]{1, 1};
+        int align[] = new int[]{0, 2};
+
+        txts[0] = mContext.getResources().getString(R.string.merchant_no_upper)
+                .concat(":")
+                .concat(merchantNum);
+        txts[1] = mContext.getResources().getString(R.string.terminal_upper)
+                .concat(":")
+                .concat(terminalNum);
+        try {
+            sunmiPrinterService.setFontSize(20, null);
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void printAppCodeBatchAndStan(Context mContext, SunmiPrinterService sunmiPrinterService, int approveCode, int batchNum, int stanNum){
+        String txts[] = new String[2];
+        int width[] = new int[]{1, 1};
+        int align[] = new int[]{0, 2};
+
+        txts[0] = mContext.getResources().getString(R.string.approve_code_upper)
+                .concat(": ")
+                .concat(String.valueOf(approveCode));
+        txts[1] = mContext.getResources().getString(R.string.batch_upper)
+                .concat(":")
+                .concat(String.valueOf(batchNum))
+                .concat("/")
+                .concat(mContext.getResources().getString(R.string.stan_upper))
+                .concat(":")
+                .concat(String.valueOf(stanNum));
+
+        try {
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void printSaleDateRow(Context context, SunmiPrinterService sunmiPrinterService, Date date){
+        @SuppressLint("SimpleDateFormat") String dateStr = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(date);
+        String printSaleDateStr = dateStr
+                .concat(" ")
+                .concat(context.getString(R.string.sale_upper));
+        try {
+            sunmiPrinterService.setAlignment(0, null);
+            sunmiPrinterService.printTextWithFont(printSaleDateStr + "\n", null, 20, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void printEkuAndZNo(Context mContext, SunmiPrinterService sunmiPrinterService, int EkuNo, int zNo){
+        String txts[] = new String[2];
+        int width[] = new int[]{1, 1};
+        int align[] = new int[]{0, 2};
+        txts[0] = mContext.getResources().getString(R.string.eku_no_upper)
+                .concat(": ")
+                .concat(String.valueOf(EkuNo));
+        txts[1] = mContext.getResources().getString(R.string.z_no_upper)
+                .concat(":")
+                .concat(String.valueOf(zNo));
+        try {
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void printCardTypeAndAmountRows(Context context, SunmiPrinterService sunmiPrinterService, PrintReceiptModel printReceiptModel){
+        try {
+            sunmiPrinterService.setAlignment(1, null);
+
+            for(PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel : printReceiptModel.getReceiptPaymentModels()){
+
+                if(receiptPaymentModel.getPaymentType() == PaymentTypeEnum.CREDIT_CARD.getId()){
+                    String maskedCardNumber = PrintHelper.getMaskedCardNumber(receiptPaymentModel.getCardNumber());
+
+                    if(maskedCardNumber != null && !maskedCardNumber.isEmpty()){
+                        sunmiPrinterService.printTextWithFont(maskedCardNumber + "\b" + "\n", null, 25, null);
+
+                        String amountStr = context.getResources().getString(R.string.price)
+                                .concat(":")
+                                .concat(CommonUtils.getAmountText(receiptPaymentModel.getAmount()));
+                        sunmiPrinterService.printTextWithFont(amountStr + "\b" + "\n\n", null, 25, null);
+                    }
+                }
+            }
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void printGoodServicesInfo(Context context, SunmiPrinterService sunmiPrinterService){
+        try {
+            sunmiPrinterService.printTextWithFont(context.getResources().getString(R.string.goods_and_services_received) + "\n", null, 20, null);
+            sunmiPrinterService.printTextWithFont(context.getResources().getString(R.string.keep_this_receipt) + "\n", null, 20, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void printBelongsToCardHolder(Context context, SunmiPrinterService sunmiPrinterService){
+        try {
+            sunmiPrinterService.setAlignment(0, null);
+            sunmiPrinterService.printTextWithFont(context.getResources().getString(R.string.belongs_to_card_holder)
+                    .concat(" ")
+                    .concat("(")
+                    .concat(context.getResources().getString(R.string.first_copy))
+                    .concat(")")+ "\n\n", null, 20, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void printBelongsToMerchant(Context context, SunmiPrinterService sunmiPrinterService){
+        try {
+            sunmiPrinterService.setAlignment(0, null);
+            sunmiPrinterService.printTextWithFont(context.getResources().getString(R.string.belongs_to_contracted_merchant)
+                    .concat(" ")
+                    .concat("(")
+                    .concat(context.getResources().getString(R.string.second_copy))
+                    .concat(")")+ "\n\n", null, 18, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setBold(SunmiPrinterService sunmiPrinterService, int boldValue){
+        try {
+            sunmiPrinterService.setPrinterStyle(WoyouConsts.ENABLE_BOLD, boldValue);
+        } catch (RemoteException e) {
+            try {
+                sunmiPrinterService.sendRAWData(ESCUtil.boldOn(), null);
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }
