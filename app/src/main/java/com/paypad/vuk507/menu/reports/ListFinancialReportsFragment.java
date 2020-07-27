@@ -13,9 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.enums.ReportsEnum;
-import com.paypad.vuk507.menu.reports.adapters.ReportAdapter;
-import com.paypad.vuk507.menu.reports.interfaces.ReturnReportItemCallback;
+import com.paypad.vuk507.enums.FinancialReportsEnum;
+import com.paypad.vuk507.menu.reports.adapters.FinancialReportAdapter;
+import com.paypad.vuk507.menu.reports.financialreports.SalesReportFragment;
+import com.paypad.vuk507.menu.reports.financialreports.XReportFragment;
+import com.paypad.vuk507.menu.reports.financialreports.ZReportFragment;
+import com.paypad.vuk507.menu.reports.interfaces.ReturnFinancialReportItemCallback;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 
 import java.util.Objects;
@@ -23,7 +26,8 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ReportsFragment extends BaseFragment  implements ReturnReportItemCallback {
+
+public class ListFinancialReportsFragment extends BaseFragment implements ReturnFinancialReportItemCallback {
 
     private View mView;
 
@@ -34,7 +38,7 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
     @BindView(R.id.backImgv)
     ClickableImageView backImgv;
 
-    public ReportsFragment() {
+    public ListFinancialReportsFragment() {
 
     }
 
@@ -86,17 +90,29 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
     }
 
     private void setAdapter() {
-        ReportAdapter reportAdapter = new ReportAdapter();
-        reportAdapter.setReturnReportItemCallback(this);
+
+        FinancialReportsEnum[] financialReportsEnums = new FinancialReportsEnum[]{
+                FinancialReportsEnum.Z_REPORT,
+                FinancialReportsEnum.X_REPORT,
+                FinancialReportsEnum.SALES_REPORT,
+                FinancialReportsEnum.EKU_REPORTS,
+                FinancialReportsEnum.FINANCIAL_REPORTS,
+                FinancialReportsEnum.PLU_REPORT
+        };
+
+        FinancialReportAdapter reportAdapter = new FinancialReportAdapter(financialReportsEnums);
+        reportAdapter.setCallback(this);
         reportsRv.setAdapter(reportAdapter);
     }
 
     @Override
-    public void OnReturnReportItem(ReportsEnum reportsEnum) {
-        if(reportsEnum == ReportsEnum.SALE_REPORTS){
-            mFragmentNavigation.pushFragment(new SaleReportsFragment());
-        }else if(reportsEnum == ReportsEnum.FINANCIAL_REPORTS){
-            mFragmentNavigation.pushFragment(new ListFinancialReportsFragment());
-        }
+    public void OnReturnReportItem(FinancialReportsEnum reportsEnum) {
+
+        if(reportsEnum == FinancialReportsEnum.Z_REPORT)
+            mFragmentNavigation.pushFragment(new ZReportFragment());
+        else if(reportsEnum == FinancialReportsEnum.X_REPORT)
+            mFragmentNavigation.pushFragment(new XReportFragment());
+        else if(reportsEnum == FinancialReportsEnum.SALES_REPORT)
+            mFragmentNavigation.pushFragment(new SalesReportFragment());
     }
 }

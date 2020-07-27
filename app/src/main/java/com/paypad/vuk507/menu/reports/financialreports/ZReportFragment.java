@@ -1,9 +1,6 @@
-package com.paypad.vuk507.menu.reports;
+package com.paypad.vuk507.menu.reports.financialreports;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,27 +13,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.FinancialReportsEnum;
-import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.reports.adapters.FinancialReportAdapter;
-import com.paypad.vuk507.menu.reports.util.FinancialReportManager;
 import com.paypad.vuk507.menu.reports.interfaces.ReturnFinancialReportItemCallback;
-import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.sunmi.peripheral.printer.InnerResultCallbcak;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 
-public class FinancialReportsFragment extends BaseFragment implements ReturnFinancialReportItemCallback {
+public class ZReportFragment extends BaseFragment implements ReturnFinancialReportItemCallback {
 
     private View mView;
 
@@ -47,10 +37,7 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
     @BindView(R.id.backImgv)
     ClickableImageView backImgv;
 
-    private FinancialReportManager financialReportManager;
-    private User user;
-
-    public FinancialReportsFragment() {
+    public ZReportFragment() {
 
     }
 
@@ -63,25 +50,6 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Subscribe(sticky = true)
-    public void accountHolderUserReceived(UserBus userBus) {
-        user = userBus.getUser();
-        if (user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
     }
 
     @Nullable
@@ -111,8 +79,7 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
     }
 
     private void initVariables() {
-        toolbarTitleTv.setText(getContext().getResources().getString(R.string.reports));
-        financialReportManager = new FinancialReportManager(getContext(),  null, null,   user.getUsername() );
+        toolbarTitleTv.setText(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? FinancialReportsEnum.Z_REPORT.getLabelTr() : FinancialReportsEnum.Z_REPORT.getLabelEn());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -122,7 +89,13 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
     }
 
     private void setAdapter() {
-        FinancialReportAdapter reportAdapter = new FinancialReportAdapter();
+
+        FinancialReportsEnum[] financialReportsEnums = new FinancialReportsEnum[]{
+                FinancialReportsEnum.Z_REPORT,
+                FinancialReportsEnum.Z_TERM_REPORT
+        };
+
+        FinancialReportAdapter reportAdapter = new FinancialReportAdapter(financialReportsEnums);
         reportAdapter.setCallback(this);
         reportsRv.setAdapter(reportAdapter);
     }
@@ -130,43 +103,10 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
     @Override
     public void OnReturnReportItem(FinancialReportsEnum reportsEnum) {
 
-
         if(reportsEnum == FinancialReportsEnum.Z_REPORT){
-            financialReportManager.printZReport(getContext(), mCallback);
+
+        }else if(reportsEnum == FinancialReportsEnum.Z_TERM_REPORT){
+            mFragmentNavigation.pushFragment(new ZTermReportFragment());
         }
     }
-
-    InnerResultCallbcak mCallback = new InnerResultCallbcak() {
-        @Override
-        public void onRunResult(boolean isSuccess) throws RemoteException {
-
-        }
-
-        @Override
-        public void onReturnString(String result) throws RemoteException {
-
-        }
-
-        @Override
-        public void onRaiseException(int code, String msg) throws RemoteException {
-
-        }
-
-        @Override
-        public void onPrintResult(int code, String msg) throws RemoteException {
-            final int res = code;
-            ((Activity)getContext()).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(res == 0){
-                        CommonUtils.showToastShort(getContext(), "Print successful");
-                        //TODO Follow-up after successful
-                    }else{
-                        CommonUtils.showToastShort(getContext(), "Print failed");
-                        //TODO Follow-up after failed, such as reprint
-                    }
-                }
-            });
-        }
-    };
 }

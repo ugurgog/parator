@@ -84,7 +84,7 @@ public class PrintReceiptManager {
         addTotalTipAmount();
 
         printReceiptModel.setfDate(new Date());
-        printReceiptModel.setReceiptDate(saleModel.getSale().getCreateDate());
+        printReceiptModel.setReceiptDate(transaction.getCreateDate());
         printReceiptModel.setTotalAmount(transaction.getTransactionAmount());
         printReceiptModel.setfNo(5);                                //TODO
         printReceiptModel.setzNo(176);                              //TODO

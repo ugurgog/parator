@@ -69,6 +69,32 @@ public class PrintHelper {
         }
     }
 
+    public static void addLineTextWithValue(SunmiPrinterService sunmiPrinterService, String text){
+        int paper;
+        try {
+            String fullLine = "------------------------------------------------";
+            paper = sunmiPrinterService.getPrinterPaper();
+
+            int dataLen = text.trim().length();
+            int maxLen = paper == 1 ? 32 : 48;
+
+            if(dataLen > maxLen){
+                text = text.substring(0, maxLen - 6).concat("..");
+                dataLen = text.trim().length();
+            }
+
+            int lineLen = (maxLen - dataLen) / 2;
+
+            String mainText = fullLine.substring(0, lineLen).concat(text).concat(fullLine);
+            mainText = mainText.substring(0, maxLen);
+
+            sunmiPrinterService.printText(mainText + "\n", null);
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static List<String> getAddressList(int paper, String address){
         List<String> addressList = new ArrayList<>();
 
@@ -275,6 +301,16 @@ public class PrintHelper {
             } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
+        }
+    }
+
+    public static void printTestDeviceLabel(Context mContext, SunmiPrinterService sunmiPrinterService){
+        try {
+            sunmiPrinterService.setAlignment(1, null);
+            sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.test_device) + "\b" + "\n", null, 25, null);
+            sunmiPrinterService.printTextWithFont(" " + "\n", null, 25, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -23,8 +23,8 @@ public class FinancialReportAdapter extends RecyclerView.Adapter<FinancialReport
     private FinancialReportsEnum[] values;
     private ReturnFinancialReportItemCallback callback;
 
-    public FinancialReportAdapter() {
-        this.values = FinancialReportsEnum.values();
+    public FinancialReportAdapter(FinancialReportsEnum[] values) {
+        this.values = values;
     }
 
     public void setCallback(ReturnFinancialReportItemCallback callback) {

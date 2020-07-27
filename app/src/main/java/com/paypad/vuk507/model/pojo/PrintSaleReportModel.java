@@ -3,7 +3,7 @@ package com.paypad.vuk507.model.pojo;
 import java.util.Date;
 import java.util.List;
 
-public class PrintReportModel {
+public class PrintSaleReportModel {
 
     private String merchantName;
     private String firmName;
@@ -12,9 +12,13 @@ public class PrintReportModel {
     private String taxOffice;
 
     private String reportId;
-    private Date reportDate;
+    private Date fDate;
     private String reportTitle;
+    private int fNo;
+    private int zNo;
+
     private long reportNum;
+    private Date reportDate;
 
     //KDV Bilgileri
     private List<ReportTaxModel> reportTaxModels;
@@ -34,7 +38,7 @@ public class PrintReportModel {
     private List<FileTypeModel> fileTypeModels;
 
     //Tamamlanmamis Islemler
-    private double cancellationCount;
+    private int cancellationCount;
     private double cancellationAmount;
 
     //Odeme Bilgileri
@@ -49,12 +53,26 @@ public class PrintReportModel {
     private double otherNoTaxAmount;
     private double otherAmount;
 
-
     private String mersisNo;
     private String email;
     private int ekuNo;
-    private int zNo;
     private String deviceRegisterId;
+
+    public Date getReportDate() {
+        return reportDate;
+    }
+
+    public void setReportDate(Date reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public int getfNo() {
+        return fNo;
+    }
+
+    public void setfNo(int fNo) {
+        this.fNo = fNo;
+    }
 
     public String getMerchantName() {
         return merchantName;
@@ -104,12 +122,12 @@ public class PrintReportModel {
         this.reportId = reportId;
     }
 
-    public Date getReportDate() {
-        return reportDate;
+    public Date getfDate() {
+        return fDate;
     }
 
-    public void setReportDate(Date reportDate) {
-        this.reportDate = reportDate;
+    public void setfDate(Date fDate) {
+        this.fDate = fDate;
     }
 
     public String getReportTitle() {
@@ -200,11 +218,11 @@ public class PrintReportModel {
         this.fileTypeModels = fileTypeModels;
     }
 
-    public double getCancellationCount() {
+    public int getCancellationCount() {
         return cancellationCount;
     }
 
-    public void setCancellationCount(double cancellationCount) {
+    public void setCancellationCount(int cancellationCount) {
         this.cancellationCount = cancellationCount;
     }
 
@@ -422,6 +440,15 @@ public class PrintReportModel {
         private double eMoneyAmount;
         private double chequeAmount;
         private double openAccountAmount;
+        private double totalPaymentAmount;
+
+        public double getTotalPaymentAmount() {
+            return totalPaymentAmount;
+        }
+
+        public void setTotalPaymentAmount(double totalPaymentAmount) {
+            this.totalPaymentAmount = totalPaymentAmount;
+        }
 
         public double getCashAmount() {
             return cashAmount;

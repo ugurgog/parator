@@ -256,6 +256,35 @@
     <string name="belongs_to_contracted_merchant">İŞYERİNE AİT</string>
     <string name="second_copy">2.KOPYA</string>
     <string name="print_merchant_receipt">İşyeri Makbuzuu Yazdır</string>
+    <string name="report_date_upper">RAPOR GÜNÜ</string>
+    <string name="report_no_upper">RAPOR NO</string>
+    <string name="tax_information_upper">KDV BİLGİLERİ</string>
+    <string name="sale_information_upper">SATIŞ BİLGİLERİ</string>
+    <string name="total_tax_upper">TOPLAM KDV</string>
+    <string name="total_sales_upper">TOPLAM SATIŞ</string>
+    <string name="announced_tax_upper">BEYAN EDİLECEK KDV</string>
+    <string name="dicount_total_upper">İNDİRİM TOPLAMI</string>
+    <string name="increase_total_upper">ARTIRIM TOPLAMI</string>
+
+    <string name="cumulatives_upper">KÜMÜLATİFLER</string>
+    <string name="cum_tax_upper">KÜM. KDV</string>
+    <string name="cum_sale_upper">KÜM. SATIŞ</string>
+    <string name="file_types_upper">BELGE TİPLERİ</string>
+    <string name="count_upper">ADEDİ</string>
+    <string name="uncompleted_processes_upper">TAMAMLANMAMIŞ İŞLEMLER</string>
+    <string name="cancel_count_upper">İPTAL ADEDİ</string>
+    <string name="cancel_amount_upper">İPTAL TUTAR</string>
+
+    <string name="payment_information_upper">ÖDEME BILGILERI</string>
+    <string name="other_upper">DIĞER</string>
+    <string name="virtual_pos_upper">SANAL POS</string>
+    <string name="gift_card_upper">HEDIYE K.</string>
+    <string name="havale_eft_upper">HAVALE/EFT</string>
+    <string name="e_money_upper">E-PARA/HIZLI PARA T.</string>
+    <string name="cheque_bill_upper">SENET/</string>
+    <string name="open_account_upper">OPEN ACCOUNT</string>
+    <string name="meal_card_upper">MEAL CARD</string>
+    <string name="total_payment_upper">TOTAL PAYMENT</string>
 
     <string name="no_transaction_time_period">Bu zaman dilimi için işlem yok</string>
     <string name="no_transaction_time_period_desc">Seçtiğiniz süre içinde herhangi bir işlem yapılmadı. Farklı bir zaman aralığı seçmeyi deneyin.</string>

@@ -256,6 +256,35 @@
     <string name="belongs_to_contracted_merchant">BELONGS TO CONTRACTED MERCHANT</string>
     <string name="second_copy">2.COPY</string>
     <string name="print_merchant_receipt">Print Merchant Receipt</string>
+    <string name="report_date_upper">REPORT DATE</string>
+    <string name="report_no_upper">REPORT NO</string>
+    <string name="tax_information_upper">TAX INFORMATION</string>
+    <string name="sale_information_upper">SALE INFORMATION</string>
+    <string name="total_tax_upper">TOTAL TAX</string>
+    <string name="total_sales_upper">TOTAL SALE</string>
+    <string name="announced_tax_upper">ANNOUNCED TAX</string>
+    <string name="dicount_total_upper">DISCOUNT TOTAL</string>
+    <string name="increase_total_upper">INCREASE TOTAL</string>
+
+    <string name="cumulatives_upper">CUMULATIVES</string>
+    <string name="cum_tax_upper">CUM. TAX</string>
+    <string name="cum_sale_upper">CUM. SALE</string>
+    <string name="file_types_upper">FILE TYPES</string>
+    <string name="count_upper">COUNT</string>
+    <string name="uncompleted_processes_upper">UNCOMPLETED PROCESSES</string>
+    <string name="cancel_count_upper">CANCEL COUNT</string>
+    <string name="cancel_amount_upper">CANCEL AMOUNT</string>
+
+    <string name="payment_information_upper">PAYMENT INFORMATION</string>
+    <string name="other_upper">OTHER</string>
+    <string name="virtual_pos_upper">VIRTUAL POS</string>
+    <string name="gift_card_upper">GIFT CARD</string>
+    <string name="havale_eft_upper">TRANSFER/EFT</string>
+    <string name="e_money_upper">E-MONEY/MONEY TRANSFER</string>
+    <string name="cheque_bill_upper">BILL/CHEQUE</string>
+    <string name="open_account_upper">OPEN ACCOUNT</string>
+    <string name="meal_card_upper">MEAL CARD</string>
+    <string name="total_payment_upper">TOTAL PAYMENT</string>
 
 
     <string name="no_transaction_time_period">No transactions for time period</string>

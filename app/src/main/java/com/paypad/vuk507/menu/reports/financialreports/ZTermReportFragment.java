@@ -1,4 +1,4 @@
-package com.paypad.vuk507.menu.reports;
+package com.paypad.vuk507.menu.reports.financialreports;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,17 +13,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.enums.ReportsEnum;
-import com.paypad.vuk507.menu.reports.adapters.ReportAdapter;
-import com.paypad.vuk507.menu.reports.interfaces.ReturnReportItemCallback;
+import com.paypad.vuk507.enums.FinancialReportsEnum;
+import com.paypad.vuk507.menu.reports.adapters.FinancialReportAdapter;
+import com.paypad.vuk507.menu.reports.interfaces.ReturnFinancialReportItemCallback;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
+import com.paypad.vuk507.utils.CommonUtils;
 
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ReportsFragment extends BaseFragment  implements ReturnReportItemCallback {
+import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+
+
+public class ZTermReportFragment extends BaseFragment implements ReturnFinancialReportItemCallback {
 
     private View mView;
 
@@ -34,7 +38,7 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
     @BindView(R.id.backImgv)
     ClickableImageView backImgv;
 
-    public ReportsFragment() {
+    public ZTermReportFragment() {
 
     }
 
@@ -76,7 +80,7 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
     }
 
     private void initVariables() {
-        toolbarTitleTv.setText(getContext().getResources().getString(R.string.reports));
+        toolbarTitleTv.setText(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? FinancialReportsEnum.Z_TERM_REPORT.getLabelTr() : FinancialReportsEnum.Z_TERM_REPORT.getLabelEn());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -86,17 +90,23 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
     }
 
     private void setAdapter() {
-        ReportAdapter reportAdapter = new ReportAdapter();
-        reportAdapter.setReturnReportItemCallback(this);
+
+        FinancialReportsEnum[] financialReportsEnums = new FinancialReportsEnum[]{
+                FinancialReportsEnum.ACCUMULATED_TERM_REPORT,
+                FinancialReportsEnum.REPORT_BETWEEN_TWO_Z,
+                FinancialReportsEnum.REPORT_BETWEEN_TWO_DATE,
+                FinancialReportsEnum.REPORT_CURRENT_MONTH,
+                FinancialReportsEnum.REPORT_PREVIOUS_MONTH
+        };
+
+        FinancialReportAdapter reportAdapter = new FinancialReportAdapter(financialReportsEnums);
+        reportAdapter.setCallback(this);
         reportsRv.setAdapter(reportAdapter);
     }
 
     @Override
-    public void OnReturnReportItem(ReportsEnum reportsEnum) {
-        if(reportsEnum == ReportsEnum.SALE_REPORTS){
-            mFragmentNavigation.pushFragment(new SaleReportsFragment());
-        }else if(reportsEnum == ReportsEnum.FINANCIAL_REPORTS){
-            mFragmentNavigation.pushFragment(new ListFinancialReportsFragment());
-        }
+    public void OnReturnReportItem(FinancialReportsEnum reportsEnum) {
+
+
     }
 }
