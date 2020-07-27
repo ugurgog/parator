@@ -34,6 +34,7 @@ import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -68,10 +69,14 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     Button btnSend;
     @BindView(R.id.mainRl)
     RelativeLayout mainRl;
+    @BindView(R.id.printReceiptImgv)
+    ClickableImageView printReceiptImgv;
 
     private User user;
     private Transaction mTransaction;
     private String email;
+
+    private PrintReceiptManager printReceiptManager;
 
     SendNewReceiptFragment(Transaction transaction) {
         mTransaction = transaction;
@@ -143,6 +148,19 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
+
+        printReceiptImgv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                printReceiptManager.printCustomerReceipt();
+            }
+        });
+    }
+
+    private void initPrinter() {
+        SaleModel saleModel = SaleDBHelper.getSaleModelBySaleId(mTransaction.getSaleUuid());
+        printReceiptManager = new PrintReceiptManager(getContext(), saleModel, mTransaction,false);
+        printReceiptManager.setCallback(mCallback);
     }
 
     private void sendMail(){
@@ -155,7 +173,7 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     }
 
     private void initVariables() {
-
+        initPrinter();
     }
 
     private void checkValidEmail() {
@@ -222,6 +240,43 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
             }catch (NullPointerException e){
 
             }
+        }
+    };
+
+    InnerResultCallbcak mCallback = new InnerResultCallbcak() {
+        @Override
+        public void onRunResult(boolean isSuccess) throws RemoteException {
+
+        }
+
+        @Override
+        public void onReturnString(String result) throws RemoteException {
+
+        }
+
+        @Override
+        public void onRaiseException(int code, String msg) throws RemoteException {
+
+        }
+
+        @Override
+        public void onPrintResult(int code, String msg) throws RemoteException {
+            final int res = code;
+            ((Activity)getContext()).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(res == 0){
+                        CommonUtils.showToastShort(getContext(), "Print successful");
+                        //TODO Follow-up after successful
+
+                        startCounter();
+                    }else{
+                        CommonUtils.showToastShort(getContext(), "Print failed");
+                        //TODO Follow-up after failed, such as reprint
+                        startCounter();
+                    }
+                }
+            });
         }
     };
 }

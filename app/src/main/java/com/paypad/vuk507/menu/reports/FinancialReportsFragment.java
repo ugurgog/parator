@@ -1,6 +1,7 @@
 package com.paypad.vuk507.menu.reports;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.LayoutInflater;
@@ -15,13 +16,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.FinancialReportsEnum;
+import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.reports.adapters.FinancialReportAdapter;
 import com.paypad.vuk507.menu.reports.util.FinancialReportManager;
 import com.paypad.vuk507.menu.reports.interfaces.ReturnFinancialReportItemCallback;
+import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.sunmi.peripheral.printer.InnerResultCallbcak;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Objects;
 
@@ -41,6 +48,7 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
     ClickableImageView backImgv;
 
     private FinancialReportManager financialReportManager;
+    private User user;
 
     public FinancialReportsFragment() {
 
@@ -55,6 +63,25 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(sticky = true)
+    public void accountHolderUserReceived(UserBus userBus) {
+        user = userBus.getUser();
+        if (user == null)
+            user = UserDBHelper.getUserFromCache(getContext());
     }
 
     @Nullable
@@ -85,7 +112,7 @@ public class FinancialReportsFragment extends BaseFragment implements ReturnFina
 
     private void initVariables() {
         toolbarTitleTv.setText(getContext().getResources().getString(R.string.reports));
-        financialReportManager = new FinancialReportManager(   );
+        financialReportManager = new FinancialReportManager(getContext(),  null, null,   user.getUsername() );
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);

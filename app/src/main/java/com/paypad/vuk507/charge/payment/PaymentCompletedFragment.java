@@ -231,18 +231,16 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     }
 
     private void initVariables() {
-        printReceiptManager = new PrintReceiptManager(getContext(), SaleModelInstance.getInstance().getSaleModel(), true);
+        printReceiptManager = new PrintReceiptManager(getContext(), SaleModelInstance.getInstance().getSaleModel(), mTransaction,true);
         printReceiptManager.setCallback(mCallback);
 
         if(mProcessDirectionType == ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED){
             paymentStatus = STATUS_NEW_SALE;
             continueBtn.setText(getResources().getString(R.string.new_sale));
-            receiptInfoll.setVisibility(View.VISIBLE);
             startCounter();
         }else{
             paymentStatus = STATUS_CONTINUE;
             continueBtn.setText(getResources().getString(R.string.continue_text));
-            receiptInfoll.setVisibility(View.GONE);
         }
 
         btnPrintReceipt.setText(getContext().getResources().getString(R.string.print_receipt));

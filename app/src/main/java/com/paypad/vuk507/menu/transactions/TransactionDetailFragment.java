@@ -69,8 +69,8 @@ public class TransactionDetailFragment extends BaseFragment {
     RecyclerView saleItemsRv;
     @BindView(R.id.totalRv)
     RecyclerView totalRv;
-    @BindView(R.id.printReceiptBtn)
-    Button printReceiptBtn;
+    //@BindView(R.id.printReceiptBtn)
+    //Button printReceiptBtn;
 
 
     private User user;
@@ -81,8 +81,6 @@ public class TransactionDetailFragment extends BaseFragment {
 
     private SaleModel saleModel;
     private OrderManager orderManager;
-
-    private PrintReceiptManager printReceiptManager;
 
     public TransactionDetailFragment(SaleModel saleModel) {
         this.saleModel = saleModel;
@@ -149,27 +147,21 @@ public class TransactionDetailFragment extends BaseFragment {
             }
         });
 
-        printReceiptBtn.setOnClickListener(new View.OnClickListener() {
+        /*printReceiptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 printReceiptManager.printCustomerReceipt();
             }
-        });
+        });*/
     }
 
     private void initVariables() {
         orderManager = new OrderManager();
         setToolbarTitle();
-        initPrinter();
 
         setPaymentDetailAdapter();
         setItemsServicesAdapter();
         setPaymentTotalAdapter();
-    }
-
-    private void initPrinter() {
-        printReceiptManager = new PrintReceiptManager(getContext(), saleModel, false);
-        printReceiptManager.setCallback(mCallback);
     }
 
     private void setToolbarTitle(){

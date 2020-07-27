@@ -197,7 +197,7 @@ public class PrintHelper {
         try {
             sunmiPrinterService.setAlignment(1, null);
 
-            for(PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel : printReceiptModel.getReceiptPaymentModels()){
+            /*for(PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel : printReceiptModel.getReceiptPaymentModels()){
 
                 if(receiptPaymentModel.getPaymentType() == PaymentTypeEnum.CREDIT_CARD.getId()){
                     String maskedCardNumber = PrintHelper.getMaskedCardNumber(receiptPaymentModel.getCardNumber());
@@ -211,7 +211,20 @@ public class PrintHelper {
                         sunmiPrinterService.printTextWithFont(amountStr + "\b" + "\n\n", null, 25, null);
                     }
                 }
+            }*/
+
+            if(printReceiptModel.getReceiptPaymentModel().getPaymentType() == PaymentTypeEnum.CREDIT_CARD.getId()){
+                String maskedCardNumber = PrintHelper.getMaskedCardNumber(printReceiptModel.getReceiptPaymentModel().getCardNumber());
+
+                if(maskedCardNumber != null && !maskedCardNumber.isEmpty()){
+                    sunmiPrinterService.printTextWithFont(maskedCardNumber + "\b" + "\n", null, 25, null);
+                }
             }
+
+            String amountStr = context.getResources().getString(R.string.price)
+                    .concat(":")
+                    .concat(CommonUtils.getAmountText(printReceiptModel.getReceiptPaymentModel().getAmount()));
+            sunmiPrinterService.printTextWithFont(amountStr + "\b" + "\n\n", null, 25, null);
 
         } catch (RemoteException e) {
             e.printStackTrace();

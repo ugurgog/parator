@@ -43,8 +43,9 @@ public class PrintReceiptManager {
     private PrintReceiptModel printReceiptModel;
     private Context mContext;
     private boolean isFinancialReceipt;
+    private Transaction transaction;
 
-    public PrintReceiptManager(Context context, SaleModel saleModel, boolean isFinancialReceipt) {
+    public PrintReceiptManager(Context context, SaleModel saleModel, Transaction transaction, boolean isFinancialReceipt) {
         this.mContext = context;
         this.helper = SunmiPrintHelper.getInstance();
         this.sunmiPrinterService = helper.getSunmiPrinterService();
@@ -52,6 +53,7 @@ public class PrintReceiptManager {
         this.saleModel = saleModel;
         printReceiptModel = new PrintReceiptModel();
         this.isFinancialReceipt = isFinancialReceipt;
+        this.transaction = transaction;
 
         fillReceiptModel();
     }
@@ -72,16 +74,18 @@ public class PrintReceiptManager {
         printReceiptModel.setDiscounts(new ArrayList<>());
         printReceiptModel.setSaleItems(new ArrayList<>());
         printReceiptModel.setReceiptTaxModels(new ArrayList<>());
-        printReceiptModel.setReceiptPaymentModels(new ArrayList<>());
+        //printReceiptModel.setReceiptPaymentModels(new ArrayList<>());
+
 
         addDiscountItems();
         addSaleItems();
         addTaxModels();
         addPaymentTypes();
+        addTotalTipAmount();
 
         printReceiptModel.setfDate(new Date());
         printReceiptModel.setReceiptDate(saleModel.getSale().getCreateDate());
-        printReceiptModel.setTotalAmount(saleModel.getSale().getSubTotalAmount());
+        printReceiptModel.setTotalAmount(transaction.getTransactionAmount());
         printReceiptModel.setfNo(5);                                //TODO
         printReceiptModel.setzNo(176);                              //TODO
 
@@ -99,7 +103,7 @@ public class PrintReceiptManager {
     }
 
     private void addPaymentTypes() {
-        for(Transaction transaction : saleModel.getTransactions()){
+        /*for(Transaction transaction : saleModel.getTransactions()){
             if(transaction.getPaymentTypeId() == PaymentTypeEnum.CREDIT_CARD.getId()){
                 PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel = new PrintReceiptModel.ReceiptPaymentModel();
                 receiptPaymentModel.setPaymentType(transaction.getPaymentTypeId());
@@ -126,6 +130,26 @@ public class PrintReceiptManager {
                     receiptPaymentModel.setAmount(transaction.getTransactionAmount());
                     printReceiptModel.getReceiptPaymentModels().add(receiptPaymentModel);
                 }
+            }
+        }*/
+
+
+        PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel = new PrintReceiptModel.ReceiptPaymentModel();
+        receiptPaymentModel.setPaymentType(transaction.getPaymentTypeId());
+        receiptPaymentModel.setAmount(transaction.getTransactionAmount());
+
+        if(transaction.getPaymentTypeId() == PaymentTypeEnum.CREDIT_CARD.getId()){
+            receiptPaymentModel.setCardName("OFFLINE XXX"); //TODO
+            receiptPaymentModel.setCardNumber("1111 2222 3333 4444");//TODO
+        }
+
+        printReceiptModel.setReceiptPaymentModel(receiptPaymentModel);
+    }
+
+    private void addTotalTipAmount(){
+        for(Transaction transaction : saleModel.getTransactions()){
+            if(transaction.getTipAmount() > 0d){
+                printReceiptModel.setTotalTipAmount(CommonUtils.round(printReceiptModel.getTotalTipAmount() + transaction.getTipAmount(), 2));
             }
         }
     }
@@ -170,6 +194,8 @@ public class PrintReceiptManager {
 
             printReceiptModel.setTotalTaxAmount(CommonUtils.round(printReceiptModel.getTotalTaxAmount() + (saleItem.getTaxAmount() * saleItem.getQuantity()), 2));
         }
+
+        printReceiptModel.setTotalTaxAmount(CommonUtils.round(printReceiptModel.getTotalTaxAmount() / saleModel.getTransactions().size(), 2));
     }
 
     private void addDiscountItems(){
@@ -359,7 +385,24 @@ public class PrintReceiptManager {
             PrintHelper.addLineText(sunmiPrinterService);
 
             //PRINT PAYMENT TYPES AND CARD INFOS
-            for(PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel : printReceiptModel.getReceiptPaymentModels()){
+            if(printReceiptModel.getReceiptPaymentModel().getPaymentType() == PaymentTypeEnum.CASH.getId()){
+                txts[0] = mContext.getResources().getString(R.string.cash_upper);
+                txts[1] = "*" + CommonUtils.getAmountText(printReceiptModel.getReceiptPaymentModel().getAmount());
+
+                sunmiPrinterService.printColumnsString(txts, width, align, null);
+            }else if(printReceiptModel.getReceiptPaymentModel().getPaymentType() == PaymentTypeEnum.CREDIT_CARD.getId()){
+                txts[0] = mContext.getResources().getString(R.string.card_upper);
+                txts[1] = "*" + CommonUtils.getAmountText(printReceiptModel.getReceiptPaymentModel().getAmount());
+
+                sunmiPrinterService.printColumnsString(txts, width, align, null);
+
+                sunmiPrinterService.printTextWithFont("  " + printReceiptModel.getReceiptPaymentModel().getCardName() + "\n", null, 20, null);
+
+                String maskedCardNum = PrintHelper.getMaskedCardNumber(printReceiptModel.getReceiptPaymentModel().getCardNumber());
+                sunmiPrinterService.printTextWithFont("  " + maskedCardNum + "\n", null, 20, null);
+            }
+
+            /*for(PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel : printReceiptModel.getReceiptPaymentModels()){
 
                 if(receiptPaymentModel.getPaymentType() == PaymentTypeEnum.CASH.getId()){
                     txts[0] = mContext.getResources().getString(R.string.cash_upper);
@@ -377,7 +420,7 @@ public class PrintReceiptManager {
                     String maskedCardNum = PrintHelper.getMaskedCardNumber(receiptPaymentModel.getCardNumber());
                     sunmiPrinterService.printTextWithFont("  " + maskedCardNum + "\n", null, 20, null);
                 }
-            }
+            }*/
 
             //PRINT BARCODE
             sunmiPrinterService.printTextWithFont(" " + "\n\n", null, 20, null);
@@ -448,7 +491,21 @@ public class PrintReceiptManager {
             //PRINT CARD INFOS
             sunmiPrinterService.setAlignment(1, null);
 
-            for(PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel : printReceiptModel.getReceiptPaymentModels()){
+            if (printReceiptModel.getReceiptPaymentModel().getPaymentType() == PaymentTypeEnum.CREDIT_CARD.getId()) {
+                String maskedCardNumber = PrintHelper.getMaskedCardNumber(printReceiptModel.getReceiptPaymentModel().getCardNumber());
+
+                if (maskedCardNumber != null && !maskedCardNumber.isEmpty()) {
+                    sunmiPrinterService.printTextWithFont(maskedCardNumber + "\b" + "\n", null, 25, null);
+                }
+            }
+
+            String amountStr = mContext.getResources().getString(R.string.price)
+                    .concat(":")
+                    .concat(CommonUtils.getAmountText(printReceiptModel.getReceiptPaymentModel().getAmount()));
+            sunmiPrinterService.printTextWithFont(amountStr + "\b" + "\n\n", null, 25, null);
+
+
+            /*for(PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel : printReceiptModel.getReceiptPaymentModels()){
 
                 if(receiptPaymentModel.getPaymentType() == PaymentTypeEnum.CREDIT_CARD.getId()){
                     String maskedCardNumber = PrintHelper.getMaskedCardNumber(receiptPaymentModel.getCardNumber());
@@ -462,7 +519,7 @@ public class PrintReceiptManager {
                         sunmiPrinterService.printTextWithFont(amountStr + "\b" + "\n\n", null, 25, null);
                     }
                 }
-            }
+            }*/
 
             PrintHelper.setBold(sunmiPrinterService, WoyouConsts.ENABLE);
 
