@@ -275,16 +275,24 @@
     <string name="cancel_count_upper">İPTAL ADEDİ</string>
     <string name="cancel_amount_upper">İPTAL TUTAR</string>
 
-    <string name="payment_information_upper">ÖDEME BILGILERI</string>
-    <string name="other_upper">DIĞER</string>
+    <string name="payment_information_upper">ÖDEME BİLGİLERİ</string>
+    <string name="other_upper">DİĞER</string>
     <string name="virtual_pos_upper">SANAL POS</string>
-    <string name="gift_card_upper">HEDIYE K.</string>
+    <string name="gift_card_upper">HEDİYE K.</string>
     <string name="havale_eft_upper">HAVALE/EFT</string>
     <string name="e_money_upper">E-PARA/HIZLI PARA T.</string>
-    <string name="cheque_bill_upper">SENET/</string>
-    <string name="open_account_upper">OPEN ACCOUNT</string>
-    <string name="meal_card_upper">MEAL CARD</string>
-    <string name="total_payment_upper">TOTAL PAYMENT</string>
+    <string name="cheque_bill_upper">SENET/ÇEK</string>
+    <string name="open_account_upper">AÇIK HESAP</string>
+    <string name="meal_card_upper">YEMEK KARTI</string>
+    <string name="total_payment_upper">TOPLAM ÖDEME</string>
+    <string name="information_receipts_upper">BİLGİ FİŞLERİ</string>
+    <string name="total_price_upper">TOPLAM TUTAR</string>
+    <string name="total_info_receipt_count_upper">TOPLAM BİLGİ F. AD.</string>
+    <string name="additional_info_upper">EK BİLGİLER</string>
+    <string name="financial_receipt_incl_upper">MALİ FİŞ İÇİNDE</string>
+    <string name="invoice_collection_upper">FATURA TAHSİLAT</string>
+    <string name="other_matrahsiz_upper">DİĞER MATRAHSIZ</string>
+    <string name="process_end_of_day">Günsonu Al</string>
 
     <string name="no_transaction_time_period">Bu zaman dilimi için işlem yok</string>
     <string name="no_transaction_time_period_desc">Seçtiğiniz süre içinde herhangi bir işlem yapılmadı. Farklı bir zaman aralığı seçmeyi deneyin.</string>

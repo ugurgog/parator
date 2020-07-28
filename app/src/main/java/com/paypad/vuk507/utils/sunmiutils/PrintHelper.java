@@ -313,4 +313,13 @@ public class PrintHelper {
             e.printStackTrace();
         }
     }
+
+    public static void printNoFinancialLabel(Context mContext, SunmiPrinterService sunmiPrinterService){
+        try {
+            sunmiPrinterService.setAlignment(1, null);
+            sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.no_financial_receipt) + "\b" + "\n", null, 25, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 }

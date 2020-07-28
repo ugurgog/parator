@@ -205,11 +205,11 @@ public class SaleReportsFragment extends BaseFragment implements ReturnReportDat
         ReportDate currentMonthDates = getCurrentMonthDates();
         initSaleSummaryReportFragment(ReportSelectionEnum.ONE_M, currentMonthDates.getStartDate(), currentMonthDates.getEndDate());
 
-        ReportDate threeMonthDates = getThreeMonthsDates();
+        /*ReportDate threeMonthDates = getThreeMonthsDates();
         initSaleSummaryReportFragment(ReportSelectionEnum.THREE_M, threeMonthDates.getStartDate(), threeMonthDates.getEndDate());
 
         ReportDate oneYearDates = getOneYearDates();
-        initSaleSummaryReportFragment(ReportSelectionEnum.ONE_Y, oneYearDates.getStartDate(), oneYearDates.getEndDate());
+        initSaleSummaryReportFragment(ReportSelectionEnum.ONE_Y, oneYearDates.getStartDate(), oneYearDates.getEndDate());*/
 
         viewPager.setAdapter(customViewPagerAdapter);
     }
@@ -255,31 +255,11 @@ public class SaleReportsFragment extends BaseFragment implements ReturnReportDat
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         Log.i("Info", "initSaleSummaryReportFragment  " + reportSelectionEnum.getLabel() + " "
-                + simpleDateFormat.format(getStartDate(startDate)) + "  " + simpleDateFormat.format(getEndDate(endDate)) );
+                + simpleDateFormat.format(DataUtils.getStartTimeOfDate(startDate)) + "  " + simpleDateFormat.format(DataUtils.getEndTimeOfDate(endDate)) );
 
-        SalesDetailFragment salesDetailFragment = new SalesDetailFragment(getStartDate(startDate), getEndDate(endDate), false, reportSelectionEnum);
+        SalesDetailFragment salesDetailFragment = new SalesDetailFragment(DataUtils.getStartTimeOfDate(startDate), DataUtils.getEndTimeOfDate(endDate), false, reportSelectionEnum);
         salesDetailFragment.setReturnReportModelCallback(this);
         customViewPagerAdapter.addFrag(salesDetailFragment, reportSelectionEnum.getLabel());
-    }
-
-    private Date getStartDate(Date startDate){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(startDate);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
-    }
-
-    private Date getEndDate(Date endDate){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(endDate);
-        cal.set(Calendar.HOUR_OF_DAY, 23);
-        cal.set(Calendar.MINUTE, 59);
-        cal.set(Calendar.SECOND, 59);
-        cal.set(Calendar.MILLISECOND, 999);
-        return cal.getTime();
     }
 
     private ReportDate getOneWeekDates(){
@@ -367,7 +347,8 @@ public class SaleReportsFragment extends BaseFragment implements ReturnReportDat
         if (customizeReportFragment != null)
             Objects.requireNonNull(customizeReportFragment.getActivity()).onBackPressed();
 
-        undefinedSalesDetailFragment = new SalesDetailFragment(getStartDate(reportDate.getStartDate()), getEndDate(reportDate.getEndDate()), false, ReportSelectionEnum.NOT_DEFINED);
+        undefinedSalesDetailFragment = new SalesDetailFragment(DataUtils.getStartTimeOfDate(reportDate.getStartDate()), DataUtils.getEndTimeOfDate(reportDate.getEndDate()),
+                false, ReportSelectionEnum.NOT_DEFINED);
         undefinedSalesDetailFragment.setReturnReportModelCallback(this);
 
         Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction()

@@ -50,17 +50,22 @@ public class PrintSalesReportManager {
     private List<SaleModel> saleModels;
     private String userName;
     private PrintSaleReportModel printSaleReportModel;
+    private InnerResultCallbcak callback;
 
     private Date startDate;
     private Date endDate;
 
+    public void setCallback(InnerResultCallbcak callback) {
+        this.callback = callback;
+    }
+
     enum FileTypeEnum{
-        OKC_RECEIPTS("OKC RECEIPTS", "ÖKC FİŞLERİ"),
+        OKC_RECEIPTS("OKC REC.", "ÖKC FİŞLERİ"),
         INVOICE("INVOICE", "FATURA"),
         SMM("SMM", "SMM"),
         MM("MM", "MM"),
         TICKET("TICKET", "BİLET"),
-        EXPENSES("NOTE OF EXPENSES", "GİDER PUSULASI");
+        EXPENSES("NOTE OF EXPEN.", "GİDER PUS.");
 
         private final String labelTr;
         private final String labelEn;
@@ -83,10 +88,10 @@ public class PrintSalesReportManager {
         INVOICE("INVOICE", "FATURA"),
         MEAL_CARD("MEAL CARD", "YEMEK KARTI"),
         EARNEST("EARNEST", "AVANS"),
-        CAR_PARK_RECEIPT("CAR PARK RECEIPT", "OTO PARK FİŞİ"),
-        INVOICE_COLLECTION("INVOICE COLLECTION", "FATURA TAHSİLAT"),
-        CURRENT_ACCOUNT("CURRENT ACCOUNT", "CARİ HESAP"),
-        OTHER_INFO_RECEIPT("OTHER INFO R.", "DİĞER BİLGİ F.");
+        CAR_PARK_RECEIPT("CAR PARK REC.", "OTO PARK F."),
+        INVOICE_COLLECTION("INVOICE COLL.", "FATURA TAH."),
+        CURRENT_ACCOUNT("CURRENT ACC.", "CARİ HESAP"),
+        OTHER_INFO_RECEIPT("OTHER INFO R.", "DİĞER BİL. F.");
 
         private final String labelTr;
         private final String labelEn;
@@ -259,7 +264,9 @@ public class PrintSalesReportManager {
 
         for(InformationReceiptEnum receiptEnum : informationReceiptEnums){
             PrintSaleReportModel.InformationReceiptModel receiptModel = new PrintSaleReportModel.InformationReceiptModel();
-            receiptModel.setInfoName(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? receiptEnum.getLabelTr() : receiptEnum.getLabelEn());
+            receiptModel.setInfoName((CommonUtils.getLanguage().equals(LANGUAGE_TR) ? receiptEnum.getLabelTr() : receiptEnum.getLabelEn())
+                .concat(" ")
+                .concat(mContext.getResources().getString(R.string.count_upper)));
             receiptModel.setAmount(0d);         //TODO
             receiptModel.setCount(0);           //TODO
             informationReceiptModels.add(receiptModel);
@@ -330,7 +337,7 @@ public class PrintSalesReportManager {
 
             //PRINT REPORT TITLE
             sunmiPrinterService.setAlignment(1, null);
-            sunmiPrinterService.printTextWithFont(printSaleReportModel.getReportTitle() + "\b", null, 20, null);
+            sunmiPrinterService.printTextWithFont(printSaleReportModel.getReportTitle() + "\b" + "\n", null, 20, null);
 
             //ADD LINE
             PrintHelper.addLineText(sunmiPrinterService);
@@ -412,7 +419,7 @@ public class PrintSalesReportManager {
             for(PrintSaleReportModel.FileTypeModel fileTypeModel : printSaleReportModel.getFileTypeModels()){
 
                 txts[0] = fileTypeModel.getFileName().concat(" ").concat(mContext.getResources().getString(R.string.count_upper));
-                txts[1] = "*".concat(String.valueOf(fileTypeModel.getSaleCount()));
+                txts[1] = String.valueOf(fileTypeModel.getSaleCount());
                 sunmiPrinterService.printColumnsString(txts, width, align, null);
 
                 txts[0] = "  -".concat(mContext.getResources().getString(R.string.total_tax_upper));
@@ -486,112 +493,102 @@ public class PrintSalesReportManager {
             txts[1] = "*".concat(CommonUtils.getAmountText(paymentModel.getTotalPaymentAmount()));
             sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+            /***************************************** BILGI FISLERI ***************************************************************************/
 
+            PrintHelper.addLineTextWithValue(sunmiPrinterService, mContext.getResources().getString(R.string.information_receipts_upper));
 
+            width = new int[]{2, 1};
+            align = new int[]{0, 2};
 
+            long totalInfoCount = 0; double totalInfoAmount = 0d;
+            for(PrintSaleReportModel.InformationReceiptModel receiptModel : printSaleReportModel.getInformationReceiptModels()){
 
+                txts[0] = receiptModel.getInfoName();
+                txts[1] = String.valueOf(receiptModel.getCount());
+                sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+                txts[0] = "  -" + mContext.getResources().getString(R.string.total_price_upper);
+                txts[1] = "*".concat(CommonUtils.getAmountText(receiptModel.getAmount()));
+                sunmiPrinterService.printColumnsString(txts, width, align, null);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            //PRINT SALE ITEMS
-            for(SaleItemPojo saleItem : printReceiptModel.getSaleItems()){
-
-                String txts1[] = new String[3];
-                int width1[] = new int[]{3, 1, 1};
-                int align1[] = new int[]{0, 1, 2};
-
-                txts1[0] = saleItem.getName();
-                txts1[1] = "%" + saleItem.getOrderItemTaxes().get(0).getTaxRate();
-                txts1[2] = "*" + CommonUtils.getAmountText(CommonUtils.round(saleItem.getAmount() * saleItem.getQuantity(), 2));
-                sunmiPrinterService.printColumnsString(txts1, width1, align1, null);
-
-                if(saleItem.getQuantity() > 1){
-                    String quantityStr = String.valueOf(saleItem.getQuantity())
-                            .concat(mContext.getResources().getString(R.string.per))
-                            .concat(" X ")
-                            .concat(CommonUtils.getAmountTextWithCurrency(saleItem.getAmount()));
-                    sunmiPrinterService.printTextWithFont(quantityStr + "\n", null, 20, null);
-                }
+                totalInfoCount = totalInfoCount + receiptModel.getCount();
+                totalInfoAmount = CommonUtils.round((totalInfoAmount + receiptModel.getAmount()), 2);
             }
 
+            txts[0] = mContext.getResources().getString(R.string.total_info_receipt_count_upper);
+            txts[1] = String.valueOf(totalInfoCount);
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+            txts[0] = "  -" + mContext.getResources().getString(R.string.total_price_upper);
+            txts[1] = "*".concat(CommonUtils.getAmountText(totalInfoAmount));
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+            /***************************************** ADDITIONAL INFORMATION ***************************************************************************/
 
+            PrintHelper.addLineTextWithValue(sunmiPrinterService, mContext.getResources().getString(R.string.additional_info_upper));
 
+            width = new int[]{2, 1};
+            align = new int[]{0, 2};
 
+            txts[0] = mContext.getResources().getString(R.string.financial_receipt_incl_upper);
+            txts[1] = " ";
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+            txts[0] = "  -" + mContext.getResources().getString(R.string.invoice_collection_upper);
+            txts[1] = "*".concat(CommonUtils.getAmountText(printSaleReportModel.getInvCollectionAmount()));
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+            txts[0] = "  -" + mContext.getResources().getString(R.string.meal_card_upper);
+            txts[1] = "*".concat(CommonUtils.getAmountText(printSaleReportModel.getMealCardAmount()));
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+            txts[0] = "  -" + mContext.getResources().getString(R.string.other_matrahsiz_upper);
+            txts[1] = "*".concat(CommonUtils.getAmountText(printSaleReportModel.getOtherNoTaxAmount()));
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+            txts[0] = mContext.getResources().getString(R.string.payment_information_upper);
+            txts[1] = " ";
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+            txts[0] = "  -" + mContext.getResources().getString(R.string.other_upper);
+            txts[1] = "*".concat(CommonUtils.getAmountText(printSaleReportModel.getOtherAmount()));
+            sunmiPrinterService.printColumnsString(txts, width, align, null);
 
+            /*****************************************************************************************************************************************/
 
+            //ADD LINE
+            PrintHelper.addLineText(sunmiPrinterService);
 
+            //PRINT REPORT TITLE
+            sunmiPrinterService.setAlignment(1, null);
+            sunmiPrinterService.printTextWithFont(printSaleReportModel.getReportTitle()
+                    .concat(" ").concat("SONU")+ "\b" + "\n", null, 20, null);
 
+            //ADD LINE
+            PrintHelper.addLineText(sunmiPrinterService);
 
+            //PRINT MERSIS
+            sunmiPrinterService.setAlignment(0, null);
+            String mersis = mContext.getString(R.string.mersis_upper)
+                    .concat(" : ")
+                    .concat(printSaleReportModel.getMersisNo());
+            sunmiPrinterService.printTextWithFont(mersis + "\n", null, 20, null);
 
-
-
-
-
-
-
-
-
-
-
-
-
-            //PRINT MERCHANT AND TERMINAL
-            PrintHelper.printMerchantAndTerminalRow(mContext, sunmiPrinterService, printReceiptModel.getMerchantNum(), printReceiptModel.getTerminalNum());
-
-            //APPCODE, BATCH, STAN
-            PrintHelper.printAppCodeBatchAndStan(mContext, sunmiPrinterService, printReceiptModel.getApproveCode(), printReceiptModel.getBatchNum(), printReceiptModel.getStanNum());
-
-            //SALE DATE
-            PrintHelper.printSaleDateRow(mContext, sunmiPrinterService, printReceiptModel.getReceiptDate());
-
-            //PRINT CARD INFOS
-            PrintHelper.printCardTypeAndAmountRows(mContext, sunmiPrinterService, printReceiptModel);
-
-            //PRINT GOOD AND SERVICES
-            PrintHelper.printGoodServicesInfo(mContext, sunmiPrinterService);
-
-            //PRINT BELONGS TO INFO
-            PrintHelper.printBelongsToMerchant(mContext, sunmiPrinterService);
-
-            //PRINT RECEIPT NO
-            PrintHelper.printReceiptNo(mContext, sunmiPrinterService, printReceiptModel.getfNo());
+            //PRINT EMAIL
+            sunmiPrinterService.printTextWithFont(printSaleReportModel.getEmail() + "\n", null, 20, null);
+            sunmiPrinterService.printTextWithFont(" " + "\n", null, 20, null);
 
             //PRINT EKU AND ZNO
-            PrintHelper.printEkuAndZNo(mContext, sunmiPrinterService, printReceiptModel.getEkuNo(), printReceiptModel.getzNo());
+            PrintHelper.printEkuAndZNo(mContext, sunmiPrinterService, printSaleReportModel.getEkuNo(), printSaleReportModel.getzNo());
 
-            sunmiPrinterService.setAlignment(1, null);
-            sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.no_financial_receipt) + "\b" + "\n", null, 25, null);
+            //PRINT NO FINANCIAL LABEL
+            PrintHelper.printNoFinancialLabel(mContext, sunmiPrinterService);
 
-            sunmiPrinterService.printTextWithFont(printReceiptModel.getDeviceRegisterId() + "\b" + "\n", null, 25, null);
+            //PRINT TEST DEVICE
+            PrintHelper.printTestDeviceLabel(mContext, sunmiPrinterService);
+
+            //PRINT REGISTER ID
+            sunmiPrinterService.printTextWithFont(printSaleReportModel.getDeviceRegisterId() + "\b" + "\n", null, 25, null);
             sunmiPrinterService.autoOutPaper(null);
 
             sunmiPrinterService.exitPrinterBufferWithCallback(true, callback);

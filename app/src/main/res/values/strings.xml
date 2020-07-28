@@ -285,6 +285,14 @@
     <string name="open_account_upper">OPEN ACCOUNT</string>
     <string name="meal_card_upper">MEAL CARD</string>
     <string name="total_payment_upper">TOTAL PAYMENT</string>
+    <string name="information_receipts_upper">INFO. RECEIPTS</string>
+    <string name="total_price_upper">TOTAL PRICE</string>
+    <string name="total_info_receipt_count_upper">TOTAL INFO. REC. COUNT</string>
+    <string name="additional_info_upper">ADD. INFORMATION</string>
+    <string name="financial_receipt_incl_upper">FIN. REC. INCLUDED</string>
+    <string name="invoice_collection_upper">INV. COLL.</string>
+    <string name="other_matrahsiz_upper">OTHER TAXES</string>
+    <string name="process_end_of_day">End Of Day</string>
 
 
     <string name="no_transaction_time_period">No transactions for time period</string>

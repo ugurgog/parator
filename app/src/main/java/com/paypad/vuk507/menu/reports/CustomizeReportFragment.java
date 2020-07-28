@@ -86,8 +86,6 @@ public class CustomizeReportFragment extends BaseFragment implements TimePickerD
     @Override
     public void onResume() {
         super.onResume();
-        //TimePickerDialog tpd = (TimePickerDialog) requireFragmentManager().findFragmentByTag("Timepickerdialog");
-        //if(tpd != null) tpd.setOnTimeSetListener(this);
     }
 
     @Override
@@ -206,10 +204,13 @@ public class CustomizeReportFragment extends BaseFragment implements TimePickerD
 
     private void initCalendar() {
         Calendar nextYear = Calendar.getInstance();
-        nextYear.add(Calendar.YEAR, 1);
+        //nextYear.add(Calendar.YEAR, 1);
+        //nextYear.add(Calendar.MONTH, 1);
+        nextYear.add(Calendar.DATE, 1);
 
         final Calendar lastYear = Calendar.getInstance();
-        lastYear.add(Calendar.YEAR, -1);
+        //lastYear.add(Calendar.YEAR, -1);
+        lastYear.add(Calendar.MONTH, -1);
 
         calendar.setCustomDayView(new DayViewAdapter());
 
@@ -279,8 +280,8 @@ public class CustomizeReportFragment extends BaseFragment implements TimePickerD
         reportDate.setEndDate(calendar.getTime());
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        Log.i("Info", "saveNewDateSelection  repoertDate_S:" + simpleDateFormat.format(reportDate.getStartDate()));
-        Log.i("Info", "saveNewDateSelection  repoertDate_E:" + simpleDateFormat.format(reportDate.getEndDate()));
+        Log.i("Info", "saveNewDateSelection  reportDate_S:" + simpleDateFormat.format(reportDate.getStartDate()));
+        Log.i("Info", "saveNewDateSelection  reportDate_E:" + simpleDateFormat.format(reportDate.getEndDate()));
 
         returnReportDateCallback.OnReturnDates(reportDate);
     }
