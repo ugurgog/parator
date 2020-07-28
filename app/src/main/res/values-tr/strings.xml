@@ -70,6 +70,8 @@
     <string name="items_and_services">ÜRÜNLER</string>
     <string name="cash_payment">NAKİT ÖDEME</string>
     <string name="card_payment">KARTLI ÖDEME</string>
+    <string name="card_price_upper">KART TUTARI</string>
+    <string name="cash_price_upper">NAKİT TUTAR</string>
     <string name="card">Kart</string>
     <string name="subtotal">Alt Toplam</string>
     <string name="sales_tax">KDV</string>
@@ -411,4 +413,21 @@
     <string name="no_upper">HAYIR</string>
 
     <string name="device_has_no_camera">Cihazda kamera yok</string>
+
+    <!-- Settings -->
+    <string name="checkout_options">KONTROL SEÇENEKLERİ</string>
+    <string name="security">GÜVENLİK</string>
+    <string name="hardware">DONANIM</string>
+    <string name="device">CİHAZ</string>
+    <string name="orders">SİPARİŞLER</string>
+
+    <string name="passcodes">Parolalar</string>
+    <string name="printers">Printers</string>
+    <string name="device_name">Cihaz Adı</string>
+    <string name="alerts">Uyarılar</string>
+    <string name="print_orders">Siparişleri Yazdır</string>
+    <string name="sign_out">Çıkış</string>
+    <string name="automatically_print_new_orders">Yeni Satışları Otomatik Yazdır</string>
+    <string name="print_orders_desc">Yeni çevrimiçi siparişler, geldiklerinde otomatik olarak yazdırılır.</string>
+
 </resources>

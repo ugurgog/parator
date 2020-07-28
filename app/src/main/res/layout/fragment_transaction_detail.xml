@@ -36,7 +36,7 @@
 
             </Button>
 
-            <!--Button
+            <Button
                 android:id="@+id/printReceiptBtn"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="match_parent"
@@ -47,7 +47,7 @@
                 android:textAllCaps="false"
                 android:textColor="@color/DodgerBlue">
 
-            </Button-->
+            </Button>
 
             <Button
                 android:id="@+id/issueRefundBtn"

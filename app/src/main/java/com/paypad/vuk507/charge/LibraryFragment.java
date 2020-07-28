@@ -413,39 +413,44 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
         if(spinnerType != null && searchText != null){
             if(spinnerType.getId() == ItemSpinnerEnum.DISCOUNTS.getId()){
 
-                discountListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
-                    @Override
-                    public void OnReturn(int size) {
-                        if(size == 0 && (discountList != null && discountList.size() > 0))
-                            searchResultTv.setVisibility(View.VISIBLE);
-                        else
-                            searchResultTv.setVisibility(View.GONE);
-                    }
-                });
+                if(discountListAdapter != null){
+                    discountListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+                        @Override
+                        public void OnReturn(int size) {
+                            if(size == 0 && (discountList != null && discountList.size() > 0))
+                                searchResultTv.setVisibility(View.VISIBLE);
+                            else
+                                searchResultTv.setVisibility(View.GONE);
+                        }
+                    });
+                }
 
             }else if(spinnerType.getId() == ItemSpinnerEnum.PRODUCTS.getId()){
 
-                productListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
-                    @Override
-                    public void OnReturn(int size) {
-                        if(size == 0 && (productList != null && productList.size() > 0))
-                            searchResultTv.setVisibility(View.VISIBLE);
-                        else
-                            searchResultTv.setVisibility(View.GONE);
-                    }
-                });
-
+                if(productListAdapter != null){
+                    productListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+                        @Override
+                        public void OnReturn(int size) {
+                            if(size == 0 && (productList != null && productList.size() > 0))
+                                searchResultTv.setVisibility(View.VISIBLE);
+                            else
+                                searchResultTv.setVisibility(View.GONE);
+                        }
+                    });
+                }
             }else if(spinnerType.getId() == ItemSpinnerEnum.CATEGORIES.getId()){
 
-                categorySelectListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
-                    @Override
-                    public void OnReturn(int size) {
-                        if(size == 0 && (categoryList != null && categoryList.size() > 0))
-                            searchResultTv.setVisibility(View.VISIBLE);
-                        else
-                            searchResultTv.setVisibility(View.GONE);
-                    }
-                });
+                if(categorySelectListAdapter != null){
+                    categorySelectListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+                        @Override
+                        public void OnReturn(int size) {
+                            if(size == 0 && (categoryList != null && categoryList.size() > 0))
+                                searchResultTv.setVisibility(View.VISIBLE);
+                            else
+                                searchResultTv.setVisibility(View.GONE);
+                        }
+                    });
+                }
             }
         }
     }

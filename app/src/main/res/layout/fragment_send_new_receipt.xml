@@ -64,7 +64,8 @@
                         android:layout_height="?attr/actionBarSize"
                         android:padding="15dp"
                         android:src="@drawable/ic_print_white_24dp"
-                        android:tint="@android:color/black"/>
+                        android:tint="@android:color/black"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
 

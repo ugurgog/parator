@@ -148,7 +148,7 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
-   
+
         printReceiptImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

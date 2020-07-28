@@ -214,6 +214,7 @@ public class PrintHelper {
                 .concat(String.valueOf(zNo));
         try {
             sunmiPrinterService.printColumnsString(txts, width, align, null);
+            sunmiPrinterService.printTextWithFont(" " + "\n", null, 25, null);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -223,6 +224,7 @@ public class PrintHelper {
         try {
             sunmiPrinterService.setAlignment(1, null);
 
+            double cashAmount = 0d;
             for(PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel : printReceiptModel.getReceiptPaymentModels()){
 
                 if(receiptPaymentModel.getPaymentType() == PaymentTypeEnum.CREDIT_CARD.getId()){
@@ -231,13 +233,23 @@ public class PrintHelper {
                     if(maskedCardNumber != null && !maskedCardNumber.isEmpty()){
                         sunmiPrinterService.printTextWithFont(maskedCardNumber + "\b" + "\n", null, 25, null);
 
-                        String amountStr = context.getResources().getString(R.string.price)
+                        String amountStr = context.getResources().getString(R.string.card_price_upper)
                                 .concat(":")
                                 .concat(CommonUtils.getAmountText(receiptPaymentModel.getAmount()));
-                        sunmiPrinterService.printTextWithFont(amountStr + "\b" + "\n\n", null, 25, null);
+                        sunmiPrinterService.printTextWithFont(amountStr + "\b" + "\n", null, 25, null);
                     }
+                }else if(receiptPaymentModel.getPaymentType() == PaymentTypeEnum.CASH.getId()){
+                    cashAmount = CommonUtils.round(cashAmount + receiptPaymentModel.getAmount(), 2);
                 }
             }
+
+            if(cashAmount > 0d){
+                String amountStr = context.getResources().getString(R.string.cash_price_upper)
+                        .concat(":")
+                        .concat(CommonUtils.getAmountText(cashAmount));
+                sunmiPrinterService.printTextWithFont(amountStr + "\b" + "\n", null, 25, null);
+            }
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }

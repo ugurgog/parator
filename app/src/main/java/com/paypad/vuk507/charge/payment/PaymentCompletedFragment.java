@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ import com.paypad.vuk507.charge.payment.utils.PrintReceiptManager;
 import com.paypad.vuk507.charge.payment.utils.SendMail;
 import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
+import com.paypad.vuk507.db.PrinterSettingsDBHelper;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
@@ -42,6 +44,7 @@ import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.PrinterSettings;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.Transaction;
@@ -106,6 +109,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     private SendReceiptEmailFragment sendReceiptEmailFragment;
     private PrintReceiptManager printReceiptManager;
     private int receiptType = CUSTOMER_RECEIPT;
+    private PrinterSettings printerSettings;
 
     private static final int CUSTOMER_RECEIPT = 1;
     private static final int MERCHANT_RECEIPT = 2;
@@ -221,24 +225,24 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
             @Override
             public void onClick(View view) {
                 cancelCounter();
-
-                if(receiptType == CUSTOMER_RECEIPT)
-                    printReceiptManager.printCustomerReceipt();
-                else
-                    printReceiptManager.printMerchantReceipt();
+                printReceiptProcess();
             }
         });
     }
 
-    private void initVariables() {
+    private void initPrinter() {
         printReceiptManager = new PrintReceiptManager(getContext(), SaleModelInstance.getInstance().getSaleModel(),true);
         printReceiptManager.setCallback(mCallback);
+    }
+
+    private void initVariables() {
 
         if(mProcessDirectionType == ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED){
             paymentStatus = STATUS_NEW_SALE;
             continueBtn.setText(getResources().getString(R.string.new_sale));
             receiptInfoll.setVisibility(View.VISIBLE);
-            startCounter();
+            //startCounter();
+            checkAutoPrint();
         }else{
             paymentStatus = STATUS_CONTINUE;
             continueBtn.setText(getResources().getString(R.string.continue_text));
@@ -253,6 +257,28 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     private void initSendReceiptEmailFragment(){
         sendReceiptEmailFragment = new SendReceiptEmailFragment(mTransaction, mCustomer);
         sendReceiptEmailFragment.setMailSendCallback(this);
+    }
+
+    private void checkAutoPrint(){
+        initPrinter();
+        printerSettings = PrinterSettingsDBHelper.getPrinterSetting(user.getUuid());
+
+        if(printerSettings != null && printerSettings.isOrdersAutoPrint()){
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    printReceiptProcess();
+
+                }
+            }, 3000);
+        }
+    }
+
+    private void printReceiptProcess(){
+        if(receiptType == CUSTOMER_RECEIPT)
+            printReceiptManager.printCustomerReceipt();
+        else
+            printReceiptManager.printMerchantReceipt();
     }
 
     private void setChargeAmountTv(){
@@ -381,6 +407,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
 
         btnEmail.setVisibility(View.GONE);
         btnReceipt.setVisibility(View.GONE);
+        btnPrintReceipt.setVisibility(View.GONE);
         startCounter();
     }
 
@@ -419,7 +446,6 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
                     }else{
                         CommonUtils.showToastShort(getContext(), "Print failed");
                         //TODO Follow-up after failed, such as reprint
-                        startCounter();
                     }
                 }
             });

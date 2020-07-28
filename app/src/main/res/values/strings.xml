@@ -69,6 +69,8 @@
     <string name="items_and_services">ITEMS AND SERVICES</string>
     <string name="cash_payment">CASH PAYMENT</string>
     <string name="card_payment">CARD PAYMENT</string>
+    <string name="card_price_upper">CARD PRICE</string>
+    <string name="cash_price_upper">CASH PRICE</string>
     <string name="card">Card</string>
     <string name="subtotal">Subtotal</string>
     <string name="sales_tax">Sales Tax</string>
@@ -413,4 +415,21 @@
     <string name="no_upper">NO</string>
 
     <string name="device_has_no_camera">Device has no camera</string>
+
+    <!-- Settings -->
+    <string name="checkout_options">CHECKOUT OPTIONS</string>
+    <string name="security">SECURITY</string>
+    <string name="hardware">HARDWARE</string>
+    <string name="device">DEVICE</string>
+    <string name="orders">ORDERS</string>
+
+    <string name="passcodes">Passcodes</string>
+    <string name="printers">Printers</string>
+    <string name="device_name">Device Name</string>
+    <string name="alerts">Alerts</string>
+    <string name="print_orders">Print Orders</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="automatically_print_new_orders">Automatically Print New Orders</string>
+    <string name="print_orders_desc">New online orders will print automatically when they come in.</string>
+
 </resources>

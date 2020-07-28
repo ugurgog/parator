@@ -47,6 +47,7 @@ import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.item.ItemListFragment;
 import com.paypad.vuk507.menu.reports.ReportsFragment;
+import com.paypad.vuk507.menu.settings.SettingsFragment;
 import com.paypad.vuk507.menu.transactions.TransactionsFragment;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
@@ -348,23 +349,6 @@ public class ChargeFragment extends BaseFragment implements
                 case R.id.checkout:
 
                     drawerLayout.closeDrawer(Gravity.LEFT);
-
-                    /*boolean commit = LoginUtils.deleteSharedPreferences(getContext());
-
-                    if(commit){
-                        UserDBHelper.updateUserLoggedInStatus(user.getUsername(), false, new CompleteCallback() {
-                            @Override
-                            public void onComplete(BaseResponse baseResponse) {
-                                if(baseResponse.isSuccess()){
-                                    Objects.requireNonNull(getActivity()).finish();
-                                    startActivity(new Intent(getActivity(), InitialActivity.class));
-                                }else
-                                    CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
-                            }
-                        });
-                    }else
-                        CommonUtils.showToastShort(getContext(), "cache delete error!");*/
-
                     SaleDBHelper.deleteAllOrders();
 
                     break;
@@ -421,6 +405,7 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void startSettingsFragment() {
+        mFragmentNavigation.pushFragment(new SettingsFragment());
     }
 
     private void startItemsFragment() {
