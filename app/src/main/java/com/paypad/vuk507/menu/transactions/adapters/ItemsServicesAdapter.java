@@ -115,7 +115,8 @@ public class ItemsServicesAdapter extends RecyclerView.Adapter<ItemsServicesAdap
         }
 
         private void setItemAmount(){
-            String amountStr = CommonUtils.getDoubleStrValueForView(saleItem.getAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+            double itemAmount = CommonUtils.round(saleItem.getAmount() * saleItem.getQuantity() , 2);
+            String amountStr = CommonUtils.getDoubleStrValueForView(itemAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
             itemAmountTv.setText(amountStr);
         }
     }

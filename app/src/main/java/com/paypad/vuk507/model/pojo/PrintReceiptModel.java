@@ -39,8 +39,7 @@ public class PrintReceiptModel {
     private List<SaleItemPojo> saleItems;
     private List<ReceiptDiscountModel> discounts;
     private List<ReceiptTaxModel> receiptTaxModels;
-    //private List<ReceiptPaymentModel> receiptPaymentModels;
-    private ReceiptPaymentModel receiptPaymentModel;
+    private List<ReceiptPaymentModel> receiptPaymentModels;
 
     public Date getfDate() {
         return fDate;
@@ -242,20 +241,12 @@ public class PrintReceiptModel {
         this.totalTipAmount = totalTipAmount;
     }
 
-    /*public List<ReceiptPaymentModel> getReceiptPaymentModels() {
+    public List<ReceiptPaymentModel> getReceiptPaymentModels() {
         return receiptPaymentModels;
     }
 
     public void setReceiptPaymentModels(List<ReceiptPaymentModel> receiptPaymentModels) {
         this.receiptPaymentModels = receiptPaymentModels;
-    }*/
-
-    public ReceiptPaymentModel getReceiptPaymentModel() {
-        return receiptPaymentModel;
-    }
-
-    public void setReceiptPaymentModel(ReceiptPaymentModel receiptPaymentModel) {
-        this.receiptPaymentModel = receiptPaymentModel;
     }
 
     public double getTotalTaxAmount() {

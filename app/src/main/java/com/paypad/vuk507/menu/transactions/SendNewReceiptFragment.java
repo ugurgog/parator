@@ -159,7 +159,7 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
 
     private void initPrinter() {
         SaleModel saleModel = SaleDBHelper.getSaleModelBySaleId(mTransaction.getSaleUuid());
-        printReceiptManager = new PrintReceiptManager(getContext(), saleModel, mTransaction,false);
+        printReceiptManager = new PrintReceiptManager(getContext(), saleModel,false);
         printReceiptManager.setCallback(mCallback);
     }
 
