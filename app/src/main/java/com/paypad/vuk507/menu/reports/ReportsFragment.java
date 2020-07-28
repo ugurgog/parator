@@ -87,7 +87,7 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
     }
 
     @Subscribe(sticky = true)
-    public void accountHolderUserReceived(UserBus userBus) {
+    public void accountHolderUserReceived(UserBus userBus) {   
         user = userBus.getUser();
         if (user == null)
             user = UserDBHelper.getUserFromCache(getContext());
