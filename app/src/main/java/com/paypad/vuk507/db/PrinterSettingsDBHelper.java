@@ -22,7 +22,6 @@ public class PrinterSettingsDBHelper {
         baseResponse.setSuccess(true);
 
         realm.executeTransaction(new Realm.Transaction(){
-
             @Override
             public void execute(Realm realm) {
                 try{

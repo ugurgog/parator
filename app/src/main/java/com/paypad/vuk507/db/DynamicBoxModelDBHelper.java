@@ -19,7 +19,7 @@ public class DynamicBoxModelDBHelper {
         return dynamicBoxModels;
     }
 
-    public static void deleteDynamicBoxByStructId(long id, String uuid, CompleteCallback completeCallback){
+    /*public static void deleteDynamicBoxByStructId(long id, String uuid, CompleteCallback completeCallback){
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -41,15 +41,17 @@ public class DynamicBoxModelDBHelper {
                 completeCallback.onComplete(baseResponse);
             }
         });
-    }
+    }*/
 
-    public static void deleteDynamicBoxByStructAndItemId(long structId, long itemId, String uuid, CompleteCallback completeCallback){
+    public static BaseResponse deleteDynamicBoxByStructAndItemId(long structId, long itemId, String uuid){
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
+
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
                             .equalTo("structId", structId)
@@ -63,9 +65,9 @@ public class DynamicBoxModelDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Dynamic Box cannot be deleted");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static DynamicBoxModel getDynamicBoxModel(long structId, long itemId, String uuid){
@@ -77,15 +79,15 @@ public class DynamicBoxModelDBHelper {
         return dynamicBoxModel;
     }
 
-    public static void createOrUpdateDynamicBox(DynamicBoxModel dynamicBoxModel, CompleteCallback completeCallback) {
+    public static BaseResponse createOrUpdateDynamicBox(DynamicBoxModel dynamicBoxModel) {
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
         realm.executeTransaction(new Realm.Transaction(){
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     realm.insertOrUpdate(dynamicBoxModel);
                     baseResponse.setObject(dynamicBoxModel);
@@ -94,8 +96,8 @@ public class DynamicBoxModelDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Dynamic box cannot be saved!");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 }

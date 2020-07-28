@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,14 +42,22 @@ public class SalesTopCategoriesFragment extends BaseFragment {
     Button countBtn;
     @BindView(R.id.topItemsRv)
     RecyclerView topItemsRv;
+    @BindView(R.id.showMoreTv)
+    TextView showMoreTv;
 
     private ReportModel reportModel;
 
     private boolean isGrossSelected = true;
     private TopCategoryAdapter topCategoryAdapter;
     private List<TopCategory> topCategories;
+    private List<TopCategory> adapterTopCategories;
 
     private static final int TOP_ITEM_MAX_COUNT = 5;
+
+    private static final int SHOW_MORE = 0;
+    private static final int SHOW_LESS = 1;
+
+    private int showMoreLess = SHOW_LESS;
 
     public SalesTopCategoriesFragment(ReportModel reportModel) {
         this.reportModel = reportModel;
@@ -102,6 +111,21 @@ public class SalesTopCategoriesFragment extends BaseFragment {
                 updateAdapter();
             }
         });
+
+        showMoreTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(showMoreLess == SHOW_LESS){
+                    showMoreLess = SHOW_MORE;
+                    showMoreTv.setText(getContext().getResources().getString(R.string.show_less));
+                } else{
+                    showMoreLess = SHOW_LESS;
+                    showMoreTv.setText(getContext().getResources().getString(R.string.show_more));
+                }
+
+                setItems();
+            }
+        });
     }
 
     private void setShapes() {
@@ -128,7 +152,6 @@ public class SalesTopCategoriesFragment extends BaseFragment {
         topItemsRv.setLayoutManager(linearLayoutManager);
 
         fillTopCategoriesList();
-        updateAdapter();
     }
 
     private void fillTopCategoriesList(){
@@ -154,12 +177,27 @@ public class SalesTopCategoriesFragment extends BaseFragment {
 
         Collections.sort(topCategories, new SaleCountComparator());
 
-        if(topCategories.size() > TOP_ITEM_MAX_COUNT)
-            topCategories = topCategories.subList(0, TOP_ITEM_MAX_COUNT);
+        setItems();
+    }
+
+    private void setItems(){
+
+        if(topCategories.size() <= TOP_ITEM_MAX_COUNT)
+            showMoreTv.setVisibility(View.GONE);
+
+        if(topCategories.size() <= TOP_ITEM_MAX_COUNT)
+            adapterTopCategories = topCategories;
+        else {
+            if(showMoreLess == SHOW_LESS)
+                adapterTopCategories = topCategories.subList(0, TOP_ITEM_MAX_COUNT);
+            else
+                adapterTopCategories = topCategories;
+        }
+        updateAdapter();
     }
 
     private void updateAdapter() {
-        topCategoryAdapter = new TopCategoryAdapter(getContext(), topCategories, isGrossSelected);
+        topCategoryAdapter = new TopCategoryAdapter(getContext(), adapterTopCategories, isGrossSelected);
         topItemsRv.setAdapter(topCategoryAdapter);
     }
 
@@ -169,5 +207,4 @@ public class SalesTopCategoriesFragment extends BaseFragment {
             return (int) (o2.getTotalSaleCount() - o1.getTotalSaleCount());
         }
     }
-
 }

@@ -459,20 +459,18 @@ public class CustomerEditFragment extends BaseFragment
             e.printStackTrace();
         }
 
-
         realm.commitTransaction();
 
         boolean finalInserted = inserted;
-        CustomerDBHelper.createOrUpdateCustomer(tempCustomer, baseResponse -> {
-            CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
-            if(baseResponse.isSuccess()){
 
-                if(finalInserted)
-                    returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.INSERTED);
-                else
-                    returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.CHANGED);
-            }
-        });
+        BaseResponse baseResponse = CustomerDBHelper.createOrUpdateCustomer(tempCustomer);
+
+        if(baseResponse.isSuccess()){
+            if(finalInserted)
+                returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+            else
+                returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.CHANGED);
+        }
 
         // Secilen gruplara customer dahil edilir
         // TODO - unselected yapilan gruplardan da customer cikartilmali ???
@@ -519,14 +517,11 @@ public class CustomerEditFragment extends BaseFragment
 
         realm.commitTransaction();
 
-        GroupDBHelper.createOrUpdateGroup(tempGroup, new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-                if(baseResponse.isSuccess()){
-                    returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.INSERTED);
-                }
-            }
-        });
+        BaseResponse baseResponse = GroupDBHelper.createOrUpdateGroup(tempGroup);
+
+        if(baseResponse.isSuccess()){
+            returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+        }
     }
 
     private void getContactList() {

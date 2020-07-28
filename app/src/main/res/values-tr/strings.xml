@@ -193,6 +193,8 @@
     <string name="tips">Bahşişler</string>
     <string name="refunds_by_amount">Tutara göre iade</string>
     <string name="sales_count">Satış Adedi</string>
+    <string name="show_more">Daha Fazla Göster…</string>
+    <string name="show_less">Daha Az Göster…</string>
 
     <string name="daily_gross_sales">GÜNLÜK BRÜT SATIŞ</string>
     <string name="daily_net_sales">GÜNLÜK NET SATIŞ</string>

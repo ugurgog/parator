@@ -272,14 +272,11 @@ public class CategoryEditFragment extends BaseFragment
     }
 
     private void updateCategory() {
-
-        boolean inserted = false;
         realm.beginTransaction();
 
         if(category.getId() == 0){
             category.setCreateDate(new Date());
             category.setId(CategoryDBHelper.getCurrentPrimaryKeyId());
-            inserted = true;
         }
 
         Category tempCategory = realm.copyToRealm(category);
@@ -290,24 +287,20 @@ public class CategoryEditFragment extends BaseFragment
 
         realm.commitTransaction();
 
-        boolean finalInserted = inserted;
-        CategoryDBHelper.createOrUpdateCategory(tempCategory, new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-                CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
-                if(baseResponse.isSuccess()){
-                    deleteButtonStatus = 1;
-                    CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
-                            getContext().getResources().getString(R.string.delete_unit));
-                    btnDelete.setEnabled(false);
+        BaseResponse baseResponse = CategoryDBHelper.createOrUpdateCategory(tempCategory);
+        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
-                    returnCategoryCallback.OnReturn((Category) baseResponse.getObject());
+        if(baseResponse.isSuccess()){
+            deleteButtonStatus = 1;
+            CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
+                    getContext().getResources().getString(R.string.delete_unit));
+            btnDelete.setEnabled(false);
 
-                    clearViews();
-                    Objects.requireNonNull(getActivity()).onBackPressed();
-                }
-            }
-        });
+            returnCategoryCallback.OnReturn((Category) baseResponse.getObject());
+
+            clearViews();
+            Objects.requireNonNull(getActivity()).onBackPressed();
+        }
     }
 
     private void clearViews() {

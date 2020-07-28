@@ -51,16 +51,16 @@ public class UnitDBHelper {
         return unitModel;
     }
 
-    public static void createOrUpdateUnit(UnitModel unitModel, CompleteCallback completeCallback) {
+    public static BaseResponse createOrUpdateUnit(UnitModel unitModel) {
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
         realm.executeTransaction(new Realm.Transaction(){
 
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     realm.insertOrUpdate(unitModel);
 
@@ -70,9 +70,9 @@ public class UnitDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Unit cannot be saved!");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static int getCurrentPrimaryKeyId(){

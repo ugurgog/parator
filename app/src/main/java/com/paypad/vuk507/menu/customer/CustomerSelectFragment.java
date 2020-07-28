@@ -274,12 +274,7 @@ public class CustomerSelectFragment extends BaseFragment {
         }
 
         for (Customer customer : selectedCustomerList) {
-            CustomerDBHelper.deleteCustomer(customer.getId(), new CompleteCallback() {
-                @Override
-                public void onComplete(BaseResponse baseResponse) {
-
-                }
-            });
+            CustomerDBHelper.deleteCustomer(customer.getId());
         }
 
         completeCallback.onComplete(baseResponse);

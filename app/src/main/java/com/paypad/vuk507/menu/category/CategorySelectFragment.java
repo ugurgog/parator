@@ -27,6 +27,7 @@ import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.category.adapters.CategorySelectListAdapter;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
+import com.paypad.vuk507.menu.product.ProductEditFragment;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -74,9 +75,14 @@ public class CategorySelectFragment extends BaseFragment {
     private List<Category> categoryList;
     private User user;
     private ReturnCategoryCallback returnCategoryCallback;
+    private String classTag;
 
     public CategorySelectFragment(ReturnCategoryCallback returnCategoryCallback) {
         this.returnCategoryCallback = returnCategoryCallback;
+    }
+
+    public void setClassTag(String classTag) {
+        this.classTag = classTag;
     }
 
     @Override
@@ -177,8 +183,17 @@ public class CategorySelectFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
+
         categories = CategoryDBHelper.getAllCategories(user.getUsername());
         categoryList = new ArrayList(categories);
+
+        if(classTag != null && classTag.equals(ProductEditFragment.class.getName())){
+            Category category = new Category();
+            category.setId(0);
+            category.setName(getContext().getResources().getString(R.string.uncategorized));
+            categoryList.add(0, category);
+        }
+
         categorySelectListAdapter = new CategorySelectListAdapter(getContext(), categoryList, mFragmentNavigation, new ReturnCategoryCallback() {
             @Override
             public void OnReturn(Category category) {

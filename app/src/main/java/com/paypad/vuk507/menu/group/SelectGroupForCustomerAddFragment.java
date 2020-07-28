@@ -190,15 +190,11 @@ public class SelectGroupForCustomerAddFragment extends BaseFragment {
 
         realm.commitTransaction();
 
-        GroupDBHelper.createOrUpdateGroup(tempGroup, new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-                if(baseResponse.isSuccess()){
-                    completeCallback.onComplete(baseResponse);
-                    //Objects.requireNonNull(getActivity()).onBackPressed();
-                }
-            }
-        });
+        BaseResponse baseResponse = GroupDBHelper.createOrUpdateGroup(tempGroup);
+
+        if(baseResponse.isSuccess()){
+            completeCallback.onComplete(baseResponse);
+        }
     }
 
     public void updateAdapterWithCurrentList(){

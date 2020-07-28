@@ -34,6 +34,7 @@ import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.NumberFormatWatcher;
 
 import org.greenrobot.eventbus.EventBus;
@@ -206,26 +207,23 @@ public class GroupCreateFragment extends BaseFragment {
 
         boolean finalInserted = inserted;
 
-        GroupDBHelper.createOrUpdateGroup(tempGroup, new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-                CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
-                if(baseResponse.isSuccess()){
-                    deleteButtonStatus = 1;
-                    CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
-                            getContext().getResources().getString(R.string.delete_group));
-                    btnDelete.setEnabled(false);
+        BaseResponse baseResponse = GroupDBHelper.createOrUpdateGroup(tempGroup);
+        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
-                    if(finalInserted)
-                        returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.INSERTED);
-                    else
-                        returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.CHANGED);
+        if(baseResponse.isSuccess()){
+            deleteButtonStatus = 1;
+            CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
+                    getContext().getResources().getString(R.string.delete_group));
+            btnDelete.setEnabled(false);
 
-                    clearViews();
-                    Objects.requireNonNull(getActivity()).onBackPressed();
-                }
-            }
-        });
+            if(finalInserted)
+                returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+            else
+                returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.CHANGED);
+
+            clearViews();
+            Objects.requireNonNull(getActivity()).onBackPressed();
+        }
     }
 
     private void clearViews() {

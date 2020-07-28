@@ -41,13 +41,15 @@ public class ProductDBHelper {
         return products;
     }
 
-    public static void deleteProduct(long id, CompleteCallback completeCallback){
+    public static BaseResponse deleteProduct(long id){
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
+
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     Product product = realm.where(Product.class).equalTo("id", id).findFirst();
                     product.deleteFromRealm();
@@ -56,9 +58,9 @@ public class ProductDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Product cannot be deleted");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static Product getProduct(long id){

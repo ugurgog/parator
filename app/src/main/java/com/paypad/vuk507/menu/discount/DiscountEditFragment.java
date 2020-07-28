@@ -180,16 +180,13 @@ public class DiscountEditFragment extends BaseFragment {
                     CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
                             getContext().getResources().getString(R.string.confirm_delete));
                 }else if(deleteButtonStatus == 2){
-                    DiscountDBHelper.deleteDiscount(discount.getId(), new CompleteCallback() {
-                        @Override
-                        public void onComplete(BaseResponse baseResponse) {
-                            CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
-                            if(baseResponse.isSuccess()){
-                                returnDiscountCallback.OnReturn((Discount) baseResponse.getObject(), ItemProcessEnum.DELETED);
-                                Objects.requireNonNull(getActivity()).onBackPressed();
-                            }
-                        }
-                    });
+                    BaseResponse baseResponse = DiscountDBHelper.deleteDiscount(discount.getId());
+                    DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+
+                    if(baseResponse.isSuccess()){
+                        returnDiscountCallback.OnReturn((Discount) baseResponse.getObject(), ItemProcessEnum.DELETED);
+                        Objects.requireNonNull(getActivity()).onBackPressed();
+                    }
                 }
             }
         });
@@ -267,23 +264,21 @@ public class DiscountEditFragment extends BaseFragment {
         realm.commitTransaction();
 
         boolean finalInserted = inserted;
-        DiscountDBHelper.createOrUpdateDiscount(tempDiscount, new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-                CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
-                if(baseResponse.isSuccess()){
-                    deleteButtonStatus = 1;
 
-                    if(finalInserted)
-                        returnDiscountCallback.OnReturn((Discount) baseResponse.getObject(), ItemProcessEnum.INSERTED);
-                    else
-                        returnDiscountCallback.OnReturn((Discount) baseResponse.getObject(), ItemProcessEnum.CHANGED);
+        BaseResponse baseResponse = DiscountDBHelper.createOrUpdateDiscount(tempDiscount);
+        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
-                    clearItems();
-                    Objects.requireNonNull(getActivity()).onBackPressed();
-                }
-            }
-        });
+        if(baseResponse.isSuccess()){
+            deleteButtonStatus = 1;
+
+            if(finalInserted)
+                returnDiscountCallback.OnReturn((Discount) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+            else
+                returnDiscountCallback.OnReturn((Discount) baseResponse.getObject(), ItemProcessEnum.CHANGED);
+
+            clearItems();
+            Objects.requireNonNull(getActivity()).onBackPressed();
+        }
     }
 
     private void clearItems() {

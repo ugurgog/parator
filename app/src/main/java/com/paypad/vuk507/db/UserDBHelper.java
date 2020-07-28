@@ -37,29 +37,16 @@ public class UserDBHelper {
         return getUserByUsername(username);
     }
 
-    public static void createUser(String username, String password, String uuid,
-                                  boolean isLoggedIn, CompleteCallback completeCallback) {
-
-        /*User user = new User();
-        user.setCreateDate(new Date());
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setLoggedIn(isLoggedIn);
-
+    public static BaseResponse createUser(String username, String password, String uuid, boolean isLoggedIn) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        User realmUser = realm.copyToRealm(user);
-        realm.commitTransaction();*/
 
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
-        Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction(){
 
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     User user = realm.createObject(User.class);
 
@@ -78,21 +65,21 @@ public class UserDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("User cannot be saved!");
                 }
-                //realm.close();
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
-    public static void updateUserLoggedInStatus(String username, boolean loggedIn, CompleteCallback completeCallback){
+    public static BaseResponse updateUserLoggedInStatus(String username, boolean loggedIn){
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
+
         realm.executeTransaction(new Realm.Transaction(){
 
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     User user = getUserByUsername(username);
                     user.setLoggedIn(loggedIn);
@@ -105,9 +92,8 @@ public class UserDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("User cannot be updated!");
                 }
-                //realm.close();
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 }

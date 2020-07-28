@@ -98,7 +98,6 @@ public class CustomerViewFragment extends BaseFragment{
     private Customer mCustomer;
     private ReturnCustomerCallback returnCustomerCallback;
     private long customerId;
-    private boolean deleteCustomer = false;
     private CustomerEditFragment customerEditFragment;
     private String classTag;
 
@@ -273,17 +272,9 @@ public class CustomerViewFragment extends BaseFragment{
     }
 
     private void approveDeleteCustomer(){
+        BaseResponse baseResponse = CustomerDBHelper.deleteCustomer(mCustomer.getId());
 
-        CustomerDBHelper.deleteCustomer(mCustomer.getId(), new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-                if(baseResponse.isSuccess()){
-                    deleteCustomer = true;
-                }
-            }
-        });
-
-        if(deleteCustomer)
+        if(baseResponse.isSuccess())
             deleteCustomerFromGroups();
     }
 

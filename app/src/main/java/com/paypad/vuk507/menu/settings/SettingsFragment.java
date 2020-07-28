@@ -154,16 +154,13 @@ public class SettingsFragment extends BaseFragment{
         boolean commit = LoginUtils.deleteSharedPreferences(getContext());
 
         if(commit){
-            UserDBHelper.updateUserLoggedInStatus(user.getUsername(), false, new CompleteCallback() {
-                @Override
-                public void onComplete(BaseResponse baseResponse) {
-                    if(baseResponse.isSuccess()){
-                        Objects.requireNonNull(getActivity()).finish();
-                        startActivity(new Intent(getActivity(), InitialActivity.class));
-                    }else
-                        CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
-                }
-            });
+            BaseResponse baseResponse = UserDBHelper.updateUserLoggedInStatus(user.getUsername(), false);
+            DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+
+            if(baseResponse.isSuccess()){
+                Objects.requireNonNull(getActivity()).finish();
+                startActivity(new Intent(getActivity(), InitialActivity.class));
+            }
         }else
             CommonUtils.showToastShort(getContext(), "cache delete error!");
     }

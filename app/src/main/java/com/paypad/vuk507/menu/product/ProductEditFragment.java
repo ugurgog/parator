@@ -129,6 +129,7 @@ public class ProductEditFragment extends BaseFragment implements
     private Category myCategory;
     private byte[] itemPictureByteArray = null;
     private SelectColorFragment selectColorFragment;
+    private CategorySelectFragment categorySelectFragment;
 
     private int mColorId;
     private String itemName = "";
@@ -206,15 +207,8 @@ public class ProductEditFragment extends BaseFragment implements
         categoryll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new CategorySelectFragment(new ReturnCategoryCallback() {
-                    @Override
-                    public void OnReturn(Category category) {
-                        if(category != null && category.getName() != null && !category.getName().isEmpty()){
-                            categoryTv.setText(category.getName());
-                            myCategory = category;
-                        }
-                    }
-                }));
+                initCategorySelectFragment();
+                mFragmentNavigation.pushFragment(categorySelectFragment);
             }
         });
 
@@ -254,16 +248,13 @@ public class ProductEditFragment extends BaseFragment implements
                     CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
                             getContext().getResources().getString(R.string.confirm_delete));
                 }else if(deleteButtonStatus == 2){
-                    ProductDBHelper.deleteProduct(productXX.getId(), new CompleteCallback() {
-                        @Override
-                        public void onComplete(BaseResponse baseResponse) {
-                            CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
-                            if(baseResponse.isSuccess()){
-                                returnCallback.OnReturn((Product) baseResponse.getObject(), ItemProcessEnum.DELETED);
-                                Objects.requireNonNull(getActivity()).onBackPressed();
-                            }
-                        }
-                    });
+                    BaseResponse baseResponse = ProductDBHelper.deleteProduct(productXX.getId());
+                    DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+
+                    if(baseResponse.isSuccess()){
+                        returnCallback.OnReturn((Product) baseResponse.getObject(), ItemProcessEnum.DELETED);
+                        Objects.requireNonNull(getActivity()).onBackPressed();
+                    }
                 }
             }
         });
@@ -304,6 +295,19 @@ public class ProductEditFragment extends BaseFragment implements
         });
     }
 
+    private void initCategorySelectFragment(){
+        categorySelectFragment = new CategorySelectFragment(new ReturnCategoryCallback() {
+            @Override
+            public void OnReturn(Category category) {
+                if(category != null && category.getName() != null && !category.getName().isEmpty()){
+                    categoryTv.setText(category.getName());
+                    myCategory = category;
+                }
+            }
+        });
+        categorySelectFragment.setClassTag(this.getClass().getName());
+    }
+
     private void initSelectColorFragment(){
         selectColorFragment = new SelectColorFragment(ProductEditFragment.class.getName(), itemName, mColorId,
                 ((productXX != null && productXX.getProductImage() != null) ? productXX.getProductImage() : null));
@@ -318,11 +322,11 @@ public class ProductEditFragment extends BaseFragment implements
             return;
         }
 
-        if(myCategory == null || myCategory.getName() == null || myCategory.getName().isEmpty()){
+        /*if(myCategory == null || myCategory.getName() == null || myCategory.getName().isEmpty()){
             CommonUtils.snackbarDisplay(productMainll,
                     Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.product_category_can_not_be_empty));
             return;
-        }
+        }*/
 
         if(unitTypeTv.getText() == null || unitTypeTv.getText().toString().isEmpty()){
             CommonUtils.snackbarDisplay(productMainll,
@@ -475,7 +479,8 @@ public class ProductEditFragment extends BaseFragment implements
 
             if(myCategory != null && myCategory.getName() != null)
                 categoryTv.setText(myCategory.getName());
-        }
+        }else
+            categoryTv.setText(getContext().getResources().getString(R.string.uncategorized));
 
         if(productXX.getUnitId() != 0){
             mUnitModel = DataUtils.getUnitModelById(productXX.getUnitId());
@@ -485,17 +490,7 @@ public class ProductEditFragment extends BaseFragment implements
         }
 
         if(productXX.getTaxId() != 0){
-
-            if(productXX.getTaxId() < 0){
-                myTaxModel = new TaxModel();
-                TaxRateEnum taxRateEnum = TaxRateEnum.getById(productXX.getTaxId());
-                myTaxModel.setId(taxRateEnum.getId());
-                myTaxModel.setTaxRate(taxRateEnum.getRateValue());
-                myTaxModel.setName(taxRateEnum.getLabel());
-            }else {
-                myTaxModel = TaxDBHelper.getTax(productXX.getTaxId());
-            }
-
+            myTaxModel = DataUtils.getTaxModelById(productXX.getTaxId());
             taxTypeTv.setText(myTaxModel.getName());
         }
 

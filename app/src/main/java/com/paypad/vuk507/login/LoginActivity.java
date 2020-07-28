@@ -191,16 +191,13 @@ public class LoginActivity extends AppCompatActivity
         progressDialog.dismiss();
 
         if(user != null){
-            UserDBHelper.updateUserLoggedInStatus(username, true, new CompleteCallback() {
-                @Override
-                public void onComplete(BaseResponse baseResponse) {
-                    if(baseResponse.isSuccess()){
-                        LoginUtils.applySharedPreferences(LoginActivity.this, user.getUsername(),
-                                user.getPassword(), user.getUuid());
-                        startMainPage();
-                    }
-                }
-            });
+            BaseResponse baseResponse = UserDBHelper.updateUserLoggedInStatus(username, true);
+
+            if(baseResponse.isSuccess()){
+                LoginUtils.applySharedPreferences(LoginActivity.this, user.getUsername(),
+                        user.getPassword(), user.getUuid());
+                startMainPage();
+            }
 
         }else
             CommonUtils.showToastShort(LoginActivity.this, getResources().getString(R.string.invalid_username_or_password));

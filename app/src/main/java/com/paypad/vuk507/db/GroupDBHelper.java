@@ -42,16 +42,15 @@ public class GroupDBHelper {
 
 
     //******************* Creation
-    public static void createOrUpdateGroup(Group group, CompleteCallback completeCallback) {
+    public static BaseResponse createOrUpdateGroup(Group group) {
         Realm realm = Realm.getDefaultInstance();
 
-        realm.executeTransaction(new Realm.Transaction(){
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
+        realm.executeTransaction(new Realm.Transaction(){
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     realm.insertOrUpdate(group);
 
@@ -61,9 +60,9 @@ public class GroupDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Group cannot be saved!");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static void deleteGroup(long groupId, CompleteCallback completeCallback){

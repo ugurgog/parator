@@ -49,6 +49,8 @@ public class SalesTopItemsFragment extends BaseFragment {
     Button countBtn;
     @BindView(R.id.topItemsRv)
     RecyclerView topItemsRv;
+    @BindView(R.id.showMoreTv)
+    TextView showMoreTv;
 
     private ReportModel reportModel;
 
@@ -57,6 +59,11 @@ public class SalesTopItemsFragment extends BaseFragment {
     private List<ReportOrderItem> orderItems;
 
     private static final int TOP_ITEM_MAX_COUNT = 5;
+
+    private static final int SHOW_MORE = 0;
+    private static final int SHOW_LESS = 1;
+
+    private int showMoreLess = SHOW_LESS;
 
     public SalesTopItemsFragment(ReportModel reportModel) {
         this.reportModel = reportModel;
@@ -110,6 +117,21 @@ public class SalesTopItemsFragment extends BaseFragment {
                 updateAdapter();
             }
         });
+
+        showMoreTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(showMoreLess == SHOW_LESS){
+                    showMoreLess = SHOW_MORE;
+                    showMoreTv.setText(getContext().getResources().getString(R.string.show_less));
+                } else{
+                    showMoreLess = SHOW_LESS;
+                    showMoreTv.setText(getContext().getResources().getString(R.string.show_more));
+                }
+
+                setItems();
+            }
+        });
     }
 
     private void setShapes() {
@@ -136,11 +158,21 @@ public class SalesTopItemsFragment extends BaseFragment {
         topItemsRv.setLayoutManager(linearLayoutManager);
         Collections.sort(reportModel.getTopItems(), new SaleCountComparator());
 
-        if(reportModel.getTopItems().size() < TOP_ITEM_MAX_COUNT)
-            orderItems = reportModel.getTopItems();
-        else
-            orderItems = reportModel.getTopItems().subList(0, TOP_ITEM_MAX_COUNT);
+        setItems();
+    }
 
+    private void setItems(){
+        if(reportModel.getTopItems().size() <= TOP_ITEM_MAX_COUNT)
+            showMoreTv.setVisibility(View.GONE);
+
+        if(reportModel.getTopItems().size() <= TOP_ITEM_MAX_COUNT)
+            orderItems = reportModel.getTopItems();
+        else{
+            if(showMoreLess == SHOW_LESS)
+                orderItems = reportModel.getTopItems().subList(0, TOP_ITEM_MAX_COUNT);
+            else
+                orderItems = reportModel.getTopItems();
+        }
         updateAdapter();
     }
 

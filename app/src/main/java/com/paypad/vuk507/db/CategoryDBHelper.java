@@ -57,78 +57,16 @@ public class CategoryDBHelper {
         return category;
     }
 
-    public static void createCategory(String categoryName, String username, CompleteCallback completeCallback) {
+    public static BaseResponse createOrUpdateCategory(Category category) {
         Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction(){
 
-            @Override
-            public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
-                try{
-                    Number currentIdNum = realm.where(Category.class).max("id");
-                    int nextId;
-                    if(currentIdNum == null) {
-                        nextId = 1;
-                    } else {
-                        nextId = currentIdNum.intValue() + 1;
-                    }
-
-                    Category category = new Category();
-                    category.setId(nextId);
-                    category.setName(categoryName);
-                    category.setCreateUsername(username);
-
-                    realm.insertOrUpdate(category);
-
-                    baseResponse.setObject(category);
-                    baseResponse.setMessage("Category is saved/updated!");
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Category cannot be updated!");
-                }
-                //realm.close();
-                completeCallback.onComplete(baseResponse);
-            }
-        });
-    }
-
-    public static void updateCategory(Category category, String name, CompleteCallback completeCallback) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction(){
-
-            @Override
-            public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
-                try{
-                    category.setName(name);
-                    realm.insertOrUpdate(category);
-
-                    baseResponse.setObject(category);
-                    baseResponse.setMessage("Category is saved/updated!");
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Category cannot be updated!");
-                }
-                //realm.close();
-                completeCallback.onComplete(baseResponse);
-            }
-        });
-    }
-
-    public static void createOrUpdateCategory(Category category, CompleteCallback completeCallback) {
-        Realm realm = Realm.getDefaultInstance();
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
         realm.executeTransaction(new Realm.Transaction(){
 
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     realm.insertOrUpdate(category);
 
@@ -138,9 +76,9 @@ public class CategoryDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Category cannot be saved!");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static int getCurrentPrimaryKeyId(){

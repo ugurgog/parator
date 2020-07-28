@@ -17,13 +17,15 @@ public class DiscountDBHelper {
         return discounts;
     }
 
-    public static void deleteDiscount(long id, CompleteCallback completeCallback){
+    public static BaseResponse deleteDiscount(long id){
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
+
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     Discount discount = realm.where(Discount.class).equalTo("id", id).findFirst();
                     discount.deleteFromRealm();
@@ -32,9 +34,9 @@ public class DiscountDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Discount cannot be deleted");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static Discount getDiscount(long id){
@@ -43,28 +45,17 @@ public class DiscountDBHelper {
         return discount;
     }
 
-    public static void createOrUpdateDiscount(Discount discount, CompleteCallback completeCallback) {
+    public static BaseResponse createOrUpdateDiscount(Discount discount) {
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
         realm.executeTransaction(new Realm.Transaction(){
 
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
-                    /*if(discount.getId() == 0){
-                        Number currentIdNum = realm.where(Discount.class).max("id");
-                        int nextId;
-                        if(currentIdNum == null) {
-                            nextId = 1;
-                        } else {
-                            nextId = currentIdNum.intValue() + 1;
-                        }
-                        discount.setId(nextId);
-                    }*/
-
                     realm.insertOrUpdate(discount);
 
                     baseResponse.setObject(discount);
@@ -73,9 +64,9 @@ public class DiscountDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Discount cannot be saved!");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static int getCurrentPrimaryKeyId(){
@@ -88,62 +79,5 @@ public class DiscountDBHelper {
             nextId = currentIdNum.intValue() + 1;
         }
         return nextId;
-    }
-
-    public static void createDiscount(Discount discount, CompleteCallback completeCallback) {
-        Realm realm = Realm.getDefaultInstance();
-
-        realm.executeTransaction(new Realm.Transaction(){
-
-            @Override
-            public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
-                try{
-                    Number currentIdNum = realm.where(Discount.class).max("id");
-                    int nextId;
-                    if(currentIdNum == null) {
-                        nextId = 1;
-                    } else {
-                        nextId = currentIdNum.intValue() + 1;
-                    }
-
-                    discount.setId(nextId);
-
-                    realm.insertOrUpdate(discount);
-
-                    baseResponse.setObject(discount);
-                    baseResponse.setMessage("Discount is saved!");
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Category cannot be saved!");
-                }
-                completeCallback.onComplete(baseResponse);
-            }
-        });
-    }
-
-    public static void updateDiscount(Discount discount, CompleteCallback completeCallback) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction(){
-
-            @Override
-            public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
-                try{
-                    realm.insertOrUpdate(discount);
-
-                    baseResponse.setObject(discount);
-                    baseResponse.setMessage("Discount is updated!");
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Discount cannot be updated!");
-                }
-                completeCallback.onComplete(baseResponse);
-            }
-        });
     }
 }

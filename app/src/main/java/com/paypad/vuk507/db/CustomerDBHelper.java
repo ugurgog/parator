@@ -24,13 +24,15 @@ public class CustomerDBHelper {
         return customers;
     }
 
-    public static void deleteCustomer(long customerId, CompleteCallback completeCallback){
+    public static BaseResponse deleteCustomer(long customerId){
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
+
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     Customer customer = realm.where(Customer.class).equalTo("id", customerId).findFirst();
 
@@ -47,9 +49,9 @@ public class CustomerDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Customer cannot be deleted !!");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static Customer getCustomer(long id){
@@ -58,16 +60,16 @@ public class CustomerDBHelper {
         return customer;
     }
 
-    public static void createOrUpdateCustomer(Customer customer, CompleteCallback completeCallback) {
+    public static BaseResponse createOrUpdateCustomer(Customer customer) {
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
         realm.executeTransaction(new Realm.Transaction(){
 
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     realm.insertOrUpdate(customer);
 
@@ -77,9 +79,9 @@ public class CustomerDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Customer cannot be saved!");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static int getCustomerCurrentPrimaryKeyId(){

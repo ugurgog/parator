@@ -62,6 +62,7 @@ import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
+import com.paypad.vuk507.utils.CustomDialogBox2;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.LogUtil;
 
@@ -463,16 +464,12 @@ public class KeypadFragment extends BaseFragment implements
                 .OnPositiveClicked(new CustomDialogListener() {
                     @Override
                     public void OnClick() {
-                        DynamicBoxModelDBHelper.deleteDynamicBoxByStructAndItemId(dynamicBoxModel.getStructId(), dynamicBoxModel.getItemId(), user.getUuid(), new CompleteCallback() {
-                            @Override
-                            public void onComplete(BaseResponse baseResponse) {
-                                CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
-                                if(baseResponse.isSuccess()){
-                                    setDynamicBoxAdapter();
-                                }
-                            }
-                        });
+                        BaseResponse baseResponse = DynamicBoxModelDBHelper.deleteDynamicBoxByStructAndItemId(dynamicBoxModel.getStructId(), dynamicBoxModel.getItemId(), user.getUuid());
+                        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
+                        if(baseResponse.isSuccess()){
+                            setDynamicBoxAdapter();
+                        }
                     }
                 })
                 .OnNegativeClicked(new CustomDialogListener() {
@@ -497,16 +494,13 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     private void createDynamicBox(DynamicBoxModel dynamicBoxModel){
-        DynamicBoxModelDBHelper.createOrUpdateDynamicBox(dynamicBoxModel, new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-                CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
-                if(baseResponse.isSuccess()){
-                    setDynamicBoxAdapter();
-                }
-                dismissDynamicFragment();
-            }
-        });
+        BaseResponse baseResponse = DynamicBoxModelDBHelper.createOrUpdateDynamicBox(dynamicBoxModel);
+
+        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+        if(baseResponse.isSuccess()){
+            setDynamicBoxAdapter();
+        }
+        dismissDynamicFragment();
     }
 
     private void dismissDynamicFragment() {
