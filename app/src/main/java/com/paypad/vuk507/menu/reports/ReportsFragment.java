@@ -81,13 +81,13 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
     }
 
     @Override
-    public void onDetach() {
+    public void onDetach() {   
         super.onDetach();
         EventBus.getDefault().unregister(this);
     }
 
     @Subscribe(sticky = true)
-    public void accountHolderUserReceived(UserBus userBus) {   
+    public void accountHolderUserReceived(UserBus userBus) {
         user = userBus.getUser();
         if (user == null)
             user = UserDBHelper.getUserFromCache(getContext());
