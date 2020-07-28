@@ -124,7 +124,7 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
         });
 
         mainLl.setOnClickListener(new View.OnClickListener() {
-            @Override
+            @Override   
             public void onClick(View view) {
                 mFragmentNavigation.pushFragment(new SaleReportsFragment());
             }
