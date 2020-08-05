@@ -2,11 +2,13 @@ package com.paypad.vuk507.menu.transactions.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.category.CategoryEditFragment;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
@@ -26,6 +29,7 @@ import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
+import com.paypad.vuk507.utils.ShapeUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -119,6 +123,11 @@ public class PaymentDetailAdapter extends RecyclerView.Adapter {
         TextView tipAmountTv;
         TextView cardAmountTv;
 
+        LinearLayout refundedll;
+        ImageView refundImgv;
+        TextView refundCancelTv;
+        TextView refundDateTv;
+
         Transaction transaction;
         int position;
 
@@ -128,6 +137,10 @@ public class PaymentDetailAdapter extends RecyclerView.Adapter {
             amountTv = view.findViewById(R.id.amountTv);
             tipAmountTv = view.findViewById(R.id.tipAmountTv);
             cardAmountTv = view.findViewById(R.id.cardAmountTv);
+            refundedll = view.findViewById(R.id.refundedll);
+            refundImgv = view.findViewById(R.id.refundImgv);
+            refundCancelTv = view.findViewById(R.id.refundCancelTv);
+            refundDateTv = view.findViewById(R.id.refundDateTv);
         }
 
         void setData(Transaction transaction, int position) {
@@ -138,6 +151,7 @@ public class PaymentDetailAdapter extends RecyclerView.Adapter {
             setAmount();
             setTipAmount();
             setTotalAmount();
+            setRefundCancelViews();
         }
 
         private void setTransactionDate() {
@@ -159,6 +173,38 @@ public class PaymentDetailAdapter extends RecyclerView.Adapter {
         private void setTotalAmount() {
             String amountStr = CommonUtils.getDoubleStrValueForView(transaction.getTotalAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
             cardAmountTv.setText(amountStr);
+        }
+
+        private void setRefundCancelViews(){
+            if(transaction.getTransactionType() == TransactionTypeEnum.SALE.getId())
+                refundedll.setVisibility(View.GONE);
+            else{
+                refundedll.setVisibility(View.VISIBLE);
+                setRefundedItems();
+            }
+        }
+
+        private void setRefundedItems(){
+
+            @SuppressLint("SimpleDateFormat")
+            String trxDate = new SimpleDateFormat("dd MM yyyy HH:mm").format(transaction.getRefundOrCancelDate());
+            refundDateTv.setText(trxDate);
+
+            if(transaction.getTransactionType() == TransactionTypeEnum.REFUND.getId()){
+
+                refundCancelTv.setText(mContext.getResources().getString(R.string.payment_refunded_upper));
+
+                Glide.with(mContext).load(R.drawable.ic_arrow_back_white_24dp).into(refundImgv);
+                refundImgv.setBackground(ShapeUtil.getShape(mContext.getResources().getColor(R.color.Orange, null),
+                        mContext.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 20, 3));
+            }else if(transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId()){
+
+                refundCancelTv.setText(mContext.getResources().getString(R.string.payment_cancelled_upper));
+
+                Glide.with(mContext).load(R.drawable.ic_close_gray_24dp).into(refundImgv);
+                refundImgv.setBackground(ShapeUtil.getShape(mContext.getResources().getColor(R.color.Red, null),
+                        mContext.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 20, 3));
+            }
         }
     }
 

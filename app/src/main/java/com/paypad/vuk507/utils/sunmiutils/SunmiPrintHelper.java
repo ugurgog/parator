@@ -7,6 +7,7 @@ import android.os.RemoteException;
 import android.widget.Toast;
 
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.enums.PrinterStatusEnum;
 import com.sunmi.peripheral.printer.ExceptionConst;
 import com.sunmi.peripheral.printer.InnerLcdCallback;
 import com.sunmi.peripheral.printer.InnerPrinterCallback;
@@ -713,18 +714,20 @@ public class SunmiPrintHelper {
         Toast.makeText(context, result, Toast.LENGTH_LONG).show();
     }
 
-    public int getPrinterStatus(){
-        int status = 0;
-        if(sunmiPrinterService == null){
-            return status;
-        }
+    public PrinterStatusEnum getPrinterStatus(){
+        PrinterStatusEnum printerStatus = PrinterStatusEnum.NOT_EXIST;
+
+        if(sunmiPrinterService == null)
+            return printerStatus;
 
         try {
-            status = sunmiPrinterService.updatePrinterState();
+            int status = sunmiPrinterService.updatePrinterState();
+            printerStatus = PrinterStatusEnum.getById(status);
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        return status;
+        return printerStatus;
     }
 
     /**

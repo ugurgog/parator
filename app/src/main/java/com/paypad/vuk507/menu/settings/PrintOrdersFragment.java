@@ -50,8 +50,10 @@ public class PrintOrdersFragment extends BaseFragment {
     ClickableImageView backImgv;
     @BindView(R.id.toolbarTitleTv)
     AppCompatTextView toolbarTitleTv;
-    @BindView(R.id.autoPrintSwitch)
-    Switch autoPrintSwitch;
+    @BindView(R.id.autoPrintCustomerSwitch)
+    Switch autoPrintCustomerSwitch;
+    @BindView(R.id.autoPrintMerchantSwitch)
+    Switch autoPrintMerchantSwitch;
 
     private User user;
     private Realm realm;
@@ -115,10 +117,17 @@ public class PrintOrdersFragment extends BaseFragment {
             }
         });
 
-        autoPrintSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        autoPrintCustomerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                updatePrinterSettings(b);
+                updatePrinterSettings(b, null);
+            }
+        });
+
+        autoPrintMerchantSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                updatePrinterSettings(null, b);
             }
         });
     }
@@ -129,14 +138,16 @@ public class PrintOrdersFragment extends BaseFragment {
         printerSettings = PrinterSettingsDBHelper.getPrinterSetting(user.getUuid());
 
         if(printerSettings == null){
-            autoPrintSwitch.setChecked(false);
+            autoPrintCustomerSwitch.setChecked(false);
+            autoPrintMerchantSwitch.setChecked(false);
             printerSettings = new PrinterSettings();
         } else {
-            autoPrintSwitch.setChecked(printerSettings.isOrdersAutoPrint());
+            autoPrintCustomerSwitch.setChecked(printerSettings.isCustomerAutoPrint());
+            autoPrintMerchantSwitch.setChecked(printerSettings.isMerchantAutoPrint());
         }
     }
 
-    private void updatePrinterSettings(boolean isAutoPrint){
+    private void updatePrinterSettings(Boolean isCustomerPrint, Boolean isMerchantPrint){
 
         realm.beginTransaction();
 
@@ -153,7 +164,11 @@ public class PrintOrdersFragment extends BaseFragment {
 
         PrinterSettings tempPrinterSettings = realm.copyToRealm(printerSettings);
 
-        tempPrinterSettings.setOrdersAutoPrint(isAutoPrint);
+        if(isCustomerPrint != null)
+            tempPrinterSettings.setCustomerAutoPrint(isCustomerPrint);
+
+        if(isMerchantPrint != null)
+            tempPrinterSettings.setMerchantAutoPrint(isMerchantPrint);
 
         realm.commitTransaction();
 

@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
@@ -53,7 +54,9 @@ import butterknife.ButterKnife;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_CANCEL;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_REFUND;
 
 public class SendNewReceiptFragment extends BaseFragment implements SendMail.MailSendCallback {
 
@@ -71,15 +74,21 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     RelativeLayout mainRl;
     @BindView(R.id.printReceiptImgv)
     ClickableImageView printReceiptImgv;
+    @BindView(R.id.toolbarTitleTv)
+    AppCompatTextView toolbarTitleTv;
 
     private User user;
     private Transaction mTransaction;
     private String email;
+    private Integer refundCancelStatus = null;
+    private double refundAmount;
 
     private PrintReceiptManager printReceiptManager;
 
-    SendNewReceiptFragment(Transaction transaction) {
+    SendNewReceiptFragment(Transaction transaction, Integer refundCancelStatus, double refundAmount) {
         mTransaction = transaction;
+        this.refundCancelStatus = refundCancelStatus;
+        this.refundAmount = refundAmount;
     }
 
     @Override
@@ -145,21 +154,32 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
         backImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
+                if(refundCancelStatus != null)
+                    mFragmentNavigation.popFragments(3);
+                else
+                    Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
 
         printReceiptImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                printReceiptManager.printCustomerReceipt();
+                if(refundCancelStatus != null && (refundCancelStatus == TYPE_REFUND || refundCancelStatus == TYPE_CANCEL))
+                    printReceiptManager.printRefundOrCancelReceipt();
+                else
+                    printReceiptManager.printCustomerReceipt();
             }
         });
     }
 
     private void initPrinter() {
         SaleModel saleModel = SaleDBHelper.getSaleModelBySaleId(mTransaction.getSaleUuid());
-        printReceiptManager = new PrintReceiptManager(getContext(), saleModel,false);
+
+        if(refundCancelStatus != null)
+            printReceiptManager = new PrintReceiptManager(getContext(), mTransaction,false,  refundAmount, refundCancelStatus);
+        else
+            printReceiptManager = new PrintReceiptManager(getContext(), saleModel,false);
+
         printReceiptManager.setCallback(mCallback);
     }
 
@@ -173,7 +193,22 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     }
 
     private void initVariables() {
+        if(refundCancelStatus != null)
+            printReceiptImgv.setVisibility(View.VISIBLE);
+
+        setToolbarTitle();
         initPrinter();
+    }
+
+    private void setToolbarTitle(){
+        if(refundCancelStatus == null)
+            toolbarTitleTv.setText(getResources().getString(R.string.new_receipt));
+        else {
+            if(refundCancelStatus == TYPE_REFUND)
+                toolbarTitleTv.setText(getResources().getString(R.string.refund_receipt));
+            else if(refundCancelStatus == TYPE_CANCEL)
+                toolbarTitleTv.setText(getResources().getString(R.string.cancel_receipt));
+        }
     }
 
     private void checkValidEmail() {
@@ -212,36 +247,12 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
         DataUtils.showBaseResponseMessage(getContext(), mailSendResponse);
 
         LogUtil.logTransaction("handleMailResponse", mTransaction);
-
-        startCounter();
     }
 
     @Override
     public void OnBackPressed() {
 
     }
-
-    private void startCounter(){
-        myCountDown.start();
-    }
-
-    private void cancelCounter(){
-        myCountDown.cancel();
-    }
-
-    private CountDownTimer myCountDown = new CountDownTimer(7000, 1000) {
-        public void onTick(long millisUntilFinished) {
-            Log.i("Info", "::myCountDown millisUntilFinished:" + millisUntilFinished);
-        }
-
-        public void onFinish() {
-            try{
-                Objects.requireNonNull(getActivity()).onBackPressed();
-            }catch (NullPointerException e){
-
-            }
-        }
-    };
 
     InnerResultCallbcak mCallback = new InnerResultCallbcak() {
         @Override
@@ -267,13 +278,8 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
                 public void run() {
                     if(res == 0){
                         CommonUtils.showToastShort(getContext(), "Print successful");
-                        //TODO Follow-up after successful
-
-                        startCounter();
                     }else{
                         CommonUtils.showToastShort(getContext(), "Print failed");
-                        //TODO Follow-up after failed, such as reprint
-                        startCounter();
                     }
                 }
             });

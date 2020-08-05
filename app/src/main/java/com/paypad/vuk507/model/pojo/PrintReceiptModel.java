@@ -19,19 +19,17 @@ public class PrintReceiptModel {
     private double totalAmount;
     private double totalTipAmount;
     private double totalTaxAmount;
-    private int fNo;
-    private int zNo;
+    private int receiptNum;
+    private int batchNum;
 
     private int chequeNo;
     private int tableNo;
     private String mersisNo;
     private String email;
-    private int ekuNo;
 
     private String merchantNum;
     private String terminalNum;
     private int approveCode;
-    private int batchNum;
     private int stanNum;
     private String deviceRegisterId;
     private Date fDate;
@@ -79,14 +77,6 @@ public class PrintReceiptModel {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public int getEkuNo() {
-        return ekuNo;
-    }
-
-    public void setEkuNo(int ekuNo) {
-        this.ekuNo = ekuNo;
     }
 
     public String getMerchantNum() {
@@ -257,22 +247,13 @@ public class PrintReceiptModel {
         this.totalTaxAmount = totalTaxAmount;
     }
 
-    public int getfNo() {
-        return fNo;
+    public int getReceiptNum() {
+        return receiptNum;
     }
 
-    public void setfNo(int fNo) {
-        this.fNo = fNo;
+    public void setReceiptNum(int receiptNum) {
+        this.receiptNum = receiptNum;
     }
-
-    public int getzNo() {
-        return zNo;
-    }
-
-    public void setzNo(int zNo) {
-        this.zNo = zNo;
-    }
-
 
     public static class ReceiptDiscountModel{
         private int discountId;
@@ -309,6 +290,7 @@ public class PrintReceiptModel {
         private long paymentType;
         private String cardNumber;
         private String cardName;
+        private String retrefNum;
 
         public double getAmount() {
             return amount;
@@ -340,6 +322,14 @@ public class PrintReceiptModel {
 
         public void setCardName(String cardName) {
             this.cardName = cardName;
+        }
+
+        public String getRetrefNum() {
+            return retrefNum;
+        }
+
+        public void setRetrefNum(String retrefNum) {
+            this.retrefNum = retrefNum;
         }
     }
 

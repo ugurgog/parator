@@ -52,16 +52,16 @@ public class TaxDBHelper {
         return taxModel;
     }
 
-    public static void createOrUpdateTax(TaxModel taxModel, CompleteCallback completeCallback) {
+    public static BaseResponse createOrUpdateTax(TaxModel taxModel) {
         Realm realm = Realm.getDefaultInstance();
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
         realm.executeTransaction(new Realm.Transaction(){
 
             @Override
             public void execute(Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
                 try{
                     realm.insertOrUpdate(taxModel);
 
@@ -71,9 +71,9 @@ public class TaxDBHelper {
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Tax cannot be saved!");
                 }
-                completeCallback.onComplete(baseResponse);
             }
         });
+        return baseResponse;
     }
 
     public static int getCurrentPrimaryKeyId(){

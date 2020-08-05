@@ -23,14 +23,17 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.transactions.adapters.SaleModelListAdapter;
 import com.paypad.vuk507.model.Sale;
+import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
+import com.paypad.vuk507.utils.LogUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -81,6 +84,13 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        initVariables();
+        initListeners();
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         EventBus.getDefault().register(this);
@@ -110,8 +120,8 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_transactions, container, false);
             ButterKnife.bind(this, mView);
-            initVariables();
-            initListeners();
+            //initVariables();
+            //initListeners();
         }
         return mView;
     }
@@ -171,10 +181,10 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
         updateAdapterWithCurrentList();
     }
 
-    public static class DateComparator implements Comparator<SaleModel> {
+    public static class DateComparator implements Comparator<TransactionItem> {
         @Override
-        public int compare(SaleModel o1, SaleModel o2) {
-            return o2.getSale().getCreateDate().compareTo(o1.getSale().getCreateDate());
+        public int compare(TransactionItem o1, TransactionItem o2) {
+            return o2.getTrxDate().compareTo(o1.getTrxDate());
         }
     }
 
@@ -182,22 +192,51 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
     public void updateAdapterWithCurrentList(){
 
         List<SaleModel> saleModels = SaleDBHelper.getSaleModelsForTransactionList(user.getUuid());
-        Collections.sort(saleModels, new DateComparator());
 
-        List<SaleModel> adapterModel = new ArrayList<>();
+        List<TransactionItem> transactionItems = new ArrayList<>();
+
+
+        for(SaleModel saleModel : saleModels){
+            for(Transaction transaction : saleModel.getTransactions()){
+
+                LogUtil.logTransaction("updateAdapterWithCurrentList", transaction);
+
+                if(transaction.getTransactionType() == TransactionTypeEnum.REFUND.getId() ||
+                        transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId()){
+                    TransactionItem transactionItem = new TransactionItem();
+                    transactionItem.setTrxDate(transaction.getRefundOrCancelDate());
+                    transactionItem.setTransaction(transaction);
+                    transactionItem.setSaleModel(saleModel);
+                    transactionItems.add(transactionItem);
+                }
+            }
+
+            TransactionItem transactionItem1 = new TransactionItem();
+            transactionItem1.setTrxDate(saleModel.getSale().getCreateDate());
+            transactionItem1.setTransaction(null);
+            transactionItem1.setSaleModel(saleModel);
+            transactionItems.add(transactionItem1);
+        }
+
+        Collections.sort(transactionItems, new DateComparator());
+
+        List<TransactionItem> adapterModel = new ArrayList<>();
 
         Date previousDate = null;
 
-        for(SaleModel saleModel : saleModels){
-            if(DataUtils.getDifferenceDays(previousDate, saleModel.getSale().getCreateDate()) != 0){
-                SaleModel saleModel1 = new SaleModel();
-                saleModel1.setSale(new Sale());
-                saleModel1.getSale().setCreateDate(saleModel.getSale().getCreateDate());
-                adapterModel.add(saleModel1);
+        for(TransactionItem transactionItem : transactionItems){
+
+            if(DataUtils.getDifferenceDays(previousDate, transactionItem.getTrxDate()) != 0){
+                TransactionItem transactionItem1 = new TransactionItem();
+                transactionItem1.setTrxDate(transactionItem.getTrxDate());
+                transactionItem1.setTransaction(null);
+                transactionItem1.setSaleModel(null);
+                transactionItem1.setNoItem(true);
+                adapterModel.add(transactionItem1);
             }
 
-            adapterModel.add(saleModel);
-            previousDate = saleModel.getSale().getCreateDate();
+            adapterModel.add(transactionItem);
+            previousDate = transactionItem.getTrxDate();
         }
         saleModelListAdapter = new SaleModelListAdapter(getContext(), adapterModel);
         saleModelListAdapter.setReturnSaleModelCallback(this);
@@ -211,5 +250,44 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
     @Override
     public void OnReturnSaleModel(SaleModel saleModel) {
         mFragmentNavigation.pushFragment(new TransactionDetailFragment(saleModel));
+    }
+
+    public class TransactionItem{
+        private SaleModel saleModel;
+        private Transaction transaction;
+        private Date trxDate;
+        private boolean noItem;
+
+        public SaleModel getSaleModel() {
+            return saleModel;
+        }
+
+        public void setSaleModel(SaleModel saleModel) {
+            this.saleModel = saleModel;
+        }
+
+        public Transaction getTransaction() {
+            return transaction;
+        }
+
+        public void setTransaction(Transaction transaction) {
+            this.transaction = transaction;
+        }
+
+        public Date getTrxDate() {
+            return trxDate;
+        }
+
+        public void setTrxDate(Date trxDate) {
+            this.trxDate = trxDate;
+        }
+
+        public boolean isNoItem() {
+            return noItem;
+        }
+
+        public void setNoItem(boolean noItem) {
+            this.noItem = noItem;
+        }
     }
 }

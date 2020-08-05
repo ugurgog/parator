@@ -285,6 +285,13 @@ public class MainActivity extends FragmentActivity implements
     }
 
     @Override
+    public void popFragments(int depth) {
+        if (mNavController != null) {
+            mNavController.popFragments(depth);
+        }
+    }
+
+    @Override
     public void onTabTransaction(Fragment fragment, int index) {
 
     }

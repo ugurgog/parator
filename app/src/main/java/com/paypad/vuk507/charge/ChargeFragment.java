@@ -203,6 +203,8 @@ public class ChargeFragment extends BaseFragment implements
         chargell.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.DodgerBlue, null),
                 getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 20, 0));
         SaleModelInstance.reset();
+        DataUtils.checkPrinterSettings(user.getUuid());
+        DataUtils.checkAutoIncrement(user.getUuid());
     }
 
     private void initListeners() {
@@ -245,11 +247,12 @@ public class ChargeFragment extends BaseFragment implements
                         if(!orderManager.isSaleItemInSale(saleItem)){
                             OnCustomItemAdd(CUSTOM_ITEM_ADD_FROM_CHARGE);
                         }
-
-                        /*if(!SaleModelInstance.getInstance().getSaleModel().isSaleItemInSale(saleItem)){
-                            OnCustomItemAdd();
-                        }*/
                     }
+                }
+
+                if(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount() <= 0d){
+                    CommonUtils.showToastShort(getContext(), getContext().getResources().getString(R.string.sale_amount_zero));
+                    return;
                 }
 
                 orderManager.setRemainAmountByDiscountedAmount();

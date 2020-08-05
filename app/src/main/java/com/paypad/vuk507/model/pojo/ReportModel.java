@@ -13,12 +13,12 @@ public class ReportModel {
     private Date endDate;
     private double grossSalesAmount;
     private double refundsAmount;
+    private double cancelAmount;
     private double discountAmount;
     private Map<Long, ReportDiscountModel> discounts;
     private double netSalesAmount;
     private double taxAmount;
     private double tipsAmount;
-    private double refundsByAmount;
     private double totalAmount;
     private long saleCount;
     private double averageSaleAmount;
@@ -26,7 +26,6 @@ public class ReportModel {
     //Sales by payment types
     private double cashAmount;
     private double cardAmount;
-    private double feeAmount;
 
 
     //private List<ReportOrderItem> reportOrderItems;
@@ -107,12 +106,12 @@ public class ReportModel {
         this.tipsAmount = tipsAmount;
     }
 
-    public double getRefundsByAmount() {
-        return refundsByAmount;
+    public double getCancelAmount() {
+        return cancelAmount;
     }
 
-    public void setRefundsByAmount(double refundsByAmount) {
-        this.refundsByAmount = refundsByAmount;
+    public void setCancelAmount(double cancelAmount) {
+        this.cancelAmount = cancelAmount;
     }
 
     public double getTotalAmount() {
@@ -145,14 +144,6 @@ public class ReportModel {
 
     public void setCardAmount(double cardAmount) {
         this.cardAmount = cardAmount;
-    }
-
-    public double getFeeAmount() {
-        return feeAmount;
-    }
-
-    public void setFeeAmount(double feeAmount) {
-        this.feeAmount = feeAmount;
     }
 
     public Map<String, List<ReportOrderItem>> getReportOrderItems() {

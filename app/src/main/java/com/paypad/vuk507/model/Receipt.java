@@ -6,40 +6,51 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class PrinterSettings extends RealmObject {
+public class Receipt extends RealmObject {
 
     @Index
     @PrimaryKey
-    private String userId;
-    private boolean isCustomerAutoPrint;
-    private boolean isMerchantAutoPrint;
+    private String receiptId;
+    private String saleId;
+    private long receiptNum;
+    private int receiptType;       //ReceiptTypeEnum
+    private String content;        //Makbuz içerigi (Gunsonu, customer receipt)
     private Date createDate;
+    @Index
     private String createUserId;
     private Date updateDate;
     private String updateUserId;
 
-    public String getUserId() {
-        return userId;
+    public long getReceiptNum() {
+        return receiptNum;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setReceiptNum(long receiptNum) {
+        this.receiptNum = receiptNum;
     }
 
-    public boolean isCustomerAutoPrint() {
-        return isCustomerAutoPrint;
+    public String getReceiptId() {
+        return receiptId;
     }
 
-    public void setCustomerAutoPrint(boolean customerAutoPrint) {
-        isCustomerAutoPrint = customerAutoPrint;
+    public void setReceiptId(String receiptId) {
+        this.receiptId = receiptId;
     }
 
-    public boolean isMerchantAutoPrint() {
-        return isMerchantAutoPrint;
+    public int getReceiptType() {
+        return receiptType;
     }
 
-    public void setMerchantAutoPrint(boolean merchantAutoPrint) {
-        isMerchantAutoPrint = merchantAutoPrint;
+    public void setReceiptType(int receiptType) {
+        this.receiptType = receiptType;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Date getCreateDate() {
@@ -72,5 +83,13 @@ public class PrinterSettings extends RealmObject {
 
     public void setUpdateUserId(String updateUserId) {
         this.updateUserId = updateUserId;
+    }
+
+    public String getSaleId() {
+        return saleId;
+    }
+
+    public void setSaleId(String saleId) {
+        this.saleId = saleId;
     }
 }

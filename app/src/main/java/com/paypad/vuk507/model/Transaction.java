@@ -1,6 +1,7 @@
 package com.paypad.vuk507.model;
 
 import java.util.Date;
+import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
@@ -15,6 +16,8 @@ public class Transaction extends RealmObject {
     private String transactionUuid;
     @Index
     private String saleUuid;
+    private String retrefNum;
+    private int transactionType;
     private long seqNumber;                 // Sequence number
     private double transactionAmount;       // Split amount tutari
     private double tipAmount;               // Tip Amount - Kredi karti odemelerinde
@@ -28,8 +31,8 @@ public class Transaction extends RealmObject {
     private boolean isMailSend;
     private String mailAdress;
     private Date mailSendDate;
-
     private Date createDate;
+    private Date refundOrCancelDate;
     @Index
     private String userUuid;
 
@@ -37,8 +40,32 @@ public class Transaction extends RealmObject {
         return transactionUuid;
     }
 
+    public int getTransactionType() {
+        return transactionType;
+    }
+
+    public String getRetrefNum() {
+        return retrefNum;
+    }
+
+    public void setRetrefNum(String retrefNum) {
+        this.retrefNum = retrefNum;
+    }
+
+    public void setTransactionType(int transactionType) {
+        this.transactionType = transactionType;
+    }
+
     public void setTransactionUuid(String transactionUuid) {
         this.transactionUuid = transactionUuid;
+    }
+
+    public Date getRefundOrCancelDate() {
+        return refundOrCancelDate;
+    }
+
+    public void setRefundOrCancelDate(Date refundOrCancelDate) {
+        this.refundOrCancelDate = refundOrCancelDate;
     }
 
     public String getSaleUuid() {

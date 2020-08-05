@@ -146,53 +146,6 @@
 
     </LinearLayout>
 
-
-
-    <!-- Fees-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/fees"
-                android:textStyle="bold"
-                android:textColor="@color/Black">
-
-            </TextView>
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/feeAmountTv"
-                android:text="134.32 TL"
-                android:textStyle="bold"
-                android:layout_alignParentEnd="true"
-                android:textColor="@color/Black">
-
-            </TextView>
-
-
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.3dp"
-            android:background="@color/fab_color_shadow" />
-
-    </LinearLayout>
-
-
-
     <!-- Net Total-->
     <LinearLayout
         android:layout_width="match_parent"

@@ -35,7 +35,6 @@
             android:maxLines="1"
             android:textSize="@dimen/default_size_13sp"
             android:id="@+id/paymentDateTv"
-            android:text="10 07 2020 10:45"
             android:layout_marginTop="5dp">
         </TextView>
 
@@ -249,7 +248,7 @@
                     android:textSize="@dimen/default_size_15sp"
                     android:text="Receipt #wh3T"
                     android:id="@+id/receiptDescTv"
-                      android:layout_gravity="center">
+                    android:layout_gravity="center">
                 </TextView>
 
             </LinearLayout>
@@ -260,6 +259,71 @@
                 android:background="@color/fab_color_shadow" />
 
         </LinearLayout>
+
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/refundedll">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_paym_item_receipt"
+                    card_view:ignore="ContentDescription"
+                    android:id="@+id/refundImgv"
+                    android:tint="@color/White">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="@color/Black"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp"
+                    android:id="@+id/refundCancelTv"
+                    android:text="@string/card_payment"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:layout_gravity="center">
+                </TextView>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/Gray"
+                android:maxLines="1"
+                android:textSize="@dimen/default_size_13sp"
+                android:id="@+id/refundDateTv">
+            </TextView>
+
+        </LinearLayout>
+
+
+
+
+
+
+
+
+
+
 
     </LinearLayout>
 

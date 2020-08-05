@@ -74,7 +74,8 @@ public class SalesSummaryOverviewFragment extends BaseFragment {
         netSalesTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getNetSalesAmount()));
         salesCountTv.setText(String.valueOf(reportModel.getSaleCount()));
         averageSaleTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getAverageSaleAmount()));
-        refundsTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getRefundsAmount()));
+        refundsTv.setText(CommonUtils.getAmountTextWithCurrency(
+                CommonUtils.round(reportModel.getRefundsAmount() + reportModel.getCancelAmount(), 2)));
         discountsAmountTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getDiscountAmount()));
     }
 

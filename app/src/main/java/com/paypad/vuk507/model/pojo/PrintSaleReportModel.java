@@ -14,8 +14,8 @@ public class PrintSaleReportModel {
     private String reportId;
     private Date fDate;
     private String reportTitle;
-    private int fNo;
-    private int zNo;
+    private long receiptNum;
+    private long batchNum;
 
     private long reportNum;
     private Date reportDate;
@@ -64,14 +64,6 @@ public class PrintSaleReportModel {
 
     public void setReportDate(Date reportDate) {
         this.reportDate = reportDate;
-    }
-
-    public int getfNo() {
-        return fNo;
-    }
-
-    public void setfNo(int fNo) {
-        this.fNo = fNo;
     }
 
     public String getMerchantName() {
@@ -306,12 +298,20 @@ public class PrintSaleReportModel {
         this.ekuNo = ekuNo;
     }
 
-    public int getzNo() {
-        return zNo;
+    public long getReceiptNum() {
+        return receiptNum;
     }
 
-    public void setzNo(int zNo) {
-        this.zNo = zNo;
+    public void setReceiptNum(long receiptNum) {
+        this.receiptNum = receiptNum;
+    }
+
+    public long getBatchNum() {
+        return batchNum;
+    }
+
+    public void setBatchNum(long batchNum) {
+        this.batchNum = batchNum;
     }
 
     public String getDeviceRegisterId() {

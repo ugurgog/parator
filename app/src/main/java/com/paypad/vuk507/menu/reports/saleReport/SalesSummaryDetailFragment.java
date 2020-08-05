@@ -45,8 +45,8 @@ public class SalesSummaryDetailFragment extends BaseFragment {
     TextView taxAmountTv;
     @BindView(R.id.tipsAmountTv)
     TextView tipsAmountTv;
-    @BindView(R.id.refundsByAmountTv)
-    TextView refundsByAmountTv;
+    @BindView(R.id.cancelsAmountTv)
+    TextView cancelsAmountTv;
     @BindView(R.id.totalAmountTv)
     TextView totalAmountTv;
 
@@ -86,11 +86,11 @@ public class SalesSummaryDetailFragment extends BaseFragment {
     private void initVariables() {
         grossSalesTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getGrossSalesAmount()));
         refundsAmountTv.setText("(".concat(CommonUtils.getAmountTextWithCurrency(reportModel.getRefundsAmount())).concat(")"));
+        cancelsAmountTv.setText("(".concat(CommonUtils.getAmountTextWithCurrency(reportModel.getCancelAmount())).concat(")"));
         discountsAmountTv.setText("(".concat(CommonUtils.getAmountTextWithCurrency(reportModel.getDiscountAmount())).concat(")"));
         netSalesTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getNetSalesAmount()));
         taxAmountTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getTaxAmount()));
         tipsAmountTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getTipsAmount()));
-        refundsByAmountTv.setText("(".concat(CommonUtils.getAmountTextWithCurrency(reportModel.getRefundsByAmount())).concat(")"));
         totalAmountTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getTotalAmount()));
         setAdapter();
     }

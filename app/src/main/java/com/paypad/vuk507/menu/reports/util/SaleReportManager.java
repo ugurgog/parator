@@ -3,6 +3,7 @@ package com.paypad.vuk507.menu.reports.util;
 import android.util.Log;
 
 import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
@@ -40,23 +41,19 @@ public class SaleReportManager {
         setDiscounts();
         setTotalDiscountAmount();
         setRefundsAmount();
+        setCancellationAmount();
         setNetSalesAmount();
         setTaxAmount();
         setTotalTipAmount();
-        setRefundsByAmount();
         setTotalAmount();
         setSaleCount();
         setAmountsByPaymentType();
-        setFeeAmount();
         setOrderItems();
         setTopItems();
         setAverageSaleAmount();
 
         return reportModel;
     }
-
-
-
 
     private void setGroosAmount() {
         double grossSalesAmount = 0d;
@@ -69,11 +66,27 @@ public class SaleReportManager {
     }
 
     private void setRefundsAmount() {
-        reportModel.setRefundsAmount(0d);
+        double refundAmount = 0d;
+        for(SaleModel saleModel : saleModels){
+            for(Transaction transaction: saleModel.getTransactions()){
+                if(transaction.getTransactionType() == TransactionTypeEnum.REFUND.getId()){
+                    refundAmount = CommonUtils.round(refundAmount + transaction.getTotalAmount(), 2);
+                }
+            }
+        }
+        reportModel.setRefundsAmount(refundAmount);
     }
 
-    private void setRefundsByAmount() {
-        reportModel.setRefundsByAmount(0d);
+    private void setCancellationAmount(){
+        double cancellationAmount = 0d;
+        for(SaleModel saleModel : saleModels){
+            for(Transaction transaction: saleModel.getTransactions()){
+                if(transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId()){
+                    cancellationAmount = CommonUtils.round(cancellationAmount + transaction.getTotalAmount(), 2);
+                }
+            }
+        }
+        reportModel.setRefundsAmount(cancellationAmount);
     }
 
     private void setDiscounts() {
@@ -218,9 +231,6 @@ public class SaleReportManager {
                 }
             }
         }
-    }
-    private void setFeeAmount(){
-        reportModel.setFeeAmount(0d);
     }
 
     private void setOrderItems(){

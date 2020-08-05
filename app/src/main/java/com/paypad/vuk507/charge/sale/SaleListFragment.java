@@ -238,7 +238,8 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
         if(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount() == 0)
             totalDiscountAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount();
 
-        if(totalDiscountAmount > 0){
+        if(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts() != null &&
+                SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts().size() > 0){
             SaleItem saleItem = new SaleItem();
             saleItem.setName(getResources().getString(R.string.discounts));
             saleItem.setAmount(totalDiscountAmount);

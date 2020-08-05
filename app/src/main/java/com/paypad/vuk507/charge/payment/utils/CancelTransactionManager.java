@@ -26,7 +26,7 @@ public class CancelTransactionManager {
         SaleModelInstance.getInstance().getSaleModel().getSale().setCreateDate(null);
         SaleModelInstance.getInstance().getSaleModel().getSale().setPaymentCompleted(false);
 
-        baseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel());
+        baseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel().getSale());
 
         if(!baseResponse.isSuccess())
             return baseResponse;

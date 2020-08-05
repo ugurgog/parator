@@ -149,12 +149,11 @@ public class SalesReportFragment extends BaseFragment implements ReturnFinancial
             List<SaleModel> saleModels = SaleDBHelper.getSaleModelsForReport(user.getUuid(),
                     null, DataUtils.getStartTimeOfDate(new Date()), DataUtils.getEndTimeOfDate(new Date()));
 
-            printSalesReportManager = new PrintSalesReportManager(getContext(), reportsEnum, saleModels, user.getUsername(), new Date(), new Date() );
+            printSalesReportManager = new PrintSalesReportManager(getContext(), reportsEnum, saleModels, user, new Date(), new Date() );
             printSalesReportManager.setCallback(mCallback);
 
             printSalesReportManager.printSaleReport();
         }
-
     }
 
 

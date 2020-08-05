@@ -169,8 +169,10 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
             public void onClick(View view) {
                 if(orderManager.isExistPaymentCompletedTransaction())
                     handleCancelTransaction();
-                else
+                else{
+                    SaleModelInstance.getInstance().getSaleModel().setTransactions(new ArrayList<>());
                     Objects.requireNonNull(getActivity()).onBackPressed();
+                }
             }
         });
 
@@ -196,8 +198,6 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
             }
         });
     }
-
-
 
     private void initVariables() {
         orderManager = new OrderManager();

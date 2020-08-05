@@ -18,14 +18,18 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.IOrderManager;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
+import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.SaleItemDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
+import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.menu.transactions.adapters.SaleModelListAdapter;
+import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
@@ -40,6 +44,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -132,6 +137,8 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
         mTransaction.setCreateDate(new Date());
         mTransaction.setUserUuid(user.getUuid());
         mTransaction.setTotalAmount(mTransaction.getTransactionAmount() + mTransaction.getTipAmount());
+        mTransaction.setTransactionType(TransactionTypeEnum.SALE.getId());
+        mTransaction.setRetrefNum(DataUtils.getTransactionRetrefNum(user.getUuid()));
 
         LogUtil.logTransaction("saveTransaction", mTransaction);
 
@@ -157,10 +164,13 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     private void saveSaleAndItems(){
         SaleModelInstance.getInstance().getSaleModel().getSale().setCreateDate(new Date());
         SaleModelInstance.getInstance().getSaleModel().getSale().setPaymentCompleted(true);
+        SaleModelInstance.getInstance().getSaleModel().getSale().setBatchNum(
+                AutoIncrementDBHelper.getAutoIncrement(user.getUuid()).getBatchNum());
+        SaleModelInstance.getInstance().getSaleModel().getSale().setEndOfDayProcessed(false);
 
         LogUtil.logSale(SaleModelInstance.getInstance().getSaleModel().getSale());
 
-        BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel());
+        BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel().getSale());
         DataUtils.showBaseResponseMessage(getContext(), saleBaseResponse);
 
         if(saleBaseResponse.isSuccess()){

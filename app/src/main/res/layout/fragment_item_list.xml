@@ -7,12 +7,11 @@
 
     <include layout="@layout/toolbar_including_back_view"/>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listView">
+        android:id="@+id/itemsRv">
 
-
-    </ListView>
+    </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>

@@ -237,7 +237,9 @@ public class KeypadFragment extends BaseFragment implements
 
 
                     }else {
-                        if(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount() > 0){
+                        if(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount() > 0 ||
+                                (SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts() != null &&
+                                        SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts().size() > 0)){
                             clearItems();
                         }else {
                             clearAmountFields();
@@ -300,9 +302,13 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     public void clearItems(){
+        String clearSaleDesc = getContext().getResources().getString(R.string.question_are_you_sure)
+                .concat(" ")
+                .concat( getContext().getResources().getString(R.string.items_and_discounts_deleted_from_sale));
+
         new CustomDialogBox.Builder((Activity) getContext())
                 .setTitle(getContext().getResources().getString(R.string.clear_sale))
-                .setMessage(getContext().getResources().getString(R.string.question_are_you_sure))
+                .setMessage(clearSaleDesc)
                 .setNegativeBtnVisibility(View.VISIBLE)
                 .setNegativeBtnText(getContext().getResources().getString(R.string.cancel))
                 .setNegativeBtnBackground(getContext().getResources().getColor(R.color.Silver, null))

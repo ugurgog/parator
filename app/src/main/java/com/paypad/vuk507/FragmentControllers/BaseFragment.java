@@ -32,6 +32,7 @@ public class BaseFragment extends Fragment {
     public interface FragmentNavigation {
         void pushFragment(Fragment fragment);
         void pushFragment(Fragment fragment, String animationTag);
+        void popFragments(int depth);
     }
 
 }

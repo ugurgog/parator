@@ -8,15 +8,19 @@ import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.db.PrinterSettingsDBHelper;
 import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.enums.DayEnum;
 import com.paypad.vuk507.enums.MonthEnum;
 import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.enums.TaxRateEnum;
+import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Customer;
+import com.paypad.vuk507.model.PrinterSettings;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.UnitModel;
@@ -33,7 +37,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
+
+import io.realm.Realm;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
@@ -306,4 +313,61 @@ public class DataUtils {
         return returnValue.toString();
     }
 
+    public static void checkPrinterSettings(String userId){
+
+        PrinterSettings printerSettings = PrinterSettingsDBHelper.getPrinterSetting(userId);
+
+        if(printerSettings != null)
+            return;
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        printerSettings = new PrinterSettings();
+        printerSettings.setCreateDate(new Date());
+        printerSettings.setUpdateDate(new Date());
+        printerSettings.setUserId(userId);
+        printerSettings.setCreateUserId(userId);
+        printerSettings.setUpdateUserId(userId);
+        printerSettings.setCustomerAutoPrint(true);
+        printerSettings.setMerchantAutoPrint(false);
+
+        PrinterSettings tempPrinterSettings = realm.copyToRealm(printerSettings);
+
+        realm.commitTransaction();
+
+        PrinterSettingsDBHelper.updatePrinterSettings(tempPrinterSettings);
+    }
+
+    public static void checkAutoIncrement(String userId){
+        AutoIncrement autoIncrement = AutoIncrementDBHelper.getAutoIncrement(userId);
+
+        if(autoIncrement != null)
+            return;
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        autoIncrement = new AutoIncrement();
+        autoIncrement.setUserId(userId);
+        autoIncrement.setBatchNum(1);
+        autoIncrement.setReceiptNum(1);
+        autoIncrement.setRetrefNumCounter(1);
+
+        AutoIncrement tempAutoIncrement = realm.copyToRealm(autoIncrement);
+
+        realm.commitTransaction();
+
+        AutoIncrementDBHelper.createOrUpdateAutoIncrement(tempAutoIncrement);
+    }
+
+    public static String getTransactionRetrefNum(String userId){
+        String julianDate = String.valueOf(getDayOfYearFromDate(new Date()));
+        String yearShort = String.valueOf(getYearFromDate(new Date())).substring(2,4);
+        @SuppressLint("DefaultLocale") String counter = String.format("%07d", AutoIncrementDBHelper.getCurrentRetrefNumCounter(userId));
+
+        return julianDate
+                .concat(yearShort)
+                .concat(counter);
+    }
 }

@@ -36,8 +36,6 @@ public class SalesByPaymentTypeFragment extends BaseFragment {
     TextView cardAmountTv;
     @BindView(R.id.cardSeekBar)
     SeekBar cardSeekBar;
-    @BindView(R.id.feeAmountTv)
-    TextView feeAmountTv;
     @BindView(R.id.netTotalAmountTv)
     TextView netTotalAmountTv;
 
@@ -76,7 +74,6 @@ public class SalesByPaymentTypeFragment extends BaseFragment {
         totalCollectedAmountTv.setText(CommonUtils.getAmountTextWithCurrency(CommonUtils.round(totalCollected, 2)));
         cashAmountTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getCashAmount()));
         cardAmountTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getCardAmount()));
-        feeAmountTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getFeeAmount()));
         netTotalAmountTv.setText(CommonUtils.getAmountTextWithCurrency(reportModel.getTotalAmount()));
         setSeekbars(totalCollected);
     }

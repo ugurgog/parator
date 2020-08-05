@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Paratör</string>
 
     <array name="tab_name">
@@ -66,12 +66,13 @@
     <string name="unit_undefined">Birim Tanımsız</string>
     <string name="tax_amount">KDV TUTARI</string>
     <string name="new_receipt">Yeni Makbuz</string>
-    <string name="issue_refund">İade Et</string>
+    <string name="order_refund">İade Et</string>
+    <string name="order_cancel">İptal Et</string>
     <string name="items_and_services">ÜRÜNLER</string>
     <string name="cash_payment">NAKİT ÖDEME</string>
     <string name="card_payment">KARTLI ÖDEME</string>
-    <string name="card_price_upper">KART TUTARI</string>
-    <string name="cash_price_upper">NAKİT TUTAR</string>
+    <string name="card_price_upper" tools:ignore="ExtraTranslation">KART TUTARI</string>
+    <string name="cash_price_upper" tools:ignore="ExtraTranslation">NAKİT TUTAR</string>
     <string name="card">Kart</string>
     <string name="subtotal">Alt Toplam</string>
     <string name="sales_tax">KDV</string>
@@ -94,7 +95,7 @@
     <string name="discount_amount">İndirim Tutarı</string>
     <string name="category_name">Kategori Adı</string>
     <string name="categories">Kategoriler</string>
-    <string name="discounts">İndirimler</string>
+    <string name="discounts" tools:ignore="ExtraTranslation, MissingTranslation">İndirimler</string>
     <string name="unit_name">Birim Adı</string>
     <string name="units">Birimler</string>
     <string name="tax_name">Vergi Adı</string>
@@ -183,6 +184,8 @@
     <string name="net_sales">Net Satışlar</string>
     <string name="average_sale">Ortalama Satış</string>
     <string name="refunds">İadeler</string>
+    <string name="cancels">İptaller</string>
+    <string name="refunds_and_cancellation">İade ve İptal</string>
     <string name="discounts_and_comps">İndirim ve Kampanyalar</string>
     <string name="sales_summary_overview">SATIŞ ÖZETİ: GENEL</string>
     <string name="sales_summary_details">SATIŞ ÖZETİ: DETAYLI</string>
@@ -231,34 +234,34 @@
     <string name="this_month">Bu Ay</string>
     <string name="current_three_month">Son 3 Ay</string>
     <string name="this_year">Bu Yıl</string>
-    <string name="date_upper">TARİH</string>
-    <string name="hour_upper">SAAT</string>
-    <string name="receipt_no_upper">FİŞ NO</string>
-    <string name="per">Per</string>
-    <string name="toptax_upper">TOPKDV</string>
-    <string name="total_upper">TOPLAM</string>
-    <string name="cash_upper">NAKİT</string>
-    <string name="card_upper">KREDİ</string>
-    <string name="cheque_upper">ÇEK NO</string>
-    <string name="table_no_upper">MASA NO</string>
-    <string name="mersis_upper">MERSİS</string>
-    <string name="eku_no_upper">EKÜ NO</string>
-    <string name="z_no_upper">Z NO</string>
-    <string name="sale_upper">SATIŞ</string>
-    <string name="merchant_no_upper">İŞYERİ NO</string>
-    <string name="terminal_upper">TERMINAL</string>
-    <string name="approve_code_upper">ONAY KODU</string>
-    <string name="batch_upper">BATCH</string>
-    <string name="stan_upper">STAN</string>
-    <string name="goods_and_services_received">ALINAN MAL VEYA HİZMETLER</string>
-    <string name="keep_this_receipt">BU FİŞİ SAKLAYIN</string>
-    <string name="belongs_to_card_holder">KART SAHİBİNE AİT</string>
-    <string name="first_copy">1.KOPYA</string>
-    <string name="test_device">** TEST CİHAZIDIR **</string>
-    <string name="no_financial_receipt">** MALİ DEĞERİ YOKTUR **</string>
-    <string name="copy_of_sale_receipt">SATIŞ FİŞİ KOPYASI</string>
-    <string name="belongs_to_contracted_merchant">İŞYERİNE AİT</string>
-    <string name="second_copy">2.KOPYA</string>
+    <string name="date_upper" tools:ignore="ExtraTranslation">TARİH</string>
+    <string name="hour_upper" tools:ignore="ExtraTranslation">SAAT</string>
+    <string name="receipt_no_upper" tools:ignore="ExtraTranslation">FİŞ NO</string>
+    <string name="per" tools:ignore="ExtraTranslation">Adt</string>
+    <string name="toptax_upper" tools:ignore="ExtraTranslation">TOPKDV</string>
+    <string name="total_upper" tools:ignore="ExtraTranslation">TOPLAM</string>
+    <string name="cash_upper" tools:ignore="ExtraTranslation">NAKİT</string>
+    <string name="card_upper" tools:ignore="ExtraTranslation">KREDİ</string>
+    <string name="cheque_upper" tools:ignore="ExtraTranslation">ÇEK NO</string>
+    <string name="table_no_upper" tools:ignore="ExtraTranslation">MASA NO</string>
+    <string name="mersis_upper" tools:ignore="ExtraTranslation">MERSİS</string>
+    <string name="eku_no_upper" tools:ignore="ExtraTranslation">EKÜ NO</string>
+    <string name="z_no_upper" tools:ignore="ExtraTranslation">Z NO</string>
+    <string name="sale_upper" tools:ignore="ExtraTranslation">SATIŞ</string>
+    <string name="merchant_no_upper" tools:ignore="ExtraTranslation">İŞYERİ NO</string>
+    <string name="terminal_upper" tools:ignore="ExtraTranslation">TERMINAL</string>
+    <string name="approve_code_upper" tools:ignore="ExtraTranslation">ONAY KODU</string>
+    <string name="batch_upper" tools:ignore="ExtraTranslation">BATCH</string>
+    <string name="stan_upper" tools:ignore="ExtraTranslation">STAN</string>
+    <string name="goods_and_services_received" tools:ignore="ExtraTranslation">ALINAN MAL VEYA HİZMETLER</string>
+    <string name="keep_this_receipt" tools:ignore="ExtraTranslation">BU FİŞİ SAKLAYIN</string>
+    <string name="belongs_to_card_holder" tools:ignore="ExtraTranslation">KART SAHİBİNE AİT</string>
+    <string name="first_copy" tools:ignore="ExtraTranslation">1.KOPYA</string>
+    <string name="test_device" tools:ignore="ExtraTranslation">** TEST CİHAZIDIR **</string>
+    <string name="no_financial_receipt" tools:ignore="ExtraTranslation">** MALİ DEĞERİ YOKTUR **</string>
+    <string name="copy_of_sale_receipt" tools:ignore="ExtraTranslation">SATIŞ FİŞİ KOPYASI</string>
+    <string name="belongs_to_contracted_merchant" tools:ignore="ExtraTranslation">İŞYERİNE AİT</string>
+    <string name="second_copy" tools:ignore="ExtraTranslation">2.KOPYA</string>
     <string name="print_merchant_receipt">İşyeri Makbuzuu Yazdır</string>
     <string name="report_date_upper">RAPOR GÜNÜ</string>
     <string name="report_no_upper">RAPOR NO</string>
@@ -278,6 +281,7 @@
     <string name="uncompleted_processes_upper">TAMAMLANMAMIŞ İŞLEMLER</string>
     <string name="cancel_count_upper">İPTAL ADEDİ</string>
     <string name="cancel_amount_upper">İPTAL TUTAR</string>
+    <string name="refund_amount_upper">İADE TUTAR</string>
 
     <string name="payment_information_upper">ÖDEME BİLGİLERİ</string>
     <string name="other_upper">DİĞER</string>
@@ -360,6 +364,8 @@
     <string name="please_type_custom_amount">Lütfen geçerli bir tutar giriniz</string>
     <string name="please_select_custom_amount_first">Lütfen önce tutar giriniz</string>
     <string name="including_tax_price_upper">KDV DAHİL FİYAT</string>
+    <string name="sale_amount_zero">Sipariş tutarı 0. İşleme devam edilemez.</string>
+    <string name="items_and_discounts_deleted_from_sale">Tüm ürün ve indirimler siparişten çıkarılacaktır.</string>
 
     <string name="discount_name_can_not_be_empty">İndirim adı boş olamaz</string>
     <string name="discount_rate_amount_can_not_be_empty">İndirim tutarı veya indirim oranı dolu olmalıdır</string>
@@ -429,7 +435,25 @@
     <string name="alerts">Uyarılar</string>
     <string name="print_orders">Siparişleri Yazdır</string>
     <string name="sign_out">Çıkış</string>
-    <string name="automatically_print_new_orders">Yeni Satışları Otomatik Yazdır</string>
+    <string name="automatically_print_customer_receipts">Müşteri Makbuzunu Otomatik Yazdır</string>
+    <string name="automatically_print_merchant_receipts">İşyeri Makbuzunu Otomatik Yazdır</string>
     <string name="print_orders_desc">Yeni çevrimiçi siparişler, geldiklerinde otomatik olarak yazdırılır.</string>
+    <string name="eod_failed">Günsonu işlemi sırasında bir hata oluştu!!</string>
+    <string name="eod_success">Günsonu işlemi başarılı.</string>
+    <string name="no_sale_for_eod_process">Günsonu işlemi için geçerli işlem bulunamadı!</string>
+    <string name="no_item_for_refund_found">İade yapılacak işlem bulunamadı veya tüm ödemeler iade edildi.</string>
+    <string name="no_item_for_cancel_found">İptal edilecek işlem bulunamadı veya tüm ödemeler iptal edildi.</string>
+    <string name="select_to_refund">İade edilecek işlemi seçin</string>
+    <string name="select_to_cancel">İptal edilecek işlemi seçin</string>
+    <string name="read_credit_card">Kartı Okutun</string>
+    <string name="read_card_to_refund">İade işlemi için lütfen kartı yaklaştırınız</string>
+    <string name="type_payment_id_to_refund">İade işlemine devam edebilmek için lütfen fiş üzerindeki referans numarasını giriniz</string>
+    <string name="reference_number">Referans Numarası</string>
+    <string name="refund_including_tip_amount">Bahşiş tutarını da iade et</string>
+    <string name="refund">İade</string>
+    <string name="refund_receipt">İade Makbuzu</string>
+    <string name="cancel_receipt">İptal Makbuzu</string>
+    <string name="payment_refunded_upper">ÖDEME İADE EDİLDİ</string>
+    <string name="payment_cancelled_upper">ÖDEME İPTAL EDİLDİ</string>
 
 </resources>

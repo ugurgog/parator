@@ -32,9 +32,12 @@
                 android:text="@string/checkout_options"
                 android:gravity="center|start"
                 android:textStyle="bold">
-
-
             </TextView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.7dp"
+                android:background="@color/Silver" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -43,6 +46,11 @@
                 android:gravity="center|start"
                 android:textStyle="bold">
             </TextView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.7dp"
+                android:background="@color/Silver" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -73,8 +81,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:text="@string/hardware"
-                android:gravity="center|start">
+                android:gravity="center|start"
+                android:textStyle="bold">
             </TextView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.7dp"
+                android:background="@color/Silver" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -105,8 +119,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:text="@string/device"
-                android:gravity="center|start">
+                android:gravity="center|start"
+                android:textStyle="bold">
             </TextView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.7dp"
+                android:background="@color/Silver" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -137,8 +157,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:text="@string/orders"
-                android:gravity="center|start">
+                android:gravity="center|start"
+                android:textStyle="bold">
             </TextView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.7dp"
+                android:background="@color/Silver" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

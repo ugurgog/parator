@@ -18,14 +18,37 @@
             android:layout_height="match_parent"
             android:gravity="center">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/icon_discount_black_32dp"
-                android:id="@+id/paymentIconImgv"
-                card_view:ignore="ContentDescription">
 
-            </ImageView>
+            <RelativeLayout
+                android:layout_width="35dp"
+                android:layout_height="35dp">
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:src="@drawable/icon_discount_black_32dp"
+                    android:id="@+id/paymentIconImgv"
+                    card_view:ignore="ContentDescription">
+
+                </ImageView>
+
+
+                <ImageView
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
+                    android:src="@drawable/ic_arrow_back_white_24dp"
+                    android:id="@+id/cancelImgv"
+                    android:tint="@color/White"
+                    card_view:ignore="ContentDescription"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true">
+
+                </ImageView>
+
+
+            </RelativeLayout>
+
+
 
             <LinearLayout
                 android:layout_width="wrap_content"

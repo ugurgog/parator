@@ -3,9 +3,11 @@ package com.paypad.vuk507.utils;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
+import com.paypad.vuk507.model.Receipt;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.ReportDiscountModel;
@@ -56,7 +58,9 @@ public class LogUtil {
                     ", UserUuid:" + sale.getUserUuid() +
                     ", CreateDate:" + simpleDateFormat.format(sale.getCreateDate()) +
                     ", PaymentCompleted:" + sale.isPaymentCompleted() +
-                    ", DeviceId:" + sale.getDeviceId());
+                    ", DeviceId:" + sale.getDeviceId() +
+                    ", BatchNum:" + sale.getBatchNum() +
+                    ", EndOfDayProcessed:" + sale.isEndOfDayProcessed());
         }catch (Exception e){
 
         }
@@ -78,7 +82,9 @@ public class LogUtil {
                     ", CashAmount:" + transaction.getCashAmount() +
                     ", UserUuid:" + transaction.getUserUuid() +
                     ", isMailSend:" + transaction.isMailSend() +
-                    ", mailAddress:" + transaction.getMailAdress());
+                    ", mailAddress:" + transaction.getMailAdress() +
+                    ", transactionType:" + transaction.getTransactionType() +
+                    ", retrefNum:" + transaction.getRetrefNum());
         }catch (Exception e){
 
         }
@@ -124,12 +130,11 @@ public class LogUtil {
             Log.i("Info", "::logReportModel netSalesAmount    :" + reportModel.getNetSalesAmount());
             Log.i("Info", "::logReportModel taxAmount         :" + reportModel.getTaxAmount());
             Log.i("Info", "::logReportModel tipsAmount        :" + reportModel.getTipsAmount());
-            Log.i("Info", "::logReportModel refundsByAmount   :" + reportModel.getRefundsByAmount());
+            Log.i("Info", "::logReportModel cancelAmount      :" + reportModel.getCancelAmount());
             Log.i("Info", "::logReportModel totalAmount       :" + reportModel.getTotalAmount());
             Log.i("Info", "::logReportModel saleCount         :" + reportModel.getSaleCount());
             Log.i("Info", "::logReportModel cashAmount        :" + reportModel.getCashAmount());
             Log.i("Info", "::logReportModel cardAmount        :" + reportModel.getCardAmount());
-            Log.i("Info", "::logReportModel feeAmount         :" + reportModel.getFeeAmount());
 
 
             Log.i("Info", "::logReportModel discounts-------------------");
@@ -162,6 +167,32 @@ public class LogUtil {
                 }
 
             }
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    public static void logReceipt(Receipt receipt) {
+        try {
+            Log.i("Info", "::Receipt +++++++++++++++++++++++++");
+            Log.i("Info", "::logReceipt ReceiptId:" + receipt.getReceiptId() +
+                    ", SaleId:" + receipt.getSaleId() +
+                    ", ReceiptNum:" + receipt.getReceiptNum() +
+                    ", ReceiptType:" + receipt.getReceiptType() +
+                    ", Content:" + receipt.getContent());
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    public static void logAutoIncrement(AutoIncrement autoIncrement) {
+        try {
+            Log.i("Info", "::AutoIncrement +++++++++++++++++++++++++");
+            Log.i("Info", "::logAutpIncrement UserId:" + autoIncrement.getUserId() +
+                    ", BatchNum:" + autoIncrement.getBatchNum() +
+                    ", ReceiptNum:" + autoIncrement.getReceiptNum());
 
         } catch (Exception e) {
 

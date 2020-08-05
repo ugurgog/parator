@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,8 @@ import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.payment.utils.PrintReceiptManager;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
+import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.transactions.adapters.ItemsServicesAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentDetailAdapter;
@@ -47,7 +50,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_CANCEL;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_REFUND;
 
 public class TransactionDetailFragment extends BaseFragment {
 
@@ -71,6 +76,8 @@ public class TransactionDetailFragment extends BaseFragment {
     RecyclerView totalRv;
     @BindView(R.id.printReceiptBtn)
     Button printReceiptBtn;
+    @BindView(R.id.mainll)
+    LinearLayout mainll;
 
 
     private User user;
@@ -82,6 +89,9 @@ public class TransactionDetailFragment extends BaseFragment {
     private SaleModel saleModel;
     private OrderManager orderManager;
     private PrintReceiptManager printReceiptManager;
+    private RefundOrCancelListFragment refundOrCancelListFragment;
+
+    private int refundCancellationStatus = TYPE_REFUND;
 
     public TransactionDetailFragment(SaleModel saleModel) {
         this.saleModel = saleModel;
@@ -90,6 +100,13 @@ public class TransactionDetailFragment extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initVariables();
+        initListeners();
     }
 
     @Override
@@ -122,8 +139,8 @@ public class TransactionDetailFragment extends BaseFragment {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_transaction_detail, container, false);
             ButterKnife.bind(this, mView);
-            initVariables();
-            initListeners();
+            //initVariables();
+            //initListeners();
         }
         return mView;
     }
@@ -154,21 +171,68 @@ public class TransactionDetailFragment extends BaseFragment {
                 printReceiptManager.printCustomerReceipt();
             }
         });
+
+        issueRefundBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                processRefundOrCancel();
+            }
+        });
     }
 
     private void initVariables() {
         orderManager = new OrderManager();
         setToolbarTitle();
         initPrinter();
+        setRefundStatus();
 
         setPaymentDetailAdapter();
         setItemsServicesAdapter();
         setPaymentTotalAdapter();
     }
 
+    private void processRefundOrCancel(){
+        boolean cancellationStatus = checkRefundAndCancellation();
+
+        if(!cancellationStatus){
+            if(refundCancellationStatus == TYPE_REFUND){
+                CommonUtils.snackbarDisplay(mainll, getContext(), getResources().getString(R.string.no_item_for_refund_found));
+            }else if(refundCancellationStatus == TYPE_CANCEL){
+                CommonUtils.snackbarDisplay(mainll, getContext(), getResources().getString(R.string.no_item_for_cancel_found));
+            }
+        }else {
+            initRefundOrCancelListFragment();
+            mFragmentNavigation.pushFragment(refundOrCancelListFragment);
+        }
+    }
+
+    private void initRefundOrCancelListFragment(){
+        refundOrCancelListFragment = new RefundOrCancelListFragment(refundCancellationStatus, saleModel);
+    }
+
+    private boolean checkRefundAndCancellation(){
+        for(Transaction transaction : saleModel.getTransactions()){
+            if(transaction.getPaymentTypeId() == PaymentTypeEnum.CREDIT_CARD.getId() &&
+                transaction.getTransactionType() == TransactionTypeEnum.SALE.getId()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void initPrinter() {
         printReceiptManager = new PrintReceiptManager(getContext(), saleModel,false);
         printReceiptManager.setCallback(mCallback);
+    }
+
+    private void setRefundStatus(){
+        if(saleModel.getSale().isEndOfDayProcessed()){
+            issueRefundBtn.setText(getResources().getString(R.string.order_refund));
+            refundCancellationStatus = TYPE_REFUND;
+        } else {
+            issueRefundBtn.setText(getResources().getString(R.string.order_cancel));
+            refundCancellationStatus = TYPE_CANCEL;
+        }
     }
 
     private void setToolbarTitle(){

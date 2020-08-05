@@ -22,7 +22,7 @@ public class PrintHelper {
     private static final int DATE_FIELDS_FONT_SIZE = 25;
 
     @SuppressLint("DefaultLocale")
-    public static void printDateAndReceiptNoFields(SunmiPrinterService sunmiPrinterService, Context mContext, Date date, int receiptNo){
+    public static void printDateAndReceiptNoFields(SunmiPrinterService sunmiPrinterService, Context mContext, Date date, long receiptNo){
         try {
             sunmiPrinterService.setAlignment(0, null);
             String dateString = CommonUtils.padRight(mContext.getResources().getString(R.string.date_upper), MAX_DATE_LEN) + ": ";
@@ -45,7 +45,7 @@ public class PrintHelper {
     }
 
     @SuppressLint("DefaultLocale")
-    public static void printReceiptNo(Context mContext, SunmiPrinterService sunmiPrinterService, int receiptNo){
+    public static void printReceiptNo(Context mContext, SunmiPrinterService sunmiPrinterService, long receiptNo){
         String rNoString = CommonUtils.padRight(mContext.getResources().getString(R.string.receipt_no_upper), MAX_DATE_LEN) + ": ";
         try {
             sunmiPrinterService.printTextWithFont(rNoString + String.format("%05d", receiptNo) + "\n", null, DATE_FIELDS_FONT_SIZE, null);
@@ -62,6 +62,21 @@ public class PrintHelper {
                 sunmiPrinterService.printText("--------------------------------\n", null);
             }else{
                 sunmiPrinterService.printText("------------------------------------------------\n",
+                        null);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addLineText2(SunmiPrinterService sunmiPrinterService){
+        int paper;
+        try {
+            paper = sunmiPrinterService.getPrinterPaper();
+            if(paper == 1){
+                sunmiPrinterService.printText("................................\n", null);
+            }else{
+                sunmiPrinterService.printText("................................................\n",
                         null);
             }
         } catch (RemoteException e) {
@@ -202,7 +217,7 @@ public class PrintHelper {
         }
     }
 
-    public static void printEkuAndZNo(Context mContext, SunmiPrinterService sunmiPrinterService, int EkuNo, int zNo){
+    public static void printEkuAndZNo(Context mContext, SunmiPrinterService sunmiPrinterService, int EkuNo, long zNo){
         String txts[] = new String[2];
         int width[] = new int[]{1, 1};
         int align[] = new int[]{0, 2};

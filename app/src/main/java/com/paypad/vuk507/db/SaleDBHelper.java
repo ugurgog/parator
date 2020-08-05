@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
@@ -24,7 +25,7 @@ import io.realm.RealmResults;
 
 public class SaleDBHelper {
 
-    public static BaseResponse createOrUpdateSale(SaleModel saleModel) {
+    public static BaseResponse createOrUpdateSale(Sale sale) {
         Realm realm = Realm.getDefaultInstance();
 
         BaseResponse baseResponse = new BaseResponse();
@@ -35,7 +36,7 @@ public class SaleDBHelper {
             @Override
             public void execute(Realm realm) {
                 try{
-                    realm.insertOrUpdate(saleModel.getSale());
+                    realm.insertOrUpdate(sale);
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Sale cannot be saved!");
@@ -155,6 +156,43 @@ public class SaleDBHelper {
         return saleModels;
     }
 
+
+    public static List<SaleModel> getSaleModelsNotProcessedEOD(String userId){
+
+        List<SaleModel> saleModels = new ArrayList<>();
+
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Sale> saleList;
+
+        saleList = realm.where(Sale.class)
+                .equalTo("userUuid", userId)
+                .equalTo("isEndOfDayProcessed", false)
+                .equalTo("paymentCompleted", true)
+                .findAll();
+
+        for(Sale sale : saleList){
+
+            LogUtil.logSale(sale);
+
+            if(sale.isPaymentCompleted()){
+                SaleModel saleModel = new SaleModel();
+
+                String saleId = sale.getSaleUuid();
+
+                saleModel.setSale(sale);
+
+                List<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
+                saleModel.setSaleItems(saleItems);
+
+                List<Transaction> transactions = TransactionDBHelper.getTransactionsBySaleId(saleId);
+                saleModel.setTransactions(transactions);
+
+                saleModels.add(saleModel);
+            }
+        }
+        return saleModels;
+    }
+
     public static void deleteAllOrders(){
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
@@ -193,7 +231,4 @@ public class SaleDBHelper {
             }
         });
     }
-
-
-
 }

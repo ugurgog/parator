@@ -8,11 +8,14 @@ import android.os.RemoteException;
 
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.enums.FinancialReportsEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
+import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.order.OrderItemTax;
 import com.paypad.vuk507.model.pojo.PrintSaleReportModel;
 import com.paypad.vuk507.model.pojo.SaleItemPojo;
@@ -48,7 +51,7 @@ public class PrintSalesReportManager {
     private Context mContext;
     private FinancialReportsEnum financialReportsType;
     private List<SaleModel> saleModels;
-    private String userName;
+    private User user;
     private PrintSaleReportModel printSaleReportModel;
     private InnerResultCallbcak callback;
 
@@ -110,7 +113,7 @@ public class PrintSalesReportManager {
         }
     }
 
-    public PrintSalesReportManager(Context context, FinancialReportsEnum financialReportsType, List<SaleModel> saleModels, String userName,
+    public PrintSalesReportManager(Context context, FinancialReportsEnum financialReportsType, List<SaleModel> saleModels, User user,
                                    Date startDate, Date endDate) {
         this.helper = SunmiPrintHelper.getInstance();
         this.sunmiPrinterService = helper.getSunmiPrinterService();
@@ -118,7 +121,7 @@ public class PrintSalesReportManager {
         this.mContext = context;
         this.financialReportsType = financialReportsType;
         this.saleModels = saleModels;
-        this.userName = userName;
+        this.user = user;
         this.startDate = startDate;
         this.endDate = endDate;
         fillReportModel();
@@ -138,8 +141,8 @@ public class PrintSalesReportManager {
 
         printSaleReportModel.setReportId(UUID.randomUUID().toString());
         printSaleReportModel.setfDate(new Date());
-        printSaleReportModel.setReportTitle(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? financialReportsType.getLabelTr().toUpperCase()
-                : financialReportsType.getLabelEn().toUpperCase());
+        //printSaleReportModel.setReportTitle(financialReportsType.getLabelTr().toUpperCase());
+        printSaleReportModel.setReportTitle("GÜNSONU RAPORU");
         printSaleReportModel.setReportNum(1);                                                       //TODO
 
         setReportDate();
@@ -151,13 +154,20 @@ public class PrintSalesReportManager {
         setPaymentModel();
         setInformationReceiptModels();
         setAdditionalInformation();
+        setBatchAndReceiptNum();
 
-        printSaleReportModel.setfNo(222);   //TODO
-        printSaleReportModel.setzNo(111);   //TODO
         printSaleReportModel.setMersisNo("05352900403");               //TODO
         printSaleReportModel.setEmail("ugur.gogebakan@garaj2.com");    //TODO
         printSaleReportModel.setEkuNo(1);                              //TODO
         printSaleReportModel.setDeviceRegisterId("JH 20082508");       //TODO
+    }
+
+    private void setBatchAndReceiptNum(){
+        AutoIncrement autoIncrement = AutoIncrementDBHelper.getAutoIncrement(user.getUuid());
+        long currentReceiptNum = AutoIncrementDBHelper.getCurrentReceiptNum(user.getUuid());
+
+        printSaleReportModel.setReceiptNum(currentReceiptNum);   //TODO
+        printSaleReportModel.setBatchNum(autoIncrement.getBatchNum());   //TODO
     }
 
     private void setReportDate(){
@@ -165,7 +175,7 @@ public class PrintSalesReportManager {
     }
 
     private void setReportTaxModels() {
-        List<TaxModel> taxModels = DataUtils.getAllTaxes(userName);
+        List<TaxModel> taxModels = DataUtils.getAllTaxes(user.getUsername());
 
         for(TaxModel taxModel : taxModels){
 
@@ -215,7 +225,7 @@ public class PrintSalesReportManager {
 
         for(FileTypeEnum fileTypeEnum : fileTypeEnums){
             PrintSaleReportModel.FileTypeModel fileTypeModel = new PrintSaleReportModel.FileTypeModel();
-            fileTypeModel.setFileName(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? fileTypeEnum.getLabelTr() : fileTypeEnum.getLabelEn());
+            fileTypeModel.setFileName(fileTypeEnum.getLabelTr());
             fileTypeModel.setSaleCount(0);              //TODO
             fileTypeModel.setTotSaleAmount(0d);         //TODO
             fileTypeModel.setTotTaxAmount(0d);          //TODO
@@ -264,7 +274,7 @@ public class PrintSalesReportManager {
 
         for(InformationReceiptEnum receiptEnum : informationReceiptEnums){
             PrintSaleReportModel.InformationReceiptModel receiptModel = new PrintSaleReportModel.InformationReceiptModel();
-            receiptModel.setInfoName((CommonUtils.getLanguage().equals(LANGUAGE_TR) ? receiptEnum.getLabelTr() : receiptEnum.getLabelEn())
+            receiptModel.setInfoName((receiptEnum.getLabelTr())
                 .concat(" ")
                 .concat(mContext.getResources().getString(R.string.count_upper)));
             receiptModel.setAmount(0d);         //TODO
@@ -318,7 +328,7 @@ public class PrintSalesReportManager {
             }
 
             //PRINT DATE AND RECEIPT NO FIELDS
-            PrintHelper.printDateAndReceiptNoFields(sunmiPrinterService, mContext, printSaleReportModel.getfDate(), printSaleReportModel.getfNo());
+            PrintHelper.printDateAndReceiptNoFields(sunmiPrinterService, mContext, printSaleReportModel.getfDate(), printSaleReportModel.getReceiptNum());
 
             sunmiPrinterService.lineWrap(1, null);
             sunmiPrinterService.setAlignment(0, null);
@@ -356,8 +366,8 @@ public class PrintSalesReportManager {
             sunmiPrinterService.printColumnsString(txts, width, align, null);
 
             //Print Report Date
-            txts[0] = mContext.getResources().getString(R.string.report_no_upper);
-            txts[1] = String.valueOf(printSaleReportModel.getReportNum());
+            txts[0] = mContext.getResources().getString(R.string.batch_upper);
+            txts[1] = String.valueOf(printSaleReportModel.getBatchNum());
             sunmiPrinterService.printColumnsString(txts, width, align, null);
 
             /***************************************** KDV BILGILERI ***************************************************************************/
@@ -379,6 +389,9 @@ public class PrintSalesReportManager {
             /***************************************** SATIS BILGILERI ***************************************************************************/
 
             PrintHelper.addLineTextWithValue(sunmiPrinterService, mContext.getResources().getString(R.string.sale_information_upper));
+
+            width = new int[]{2, 1};
+            align = new int[]{0, 2};
 
             txts[0] = mContext.getResources().getString(R.string.total_tax_upper);
             txts[1] = "*".concat(CommonUtils.getAmountText(printSaleReportModel.getTotTaxAmount()));
@@ -415,6 +428,9 @@ public class PrintSalesReportManager {
             /***************************************** BELGE TIPLERI ***************************************************************************/
 
             PrintHelper.addLineTextWithValue(sunmiPrinterService, mContext.getResources().getString(R.string.file_types_upper));
+
+            width = new int[]{2, 1};
+            align = new int[]{0, 2};
 
             for(PrintSaleReportModel.FileTypeModel fileTypeModel : printSaleReportModel.getFileTypeModels()){
 
@@ -579,7 +595,7 @@ public class PrintSalesReportManager {
             sunmiPrinterService.printTextWithFont(" " + "\n", null, 20, null);
 
             //PRINT EKU AND ZNO
-            PrintHelper.printEkuAndZNo(mContext, sunmiPrinterService, printSaleReportModel.getEkuNo(), printSaleReportModel.getzNo());
+            //PrintHelper.printEkuAndZNo(mContext, sunmiPrinterService, printSaleReportModel.getEkuNo(), printSaleReportModel.getBatchNum());
 
             //PRINT NO FINANCIAL LABEL
             PrintHelper.printNoFinancialLabel(mContext, sunmiPrinterService);

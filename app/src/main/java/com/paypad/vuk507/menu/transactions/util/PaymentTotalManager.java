@@ -118,7 +118,7 @@ public class PaymentTotalManager {
 
             for(PaymentDetailModel paymentDetailModel : paymentDetailModels){
                 if(paymentDetailModel.getItemId() == orderItemTax.getTaxId() && paymentDetailModel.getItemType().equals(TAX_TYPE)){
-                    paymentDetailModel.setAmount(CommonUtils.round(paymentDetailModel.getAmount() + saleItem.getTaxAmount(), 2));
+                    paymentDetailModel.setAmount(CommonUtils.round(paymentDetailModel.getAmount() + (saleItem.getTaxAmount() * saleItem.getQuantity()), 2));
                     isExist = true;
                     break;
                 }
@@ -133,7 +133,7 @@ public class PaymentTotalManager {
                         .concat("%)"));
                 paymentDetailModel.setItemType(TAX_TYPE);
                 paymentDetailModel.setItemId((int)orderItemTax.getTaxId());
-                paymentDetailModel.setAmount(saleItem.getTaxAmount());
+                paymentDetailModel.setAmount(CommonUtils.round(saleItem.getTaxAmount() * saleItem.getQuantity(), 2));
                 paymentDetailModels.add(paymentDetailModel);
             }
         }

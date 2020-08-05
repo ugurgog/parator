@@ -296,26 +296,24 @@ public class TaxEditFragment extends BaseFragment {
         realm.commitTransaction();
 
         boolean finalInserted = inserted;
-        TaxDBHelper.createOrUpdateTax(tempTax, new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-                CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
-                if(baseResponse.isSuccess()){
-                    deleteButtonStatus = 1;
-                    CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
-                            getContext().getResources().getString(R.string.delete_tax));
-                    btnDelete.setEnabled(false);
 
-                    if(finalInserted)
-                        returnTaxCallback.OnReturn((TaxModel) baseResponse.getObject(), ItemProcessEnum.INSERTED);
-                    else
-                        returnTaxCallback.OnReturn((TaxModel) baseResponse.getObject(), ItemProcessEnum.CHANGED);
+        BaseResponse baseResponse = TaxDBHelper.createOrUpdateTax(tempTax);
+        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
-                    clearViews();
-                    Objects.requireNonNull(getActivity()).onBackPressed();
-                }
-            }
-        });
+        if(baseResponse.isSuccess()){
+            deleteButtonStatus = 1;
+            CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
+                    getContext().getResources().getString(R.string.delete_tax));
+            btnDelete.setEnabled(false);
+
+            if(finalInserted)
+                returnTaxCallback.OnReturn((TaxModel) baseResponse.getObject(), ItemProcessEnum.INSERTED);
+            else
+                returnTaxCallback.OnReturn((TaxModel) baseResponse.getObject(), ItemProcessEnum.CHANGED);
+
+            clearViews();
+            Objects.requireNonNull(getActivity()).onBackPressed();
+        }
     }
 
     private void clearViews() {

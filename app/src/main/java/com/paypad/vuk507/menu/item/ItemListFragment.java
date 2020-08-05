@@ -17,18 +17,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.ItemsEnum;
+import com.paypad.vuk507.enums.ReportsEnum;
+import com.paypad.vuk507.interfaces.MenuItemCallback;
 import com.paypad.vuk507.menu.category.CategoryFragment;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.menu.discount.DiscountFragment;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.menu.product.ProductFragment;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
+import com.paypad.vuk507.menu.reports.adapters.ReportAdapter;
+import com.paypad.vuk507.menu.reports.interfaces.ReturnReportItemCallback;
 import com.paypad.vuk507.menu.tax.TaxEditFragment;
 import com.paypad.vuk507.menu.tax.TaxFragment;
 import com.paypad.vuk507.menu.unit.UnitFragment;
@@ -51,21 +57,45 @@ import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 public class ItemListFragment extends BaseFragment implements
         ReturnDiscountCallback,
         ReturnItemCallback,
-        ReturnCategoryCallback {
+        ReturnCategoryCallback,
+        MenuItemCallback {
 
     private View mView;
 
-    @BindView(R.id.listView)
-    ListView listView;
     @BindView(R.id.toolbarTitleTv)
     AppCompatTextView toolbarTitleTv;
     @BindView(R.id.backImgv)
     ClickableImageView backImgv;
+    @BindView(R.id.itemsRv)
+    RecyclerView itemsRv;
 
-    private ArrayList<String> itemList = new ArrayList<>();
     private DiscountUpdateCallback discountUpdateCallback;
     private ProductUpdateCallback productUpdateCallback;
     private CategoryUpdateCallback categoryUpdateCallback;
+
+    @Override
+    public void OnItemReturn(ItemsEnum itemType) {
+        if(itemType == ItemsEnum.ALL_ITEMS){
+            ProductFragment productFragment = new ProductFragment();
+            productFragment.setReturnItemCallback(this);
+            mFragmentNavigation.pushFragment(productFragment);
+        }else if(itemType == ItemsEnum.CATEGORIES){
+            CategoryFragment categoryFragment = new CategoryFragment();
+            categoryFragment.setReturnCategoryCallback(this);
+            mFragmentNavigation.pushFragment(categoryFragment);
+        }else if(itemType == ItemsEnum.MODIFIERS){
+
+        }else if(itemType == ItemsEnum.DISCOUNTS){
+            DiscountFragment discountFragment = new DiscountFragment();
+            discountFragment.setDiscountCallback(this);
+            mFragmentNavigation.pushFragment(discountFragment);
+        }else if(itemType == ItemsEnum.UNITS){
+            mFragmentNavigation.pushFragment(new UnitFragment());
+        }else if(itemType == ItemsEnum.TAXES){
+            mFragmentNavigation.pushFragment(new TaxFragment());
+        }
+    }
+
 
     public interface DiscountUpdateCallback{
         void OnDiscountUpdated();
@@ -112,13 +142,6 @@ public class ItemListFragment extends BaseFragment implements
     }
 
     private void initListeners() {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                jumpToRelatedFragmnet(i);
-            }
-        });
-
         backImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,54 +150,19 @@ public class ItemListFragment extends BaseFragment implements
         });
     }
 
-    private void jumpToRelatedFragmnet(int i) {
-        switch (i){
-            case 0:
-                ProductFragment productFragment = new ProductFragment();
-                productFragment.setReturnItemCallback(this);
-                mFragmentNavigation.pushFragment(productFragment);
-                break;
-            case 1:
-                CategoryFragment categoryFragment = new CategoryFragment();
-                categoryFragment.setReturnCategoryCallback(this);
-                mFragmentNavigation.pushFragment(categoryFragment);
-                break;
-            case 2:
-                //TODO - Modifiers
-                break;
-            case 3:
-                DiscountFragment discountFragment = new DiscountFragment();
-                discountFragment.setDiscountCallback(this);
-                mFragmentNavigation.pushFragment(discountFragment);
-                break;
-            case 4:
-                mFragmentNavigation.pushFragment(new UnitFragment());
-                break;
-            case 5:
-                mFragmentNavigation.pushFragment(new TaxFragment());
-                break;
-                default:break;
-        }
-    }
-
     private void initVariables() {
         toolbarTitleTv.setText(getContext().getResources().getString(R.string.items));
-        fillItems();
-        ArrayAdapter<String> listAdapter = new ArrayAdapter<>(
-                Objects.requireNonNull(getActivity()),
-                android.R.layout.simple_list_item_1,
-                itemList);
-        listView.setAdapter(listAdapter);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        itemsRv.setLayoutManager(linearLayoutManager);
+        setAdapter();
     }
 
-    private void fillItems() {
-        ItemsEnum[] values = ItemsEnum.values();
-        if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
-            for(ItemsEnum item : values)
-                itemList.add(item.getLabelTr());
-        }else
-            for(ItemsEnum item : values)
-                itemList.add(item.getLabelEn());
+    private void setAdapter() {
+        ItemsAdapter itemAdapter = new ItemsAdapter();
+        itemAdapter.setMenuItemCallback(this);
+        itemsRv.setAdapter(itemAdapter);
     }
 
     @Override
@@ -202,5 +190,73 @@ public class ItemListFragment extends BaseFragment implements
 
     public void setCategoryUpdateCallback(CategoryUpdateCallback categoryUpdateCallback) {
         this.categoryUpdateCallback = categoryUpdateCallback;
+    }
+
+    public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemHolder> {
+
+        private ItemsEnum[] values;
+        private MenuItemCallback menuItemCallback;
+
+        ItemsAdapter() {
+            this.values = ItemsEnum.values();
+        }
+
+        void setMenuItemCallback(MenuItemCallback menuItemCallback) {
+            this.menuItemCallback = menuItemCallback;
+        }
+
+        @NonNull
+        @Override
+        public ItemsAdapter.ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView;
+            itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.adapter_simple_list_item, parent, false);
+            return new ItemsAdapter.ItemHolder(itemView);
+        }
+
+        public class ItemHolder extends RecyclerView.ViewHolder {
+
+            private CardView itemCv;
+            private TextView nameTv;
+            private ItemsEnum itemType;
+            private int position;
+
+            public ItemHolder(View view) {
+                super(view);
+                itemCv = view.findViewById(R.id.itemCv);
+                nameTv = view.findViewById(R.id.nameTv);
+
+                itemCv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        menuItemCallback.OnItemReturn(itemType);
+                    }
+                });
+            }
+
+            public void setData(ItemsEnum itemType, int position) {
+                this.itemType = itemType;
+                this.position = position;
+
+                if(CommonUtils.getLanguage().equals(LANGUAGE_TR))
+                    nameTv.setText(itemType.getLabelTr());
+                else
+                    nameTv.setText(itemType.getLabelEn());
+            }
+        }
+
+        @Override
+        public void onBindViewHolder(final ItemsAdapter.ItemHolder holder, final int position) {
+            ItemsEnum itemType = values[position];
+            holder.setData(itemType, position);
+        }
+
+        @Override
+        public int getItemCount() {
+            if(values != null)
+                return values.length;
+            else
+                return 0;
+        }
     }
 }

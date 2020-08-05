@@ -25,6 +25,9 @@ public class Sale extends RealmObject {
     private String userUuid;
     @Index
     private String deviceId;
+    private boolean isEndOfDayProcessed;
+    private long batchNum;
+    private long receiptNum;
 
     public int getSaleCount() {
         return saleCount;
@@ -113,5 +116,29 @@ public class Sale extends RealmObject {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public boolean isEndOfDayProcessed() {
+        return isEndOfDayProcessed;
+    }
+
+    public void setEndOfDayProcessed(boolean endOfDayProcessed) {
+        isEndOfDayProcessed = endOfDayProcessed;
+    }
+
+    public long getBatchNum() {
+        return batchNum;
+    }
+
+    public void setBatchNum(long batchNum) {
+        this.batchNum = batchNum;
+    }
+
+    public long getReceiptNum() {
+        return receiptNum;
+    }
+
+    public void setReceiptNum(long receiptNum) {
+        this.receiptNum = receiptNum;
     }
 }

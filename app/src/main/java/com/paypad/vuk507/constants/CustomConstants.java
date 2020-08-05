@@ -36,4 +36,6 @@ public class CustomConstants {
 
     public static final int DYNAMIC_BOX_COUNT = 8;
 
+    public static final int TYPE_REFUND = 0;
+    public static final int TYPE_CANCEL = 1;
 }

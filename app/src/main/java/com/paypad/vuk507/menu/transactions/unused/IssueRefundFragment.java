@@ -84,7 +84,7 @@ public class IssueRefundFragment extends BaseFragment{
     }
 
     private void initVariables() {
-        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.issue_refund));
+        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.order_refund));
         saveBtn.setText(getContext().getResources().getString(R.string.continue_text));
         setUpPager();
     }

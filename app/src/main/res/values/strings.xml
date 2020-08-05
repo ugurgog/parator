@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Paratör</string>
 
     <array name="tab_name">
@@ -65,12 +65,15 @@
     <string name="unit_undefined">Unit Undefined</string>
     <string name="tax_amount">TAX AMOUNT</string>
     <string name="new_receipt">New Receipt</string>
-    <string name="issue_refund">Issue Refund</string>
+    <string name="order_refund">Order Refund</string>
+    <string name="order_cancel">Order Cancel</string>
     <string name="items_and_services">ITEMS AND SERVICES</string>
     <string name="cash_payment">CASH PAYMENT</string>
     <string name="card_payment">CARD PAYMENT</string>
-    <string name="card_price_upper">CARD PRICE</string>
-    <string name="cash_price_upper">CASH PRICE</string>
+    <!--string name="card_price_upper">CARD PRICE</string-->
+    <!--string name="cash_price_upper">CASH PRICE</string-->
+    <string name="card_price_upper" tools:ignore="ExtraTranslation">KART TUTARI</string>
+    <string name="cash_price_upper" tools:ignore="ExtraTranslation">NAKİT TUTAR</string>
     <string name="card">Card</string>
     <string name="subtotal">Subtotal</string>
     <string name="sales_tax">Sales Tax</string>
@@ -94,7 +97,8 @@
     <string name="discount_amount">Discount Amount</string>
     <string name="category_name">Category Name</string>
     <string name="categories">Categories</string>
-    <string name="discounts">Discounts</string>
+    <!--string name="discounts">Discounts</string-->
+    <string name="discounts" tools:ignore="ExtraTranslation, MissingTranslation">İndirimler</string>
     <string name="unit_name">Unit Name</string>
     <string name="units">Units</string>
     <string name="tax_name">Tax Name</string>
@@ -150,6 +154,7 @@
     <string name="purchase_subtotal">Purchase Subtotal</string>
     <string name="payment_type">Payment Type</string>
 
+
     <string name="change">Change</string>
     <string name="credit_card_payment_info">This amount (including tip) is used for tracking purposes only. You will not receive a deposit for this transaction.</string>
     <string name="credit_card_tip_info">Tip amounts are listed seperately in your sales reports.</string>
@@ -183,6 +188,8 @@
     <string name="net_sales">Net Sales</string>
     <string name="average_sale">Average Sale</string>
     <string name="refunds">Refunds</string>
+    <string name="cancels">Cancels</string>
+    <string name="refunds_and_cancellation">Refunds and Cancels</string>
     <string name="discounts_and_comps">Discounts and Comps</string>
     <string name="sales_summary_overview">SALES SUMMARY: OVERVIEW</string>
     <string name="sales_summary_details">SALES SUMMARY: DETAILS</string>
@@ -231,55 +238,106 @@
     <string name="this_month">This Month</string>
     <string name="current_three_month">Current 3 Months</string>
     <string name="this_year">This Year</string>
-    <string name="date_upper">DATE</string>
-    <string name="hour_upper">HOUR</string>
-    <string name="receipt_no_upper">RECEIPT NO</string>
-    <string name="per">Adt</string>
-    <string name="toptax_upper">TOTAL TAX</string>
-    <string name="total_upper">TOTAL</string>
-    <string name="cash_upper">CASH</string>
-    <string name="card_upper">CARD</string>
-    <string name="cheque_upper">CHEQUE NO</string>
-    <string name="table_no_upper">TABLE NO</string>
-    <string name="mersis_upper">CRS NO</string>
-    <string name="eku_no_upper">EKU NO</string>
-    <string name="z_no_upper">Z NO</string>
-    <string name="sale_upper">SALE</string>
-    <string name="merchant_no_upper">MERC. NO</string>
-    <string name="terminal_upper">TERMINAL</string>
-    <string name="approve_code_upper">APP. CODE</string>
-    <string name="batch_upper">BATCH</string>
-    <string name="stan_upper">STAN</string>
-    <string name="goods_and_services_received">GOODS OR SERVICES RECEIVED</string>
-    <string name="keep_this_receipt">KEEP THIS RECEIPT</string>
-    <string name="belongs_to_card_holder">BELONGS TO CARD HOLDER</string>
-    <string name="first_copy">1.COPY</string>
-    <string name="test_device">** TEST DEVICE **</string>
-    <string name="no_financial_receipt">** NO FINANCIAL VALUE **</string>
-    <string name="copy_of_sale_receipt">SALES RECEIPT COPY</string>
-    <string name="belongs_to_contracted_merchant">BELONGS TO CONTRACTED MERCHANT</string>
-    <string name="second_copy">2.COPY</string>
+    <!--string name="date_upper">DATE</string-->
+    <!--string name="hour_upper">HOUR</string-->
+    <!--string name="receipt_no_upper">RECEIPT NO</string-->
+    <!--string name="per">Per</string-->
+    <!--string name="toptax_upper">TOTAL TAX</string-->
+    <!--string name="total_upper">TOTAL</string-->
+    <!--string name="cash_upper">CASH</string-->
+    <!--string name="card_upper">CARD</string-->
+    <!--string name="cheque_upper">CHEQUE NO</string-->
+    <!--string name="table_no_upper">TABLE NO</string-->
+    <!--string name="mersis_upper">CRS NO</string-->
+    <!--string name="eku_no_upper">EKU NO</string-->
+    <!--string name="z_no_upper">Z NO</string-->
+    <string name="date_upper" tools:ignore="ExtraTranslation">TARİH</string>
+    <string name="hour_upper" tools:ignore="ExtraTranslation">SAAT</string>
+    <string name="receipt_no_upper" tools:ignore="ExtraTranslation">FİŞ NO</string>
+    <string name="per" tools:ignore="ExtraTranslation">Adt</string>
+    <string name="toptax_upper" tools:ignore="ExtraTranslation">TOPKDV</string>
+    <string name="total_upper" tools:ignore="ExtraTranslation">TOPLAM</string>
+    <string name="cash_upper" tools:ignore="ExtraTranslation">NAKİT</string>
+    <string name="card_upper" tools:ignore="ExtraTranslation">KREDİ</string>
+    <string name="cheque_upper" tools:ignore="ExtraTranslation">ÇEK NO</string>
+    <string name="table_no_upper" tools:ignore="ExtraTranslation">MASA NO</string>
+    <string name="mersis_upper" tools:ignore="ExtraTranslation">MERSİS</string>
+    <string name="eku_no_upper" tools:ignore="ExtraTranslation">EKÜ NO</string>
+    <string name="z_no_upper" tools:ignore="ExtraTranslation">Z NO</string>
+    <!--string name="sale_upper">SALE</string-->
+    <!--string name="merchant_no_upper">MERC. NO</string-->
+    <!--string name="terminal_upper">TERMINAL</string-->
+    <!--string name="approve_code_upper">APP. CODE</string-->
+    <!--string name="batch_upper">BATCH</string-->
+    <!--string name="stan_upper">STAN</string-->
+    <!--string name="goods_and_services_received">GOODS OR SERVICES RECEIVED</string-->
+    <!--string name="keep_this_receipt">KEEP THIS RECEIPT</string-->
+    <!--string name="belongs_to_card_holder">BELONGS TO CARD HOLDER</string-->
+    <!--string name="first_copy">1.COPY</string-->
+    <!--string name="test_device">** TEST DEVICE **</string-->
+    <!--string name="no_financial_receipt">** NO FINANCIAL VALUE **</string-->
+    <!--string name="copy_of_sale_receipt">SALES RECEIPT COPY</string-->
+    <!--string name="belongs_to_contracted_merchant">BELONGS TO CONTRACTED MERCHANT</string-->
+    <!--string name="second_copy">2.COPY</string-->
+    <string name="sale_upper" tools:ignore="ExtraTranslation">SATIŞ</string>
+    <string name="merchant_no_upper" tools:ignore="ExtraTranslation">İŞYERİ NO</string>
+    <string name="terminal_upper" tools:ignore="ExtraTranslation">TERMINAL</string>
+    <string name="approve_code_upper" tools:ignore="ExtraTranslation">ONAY KODU</string>
+    <string name="batch_upper" tools:ignore="ExtraTranslation">BATCH</string>
+    <string name="stan_upper" tools:ignore="ExtraTranslation">STAN</string>
+    <string name="goods_and_services_received" tools:ignore="ExtraTranslation">ALINAN MAL VEYA HİZMETLER</string>
+    <string name="keep_this_receipt" tools:ignore="ExtraTranslation">BU FİŞİ SAKLAYIN</string>
+    <string name="belongs_to_card_holder" tools:ignore="ExtraTranslation">KART SAHİBİNE AİT</string>
+    <string name="first_copy" tools:ignore="ExtraTranslation">1.KOPYA</string>
+    <string name="test_device" tools:ignore="ExtraTranslation">** TEST CİHAZIDIR **</string>
+    <string name="no_financial_receipt" tools:ignore="ExtraTranslation">** MALİ DEĞERİ YOKTUR **</string>
+    <string name="copy_of_sale_receipt" tools:ignore="ExtraTranslation">SATIŞ FİŞİ KOPYASI</string>
+    <string name="belongs_to_contracted_merchant" tools:ignore="ExtraTranslation">İŞYERİNE AİT</string>
+    <string name="second_copy" tools:ignore="ExtraTranslation">2.KOPYA</string>
     <string name="print_merchant_receipt">Print Merchant Receipt</string>
-    <string name="report_date_upper">REPORT DATE</string>
-    <string name="report_no_upper">REPORT NO</string>
-    <string name="tax_information_upper">TAX INFORMATION</string>
+    <!--string name="report_date_upper">REPORT DATE</string-->
+    <string name="report_date_upper">RAPOR GÜNÜ</string>
+    <!--string name="report_no_upper">REPORT NO</string-->
+    <string name="report_no_upper">RAPOR NO</string>
+
+
+    <!--string name="tax_information_upper">TAX INFORMATION</string>
     <string name="sale_information_upper">SALE INFORMATION</string>
     <string name="total_tax_upper">TOTAL TAX</string>
     <string name="total_sales_upper">TOTAL SALE</string>
     <string name="announced_tax_upper">ANNOUNCED TAX</string>
     <string name="dicount_total_upper">DISCOUNT TOTAL</string>
-    <string name="increase_total_upper">INCREASE TOTAL</string>
+    <string name="increase_total_upper">INCREASE TOTAL</string-->
 
-    <string name="cumulatives_upper">CUMULATIVES</string>
+    <string name="tax_information_upper">KDV BİLGİLERİ</string>
+    <string name="sale_information_upper">SATIŞ BİLGİLERİ</string>
+    <string name="total_tax_upper">TOPLAM KDV</string>
+    <string name="total_sales_upper">TOPLAM SATIŞ</string>
+    <string name="announced_tax_upper">BEYAN EDİLECEK KDV</string>
+    <string name="dicount_total_upper">İNDİRİM TOPLAMI</string>
+    <string name="increase_total_upper">ARTIRIM TOPLAMI</string>
+
+    <!--string name="cumulatives_upper">CUMULATIVES</string>
     <string name="cum_tax_upper">CUM. TAX</string>
     <string name="cum_sale_upper">CUM. SALE</string>
     <string name="file_types_upper">FILE TYPES</string>
     <string name="count_upper">COUNT</string>
     <string name="uncompleted_processes_upper">UNCOMPLETED PROCESSES</string>
     <string name="cancel_count_upper">CANCEL COUNT</string>
-    <string name="cancel_amount_upper">CANCEL AMOUNT</string>
+    <string name="cancel_amount_upper">CANCEL AMOUNT</string-->
 
-    <string name="payment_information_upper">PAYMENT INFORMATION</string>
+    <string name="cumulatives_upper">KÜMÜLATİFLER</string>
+    <string name="cum_tax_upper">KÜM. KDV</string>
+    <string name="cum_sale_upper">KÜM. SATIŞ</string>
+    <string name="file_types_upper">BELGE TİPLERİ</string>
+    <string name="count_upper">ADEDİ</string>
+    <string name="uncompleted_processes_upper">TAMAMLANMAMIŞ İŞLEMLER</string>
+    <string name="cancel_count_upper">İPTAL ADEDİ</string>
+    <string name="cancel_amount_upper">İPTAL TUTAR</string>
+    <string name="refund_amount_upper">İADE TUTAR</string>
+
+
+    <!--string name="payment_information_upper">PAYMENT INFORMATION</string>
     <string name="other_upper">OTHER</string>
     <string name="virtual_pos_upper">VIRTUAL POS</string>
     <string name="gift_card_upper">GIFT CARD</string>
@@ -295,7 +353,27 @@
     <string name="additional_info_upper">ADD. INFORMATION</string>
     <string name="financial_receipt_incl_upper">FIN. REC. INCLUDED</string>
     <string name="invoice_collection_upper">INV. COLL.</string>
-    <string name="other_matrahsiz_upper">OTHER TAXES</string>
+    <string name="other_matrahsiz_upper">OTHER TAXES</string-->
+
+
+    <string name="payment_information_upper">ÖDEME BİLGİLERİ</string>
+    <string name="other_upper">DİĞER</string>
+    <string name="virtual_pos_upper">SANAL POS</string>
+    <string name="gift_card_upper">HEDİYE K.</string>
+    <string name="havale_eft_upper">HAVALE/EFT</string>
+    <string name="e_money_upper">E-PARA/HIZLI PARA T.</string>
+    <string name="cheque_bill_upper">SENET/ÇEK</string>
+    <string name="open_account_upper">AÇIK HESAP</string>
+    <string name="meal_card_upper">YEMEK KARTI</string>
+    <string name="total_payment_upper">TOPLAM ÖDEME</string>
+    <string name="information_receipts_upper">BİLGİ FİŞLERİ</string>
+    <string name="total_price_upper">TOPLAM TUTAR</string>
+    <string name="total_info_receipt_count_upper">TOPLAM BİLGİ F. AD.</string>
+    <string name="additional_info_upper">EK BİLGİLER</string>
+    <string name="financial_receipt_incl_upper">MALİ FİŞ İÇİNDE</string>
+    <string name="invoice_collection_upper">FATURA TAHSİLAT</string>
+    <string name="other_matrahsiz_upper">DİĞER MATRAHSIZ</string>
+
     <string name="process_end_of_day">End Of Day</string>
 
 
@@ -362,6 +440,8 @@
     <string name="please_type_custom_amount">Please type a custom amount</string>
     <string name="please_select_custom_amount_first">Please enter the custom amount first</string>
     <string name="including_tax_price_upper">INCLUDING TAX AMOUNT</string>
+    <string name="sale_amount_zero">Order amount 0. The transaction cannot be continued.</string>
+    <string name="items_and_discounts_deleted_from_sale">All products and discounts will be removed from the order.</string>
 
     <string name="discount_name_can_not_be_empty">Discount name cannot be empty</string>
     <string name="discount_rate_amount_can_not_be_empty">Discount amount or discount rate must be filled</string>
@@ -431,7 +511,25 @@
     <string name="alerts">Alerts</string>
     <string name="print_orders">Print Orders</string>
     <string name="sign_out">Sign Out</string>
-    <string name="automatically_print_new_orders">Automatically Print New Orders</string>
+    <string name="automatically_print_customer_receipts">Automatically Print Customer Receipts</string>
+    <string name="automatically_print_merchant_receipts">Automatically Print Merchant Receipts</string>
     <string name="print_orders_desc">New online orders will print automatically when they come in.</string>
+    <string name="eod_failed">End of Day Process Failed!!</string>
+    <string name="eod_success">End of Day Process Succeed.</string>
+    <string name="no_sale_for_eod_process">There is no open order for end of day process!</string>
+    <string name="no_item_for_refund_found">There is no payment to refund or all payments have been refunded.</string>
+    <string name="no_item_for_cancel_found">There is no payment to cancel or all payments have been cancelled.</string>
+    <string name="select_to_refund">Select to Refund</string>
+    <string name="select_to_cancel">Select to Cancel</string>
+    <string name="read_credit_card">Read Card</string>
+    <string name="read_card_to_refund">Please read your card to refund payment</string>
+    <string name="type_payment_id_to_refund">Please type original payment reference number to continue refund process</string>
+    <string name="reference_number">Reference Number</string>
+    <string name="refund_including_tip_amount">Refund the tip amount</string>
+    <string name="refund">Refund</string>
+    <string name="refund_receipt">Refund Receipt</string>
+    <string name="cancel_receipt">Cancel Receipt</string>
+    <string name="payment_refunded_upper">PAYMENT REFUNDED</string>
+    <string name="payment_cancelled_upper">PAYMENT CANCELLED</string>
 
 </resources>
