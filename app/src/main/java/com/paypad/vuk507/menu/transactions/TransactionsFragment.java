@@ -20,13 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.db.RefundDBHelper;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.transactions.adapters.SaleModelListAdapter;
-import com.paypad.vuk507.model.Sale;
+import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModel;
@@ -47,8 +47,6 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class TransactionsFragment extends BaseFragment implements SaleModelListAdapter.ReturnSaleModelCallback {
 
@@ -195,26 +193,41 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
 
         List<TransactionItem> transactionItems = new ArrayList<>();
 
-
         for(SaleModel saleModel : saleModels){
+
+            List<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(saleModel.getSale().getSaleUuid(), true);
+
+            //Iade modelleri eklenir
+            for(Refund refund : refunds){
+                TransactionItem transactionItem = new TransactionItem();
+                transactionItem.setTrxDate(refund.getCreateDate());
+                transactionItem.setTransaction(null);
+                transactionItem.setSaleModel(saleModel);
+                transactionItem.setRefund(refund);
+                transactionItems.add(transactionItem);
+            }
+
             for(Transaction transaction : saleModel.getTransactions()){
 
                 LogUtil.logTransaction("updateAdapterWithCurrentList", transaction);
 
-                if(transaction.getTransactionType() == TransactionTypeEnum.REFUND.getId() ||
-                        transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId()){
+                //Cancel edilen islemler varsa eklenir
+                if(transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId()){
                     TransactionItem transactionItem = new TransactionItem();
-                    transactionItem.setTrxDate(transaction.getRefundOrCancelDate());
+                    transactionItem.setTrxDate(transaction.getCancellationDate());
                     transactionItem.setTransaction(transaction);
                     transactionItem.setSaleModel(saleModel);
+                    transactionItem.setRefund(null);
                     transactionItems.add(transactionItem);
                 }
             }
 
+            //Sale modeller eklenir
             TransactionItem transactionItem1 = new TransactionItem();
             transactionItem1.setTrxDate(saleModel.getSale().getCreateDate());
             transactionItem1.setTransaction(null);
             transactionItem1.setSaleModel(saleModel);
+            transactionItem1.setRefund(null);
             transactionItems.add(transactionItem1);
         }
 
@@ -226,12 +239,14 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
 
         for(TransactionItem transactionItem : transactionItems){
 
+            //Her gune ozel basliklar eklenir
             if(DataUtils.getDifferenceDays(previousDate, transactionItem.getTrxDate()) != 0){
                 TransactionItem transactionItem1 = new TransactionItem();
                 transactionItem1.setTrxDate(transactionItem.getTrxDate());
                 transactionItem1.setTransaction(null);
                 transactionItem1.setSaleModel(null);
                 transactionItem1.setNoItem(true);
+                transactionItem1.setRefund(null);
                 adapterModel.add(transactionItem1);
             }
 
@@ -255,6 +270,7 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
     public class TransactionItem{
         private SaleModel saleModel;
         private Transaction transaction;
+        private Refund refund;
         private Date trxDate;
         private boolean noItem;
 
@@ -288,6 +304,14 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
 
         public void setNoItem(boolean noItem) {
             this.noItem = noItem;
+        }
+
+        public Refund getRefund() {
+            return refund;
+        }
+
+        public void setRefund(Refund refund) {
+            this.refund = refund;
         }
     }
 }

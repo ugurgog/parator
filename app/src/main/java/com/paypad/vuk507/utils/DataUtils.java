@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.paypad.vuk507.R;
@@ -18,8 +17,6 @@ import com.paypad.vuk507.enums.MonthEnum;
 import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.model.AutoIncrement;
-import com.paypad.vuk507.model.Category;
-import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.PrinterSettings;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
@@ -30,21 +27,15 @@ import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
-import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class DataUtils {
 
@@ -340,7 +331,7 @@ public class DataUtils {
     }
 
     public static void checkAutoIncrement(String userId){
-        AutoIncrement autoIncrement = AutoIncrementDBHelper.getAutoIncrement(userId);
+        AutoIncrement autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(userId);
 
         if(autoIncrement != null)
             return;
@@ -350,24 +341,26 @@ public class DataUtils {
 
         autoIncrement = new AutoIncrement();
         autoIncrement.setUserId(userId);
-        autoIncrement.setBatchNum(1);
-        autoIncrement.setReceiptNum(1);
-        autoIncrement.setRetrefNumCounter(1);
+        autoIncrement.setfNum(1);
+        autoIncrement.setzNum(1);
+        autoIncrement.setOrderNumCounter(1);
 
-        AutoIncrement tempAutoIncrement = realm.copyToRealm(autoIncrement);
+        realm.copyToRealm(autoIncrement);
 
         realm.commitTransaction();
 
-        AutoIncrementDBHelper.createOrUpdateAutoIncrement(tempAutoIncrement);
+        //AutoIncrementDBHelper.createOrUpdateAutoIncrement(tempAutoIncrement);
     }
 
-    public static String getTransactionRetrefNum(String userId){
-        String julianDate = String.valueOf(getDayOfYearFromDate(new Date()));
-        String yearShort = String.valueOf(getYearFromDate(new Date())).substring(2,4);
-        @SuppressLint("DefaultLocale") String counter = String.format("%07d", AutoIncrementDBHelper.getCurrentRetrefNumCounter(userId));
+    public static String getOrderRetrefNum(String userId){
+        AutoIncrement autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(userId);
 
-        return julianDate
-                .concat(yearShort)
-                .concat(counter);
+        @SuppressLint("DefaultLocale") String julianDate = String.format("%03d", getDayOfYearFromDate(new Date()));
+        String yearShort = String.valueOf(getYearFromDate(new Date())).substring(2,4);
+        @SuppressLint("DefaultLocale") String counter = String.format("%06d", autoIncrement.getOrderNumCounter());
+
+        String retrefNum = julianDate.concat(yearShort).concat(counter);
+        Log.i("Info", ":: getOrderRetrefNum retrefNum:" + retrefNum);
+        return retrefNum;
     }
 }

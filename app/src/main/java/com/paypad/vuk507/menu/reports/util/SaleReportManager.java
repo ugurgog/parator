@@ -5,7 +5,7 @@ import android.util.Log;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.Sale;
+import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.DiscountPojo;
@@ -86,7 +86,7 @@ public class SaleReportManager {
                 }
             }
         }
-        reportModel.setRefundsAmount(cancellationAmount);
+        reportModel.setCancelAmount(cancellationAmount);
     }
 
     private void setDiscounts() {
@@ -94,7 +94,7 @@ public class SaleReportManager {
 
         for(SaleModel saleModel : saleModels){
 
-            for(Discount discount : saleModel.getSale().getDiscounts()){
+            for(OrderItemDiscount discount : saleModel.getSale().getDiscounts()){
 
                 if(discount.getAmount() > 0d){
                     if(!discountModelMap.containsKey(discount.getId())){
@@ -115,7 +115,7 @@ public class SaleReportManager {
 
                         List<DiscountPojo> discountPojos = new ArrayList<>();
 
-                        for(Discount discount1 : saleItem.getDiscounts()){
+                        for(OrderItemDiscount discount1 : saleItem.getDiscounts()){
                             discountPojos.add(ConversionHelper.convertDiscountToDiscountPojo(discount1));
                         }
 

@@ -8,45 +8,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
-import com.paypad.vuk507.MainActivity;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
-import com.paypad.vuk507.charge.interfaces.AmountCallback;
-import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.order.IOrderManager;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.payment.utils.CancelTransactionManager;
-import com.paypad.vuk507.db.DiscountDBHelper;
-import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.DynamicStructEnum;
-import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
-import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.DynamicBoxModel;
-import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.Split;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
@@ -55,19 +38,14 @@ import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
 import com.paypad.vuk507.utils.DataUtils;
-import com.paypad.vuk507.utils.NumberFormatWatcher;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -251,7 +229,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
 
         String infoText = "";
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
-            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount(), TYPE_PRICE)
+            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE)
                     .concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" Toplam, Ödeme ")
                     .concat(String.valueOf(mTransaction.getSeqNumber()))
@@ -259,7 +237,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
                     .concat(String.valueOf(SaleModelInstance.getInstance().getSaleModel().getTransactions().size()));
         }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
             infoText = "Out of "
-                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount(), TYPE_PRICE))
+                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE))
                     .concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" Total, Payment ")
                     .concat(String.valueOf(mTransaction.getSeqNumber()))

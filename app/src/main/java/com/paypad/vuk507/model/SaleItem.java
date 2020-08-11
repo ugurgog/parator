@@ -1,6 +1,5 @@
 package com.paypad.vuk507.model;
 
-import com.paypad.vuk507.model.order.OrderItemTax;
 import com.paypad.vuk507.utils.CommonUtils;
 
 import io.realm.RealmList;
@@ -13,18 +12,20 @@ public class SaleItem extends RealmObject {
     private String uuid;
     private String saleUuid;
     private String name;
-    private double amount;
-    private double taxAmount;
-    private double grossAmount;
+    private double amount;              // Item Amount = 10
+    private double taxAmount;           // Item Amount - Gross Amount = 10 -  9.26 = 0.74
+    private double grossAmount;         // Item Amount - Tax Amount = 10 - 0.74 = 9.26
+    private double totalDiscountAmount;
     private int quantity;
     private String note;
-    private RealmList<Discount> discounts;
+    private RealmList<OrderItemDiscount> discounts;
     private long productId;
     private boolean isDynamicAmount;
-    private RealmList<OrderItemTax> orderItemTaxes;
+    private OrderItemTax taxModel;
     private int colorId;
     private byte[] itemImage;
     private String categoryName;
+    private boolean isTransferred;
 
     public String getName() {
         return name;
@@ -74,14 +75,6 @@ public class SaleItem extends RealmObject {
         this.note = note;
     }
 
-    public RealmList<Discount> getDiscounts() {
-        return discounts;
-    }
-
-    public void setDiscounts(RealmList<Discount> discounts) {
-        this.discounts = discounts;
-    }
-
     public long getProductId() {
         return productId;
     }
@@ -114,12 +107,20 @@ public class SaleItem extends RealmObject {
         this.saleUuid = saleUuid;
     }
 
-    public RealmList<OrderItemTax> getOrderItemTaxes() {
-        return orderItemTaxes;
+    public RealmList<OrderItemDiscount> getDiscounts() {
+        return discounts;
     }
 
-    public void setOrderItemTaxes(RealmList<OrderItemTax> orderItemTaxes) {
-        this.orderItemTaxes = orderItemTaxes;
+    public void setDiscounts(RealmList<OrderItemDiscount> discounts) {
+        this.discounts = discounts;
+    }
+
+    public OrderItemTax getTaxModel() {
+        return taxModel;
+    }
+
+    public void setTaxModel(OrderItemTax taxModel) {
+        this.taxModel = taxModel;
     }
 
     public int getColorId() {
@@ -144,5 +145,21 @@ public class SaleItem extends RealmObject {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public boolean isTransferred() {
+        return isTransferred;
+    }
+
+    public void setTransferred(boolean transferred) {
+        isTransferred = transferred;
+    }
+
+    public double getTotalDiscountAmount() {
+        return totalDiscountAmount;
+    }
+
+    public void setTotalDiscountAmount(double totalDiscountAmount) {
+        this.totalDiscountAmount = totalDiscountAmount;
     }
 }

@@ -1,7 +1,6 @@
 package com.paypad.vuk507.model.pojo;
 
 import java.util.Date;
-import java.util.List;
 
 public class PrintRefundCancelModel {
 
@@ -12,11 +11,11 @@ public class PrintRefundCancelModel {
     private String taxOffice;
     private String taxNumber;
 
-    private String receiptId;
     private Date receiptDate;
     private double refundAmount;
-    private int receiptNum;
-    private int batchNum;
+    private long fNum;
+    private long zNum;
+    private String orderNum;
 
     private int chequeNo;
     private int tableNo;
@@ -27,8 +26,25 @@ public class PrintRefundCancelModel {
     private String terminalNum;
     private int approveCode;
     private int stanNum;
+    private int batchNum;
     private String deviceRegisterId;
     private Date fDate;
+
+    public int getBatchNum() {
+        return batchNum;
+    }
+
+    public void setBatchNum(int batchNum) {
+        this.batchNum = batchNum;
+    }
+
+    public String getOrderNum() {
+        return orderNum;
+    }
+
+    public void setOrderNum(String orderNum) {
+        this.orderNum = orderNum;
+    }
 
     public String getMerchantName() {
         return merchantName;
@@ -78,14 +94,6 @@ public class PrintRefundCancelModel {
         this.taxNumber = taxNumber;
     }
 
-    public String getReceiptId() {
-        return receiptId;
-    }
-
-    public void setReceiptId(String receiptId) {
-        this.receiptId = receiptId;
-    }
-
     public Date getReceiptDate() {
         return receiptDate;
     }
@@ -102,20 +110,20 @@ public class PrintRefundCancelModel {
         this.refundAmount = refundAmount;
     }
 
-    public int getReceiptNum() {
-        return receiptNum;
+    public long getfNum() {
+        return fNum;
     }
 
-    public void setReceiptNum(int receiptNum) {
-        this.receiptNum = receiptNum;
+    public void setfNum(long fNum) {
+        this.fNum = fNum;
     }
 
-    public int getBatchNum() {
-        return batchNum;
+    public long getzNum() {
+        return zNum;
     }
 
-    public void setBatchNum(int batchNum) {
-        this.batchNum = batchNum;
+    public void setzNum(long zNum) {
+        this.zNum = zNum;
     }
 
     public int getChequeNo() {

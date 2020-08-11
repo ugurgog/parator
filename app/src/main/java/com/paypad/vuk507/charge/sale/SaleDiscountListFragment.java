@@ -2,59 +2,42 @@ package com.paypad.vuk507.charge.sale;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.charge.sale.adapters.SaleDiscountListAdapter;
-import com.paypad.vuk507.charge.sale.adapters.SaleListAdapter;
-import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.interfaces.ReturnOrderItemDiscountCallback;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
-import com.paypad.vuk507.menu.tax.TaxEditFragment;
-import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.TaxModel;
+import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
-import com.paypad.vuk507.utils.CommonUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 
-public class SaleDiscountListFragment extends BaseFragment implements ReturnDiscountCallback {
+public class SaleDiscountListFragment extends BaseFragment implements ReturnOrderItemDiscountCallback {
 
     private View mView;
 
@@ -69,11 +52,11 @@ public class SaleDiscountListFragment extends BaseFragment implements ReturnDisc
 
     private User user;
     private SaleDiscountListAdapter saleDiscountListAdapter;
-    private RealmList<Discount> removedDiscounts;
+    private RealmList<OrderItemDiscount> removedDiscounts;
     private RemovedDiscountsCallback removedDiscountsCallback;
 
     public interface RemovedDiscountsCallback{
-        void OnRemoved(RealmList<Discount> discounts);
+        void OnRemoved(RealmList<OrderItemDiscount> discounts);
     }
 
     public void setRemovedDiscountsCallback(RemovedDiscountsCallback removedDiscountsCallback) {
@@ -159,15 +142,15 @@ public class SaleDiscountListFragment extends BaseFragment implements ReturnDisc
     }
 
     public void updateAdapterWithCurrentList(){
-        List<Discount> discountList = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts();
+        List<OrderItemDiscount> discountList = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts();
 
         saleDiscountListAdapter = new SaleDiscountListAdapter(getContext(), discountList);
-        saleDiscountListAdapter.setDiscountCallback(this);
+        saleDiscountListAdapter.setReturnOrderItemDiscountCallback(this);
         itemRv.setAdapter(saleDiscountListAdapter);
     }
 
     @Override
-    public void OnReturn(Discount discount, ItemProcessEnum processType) {
+    public void OnReturn(OrderItemDiscount discount, ItemProcessEnum processType) {
         removedDiscounts.add(discount);
     }
 }

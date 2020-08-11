@@ -17,11 +17,8 @@ import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.enums.CurrencyEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.interfaces.ReturnViewCallback;
-import com.paypad.vuk507.menu.discount.DiscountEditFragment;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.pojo.SaleModelInstance;
 
 import java.util.ArrayList;
 import java.util.List;

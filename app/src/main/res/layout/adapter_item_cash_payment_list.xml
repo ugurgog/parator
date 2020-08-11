@@ -146,6 +146,60 @@
 
         </LinearLayout>
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/cancelledll">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_paym_item_receipt"
+                    card_view:ignore="ContentDescription"
+                    android:id="@+id/cancelImgv"
+                    android:tint="@color/White">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="@color/Black"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_15sp"
+                    android:id="@+id/cancelTv"
+                    android:text="@string/cash_payment"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:layout_gravity="center">
+                </TextView>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/Gray"
+                android:maxLines="1"
+                android:textSize="@dimen/default_size_13sp"
+                android:id="@+id/cancelDateTv">
+            </TextView>
+
+        </LinearLayout>
+
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

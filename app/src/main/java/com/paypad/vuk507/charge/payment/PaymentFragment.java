@@ -1,6 +1,5 @@
 package com.paypad.vuk507.charge.payment;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,19 +20,17 @@ import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.SaleItemDBHelper;
+import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.menu.transactions.adapters.SaleModelListAdapter;
 import com.paypad.vuk507.model.AutoIncrement;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
-import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
@@ -44,10 +41,10 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Date;
 import java.util.Objects;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import pl.droidsonroids.gif.GifImageView;
 
 public class PaymentFragment extends BaseFragment implements PaymentStatusCallback {
@@ -63,6 +60,8 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     private PaymentCompletedFragment paymentCompletedFragment;
     private PaymentStatusCallback paymentStatusCallback;
     private IOrderManager orderManager;
+    private AutoIncrement autoIncrement;
+    private Realm realm;
 
     public PaymentFragment(Transaction transaction) {
         mTransaction = transaction;
@@ -124,6 +123,8 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     }
 
     private void initVariables() {
+        realm = Realm.getDefaultInstance();
+        autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getUuid());
         orderManager = new OrderManager();
         completePayment();
     }
@@ -138,7 +139,9 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
         mTransaction.setUserUuid(user.getUuid());
         mTransaction.setTotalAmount(mTransaction.getTransactionAmount() + mTransaction.getTipAmount());
         mTransaction.setTransactionType(TransactionTypeEnum.SALE.getId());
-        mTransaction.setRetrefNum(DataUtils.getTransactionRetrefNum(user.getUuid()));
+        mTransaction.setzNum(autoIncrement.getzNum());
+        mTransaction.setfNum(autoIncrement.getfNum());
+        mTransaction.setEODProcessed(false);
 
         LogUtil.logTransaction("saveTransaction", mTransaction);
 
@@ -147,6 +150,10 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
         DataUtils.showBaseResponseMessage(getContext(),transactionSaveResponse);
 
         if(transactionSaveResponse.isSuccess()){
+
+            BaseResponse baseResponse = AutoIncrementDBHelper.updateFnumByNextValue(autoIncrement);
+            DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+            autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getUuid());
 
             LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
 
@@ -164,9 +171,9 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     private void saveSaleAndItems(){
         SaleModelInstance.getInstance().getSaleModel().getSale().setCreateDate(new Date());
         SaleModelInstance.getInstance().getSaleModel().getSale().setPaymentCompleted(true);
-        SaleModelInstance.getInstance().getSaleModel().getSale().setBatchNum(
-                AutoIncrementDBHelper.getAutoIncrement(user.getUuid()).getBatchNum());
-        SaleModelInstance.getInstance().getSaleModel().getSale().setEndOfDayProcessed(false);
+        //SaleModelInstance.getInstance().getSaleModel().getSale().setEndOfDayProcessed(false);
+        SaleModelInstance.getInstance().getSaleModel().getSale().setOrderNum(DataUtils.getOrderRetrefNum(user.getUuid()));
+        SaleModelInstance.getInstance().getSaleModel().getSale().setzNum(autoIncrement.getzNum());
 
         LogUtil.logSale(SaleModelInstance.getInstance().getSaleModel().getSale());
 
@@ -174,6 +181,12 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
         DataUtils.showBaseResponseMessage(getContext(), saleBaseResponse);
 
         if(saleBaseResponse.isSuccess()){
+
+            LogUtil.logAutoIncrement(autoIncrement);
+
+            BaseResponse baseResponseAI = AutoIncrementDBHelper.updateOrderNumByNextValue(autoIncrement);
+            DataUtils.showBaseResponseMessage(getContext(), baseResponseAI);
+            autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getUuid());
 
             BaseResponse baseResponse = SaleItemDBHelper.saveSaleItems(SaleModelInstance.getInstance().getSaleModel());
             DataUtils.showBaseResponseMessage(getContext(), baseResponse);

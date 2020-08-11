@@ -2,6 +2,7 @@ package com.paypad.vuk507.square;
 
 import android.text.Editable;
 import android.text.InputFilter;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

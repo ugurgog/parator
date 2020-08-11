@@ -1,60 +1,41 @@
 package com.paypad.vuk507.menu.reports.saleReport;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.tabs.TabLayout;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.adapter.CustomViewPagerAdapter;
 import com.paypad.vuk507.charge.payment.utils.SendMail;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.MonthEnum;
-import com.paypad.vuk507.enums.ReportSelectionEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.login.utils.Validation;
-import com.paypad.vuk507.menu.reports.CustomizeReportFragment;
-import com.paypad.vuk507.menu.reports.interfaces.ReturnReportDateCallback;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
-import com.paypad.vuk507.model.pojo.ReportDate;
 import com.paypad.vuk507.model.pojo.ReportModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.DataUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 
 public class SaleReportEmailFragment extends BaseFragment implements SendMail.MailSendCallback {
 

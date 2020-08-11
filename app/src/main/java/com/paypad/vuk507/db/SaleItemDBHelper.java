@@ -1,6 +1,5 @@
 package com.paypad.vuk507.db;
 
-import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModel;

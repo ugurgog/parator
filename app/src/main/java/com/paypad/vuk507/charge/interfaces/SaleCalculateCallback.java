@@ -1,6 +1,5 @@
 package com.paypad.vuk507.charge.interfaces;
 
-import com.paypad.vuk507.R;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;

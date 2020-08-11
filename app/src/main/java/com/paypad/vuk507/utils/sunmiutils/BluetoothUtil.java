@@ -6,14 +6,14 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.widget.Toast;
 
-//import com.sunmi.printerhelper.R;
-
 import com.paypad.vuk507.R;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
+
+//import com.sunmi.printerhelper.R;
 
 /**
  *  Simple package for connecting a sunmi printer via Bluetooth

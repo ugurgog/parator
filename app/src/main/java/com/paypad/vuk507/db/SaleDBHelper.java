@@ -3,14 +3,10 @@ package com.paypad.vuk507.db;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.Category;
-import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
-import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.LogUtil;
@@ -55,6 +51,12 @@ public class SaleDBHelper {
     public static RealmResults<Sale> getOrdersByUserId(String userId){
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Sale> saleList = realm.where(Sale.class).equalTo("userUuid", userId).findAll();
+        return saleList;
+    }
+
+    public static RealmResults<Sale> getOrdersByZNum(long zNum){
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Sale> saleList = realm.where(Sale.class).equalTo("zNum", zNum).findAll();
         return saleList;
     }
 
@@ -225,6 +227,18 @@ public class SaleDBHelper {
                 try{
                     RealmResults<Transaction> transactions = realm.where(Transaction.class).findAll();
                     transactions.deleteAllFromRealm();
+                }catch (Exception e){
+
+                }
+            }
+        });
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                try{
+                    RealmResults<Refund> refunds = realm.where(Refund.class).findAll();
+                    refunds.deleteAllFromRealm();
                 }catch (Exception e){
 
                 }

@@ -1,7 +1,5 @@
 package com.paypad.vuk507.charge.sale.adapters;
 
-import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.enums.ItemProcessEnum;
-import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.category.CategoryEditFragment;
-import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
-import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.utils.CommonUtils;
 

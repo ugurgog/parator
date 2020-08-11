@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,14 +11,11 @@ import androidx.annotation.Nullable;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.ReportModel;
 import com.paypad.vuk507.utils.CommonUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class SalesSummaryOverviewFragment extends BaseFragment {
 

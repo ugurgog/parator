@@ -2,10 +2,9 @@ package com.paypad.vuk507.db;
 
 import android.content.Context;
 
-import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.login.utils.LoginUtils;
-import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 
 import java.util.Date;
 

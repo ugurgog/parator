@@ -6,7 +6,6 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;

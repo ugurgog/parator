@@ -2,7 +2,6 @@ package com.paypad.vuk507.charge;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -39,10 +38,7 @@ import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.ReturnViewCallback;
-import com.paypad.vuk507.login.InitialActivity;
-import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.item.ItemListFragment;
@@ -54,10 +50,10 @@ import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
-import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.ConversionHelper;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 
@@ -250,7 +246,7 @@ public class ChargeFragment extends BaseFragment implements
                     }
                 }
 
-                if(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount() <= 0d){
+                if(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount() <= 0d){
                     CommonUtils.showToastShort(getContext(), getContext().getResources().getString(R.string.sale_amount_zero));
                     return;
                 }
@@ -454,13 +450,14 @@ public class ChargeFragment extends BaseFragment implements
 
     @Override
     public void onDiscountSelected(Discount discount) {
-        if(discount.getRate() > 0){
+        /*if(discount.getRate() > 0){
             orderManager.addDiscountRateToAllSaleItems(discount);
-            //SaleModelInstance.getInstance().getSaleModel().addDiscountRateToAllSaleItems(discount);
         }else if(discount.getAmount() > 0){
             orderManager.addDiscountToOrder(discount);
-            //SaleModelInstance.getInstance().getSaleModel().addDiscountAmount(discount);
-        }
+        }*/
+
+        orderManager.addDiscount(discount);
+
         addDefaultValuesToOrder();
 
         setChargeAmountTv();
@@ -521,7 +518,7 @@ public class ChargeFragment extends BaseFragment implements
         if(saleNote != null)
             saleItem.setNote(saleNote);
 
-        orderManager.addCustomItemToOrder(saleItem, mTaxModel);
+        orderManager.addCustomItemToOrder(saleItem, ConversionHelper.convertTaxModelToOrderItemTax(mTaxModel));
         //SaleModelInstance.getInstance().getSaleModel().addCustomItem(saleItem, mTaxModel);
 
         currentSaleCount = orderManager.getOrderItemCount();
@@ -631,7 +628,7 @@ public class ChargeFragment extends BaseFragment implements
         //SaleModelInstance.getInstance().getSaleModel().setDiscountedAmountOfSale();
         orderManager.setDiscountedAmountOfSale();
 
-        double amountx = SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount();
+        double amountx = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount();
         String amountStr = CommonUtils.getDoubleStrValueForView(amountx, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
 
         if(amountx <= 0d)

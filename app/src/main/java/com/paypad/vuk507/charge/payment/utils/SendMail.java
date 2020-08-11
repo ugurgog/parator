@@ -2,23 +2,17 @@ package com.paypad.vuk507.charge.payment.utils;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Config;
-import android.widget.Toast;
 
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 
 import java.util.Properties;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
-import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;

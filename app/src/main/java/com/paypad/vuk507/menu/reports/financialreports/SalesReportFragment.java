@@ -22,7 +22,7 @@ import com.paypad.vuk507.enums.FinancialReportsEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.reports.adapters.FinancialReportAdapter;
 import com.paypad.vuk507.menu.reports.interfaces.ReturnFinancialReportItemCallback;
-import com.paypad.vuk507.menu.reports.util.PrintSalesReportManager;
+import com.paypad.vuk507.menu.reports.util.PrintEODReportManager;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -53,7 +53,7 @@ public class SalesReportFragment extends BaseFragment implements ReturnFinancial
     @BindView(R.id.backImgv)
     ClickableImageView backImgv;
 
-    private PrintSalesReportManager printSalesReportManager;
+    private PrintEODReportManager printEODReportManager;
     private User user;
 
     public SalesReportFragment() {
@@ -144,16 +144,16 @@ public class SalesReportFragment extends BaseFragment implements ReturnFinancial
     @Override
     public void OnReturnReportItem(FinancialReportsEnum reportsEnum) {
 
-        if(reportsEnum == FinancialReportsEnum.DAILY_X_REPORT){
+        /*if(reportsEnum == FinancialReportsEnum.DAILY_X_REPORT){
 
             List<SaleModel> saleModels = SaleDBHelper.getSaleModelsForReport(user.getUuid(),
                     null, DataUtils.getStartTimeOfDate(new Date()), DataUtils.getEndTimeOfDate(new Date()));
 
-            printSalesReportManager = new PrintSalesReportManager(getContext(), reportsEnum, saleModels, user, new Date(), new Date() );
-            printSalesReportManager.setCallback(mCallback);
+            printEODReportManager = new PrintEODReportManager(getContext(), reportsEnum, saleModels, user, new Date(), new Date() );
+            printEODReportManager.setCallback(mCallback);
 
-            printSalesReportManager.printSaleReport();
-        }
+            printEODReportManager.printSaleReport();
+        }*/
     }
 
 

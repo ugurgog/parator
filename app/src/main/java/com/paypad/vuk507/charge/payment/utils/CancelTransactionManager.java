@@ -6,7 +6,6 @@ import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class CancelTransactionManager {
 

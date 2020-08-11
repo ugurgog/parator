@@ -1,14 +1,10 @@
 package com.paypad.vuk507.menu.customer.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CheckedTextView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
@@ -20,9 +16,6 @@ import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.model.Customer;
-import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.DataUtils;
-import com.paypad.vuk507.utils.ShapeUtil;
 
 import java.util.ArrayList;
 import java.util.List;

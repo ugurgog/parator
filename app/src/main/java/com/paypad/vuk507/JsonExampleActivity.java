@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.GridView;
 
-import com.paypad.vuk507.model.pojo.City;
 import com.paypad.vuk507.model.CityAdapter;
+import com.paypad.vuk507.model.pojo.City;
 
 import org.json.JSONObject;
 

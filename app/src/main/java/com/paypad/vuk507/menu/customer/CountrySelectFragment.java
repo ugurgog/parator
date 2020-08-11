@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,19 +23,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.CountryDataEnum;
-import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.httpprocess.CountryProcess;
 import com.paypad.vuk507.httpprocess.interfaces.OnEventListener;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class CountrySelectFragment extends BottomSheetDialogFragment {
 

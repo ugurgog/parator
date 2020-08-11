@@ -11,13 +11,10 @@ public class PrintSaleReportModel {
     private String phoneNumber;
     private String taxOffice;
 
-    private String reportId;
     private Date fDate;
     private String reportTitle;
-    private long receiptNum;
-    private long batchNum;
+    private long zNum;
 
-    private long reportNum;
     private Date reportDate;
 
     //KDV Bilgileri
@@ -106,14 +103,6 @@ public class PrintSaleReportModel {
         this.taxOffice = taxOffice;
     }
 
-    public String getReportId() {
-        return reportId;
-    }
-
-    public void setReportId(String reportId) {
-        this.reportId = reportId;
-    }
-
     public Date getfDate() {
         return fDate;
     }
@@ -128,14 +117,6 @@ public class PrintSaleReportModel {
 
     public void setReportTitle(String reportTitle) {
         this.reportTitle = reportTitle;
-    }
-
-    public long getReportNum() {
-        return reportNum;
-    }
-
-    public void setReportNum(long reportNum) {
-        this.reportNum = reportNum;
     }
 
     public List<ReportTaxModel> getReportTaxModels() {
@@ -298,20 +279,12 @@ public class PrintSaleReportModel {
         this.ekuNo = ekuNo;
     }
 
-    public long getReceiptNum() {
-        return receiptNum;
+    public long getzNum() {
+        return zNum;
     }
 
-    public void setReceiptNum(long receiptNum) {
-        this.receiptNum = receiptNum;
-    }
-
-    public long getBatchNum() {
-        return batchNum;
-    }
-
-    public void setBatchNum(long batchNum) {
-        this.batchNum = batchNum;
+    public void setzNum(long zNum) {
+        this.zNum = zNum;
     }
 
     public String getDeviceRegisterId() {

@@ -11,53 +11,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.interfaces.AmountCallback;
-import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
-import com.paypad.vuk507.charge.payment.utils.PrintReceiptManager;
+import com.paypad.vuk507.charge.payment.utils.PrintOrderManager;
 import com.paypad.vuk507.charge.payment.utils.SendMail;
-import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
-import com.paypad.vuk507.charge.sale.SaleListFragment;
-import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.db.PrinterSettingsDBHelper;
-import com.paypad.vuk507.db.ReceiptDBHelper;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
-import com.paypad.vuk507.enums.ReceiptTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
-import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.Customer;
-import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.PrinterSettings;
-import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.Receipt;
 import com.paypad.vuk507.model.Sale;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
-import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.LogUtil;
@@ -66,16 +47,12 @@ import com.sunmi.peripheral.printer.InnerResultCallbcak;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import pl.droidsonroids.gif.GifImageView;
 
 import static com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback.STATUS_CONTINUE;
 import static com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback.STATUS_NEW_SALE;
@@ -115,11 +92,10 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     private int paymentStatus = 0;
     private PaymentStatusCallback paymentStatusCallback;
     private SendReceiptEmailFragment sendReceiptEmailFragment;
-    private PrintReceiptManager printReceiptManager;
+    private PrintOrderManager printOrderManager;
     private int receiptType = CUSTOMER_RECEIPT;
     private PrinterSettings printerSettings;
     private Realm realm;
-    private long receiptNum;
     private Sale sale;
 
     private static final int CUSTOMER_RECEIPT = 1;
@@ -244,15 +220,14 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     }
 
     private void initPrinter() {
-        printReceiptManager = new PrintReceiptManager(getContext(), SaleModelInstance.getInstance().getSaleModel(),true);
-        printReceiptManager.setCallback(mCallback);
+        printOrderManager = new PrintOrderManager(getContext(), SaleModelInstance.getInstance().getSaleModel(),true);
+        printOrderManager.setCallback(mCallback);
     }
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
 
         sale = SaleDBHelper.getSaleById(mTransaction.getSaleUuid());
-        receiptNum = AutoIncrementDBHelper.getCurrentReceiptNum(user.getUuid());
         initPrinter();
 
         if(mProcessDirectionType == ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED){
@@ -287,7 +262,6 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
                     @Override
                     public void run() {
                         printReceiptProcess();
-
                     }
                 }, 100);
             }else if(printerSettings.isMerchantAutoPrint() && receiptType == MERCHANT_RECEIPT){
@@ -295,22 +269,19 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
                     @Override
                     public void run() {
                         printReceiptProcess();
-
                     }
                 }, 4000);
             }else
                 btnPrintReceipt.setEnabled(true);
         }
-
-
     }
 
     private void printReceiptProcess(){
         btnPrintReceipt.setEnabled(false);
         if(receiptType == CUSTOMER_RECEIPT)
-            printReceiptManager.printCustomerReceipt();
+            printOrderManager.printCustomerReceipt();
         else
-            printReceiptManager.printMerchantReceipt();
+            printOrderManager.printMerchantReceipt();
     }
 
     private void setChargeAmountTv(){
@@ -470,8 +441,6 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
                         CommonUtils.showToastShort(getContext(), "Print successful");
 
                         if(receiptType == CUSTOMER_RECEIPT){
-                            saveReceipt();
-
                             receiptType = MERCHANT_RECEIPT;
                             btnPrintReceipt.setText(getContext().getResources().getString(R.string.print_merchant_receipt));
                             checkAutoPrint();
@@ -485,66 +454,4 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
             });
         }
     };
-
-    private void saveReceipt(){
-        Receipt receipt = new Receipt();
-        realm.beginTransaction();
-
-        receipt.setReceiptId(UUID.randomUUID().toString());
-
-        Receipt tempReceipt = realm.copyToRealm(receipt);
-        tempReceipt.setReceiptNum(receiptNum);
-
-        if(receiptType == CUSTOMER_RECEIPT)
-            tempReceipt.setReceiptType(ReceiptTypeEnum.SALE_CUSTOMER.getId());
-        else
-            tempReceipt.setReceiptType(ReceiptTypeEnum.SALE_MERCHANT.getId());
-
-        tempReceipt.setContent(printerResult);
-        tempReceipt.setSaleId(sale.getSaleUuid());
-        tempReceipt.setCreateUserId(user.getUuid());
-        tempReceipt.setCreateDate(new Date());
-        tempReceipt.setUpdateUserId(user.getUuid());
-        tempReceipt.setUpdateDate(new Date());
-
-        realm.commitTransaction();
-
-        BaseResponse baseResponse = ReceiptDBHelper.createOrUpdateReceipt(tempReceipt);
-        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
-
-        LogUtil.logReceipt(tempReceipt);
-
-        if(baseResponse.isSuccess() && receiptType == CUSTOMER_RECEIPT){
-            updateAutoIncrement();
-            updateSale();
-        }
-    }
-
-    private void updateSale(){
-        if(sale != null){
-            realm.beginTransaction();
-            Sale tempSale = realm.copyToRealm(sale);
-            tempSale.setReceiptNum(receiptNum);
-            realm.commitTransaction();
-
-            BaseResponse baseResponse = SaleDBHelper.createOrUpdateSale(tempSale);
-            DataUtils.showBaseResponseMessage(getContext(), baseResponse);
-        }
-    }
-
-    private void updateAutoIncrement(){
-        AutoIncrement autoIncrement = AutoIncrementDBHelper.getAutoIncrement(user.getUuid());
-
-        realm.beginTransaction();
-
-        AutoIncrement tempAutoIncrement = realm.copyToRealm(autoIncrement);
-        tempAutoIncrement.setReceiptNum(receiptNum);
-
-        realm.commitTransaction();
-
-        BaseResponse baseResponse = AutoIncrementDBHelper.createOrUpdateAutoIncrement(tempAutoIncrement);
-        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
-
-        LogUtil.logAutoIncrement(tempAutoIncrement);
-    }
 }

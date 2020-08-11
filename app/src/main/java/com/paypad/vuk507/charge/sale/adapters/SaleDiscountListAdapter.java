@@ -1,13 +1,10 @@
 package com.paypad.vuk507.charge.sale.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,17 +12,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.interfaces.ReturnOrderItemDiscountCallback;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.OrderItemDiscount;
+import com.paypad.vuk507.model.OrderItemTax;
 import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.order.OrderItemDiscount;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.RealmList;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
@@ -33,16 +30,16 @@ import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 public class SaleDiscountListAdapter extends RecyclerView.Adapter<SaleDiscountListAdapter.DiscountHolder> {
 
     private Context context;
-    private List<Discount> discounts = new ArrayList<>();
-    private ReturnDiscountCallback discountCallback;
+    private List<OrderItemDiscount> discounts = new ArrayList<>();
+    private ReturnOrderItemDiscountCallback returnOrderItemDiscountCallback;
 
-    public SaleDiscountListAdapter(Context context, List<Discount> discounts) {
+    public SaleDiscountListAdapter(Context context, List<OrderItemDiscount> discounts) {
         this.context = context;
         this.discounts.addAll(discounts);
     }
 
-    public void setDiscountCallback(ReturnDiscountCallback discountCallback) {
-        this.discountCallback = discountCallback;
+    public void setReturnOrderItemDiscountCallback(ReturnOrderItemDiscountCallback returnOrderItemDiscountCallback) {
+        this.returnOrderItemDiscountCallback = returnOrderItemDiscountCallback;
     }
 
     @NonNull
@@ -59,7 +56,7 @@ public class SaleDiscountListAdapter extends RecyclerView.Adapter<SaleDiscountLi
         private TextView discRateTv;
         private ImageButton deleteDiscImgBtn;
 
-        private Discount discount;
+        private OrderItemDiscount discount;
         private int position;
 
 
@@ -73,7 +70,7 @@ public class SaleDiscountListAdapter extends RecyclerView.Adapter<SaleDiscountLi
             deleteDiscImgBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    discountCallback.OnReturn(discount, ItemProcessEnum.DELETED);
+                    returnOrderItemDiscountCallback.OnReturn(discount, ItemProcessEnum.DELETED);
                     discounts.remove(discount);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, getItemCount());
@@ -81,7 +78,7 @@ public class SaleDiscountListAdapter extends RecyclerView.Adapter<SaleDiscountLi
             });
         }
 
-        public void setData(Discount discount, int position) {
+        public void setData(OrderItemDiscount discount, int position) {
             this.discount = discount;
             this.position = position;
             setDiscountNameTv();
@@ -110,7 +107,7 @@ public class SaleDiscountListAdapter extends RecyclerView.Adapter<SaleDiscountLi
                     saleItemCount++;
 
                     if(saleItem.getDiscounts() != null){
-                        for(Discount discount1 : saleItem.getDiscounts()){
+                        for(OrderItemDiscount discount1 : saleItem.getDiscounts()){
                             if(discount1.getId() == discount.getId()){
                                 itemCount++;
                                 break;
@@ -130,7 +127,7 @@ public class SaleDiscountListAdapter extends RecyclerView.Adapter<SaleDiscountLi
 
     @Override
     public void onBindViewHolder(final SaleDiscountListAdapter.DiscountHolder holder, final int position) {
-        Discount discount = discounts.get(position);
+        OrderItemDiscount discount = discounts.get(position);
         holder.setData(discount, position);
     }
 

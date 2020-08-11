@@ -5,15 +5,14 @@ import android.util.Log;
 
 import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.Category;
-import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Receipt;
+import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.ReportDiscountModel;
 import com.paypad.vuk507.model.pojo.ReportModel;
 import com.paypad.vuk507.model.pojo.ReportOrderItem;
-import com.paypad.vuk507.model.pojo.SaleModelInstance;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -27,7 +26,7 @@ public class LogUtil {
             for(Transaction transaction : transactions){
                 Log.i("Info", "::logTransactions Transactions +++++++++++++++++++++++++");
                 Log.i("Info", "::logTransactions Transaction: SaleUuid         :" + transaction.getSaleUuid() );
-                Log.i("Info", "::logTransactions Transaction: TransactionUuid  :" + transaction.getTransactionUuid() );
+                Log.i("Info", "::logTransactions Transaction: TransactionUuid  :" + transaction.getTransactionId() );
                 Log.i("Info", "::logTransactions Transaction: SeqNumber        :" + transaction.getSeqNumber() );
                 Log.i("Info", "::logTransactions Transaction: TransactionAmount:" + transaction.getTransactionAmount() );
                 Log.i("Info", "::logTransactions Transaction: CashAmount       :" + transaction.getCashAmount() );
@@ -50,7 +49,7 @@ public class LogUtil {
             Log.i("Info", "::logSale Transactions +++++++++++++++++++++++++");
             Log.i("Info", "::logSale CustomerId:" + sale.getCustomerId() +
                     ", Discounts:" + sale.getDiscounts().toString() +
-                    ", DiscountedAmount:" + sale.getSubTotalAmount() +
+                    ", DiscountedAmount:" + sale.getDiscountedAmount() +
                     ", TotalAmount:" + sale.getTotalAmount() +
                     ", SaleCount:" + sale.getSaleCount() +
                     ", SaleUuid:" + sale.getSaleUuid() +
@@ -59,8 +58,7 @@ public class LogUtil {
                     ", CreateDate:" + simpleDateFormat.format(sale.getCreateDate()) +
                     ", PaymentCompleted:" + sale.isPaymentCompleted() +
                     ", DeviceId:" + sale.getDeviceId() +
-                    ", BatchNum:" + sale.getBatchNum() +
-                    ", EndOfDayProcessed:" + sale.isEndOfDayProcessed());
+                    ", OrderNum:" + sale.getOrderNum() );
         }catch (Exception e){
 
         }
@@ -71,7 +69,7 @@ public class LogUtil {
 
             Log.i("Info", methodName + "+++++++++++++++++++++++++");
             Log.i("Info", methodName + " SaleUuid:" + transaction.getSaleUuid() +
-                    ", TransactionUuid:" + transaction.getTransactionUuid() +
+                    ", TransactionUuid:" + transaction.getTransactionId() +
                     ", SeqNumber:" + transaction.getSeqNumber() +
                     ", TransactionAmount:" + transaction.getTransactionAmount() +
                     ", TotalAmount:" + transaction.getTotalAmount() +
@@ -84,7 +82,27 @@ public class LogUtil {
                     ", isMailSend:" + transaction.isMailSend() +
                     ", mailAddress:" + transaction.getMailAdress() +
                     ", transactionType:" + transaction.getTransactionType() +
-                    ", retrefNum:" + transaction.getRetrefNum());
+                    ", zNum:" + transaction.getzNum() +
+                    ", fNum:" + transaction.getfNum());
+        }catch (Exception e){
+
+        }
+    }
+
+    public static void logRefund(Refund refund){
+        try{
+
+            Log.i("Info", "logRefund +++++++++++++++++++++++++");
+            Log.i("Info", "logRefund Id:" + refund.getId() +
+                    ", TransactionId:" + refund.getTransactionId() +
+                    ", RefundAmount:" + refund.getRefundAmount() +
+                    ", OrderId:" + refund.getOrderId() +
+                    ", RefundReason:" + refund.getRefundReason() +
+                    ", isRefundByAmount:" + refund.isRefundByAmount() +
+                    ", isSuccessful:" + refund.isSuccessful() +
+                    ", ZNum:" + refund.getzNum() +
+                    ", FNum:" + refund.getfNum() +
+                    ", RefundItems:" + refund.getRefundItems().toString());
         }catch (Exception e){
 
         }
@@ -173,26 +191,13 @@ public class LogUtil {
         }
     }
 
-    public static void logReceipt(Receipt receipt) {
-        try {
-            Log.i("Info", "::Receipt +++++++++++++++++++++++++");
-            Log.i("Info", "::logReceipt ReceiptId:" + receipt.getReceiptId() +
-                    ", SaleId:" + receipt.getSaleId() +
-                    ", ReceiptNum:" + receipt.getReceiptNum() +
-                    ", ReceiptType:" + receipt.getReceiptType() +
-                    ", Content:" + receipt.getContent());
-
-        } catch (Exception e) {
-
-        }
-    }
-
     public static void logAutoIncrement(AutoIncrement autoIncrement) {
         try {
             Log.i("Info", "::AutoIncrement +++++++++++++++++++++++++");
             Log.i("Info", "::logAutpIncrement UserId:" + autoIncrement.getUserId() +
-                    ", BatchNum:" + autoIncrement.getBatchNum() +
-                    ", ReceiptNum:" + autoIncrement.getReceiptNum());
+                    ", zNum:" + autoIncrement.getzNum() +
+                    ", fNum:" + autoIncrement.getfNum() +
+                    ", orderNum:" + autoIncrement.getOrderNumCounter());
 
         } catch (Exception e) {
 

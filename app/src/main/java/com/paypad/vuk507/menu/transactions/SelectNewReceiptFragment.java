@@ -140,7 +140,7 @@ public class SelectNewReceiptFragment extends BaseFragment implements ReturnTran
     }
 
     @Override
-    public void OnTransactionReturn(Transaction transaction) {
-        mFragmentNavigation.pushFragment(new SendNewReceiptFragment(transaction, null, 0));
+    public void OnTransactionReturn(Transaction transaction, double amount) {
+        mFragmentNavigation.pushFragment(new SendNewReceiptFragment(transaction,  null, null, 0));
     }
 }

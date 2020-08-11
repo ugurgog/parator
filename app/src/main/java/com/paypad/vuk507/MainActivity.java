@@ -1,21 +1,12 @@
 package com.paypad.vuk507;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.graphics.PorterDuff;
+import android.os.Bundle;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
-import android.app.Activity;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.google.android.material.tabs.TabLayout;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
@@ -23,20 +14,10 @@ import com.paypad.vuk507.FragmentControllers.FragNavController;
 import com.paypad.vuk507.FragmentControllers.FragNavTransactionOptions;
 import com.paypad.vuk507.FragmentControllers.FragmentHistory;
 import com.paypad.vuk507.charge.ChargeFragment;
-import com.paypad.vuk507.charge.KeypadFragment;
-import com.paypad.vuk507.charge.LibraryFragment;
-import com.paypad.vuk507.utils.MyMigration;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import java.util.List;
 import java.util.Objects;
-import java.util.Stack;
 
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 import static com.paypad.vuk507.FragmentControllers.FragNavController.TAB1;
 import static com.paypad.vuk507.constants.AnimationConstants.ANIMATE_DOWN_TO_UP;

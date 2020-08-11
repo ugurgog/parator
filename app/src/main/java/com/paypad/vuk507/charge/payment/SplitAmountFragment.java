@@ -2,7 +2,6 @@ package com.paypad.vuk507.charge.payment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,25 +12,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
-import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
 import com.paypad.vuk507.charge.order.IOrderManager;
 import com.paypad.vuk507.charge.order.OrderManager;
-import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.DynamicStructEnum;
-import com.paypad.vuk507.enums.PaymentTypeEnum;
-import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.DynamicBoxModel;
-import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.Split;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
@@ -44,12 +32,8 @@ import com.paypad.vuk507.utils.NumberFormatWatcher;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -238,14 +222,14 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
         double remainAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount() - amount;
 
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
-            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" toplam tutardan, ödeme sonrası kalacak tutar ")
                     .concat(CommonUtils.getDoubleStrValueForView(remainAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
                     .concat(".");
         }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
             infoText = CommonUtils.getDoubleStrValueForView(remainAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" of ")
-                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
+                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
                     .concat(" will remain after this transaction.");
         }
         splitInfoTv.setText(infoText);

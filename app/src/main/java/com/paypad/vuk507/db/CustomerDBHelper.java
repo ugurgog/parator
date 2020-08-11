@@ -1,15 +1,7 @@
 package com.paypad.vuk507.db;
 
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Customer;
-import com.paypad.vuk507.model.CustomerGroup;
-import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.Group;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
-
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;

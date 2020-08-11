@@ -3,7 +3,6 @@ package com.paypad.vuk507.utils;
 
 import io.realm.DynamicRealm;
 import io.realm.RealmMigration;
-import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 
 public class RealmMigrations implements RealmMigration {

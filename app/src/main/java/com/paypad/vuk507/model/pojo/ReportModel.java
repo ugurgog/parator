@@ -1,7 +1,5 @@
 package com.paypad.vuk507.model.pojo;
 
-import com.paypad.vuk507.model.Discount;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;

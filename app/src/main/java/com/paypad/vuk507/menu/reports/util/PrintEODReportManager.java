@@ -2,27 +2,25 @@ package com.paypad.vuk507.menu.reports.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.RemoteException;
 
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.db.AutoIncrementDBHelper;
+import com.paypad.vuk507.db.SaleItemDBHelper;
 import com.paypad.vuk507.enums.FinancialReportsEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.model.AutoIncrement;
+import com.paypad.vuk507.model.OrderItemTax;
+import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
-import com.paypad.vuk507.model.order.OrderItemTax;
 import com.paypad.vuk507.model.pojo.PrintSaleReportModel;
-import com.paypad.vuk507.model.pojo.SaleItemPojo;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
-import com.paypad.vuk507.utils.sunmiutils.ESCUtil;
 import com.paypad.vuk507.utils.sunmiutils.PrintHelper;
 import com.paypad.vuk507.utils.sunmiutils.SunmiPrintHelper;
 import com.sunmi.peripheral.printer.InnerResultCallbcak;
@@ -35,10 +33,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+import io.realm.RealmResults;
+
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
-public class PrintSalesReportManager {
+public class PrintEODReportManager {
 
     public static int NoSunmiPrinter = 0x00000000;
     public static int CheckSunmiPrinter = 0x00000001;
@@ -50,10 +49,13 @@ public class PrintSalesReportManager {
     private static SunmiPrintHelper helper;
     private Context mContext;
     private FinancialReportsEnum financialReportsType;
-    private List<SaleModel> saleModels;
+    //private List<SaleModel> saleModels;
+    private List<Sale> sales;
     private User user;
     private PrintSaleReportModel printSaleReportModel;
     private InnerResultCallbcak callback;
+    private long zNum;
+    private List<Transaction> transactions = new ArrayList<>();
 
     private Date startDate;
     private Date endDate;
@@ -113,17 +115,20 @@ public class PrintSalesReportManager {
         }
     }
 
-    public PrintSalesReportManager(Context context, FinancialReportsEnum financialReportsType, List<SaleModel> saleModels, User user,
-                                   Date startDate, Date endDate) {
+    public PrintEODReportManager(Context context, FinancialReportsEnum financialReportsType, List<Sale> sales, User user,
+                                 Date startDate, Date endDate, long zNum,
+                                 List<Transaction> transactions) {
         this.helper = SunmiPrintHelper.getInstance();
         this.sunmiPrinterService = helper.getSunmiPrinterService();
         this.sunmiPrinter = SunmiPrintHelper.getLostSunmiPrinter();
         this.mContext = context;
         this.financialReportsType = financialReportsType;
-        this.saleModels = saleModels;
+        this.sales = sales;
         this.user = user;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.zNum = zNum;
+        this.transactions.addAll(transactions);
         fillReportModel();
     }
 
@@ -139,11 +144,10 @@ public class PrintSalesReportManager {
         printSaleReportModel.setPhoneNumber("0 252 317 37 37");                                    //TODO
         printSaleReportModel.setTaxOffice("BODRUM V.D. 1800028646");
 
-        printSaleReportModel.setReportId(UUID.randomUUID().toString());
         printSaleReportModel.setfDate(new Date());
         //printSaleReportModel.setReportTitle(financialReportsType.getLabelTr().toUpperCase());
         printSaleReportModel.setReportTitle("GÜNSONU RAPORU");
-        printSaleReportModel.setReportNum(1);                                                       //TODO
+        printSaleReportModel.setzNum(zNum);
 
         setReportDate();
         setReportTaxModels();
@@ -163,11 +167,7 @@ public class PrintSalesReportManager {
     }
 
     private void setBatchAndReceiptNum(){
-        AutoIncrement autoIncrement = AutoIncrementDBHelper.getAutoIncrement(user.getUuid());
-        long currentReceiptNum = AutoIncrementDBHelper.getCurrentReceiptNum(user.getUuid());
-
-        printSaleReportModel.setReceiptNum(currentReceiptNum);   //TODO
-        printSaleReportModel.setBatchNum(autoIncrement.getBatchNum());   //TODO
+        printSaleReportModel.setzNum(zNum);   //TODO
     }
 
     private void setReportDate(){
@@ -183,12 +183,14 @@ public class PrintSalesReportManager {
             reportTaxModel.setTaxId(taxModel.getId());
             reportTaxModel.setTaxName("%" + CommonUtils.getDoubleStrValueForView(taxModel.getTaxRate(), TYPE_RATE));
 
-            for(SaleModel saleModel : saleModels){
-                for(SaleItem saleItem : saleModel.getSaleItems()){
+            for(Sale sale : sales){
+                RealmResults<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(sale.getSaleUuid());
 
-                    OrderItemTax orderItemTax = saleItem.getOrderItemTaxes().get(0);
+                for(SaleItem saleItem : saleItems){
 
-                    if(taxModel.getId() == orderItemTax.getTaxId()){
+                    OrderItemTax taxModel1 = saleItem.getTaxModel();
+
+                    if(taxModel.getId() == taxModel1.getId()){
                         reportTaxModel.setTaxAmount(CommonUtils.round(reportTaxModel.getTaxAmount() + saleItem.getTaxAmount(), 2));
                         reportTaxModel.setTotalAmount(CommonUtils.round(reportTaxModel.getTotalAmount() + saleItem.getGrossAmount(), 2));
                     }
@@ -205,8 +207,10 @@ public class PrintSalesReportManager {
         }
         printSaleReportModel.setDeclaredTaxAmount(printSaleReportModel.getTotTaxAmount());
 
-        for(SaleModel saleModel : saleModels){
-            double discountAmountOfSale = OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems());
+        for(Sale sale : sales){
+            RealmResults<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(sale.getSaleUuid());
+
+            double discountAmountOfSale = OrderManager.getTotalDiscountAmountOfSale(sale, saleItems);
             printSaleReportModel.setTotDiscountAmount(CommonUtils.round(discountAmountOfSale + printSaleReportModel.getTotDiscountAmount(), 2));
         }
 
@@ -242,7 +246,15 @@ public class PrintSalesReportManager {
     private void setPaymentModel(){
         PrintSaleReportModel.PaymentModel paymentModel = new PrintSaleReportModel.PaymentModel();
 
-        for(SaleModel saleModel : saleModels){
+        for(Transaction transaction : transactions){
+            if(transaction.getPaymentTypeId() == PaymentTypeEnum.CASH.getId()){
+                paymentModel.setCashAmount(paymentModel.getCashAmount() + transaction.getTransactionAmount());
+            }else if(transaction.getPaymentTypeId() == PaymentTypeEnum.CREDIT_CARD.getId()){
+                paymentModel.setCardAmount(paymentModel.getCardAmount() + transaction.getTransactionAmount());
+            }
+        }
+
+        /*for(SaleModel saleModel : saleModels){
             for(Transaction transaction : saleModel.getTransactions()){
                 if(transaction.getPaymentTypeId() == PaymentTypeEnum.CASH.getId()){
                     paymentModel.setCashAmount(paymentModel.getCashAmount() + transaction.getTransactionAmount());
@@ -251,7 +263,7 @@ public class PrintSalesReportManager {
                 }
                 //TODO
             }
-        }
+        }*/
 
         double totalPaymAmount = CommonUtils.round(paymentModel.getCashAmount() +
                 paymentModel.getCardAmount() +
@@ -328,7 +340,10 @@ public class PrintSalesReportManager {
             }
 
             //PRINT DATE AND RECEIPT NO FIELDS
-            PrintHelper.printDateAndReceiptNoFields(sunmiPrinterService, mContext, printSaleReportModel.getfDate(), printSaleReportModel.getReceiptNum());
+            PrintHelper.printReceiptDateFields(sunmiPrinterService, mContext, printSaleReportModel.getfDate());
+
+            //PRINT Z NUM
+            PrintHelper.printZNum(mContext, sunmiPrinterService, printSaleReportModel.getzNum());
 
             sunmiPrinterService.lineWrap(1, null);
             sunmiPrinterService.setAlignment(0, null);
@@ -366,9 +381,9 @@ public class PrintSalesReportManager {
             sunmiPrinterService.printColumnsString(txts, width, align, null);
 
             //Print Report Date
-            txts[0] = mContext.getResources().getString(R.string.batch_upper);
-            txts[1] = String.valueOf(printSaleReportModel.getBatchNum());
-            sunmiPrinterService.printColumnsString(txts, width, align, null);
+            //txts[0] = mContext.getResources().getString(R.string.batch_upper);
+            //txts[1] = String.valueOf(printSaleReportModel.getzNum());
+            //sunmiPrinterService.printColumnsString(txts, width, align, null);
 
             /***************************************** KDV BILGILERI ***************************************************************************/
 

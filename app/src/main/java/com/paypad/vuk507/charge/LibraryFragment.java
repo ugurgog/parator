@@ -34,9 +34,6 @@ import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.OnKeyboardVisibilityListener;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.sale.DynamicAmountFragment;
-import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.interfaces.ReturnViewCallback;
-import com.paypad.vuk507.uiUtils.NDSpinner;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.ProductDBHelper;
@@ -44,6 +41,8 @@ import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.ItemSpinnerEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.ReturnSizeCallback;
+import com.paypad.vuk507.interfaces.ReturnViewCallback;
 import com.paypad.vuk507.menu.category.CategoryEditFragment;
 import com.paypad.vuk507.menu.category.adapters.CategorySelectListAdapter;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
@@ -57,8 +56,8 @@ import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.uiUtils.NDSpinner;
 import com.paypad.vuk507.utils.CommonUtils;
-
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

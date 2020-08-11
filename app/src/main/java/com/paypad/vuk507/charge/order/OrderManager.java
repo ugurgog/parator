@@ -4,14 +4,17 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.provider.Settings;
 
-import com.paypad.vuk507.db.CategoryDBHelper;
+import com.paypad.vuk507.db.RefundDBHelper;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.OrderItemDiscount;
+import com.paypad.vuk507.model.OrderItemTax;
+import com.paypad.vuk507.model.OrderRefundItem;
 import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
-import com.paypad.vuk507.model.order.OrderItemTax;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class OrderManager implements IOrderManager{
 
@@ -57,11 +61,11 @@ public class OrderManager implements IOrderManager{
     }
 
     @Override
-    public String addCustomItemToOrder(SaleItem saleItem, TaxModel taxModel) {
+    public String addCustomItemToOrder(SaleItem saleItem, OrderItemTax orderItemTax) {
         Sale sale = SaleModelInstance.getInstance().getSaleModel().getSale();
         List<SaleItem> saleItems = SaleModelInstance.getInstance().getSaleModel().getSaleItems();
 
-        setOrderItemTaxForCustomItem(saleItem, taxModel);
+        setOrderItemTaxForCustomItem(saleItem, orderItemTax);
 
         sale.setSaleCount(getOrderItemCount() + 1);
         sale.setTotalAmount(CommonUtils.round(sale.getTotalAmount(), 2));
@@ -76,30 +80,18 @@ public class OrderManager implements IOrderManager{
 
     @Override
     public void setOrderItemTaxForProduct(SaleItem saleItem, Product product) {
-        if(saleItem.getOrderItemTaxes() != null && saleItem.getOrderItemTaxes().size() > 0)
-            saleItem.getOrderItemTaxes().clear();
-
         TaxModel taxModel = DataUtils.getTaxModelById(product.getTaxId());
         OrderItemTax orderItemTax = ConversionHelper.convertTaxModelToOrderItemTax(taxModel);
         addTaxAmount(saleItem, orderItemTax);
     }
 
     @Override
-    public void setOrderItemTaxForCustomItem(SaleItem saleItem, TaxModel taxModel) {
-        if(saleItem.getOrderItemTaxes() != null && saleItem.getOrderItemTaxes().size() > 0)
-            saleItem.getOrderItemTaxes().clear();
-
-        OrderItemTax orderItemTax = ConversionHelper.convertTaxModelToOrderItemTax(taxModel);
+    public void setOrderItemTaxForCustomItem(SaleItem saleItem, OrderItemTax orderItemTax) {
         addTaxAmount(saleItem, orderItemTax);
     }
 
     private void addTaxAmount(SaleItem saleItem, OrderItemTax orderItemTax){
-        if(saleItem.getOrderItemTaxes() == null)
-            saleItem.setOrderItemTaxes(new RealmList<>());
-
-        saleItem.getOrderItemTaxes().add(orderItemTax);
-
-        //saleItem.setTaxAmount(CommonUtils.round((saleItem.getAmount() / 100d) * orderItemTax.getTaxRate(), 2));
+        saleItem.setTaxModel(orderItemTax);
 
         saleItem.setGrossAmount(getGrossAmount(saleItem.getAmount(), orderItemTax));
         saleItem.setTaxAmount(getTaxAmount(saleItem.getAmount(), orderItemTax));
@@ -111,10 +103,7 @@ public class OrderManager implements IOrderManager{
     }
 
     public static double getGrossAmount(double amount, OrderItemTax orderItemTax){
-        double totalAmount = CommonUtils.round( amount + (amount * (orderItemTax.getTaxRate() / 100d)), 2);
-
         double grossAmount = CommonUtils.round(((100d * amount) / (100d + orderItemTax.getTaxRate())), 2);
-
         return grossAmount ;
     }
 
@@ -157,11 +146,12 @@ public class OrderManager implements IOrderManager{
         double discountedAmount = 0d;
 
         if (sale.getDiscounts() != null) {
-            for (Discount discount : sale.getDiscounts()) {
+            for (OrderItemDiscount discount : sale.getDiscounts()) {
                 if (discount.getRate() > 0d) {
 
                     if (saleItem.getDiscounts() == null)
                         saleItem.setDiscounts(new RealmList<>());
+
 
                     saleItem.getDiscounts().add(discount);
                 }
@@ -213,7 +203,7 @@ public class OrderManager implements IOrderManager{
     @Override
     public boolean isDiscountInSale(Discount discount) {
         Sale sale = SaleModelInstance.getInstance().getSaleModel().getSale();
-        for(Discount discount1 : sale.getDiscounts()){
+        for(OrderItemDiscount discount1 : sale.getDiscounts()){
             if(discount.getId() == discount1.getId())
                 return true;
         }
@@ -237,13 +227,6 @@ public class OrderManager implements IOrderManager{
     }
 
     @Override
-    public void addDiscountToOrder(Discount discount) {
-        Sale sale = SaleModelInstance.getInstance().getSaleModel().getSale();
-        sale.getDiscounts().add(discount);
-        setDiscountedAmountOfSale();
-    }
-
-    @Override
     public void setUserIdToOrder(String userId) {
         Sale sale = SaleModelInstance.getInstance().getSaleModel().getSale();
         if(sale.getUserUuid() == null || sale.getUserUuid().isEmpty())
@@ -260,23 +243,40 @@ public class OrderManager implements IOrderManager{
     @Override
     public void setRemainAmountByDiscountedAmount() {
         Sale sale = SaleModelInstance.getInstance().getSaleModel().getSale();
-        sale.setRemainAmount(CommonUtils.round(sale.getSubTotalAmount(), 2));
+        sale.setRemainAmount(CommonUtils.round(sale.getDiscountedAmount(), 2));
     }
 
     @Override
-    public void addDiscountRateToAllSaleItems(Discount discount) {
-        List<SaleItem> saleItems = SaleModelInstance.getInstance().getSaleModel().getSaleItems();
+    public void addDiscount(Discount discount) {
         Sale sale = SaleModelInstance.getInstance().getSaleModel().getSale();
 
-        for(SaleItem saleItem : saleItems){
+        if(discount.getRate() > 0){
+            List<SaleItem> saleItems = SaleModelInstance.getInstance().getSaleModel().getSaleItems();
+            for(SaleItem saleItem : saleItems){
 
-            if(saleItem.getDiscounts() == null)
-                saleItem.setDiscounts(new RealmList<>());
+                if(saleItem.getDiscounts() == null)
+                    saleItem.setDiscounts(new RealmList<>());
 
-            saleItem.getDiscounts().add(discount);
+
+                saleItem.getDiscounts().add(ConversionHelper.convertDiscountToOrderItemDiscount(discount));
+            }
         }
-        sale.getDiscounts().add(discount);
-        setDiscountedAmountOfSale();
+
+        if(sale.getDiscounts() == null)
+            sale.setDiscounts(new RealmList<>());
+
+        boolean exist = false;
+        for(OrderItemDiscount discount1 : sale.getDiscounts()){
+            if(discount1.getId() == discount.getId()){
+                exist = true;
+                break;
+            }
+        }
+
+        if(!exist){
+            sale.getDiscounts().add(ConversionHelper.convertDiscountToOrderItemDiscount(discount));
+            setDiscountedAmountOfSale();
+        }
     }
 
     @Override
@@ -291,12 +291,12 @@ public class OrderManager implements IOrderManager{
         sale.setTotalAmount(CommonUtils.round(totalAmnt, 2));
 
         if(sale.getTotalAmount() > 0)
-            sale.setSubTotalAmount(CommonUtils.round(sale.getTotalAmount() - getTotalDiscountAmountOfSale(), 2));
+            sale.setDiscountedAmount(CommonUtils.round(sale.getTotalAmount() - getTotalDiscountAmountOfSale(), 2));
         else
-            sale.setSubTotalAmount(0d);
+            sale.setDiscountedAmount(0d);
 
-        if(sale.getSubTotalAmount() <= 0)
-            sale.setSubTotalAmount(0d);
+        if(sale.getDiscountedAmount() <= 0)
+            sale.setDiscountedAmount(0d);
     }
 
     @Override
@@ -304,7 +304,7 @@ public class OrderManager implements IOrderManager{
         List<Transaction> transactions = SaleModelInstance.getInstance().getSaleModel().getTransactions();
 
         Transaction transaction = new Transaction();
-        transaction.setTransactionUuid(UUID.randomUUID().toString());
+        transaction.setTransactionId(UUID.randomUUID().toString());
         transaction.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
         transaction.setTransactionAmount(CommonUtils.round(splitAmount, 2));
         transaction.setSeqNumber(getMaxSplitSequenceNumber() + 1);
@@ -326,7 +326,7 @@ public class OrderManager implements IOrderManager{
         double totalDiscountAmount = 0;
 
         if(sale.getDiscounts() != null && sale.getDiscounts().size() > 0){
-            for(Discount discount : sale.getDiscounts()){
+            for(OrderItemDiscount discount : sale.getDiscounts()){
                 if(discount.getAmount() > 0)
                     totalDiscountAmount = totalDiscountAmount + discount.getAmount();
             }
@@ -349,7 +349,7 @@ public class OrderManager implements IOrderManager{
         if(saleItems != null){
             for(SaleItem saleItem : saleItems){
                 if(saleItem.getUuid().equals(saleItemUuid)){
-                    saleItem.getDiscounts().add(discount);
+                    saleItem.getDiscounts().add(ConversionHelper.convertDiscountToOrderItemDiscount(discount));
                     break;
                 }
             }
@@ -357,7 +357,7 @@ public class OrderManager implements IOrderManager{
 
         if(sale.getDiscounts() != null){
             if(!sale.getDiscounts().contains(discount))
-                sale.getDiscounts().add(discount);
+                sale.getDiscounts().add(ConversionHelper.convertDiscountToOrderItemDiscount(discount));
         }
     }
 
@@ -393,7 +393,7 @@ public class OrderManager implements IOrderManager{
         Sale sale = SaleModelInstance.getInstance().getSaleModel().getSale();
 
         if(sale.getDiscounts() != null){
-            for(Discount discount : sale.getDiscounts()){
+            for(OrderItemDiscount discount : sale.getDiscounts()){
                 if(discount.getRate() > 0d){
 
                     if(saleItem.getDiscounts() == null)
@@ -411,7 +411,7 @@ public class OrderManager implements IOrderManager{
         double discountAmount = 0d;
 
         if(saleItem.getDiscounts() != null && saleItem.getDiscounts().size() > 0){
-            for(Discount discount : saleItem.getDiscounts()){
+            for(OrderItemDiscount discount : saleItem.getDiscounts()){
                 discountAmount = discountAmount + ((totalAmount / 100d)  * discount.getRate());
                 totalAmount = totalAmount - discountAmount;
             }
@@ -419,17 +419,14 @@ public class OrderManager implements IOrderManager{
         return CommonUtils.round(discountAmount, 2);
     }
 
-    public double getTotalDiscountAmountOfSaleItemByDiscountId(SaleItem saleItem, long discountId){
+    public static double getTotalDiscountAmountOfOrderRefundItem(OrderRefundItem saleItem){
         double totalAmount = saleItem.getAmount() * (double) saleItem.getQuantity();
         double discountAmount = 0d;
 
         if(saleItem.getDiscounts() != null && saleItem.getDiscounts().size() > 0){
-            for(Discount discount : saleItem.getDiscounts()){
-
-                if(discount.getId() == discountId){
-                    discountAmount = discountAmount + ((totalAmount / 100d)  * discount.getRate());
-                    totalAmount = totalAmount - discountAmount;
-                }
+            for(OrderItemDiscount discount : saleItem.getDiscounts()){
+                discountAmount = discountAmount + ((totalAmount / 100d)  * discount.getRate());
+                totalAmount = totalAmount - discountAmount;
             }
         }
         return CommonUtils.round(discountAmount, 2);
@@ -448,7 +445,7 @@ public class OrderManager implements IOrderManager{
         double totalDiscountAmount = 0;
 
         if(sale.getDiscounts() != null && sale.getDiscounts().size() > 0){
-            for(Discount discount : sale.getDiscounts()){
+            for(OrderItemDiscount discount : sale.getDiscounts()){
                 if(discount.getAmount() > 0)
                     totalDiscountAmount = totalDiscountAmount + discount.getAmount();
             }
@@ -461,5 +458,20 @@ public class OrderManager implements IOrderManager{
         }
 
         return CommonUtils.round(totalDiscountAmount, 2);
+    }
+
+    public static boolean isSaleItemRefunded(SaleItem saleItem, String orderId){
+        RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(orderId, true);
+
+        for(Refund refund : refunds){
+            RealmList<OrderRefundItem> orderRefundItems = refund.getRefundItems();
+
+            for(OrderRefundItem orderRefundItem : orderRefundItems){
+                if(saleItem.getUuid().equals(orderRefundItem.getUuid())){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

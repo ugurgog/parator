@@ -2,19 +2,18 @@ package com.paypad.vuk507.charge.payment.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.RemoteException;
 
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
-import com.paypad.vuk507.menu.transactions.RefundOrCancelListFragment;
 import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.OrderItemDiscount;
+import com.paypad.vuk507.model.OrderItemTax;
 import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
-import com.paypad.vuk507.model.order.OrderItemTax;
 import com.paypad.vuk507.model.pojo.PrintReceiptModel;
 import com.paypad.vuk507.model.pojo.PrintRefundCancelModel;
 import com.paypad.vuk507.model.pojo.SaleItemPojo;
@@ -35,7 +34,7 @@ import java.util.List;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_CANCEL;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_REFUND;
 
-public class PrintReceiptManager {
+public class PrintOrderManager {
 
     public static int NoSunmiPrinter = 0x00000000;
     public static int CheckSunmiPrinter = 0x00000001;
@@ -51,10 +50,8 @@ public class PrintReceiptManager {
     private PrintRefundCancelModel refundCancelModel;
     private Context mContext;
     private boolean isFinancialReceipt;
-    private Transaction transaction;
-    private int refundCancellationStatus;
 
-    public PrintReceiptManager(Context context, SaleModel saleModel, boolean isFinancialReceipt) {
+    public PrintOrderManager(Context context, SaleModel saleModel, boolean isFinancialReceipt) {
         this.mContext = context;
         this.helper = SunmiPrintHelper.getInstance();
         this.sunmiPrinterService = helper.getSunmiPrinterService();
@@ -62,20 +59,7 @@ public class PrintReceiptManager {
         this.saleModel = saleModel;
         printReceiptModel = new PrintReceiptModel();
         this.isFinancialReceipt = isFinancialReceipt;
-
         fillReceiptModel();
-    }
-
-    public PrintReceiptManager(Context context, Transaction transaction, boolean isFinancialReceipt,
-                               double refundAmount, int refundCancellationStatus) {
-        this.mContext = context;
-        this.helper = SunmiPrintHelper.getInstance();
-        this.sunmiPrinterService = helper.getSunmiPrinterService();
-        this.sunmiPrinter = helper.getLostSunmiPrinter();
-        this.transaction = transaction;
-        this.isFinancialReceipt = isFinancialReceipt;
-        this.refundCancellationStatus = refundCancellationStatus;
-        fillRefundCancelModel(refundAmount);
     }
 
     public void setCallback(InnerResultCallbcak callback) {
@@ -102,53 +86,32 @@ public class PrintReceiptManager {
         addTaxModels();
         addPaymentTypes();
         addTotalTipAmount();
-        setBatchAndReceiptNum();
+        //setBatchAndReceiptNum();
 
+        printReceiptModel.setzNum(saleModel.getSale().getzNum());
+        printReceiptModel.setOrderNum(saleModel.getSale().getOrderNum());
         printReceiptModel.setfDate(new Date());
         printReceiptModel.setReceiptDate(saleModel.getSale().getCreateDate());
-        printReceiptModel.setTotalAmount(saleModel.getSale().getSubTotalAmount());
+        printReceiptModel.setTotalAmount(saleModel.getSale().getDiscountedAmount());
 
 
         printReceiptModel.setChequeNo(7867);                        //TODO
         printReceiptModel.setTableNo(0);                            //TODO
         printReceiptModel.setMersisNo("05352900403");               //TODO
         printReceiptModel.setEmail("ugur.gogebakan@garaj2.com");    //TODO
-        //printReceiptModel.setEkuNo(1);                              //TODO
+        //printReceiptModel.setEkuNo(1);                            //TODO
         printReceiptModel.setMerchantNum("123456789");              //TODO
         printReceiptModel.setTerminalNum("1234567");                //TODO
         printReceiptModel.setApproveCode(1234);                     //TODO
         printReceiptModel.setStanNum(1);                            //TODO
+        printReceiptModel.setBatchNum(1);                           //TODO
         printReceiptModel.setDeviceRegisterId("JH 20082508");       //TODO
-    }
-
-    private void fillRefundCancelModel(double refundAmount){
-        refundCancelModel = new PrintRefundCancelModel();
-        refundCancelModel.setMerchantName("BODRUM BELEDIYE TUR.");                              //TODO
-        refundCancelModel.setFirmName("INS GIDA ENERJI SAN. VE TIC. A.S.");                     //TODO
-        refundCancelModel.setAddress("TORBA MAH. M.KEMAL ATATURK CD. No: 153 BODRUM MUGLA");    //TODO
-        refundCancelModel.setPhoneNumber("0 252 317 37 37");                                    //TODO
-        refundCancelModel.setTaxOffice("BODRUM V.D. 1800028646");                               //TODO
-
-        refundCancelModel.setfDate(new Date());
-        refundCancelModel.setReceiptDate(new Date());
-        refundCancelModel.setRefundAmount(refundAmount);
-
-        refundCancelModel.setChequeNo(7867);                        //TODO
-        refundCancelModel.setTableNo(0);                            //TODO
-        refundCancelModel.setMersisNo("05352900403");               //TODO
-        refundCancelModel.setEmail("ugur.gogebakan@garaj2.com");    //TODO
-        //printReceiptModel.setEkuNo(1);                              //TODO
-        refundCancelModel.setMerchantNum("123456789");              //TODO
-        refundCancelModel.setTerminalNum("1234567");                //TODO
-        refundCancelModel.setApproveCode(1234);                     //TODO
-        refundCancelModel.setStanNum(1);                            //TODO
-        refundCancelModel.setDeviceRegisterId("JH 20082508");       //TODO
     }
 
     /**
      * Finansal olmayan makbuzlar orjinal satis batch ve makbuz no ile print edilir
      */
-    private void setBatchAndReceiptNum(){
+    /*private void setBatchAndReceiptNum(){
 
         if(isFinancialReceipt){
             AutoIncrement autoIncrement = AutoIncrementDBHelper.getAutoIncrement(saleModel.getSale().getUserUuid());
@@ -159,7 +122,7 @@ public class PrintReceiptManager {
             printReceiptModel.setReceiptNum((int)saleModel.getSale().getReceiptNum());
             printReceiptModel.setBatchNum((int)saleModel.getSale().getBatchNum());
         }
-    }
+    }*/
 
     private void addPaymentTypes() {
         for(Transaction transaction : saleModel.getTransactions()){
@@ -169,7 +132,10 @@ public class PrintReceiptManager {
                 receiptPaymentModel.setAmount(transaction.getTransactionAmount());
                 receiptPaymentModel.setCardName("OFFLINE XXX"); //TODO
                 receiptPaymentModel.setCardNumber("1111 2222 3333 4444");//TODO
-                receiptPaymentModel.setRetrefNum(transaction.getRetrefNum());
+
+                receiptPaymentModel.setzNum(transaction.getzNum());
+                receiptPaymentModel.setfNum(transaction.getfNum());
+
                 printReceiptModel.getReceiptPaymentModels().add(receiptPaymentModel);
                 printReceiptModel.setTotalTipAmount(CommonUtils.round(
                         printReceiptModel.getTotalTipAmount() + transaction.getTipAmount(), 2
@@ -179,7 +145,10 @@ public class PrintReceiptManager {
                 PrintReceiptModel.ReceiptPaymentModel receiptPaymentModel = new PrintReceiptModel.ReceiptPaymentModel();
                 receiptPaymentModel.setPaymentType(transaction.getPaymentTypeId());
                 receiptPaymentModel.setAmount(transaction.getTransactionAmount());
-                receiptPaymentModel.setRetrefNum(transaction.getRetrefNum());
+
+                receiptPaymentModel.setzNum(transaction.getzNum());
+                receiptPaymentModel.setfNum(transaction.getfNum());
+
                 printReceiptModel.getReceiptPaymentModels().add(receiptPaymentModel);
 
 
@@ -214,11 +183,13 @@ public class PrintReceiptManager {
 
             boolean isExist = false;
 
-            OrderItemTax orderItemTax = saleItem.getOrderItemTaxes().get(0);
+            //OrderItemTax orderItemTax = saleItem.getOrderItemTaxes().get(0);
+
+            OrderItemTax taxModel = saleItem.getTaxModel();
 
             for(PrintReceiptModel.ReceiptTaxModel receiptTaxModel : printReceiptModel.getReceiptTaxModels()){
 
-                if(receiptTaxModel.getTaxId() == orderItemTax.getTaxId()){
+                if(receiptTaxModel.getTaxId() == taxModel.getId()){
                     receiptTaxModel.setTaxAmount(CommonUtils.round(receiptTaxModel.getTaxAmount() + saleItem.getTaxAmount(), 2));
                     receiptTaxModel.setTotalAmount(CommonUtils.round(receiptTaxModel.getTotalAmount() + saleItem.getGrossAmount(), 2));
                     isExist = true;
@@ -228,8 +199,8 @@ public class PrintReceiptManager {
 
             if(!isExist){
                 PrintReceiptModel.ReceiptTaxModel receiptTaxModel = new PrintReceiptModel.ReceiptTaxModel();
-                receiptTaxModel.setTaxId(orderItemTax.getTaxId());
-                receiptTaxModel.setTaxName(orderItemTax.getName());
+                receiptTaxModel.setTaxId(taxModel.getId());
+                receiptTaxModel.setTaxName(taxModel.getName());
                 receiptTaxModel.setTaxAmount(saleItem.getTaxAmount());
                 receiptTaxModel.setTotalAmount(saleItem.getGrossAmount());
                 printReceiptModel.getReceiptTaxModels().add(receiptTaxModel);
@@ -244,7 +215,8 @@ public class PrintReceiptManager {
             saleItemPojo.setName(saleItem.getName());
             saleItemPojo.setQuantity(saleItem.getQuantity());
             saleItemPojo.setAmount(saleItem.getAmount());
-            saleItemPojo.setOrderItemTaxes(saleItem.getOrderItemTaxes());
+            saleItemPojo.setTaxModel(saleItem.getTaxModel());
+            //saleItemPojo.setOrderItemTaxes(saleItem.getOrderItemTaxes());
             printReceiptModel.getSaleItems().add(saleItemPojo);
 
             printReceiptModel.setTotalTaxAmount(CommonUtils.round(printReceiptModel.getTotalTaxAmount() + (saleItem.getTaxAmount() * saleItem.getQuantity()), 2));
@@ -263,7 +235,7 @@ public class PrintReceiptManager {
             saleItems.add(saleItem1);
         }
 
-        for(Discount discount : saleModel.getSale().getDiscounts()){
+        for(OrderItemDiscount discount : saleModel.getSale().getDiscounts()){
 
             PrintReceiptModel.ReceiptDiscountModel reportDiscountModel = new PrintReceiptModel.ReceiptDiscountModel();
 
@@ -277,7 +249,7 @@ public class PrintReceiptManager {
 
                 for(SaleItem saleItem : saleItems){
                     if(saleItem.getDiscounts() != null && saleItem.getDiscounts().size() > 0){
-                        for(Discount discount1 : saleItem.getDiscounts()){
+                        for(OrderItemDiscount discount1 : saleItem.getDiscounts()){
 
                             if(discount.getId() == discount1.getId()){
                                 discountAmount = discountAmount + ((saleItem.getAmount() / 100d)  * discount.getRate());
@@ -343,7 +315,13 @@ public class PrintReceiptManager {
 
 
             //PRINT DATE AND RECEIPT NO FIELDS
-            PrintHelper.printDateAndReceiptNoFields(sunmiPrinterService, mContext, printReceiptModel.getfDate(), printReceiptModel.getReceiptNum());
+            PrintHelper.printReceiptDateFields(sunmiPrinterService, mContext, printReceiptModel.getfDate());
+
+            //PRINT ORDER NUMBER
+            PrintHelper.printOrderNum(mContext, sunmiPrinterService, printReceiptModel.getOrderNum());
+
+            //PRINT Z NUM
+            PrintHelper.printZNum(mContext, sunmiPrinterService, printReceiptModel.getzNum());
 
             sunmiPrinterService.lineWrap(1, null);
             sunmiPrinterService.setAlignment(0, null);
@@ -370,7 +348,8 @@ public class PrintReceiptManager {
                 int align1[] = new int[]{0, 1, 2};
 
                 txts1[0] = saleItem.getName();
-                txts1[1] = "%" + saleItem.getOrderItemTaxes().get(0).getTaxRate();
+                //txts1[1] = "%" + saleItem.getOrderItemTaxes().get(0).getTaxRate();
+                txts1[1] = "%" + saleItem.getTaxModel().getTaxRate();
                 txts1[2] = "*" + CommonUtils.getAmountText(CommonUtils.round(saleItem.getAmount() * saleItem.getQuantity(), 2));
                 sunmiPrinterService.printColumnsString(txts1, width1, align1, null);
 
@@ -449,9 +428,9 @@ public class PrintReceiptManager {
                 }
 
                 sunmiPrinterService.setAlignment(0, null);
-                String retrefNumStr = mContext.getResources().getString(R.string.reference_number)
+                String retrefNumStr = mContext.getResources().getString(R.string.sequence_number)
                         .concat(" : ")
-                        .concat(receiptPaymentModel.getRetrefNum());
+                        .concat(String.format("%06d", receiptPaymentModel.getfNum()));
                 sunmiPrinterService.printTextWithFont("  " + retrefNumStr + "\n", null, 20, null);
 
                 //ADD LINE
@@ -619,7 +598,7 @@ public class PrintReceiptManager {
             PrintHelper.printBelongsToMerchant(mContext, sunmiPrinterService);
 
             //PRINT RECEIPT NO
-            PrintHelper.printReceiptNo(mContext, sunmiPrinterService, printReceiptModel.getReceiptNum());
+            PrintHelper.printOrderNum(mContext, sunmiPrinterService, printReceiptModel.getOrderNum());
 
             //PRINT EKU AND ZNO
             //PrintHelper.printEkuAndZNo(mContext, sunmiPrinterService, printReceiptModel.getEkuNo(), printReceiptModel.getBatchNum());
@@ -771,179 +750,4 @@ public class PrintReceiptManager {
             e.printStackTrace();
         }
     }*/
-
-    @SuppressLint("DefaultLocale")
-    public void printRefundOrCancelReceipt(){
-        if(sunmiPrinterService == null){
-            return ;
-        }
-
-        try {
-            sunmiPrinterService.enterPrinterBuffer(true);
-
-            int paper = sunmiPrinterService.getPrinterPaper();
-            sunmiPrinterService.printerInit(null);
-
-            //PRINT TEST DEVICE
-            sunmiPrinterService.setAlignment(1, null);
-            sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.test_device) + "\b" + "\n", null, 25, null);
-            sunmiPrinterService.printTextWithFont(" " + "\n", null, 25, null);
-
-            //PRINT MERCHANT NAME
-            sunmiPrinterService.printTextWithFont(refundCancelModel.getMerchantName() + "\b" + "\n", null, 25, null);
-
-            //PRINT FIRM NAME
-            sunmiPrinterService.printTextWithFont(refundCancelModel.getFirmName()  + "\n", null, 25, null);
-
-            //PRINT ADDRESS
-            List<String> addressList = PrintHelper.getAddressList(paper, refundCancelModel.getAddress());
-
-            for(String addressLine : addressList){
-                sunmiPrinterService.printTextWithFont(addressLine  + "\n", null, 23, null);
-            }
-
-            //PRINT TAX OFFICE
-            sunmiPrinterService.printTextWithFont(refundCancelModel.getTaxOffice() + "\n\n", null, 25, null);
-
-
-            try {
-                sunmiPrinterService.setPrinterStyle(WoyouConsts.SET_LINE_SPACING, 0);
-            } catch (RemoteException e) {
-                sunmiPrinterService.sendRAWData(new byte[]{0x1B, 0x33, 0x00}, null);
-            }
-
-
-            //PRINT DATE AND RECEIPT NO FIELDS
-            PrintHelper.printDateAndReceiptNoFields(sunmiPrinterService, mContext, refundCancelModel.getfDate(), refundCancelModel.getReceiptNum());
-
-            sunmiPrinterService.lineWrap(1, null);
-            sunmiPrinterService.setAlignment(0, null);
-
-            try {
-                sunmiPrinterService.setPrinterStyle(WoyouConsts.SET_LINE_SPACING, 0);
-            } catch (RemoteException e) {
-                sunmiPrinterService.sendRAWData(new byte[]{0x1B, 0x33, 0x00}, null);
-            }
-
-            sunmiPrinterService.printTextWithFont(" " + "\n", null, 20, null);
-
-
-            String txts[] = new String[2];
-            int width[] = new int[]{2, 1};
-            int align[] = new int[]{0, 2};
-
-
-            //ADD LINE
-            PrintHelper.addLineText(sunmiPrinterService);
-
-            try {
-                sunmiPrinterService.setPrinterStyle(WoyouConsts.ENABLE_BOLD, WoyouConsts.ENABLE);
-            } catch (RemoteException e) {
-                sunmiPrinterService.sendRAWData(ESCUtil.boldOn(), null);
-            }
-
-            //TOPKDV
-            width = new int[]{1, 1};
-            align = new int[]{0, 2};
-            sunmiPrinterService.setFontSize(20, null);
-
-            //TOTAL
-            if(refundCancellationStatus == TYPE_REFUND)
-                txts[0] = mContext.getResources().getString(R.string.refund_amount_upper) + "\b";
-            else if(refundCancellationStatus == TYPE_CANCEL)
-                txts[0] = mContext.getResources().getString(R.string.cancel_amount_upper) + "\b";
-
-
-            txts[1] = "*" + CommonUtils.getAmountText(refundCancelModel.getRefundAmount()) + "\b";
-            sunmiPrinterService.printColumnsString(txts, width, align, null);
-
-            //ADD LINE
-            PrintHelper.addLineText(sunmiPrinterService);
-
-            //PRINT BARCODE
-            sunmiPrinterService.printTextWithFont(" " + "\n\n", null, 20, null);
-            sunmiPrinterService.printBarCode("{C1234567890123456",  8, 70, 3, 2, null);
-
-            sunmiPrinterService.printTextWithFont(" " + "\n\n", null, 20, null);
-
-            //PRINT CHEQUE NO AND TABLE NO
-            PrintHelper.printChequeAndTableVars(mContext, sunmiPrinterService, refundCancelModel.getChequeNo(), refundCancelModel.getTableNo());
-
-            //PRINT MERSIS
-            String mersis = mContext.getString(R.string.mersis_upper)
-                    .concat(" : ")
-                    .concat(refundCancelModel.getMersisNo());
-            sunmiPrinterService.printTextWithFont(mersis + "\n", null, 20, null);
-
-            //PRINT EMAIL
-            sunmiPrinterService.printTextWithFont(refundCancelModel.getEmail() + "\n", null, 20, null);
-            sunmiPrinterService.printTextWithFont(" " + "\n", null, 20, null);
-
-            //MERCHANT AND TERMINAL NO
-            txts[0] = mContext.getResources().getString(R.string.merchant_no_upper)
-                    .concat(":")
-                    .concat(String.valueOf(refundCancelModel.getMerchantNum()));
-            txts[1] = mContext.getResources().getString(R.string.terminal_upper)
-                    .concat(":")
-                    .concat(String.valueOf(refundCancelModel.getTerminalNum()));
-            sunmiPrinterService.printColumnsString(txts, width, align, null);
-
-            //APPCODE, BATCH, STAN
-            txts[0] = mContext.getResources().getString(R.string.approve_code_upper)
-                    .concat(": ")
-                    .concat(String.valueOf(refundCancelModel.getApproveCode()));
-            txts[1] = mContext.getResources().getString(R.string.batch_upper)
-                    .concat(":")
-                    .concat(String.valueOf(refundCancelModel.getBatchNum()))
-                    .concat("/")
-                    .concat(mContext.getResources().getString(R.string.stan_upper))
-                    .concat(":")
-                    .concat(String.valueOf(refundCancelModel.getStanNum()));
-
-            sunmiPrinterService.printColumnsString(txts, width, align, null);
-
-            //REFUND DATE
-            sunmiPrinterService.printTextWithFont(" " + "\n\n", null, 20, null);
-            @SuppressLint("SimpleDateFormat") String dateStr = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(refundCancelModel.getReceiptDate());
-            String printSaleDateStr = dateStr
-                    .concat(" ")
-                    .concat(refundCancellationStatus == TYPE_REFUND ? mContext.getString(R.string.refund)
-                            : mContext.getString(R.string.cancel));
-            try {
-                sunmiPrinterService.setAlignment(0, null);
-                sunmiPrinterService.printTextWithFont(printSaleDateStr + "\n", null, 20, null);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-
-
-            PrintHelper.setBold(sunmiPrinterService, WoyouConsts.ENABLE);
-
-            //PRINT GOOD AND SERVICES
-            PrintHelper.printGoodServicesInfo(mContext, sunmiPrinterService);
-
-            PrintHelper.setBold(sunmiPrinterService, WoyouConsts.DISABLE);
-
-            sunmiPrinterService.setAlignment(0, null);
-
-            sunmiPrinterService.printTextWithFont(mContext.getResources().getString(R.string.belongs_to_card_holder)
-                    .concat(" ")
-                    .concat("(")
-                    .concat(mContext.getResources().getString(R.string.first_copy))
-                    .concat(")")+ "\n\n", null, 20, null);
-
-            sunmiPrinterService.printTextWithFont(" " + "\n", null, 25, null);
-
-            //PRINT TEST DEVICE
-            PrintHelper.printTestDeviceLabel(mContext, sunmiPrinterService);
-
-            sunmiPrinterService.printTextWithFont(refundCancelModel.getDeviceRegisterId() + "\b" + "\n", null, 25, null);
-
-            sunmiPrinterService.autoOutPaper(null);
-
-            sunmiPrinterService.exitPrinterBufferWithCallback(true, callback);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
 }

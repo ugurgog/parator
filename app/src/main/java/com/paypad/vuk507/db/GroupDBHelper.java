@@ -3,15 +3,10 @@ package com.paypad.vuk507.db;
 import androidx.annotation.NonNull;
 
 import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.Customer;
-import com.paypad.vuk507.model.CustomerGroup;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 
-import java.util.Objects;
-
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class GroupDBHelper {

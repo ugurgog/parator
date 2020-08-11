@@ -16,18 +16,29 @@ public class Sale extends RealmObject {
     private String saleUuid;
     private int saleCount;
     private long customerId;
-    private RealmList<Discount> discounts;
-    private double totalAmount;         // Split dahil edilmemis Total Amount
-    private double subTotalAmount;    // Indirimlerin uygulanmis tutarin son hali
+    private RealmList<OrderItemDiscount> discounts;
+    private double totalAmount;            // Split dahil edilmemis Total Amount
+    private double discountedAmount;         // Indirimlerin uygulanmis tutarin son hali
     private boolean paymentCompleted;
-    private double remainAmount;          // Parcali odeme sonrasi kalan tutar
+    private double remainAmount;           // Parcali odeme sonrasi kalan tutar
     private Date createDate;
     private String userUuid;
     @Index
     private String deviceId;
-    private boolean isEndOfDayProcessed;
-    private long batchNum;
-    private long receiptNum;
+    private String orderNum;              // julian date + year son 2 hane + 6 hane counter (25920000025) (259. gun gelen 25. i order)
+    @Index
+    private long zNum;
+    private Double latitude;
+    private Double longitude;
+    private boolean isTransferred;
+
+    public long getzNum() {
+        return zNum;
+    }
+
+    public void setzNum(long zNum) {
+        this.zNum = zNum;
+    }
 
     public int getSaleCount() {
         return saleCount;
@@ -46,11 +57,11 @@ public class Sale extends RealmObject {
         this.customerId = customerId;
     }
 
-    public RealmList<Discount> getDiscounts() {
+    public RealmList<OrderItemDiscount> getDiscounts() {
         return discounts;
     }
 
-    public void setDiscounts(RealmList<Discount> discounts) {
+    public void setDiscounts(RealmList<OrderItemDiscount> discounts) {
         this.discounts = discounts;
     }
 
@@ -86,12 +97,12 @@ public class Sale extends RealmObject {
         this.userUuid = userUuid;
     }
 
-    public double getSubTotalAmount() {
-        return subTotalAmount;
+    public double getDiscountedAmount() {
+        return discountedAmount;
     }
 
-    public void setSubTotalAmount(double subTotalAmount) {
-        this.subTotalAmount = subTotalAmount;
+    public void setDiscountedAmount(double discountedAmount) {
+        this.discountedAmount = discountedAmount;
     }
 
     public double getRemainAmount() {
@@ -118,27 +129,35 @@ public class Sale extends RealmObject {
         this.deviceId = deviceId;
     }
 
-    public boolean isEndOfDayProcessed() {
-        return isEndOfDayProcessed;
+    public String getOrderNum() {
+        return orderNum;
     }
 
-    public void setEndOfDayProcessed(boolean endOfDayProcessed) {
-        isEndOfDayProcessed = endOfDayProcessed;
+    public void setOrderNum(String orderNum) {
+        this.orderNum = orderNum;
     }
 
-    public long getBatchNum() {
-        return batchNum;
+    public Double getLatitude() {
+        return latitude;
     }
 
-    public void setBatchNum(long batchNum) {
-        this.batchNum = batchNum;
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 
-    public long getReceiptNum() {
-        return receiptNum;
+    public Double getLongitude() {
+        return longitude;
     }
 
-    public void setReceiptNum(long receiptNum) {
-        this.receiptNum = receiptNum;
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public boolean isTransferred() {
+        return isTransferred;
+    }
+
+    public void setTransferred(boolean transferred) {
+        isTransferred = transferred;
     }
 }

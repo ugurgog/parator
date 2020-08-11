@@ -14,9 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
-import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.model.Category;
-import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 

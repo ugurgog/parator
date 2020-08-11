@@ -8,21 +8,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.enums.ItemProcessEnum;
-import com.paypad.vuk507.menu.discount.adapters.DiscountListAdapter;
-import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.menu.reports.saleReport.adapter.SaleDetailDiscountAdapter;
-import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.pojo.ReportModel;
 import com.paypad.vuk507.utils.CommonUtils;
-
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

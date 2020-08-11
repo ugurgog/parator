@@ -5,23 +5,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.IOrderManager;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.order.OrderItemDiscount;
-import com.paypad.vuk507.model.pojo.SaleModel;
-import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 
 import java.util.ArrayList;
@@ -29,7 +24,6 @@ import java.util.List;
 
 import io.realm.RealmList;
 
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
 public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDiscountListAdapter.DiscountHolder> {
@@ -109,7 +103,7 @@ public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDi
             Log.i("Info", "saleItem.getDiscounts():" + saleItem.getDiscounts());
 
             if(saleItem.getDiscounts() != null && saleItem.getDiscounts().size() > 0){
-                for (Discount discount1 : saleItem.getDiscounts()) {
+                for (OrderItemDiscount discount1 : saleItem.getDiscounts()) {
 
                     if (discount1.getId() == discount.getId())
                         return true;

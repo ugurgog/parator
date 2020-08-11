@@ -1,22 +1,18 @@
 package com.paypad.vuk507.model;
 
 import java.util.Date;
-import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.RealmModule;
-import io.realm.annotations.RealmNamingPolicy;
 
 public class Transaction extends RealmObject {
 
     @Index
     @PrimaryKey
-    private String transactionUuid;
+    private String transactionId;
     @Index
     private String saleUuid;
-    private String retrefNum;
     private int transactionType;
     private long seqNumber;                 // Sequence number
     private double transactionAmount;       // Split amount tutari
@@ -25,6 +21,7 @@ public class Transaction extends RealmObject {
     private long paymentTypeId;             // Cash/Kredi Karti/Other
     private double cashAmount;              // Cash odemelerde verilen tutar
     private double changeAmount;            // Cash odemelerde verilen para ustu
+    private double totalRefundAmount;       // Toplam Iade edilen tutar
     private boolean paymentCompleted;
     private String cardNumber;
     private String cardExpireDate;
@@ -32,40 +29,54 @@ public class Transaction extends RealmObject {
     private String mailAdress;
     private Date mailSendDate;
     private Date createDate;
-    private Date refundOrCancelDate;
+    private Date cancellationDate;
     @Index
     private String userUuid;
+    @Index
+    private long zNum;
+    private long fNum;
+    private boolean isTransferred;
+    private boolean isEODProcessed;
+    private Date eodDate;
 
-    public String getTransactionUuid() {
-        return transactionUuid;
+    public long getzNum() {
+        return zNum;
+    }
+
+    public void setzNum(long zNum) {
+        this.zNum = zNum;
+    }
+
+    public long getfNum() {
+        return fNum;
+    }
+
+    public void setfNum(long fNum) {
+        this.fNum = fNum;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public int getTransactionType() {
         return transactionType;
     }
 
-    public String getRetrefNum() {
-        return retrefNum;
-    }
-
-    public void setRetrefNum(String retrefNum) {
-        this.retrefNum = retrefNum;
-    }
-
     public void setTransactionType(int transactionType) {
         this.transactionType = transactionType;
     }
 
-    public void setTransactionUuid(String transactionUuid) {
-        this.transactionUuid = transactionUuid;
+    public Date getCancellationDate() {
+        return cancellationDate;
     }
 
-    public Date getRefundOrCancelDate() {
-        return refundOrCancelDate;
-    }
-
-    public void setRefundOrCancelDate(Date refundOrCancelDate) {
-        this.refundOrCancelDate = refundOrCancelDate;
+    public void setCancellationDate(Date cancellationDate) {
+        this.cancellationDate = cancellationDate;
     }
 
     public String getSaleUuid() {
@@ -122,6 +133,14 @@ public class Transaction extends RealmObject {
 
     public void setChangeAmount(double changeAmount) {
         this.changeAmount = changeAmount;
+    }
+
+    public double getTotalRefundAmount() {
+        return totalRefundAmount;
+    }
+
+    public void setTotalRefundAmount(double totalRefundAmount) {
+        this.totalRefundAmount = totalRefundAmount;
     }
 
     public boolean isPaymentCompleted() {
@@ -194,5 +213,29 @@ public class Transaction extends RealmObject {
 
     public void setMailSendDate(Date mailSendDate) {
         this.mailSendDate = mailSendDate;
+    }
+
+    public boolean isTransferred() {
+        return isTransferred;
+    }
+
+    public void setTransferred(boolean transferred) {
+        isTransferred = transferred;
+    }
+
+    public boolean isEODProcessed() {
+        return isEODProcessed;
+    }
+
+    public void setEODProcessed(boolean EODProcessed) {
+        isEODProcessed = EODProcessed;
+    }
+
+    public Date getEodDate() {
+        return eodDate;
+    }
+
+    public void setEodDate(Date eodDate) {
+        this.eodDate = eodDate;
     }
 }

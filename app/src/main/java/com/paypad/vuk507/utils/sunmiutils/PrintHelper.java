@@ -18,11 +18,11 @@ import java.util.List;
 
 public class PrintHelper {
 
-    private static final int MAX_DATE_LEN = 12;
+    private static final int MAX_DATE_LEN = 14;
     private static final int DATE_FIELDS_FONT_SIZE = 25;
 
     @SuppressLint("DefaultLocale")
-    public static void printDateAndReceiptNoFields(SunmiPrinterService sunmiPrinterService, Context mContext, Date date, long receiptNo){
+    public static void printReceiptDateFields(SunmiPrinterService sunmiPrinterService, Context mContext, Date date){
         try {
             sunmiPrinterService.setAlignment(0, null);
             String dateString = CommonUtils.padRight(mContext.getResources().getString(R.string.date_upper), MAX_DATE_LEN) + ": ";
@@ -36,19 +36,26 @@ public class PrintHelper {
             @SuppressLint("SimpleDateFormat") String hourStr = new SimpleDateFormat("HH:mm:ss").format(date);
             sunmiPrinterService.printTextWithFont(hourString + hourStr + "\n", null, DATE_FIELDS_FONT_SIZE, null);
 
-            //Receipt no
-            printReceiptNo(mContext, sunmiPrinterService, receiptNo);
-            sunmiPrinterService.printTextWithFont(" " + "\n\n", null, 20, null);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
     @SuppressLint("DefaultLocale")
-    public static void printReceiptNo(Context mContext, SunmiPrinterService sunmiPrinterService, long receiptNo){
-        String rNoString = CommonUtils.padRight(mContext.getResources().getString(R.string.receipt_no_upper), MAX_DATE_LEN) + ": ";
+    public static void printOrderNum(Context mContext, SunmiPrinterService sunmiPrinterService, String orderNum){
+        String rNoString = CommonUtils.padRight(mContext.getResources().getString(R.string.order_num), MAX_DATE_LEN) + ": ";
         try {
-            sunmiPrinterService.printTextWithFont(rNoString + String.format("%05d", receiptNo) + "\n", null, DATE_FIELDS_FONT_SIZE, null);
+            sunmiPrinterService.printTextWithFont(rNoString + orderNum + "\n", null, DATE_FIELDS_FONT_SIZE, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    public static void printZNum(Context mContext, SunmiPrinterService sunmiPrinterService, long zNo){
+        String rNoString = CommonUtils.padRight(mContext.getResources().getString(R.string.z_no_upper), MAX_DATE_LEN) + ": ";
+        try {
+            sunmiPrinterService.printTextWithFont(rNoString + String.format("%06d", zNo) + "\n", null, DATE_FIELDS_FONT_SIZE, null);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

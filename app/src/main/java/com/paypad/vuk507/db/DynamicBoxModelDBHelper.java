@@ -1,9 +1,6 @@
 package com.paypad.vuk507.db;
 
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
-import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 
 import io.realm.Realm;

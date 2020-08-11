@@ -1,7 +1,5 @@
 package com.paypad.vuk507.db;
 
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.PrinterSettings;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 

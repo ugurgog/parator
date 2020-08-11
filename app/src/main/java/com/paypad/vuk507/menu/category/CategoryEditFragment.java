@@ -2,7 +2,6 @@ package com.paypad.vuk507.menu.category;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,21 +21,16 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.ProductDBHelper;
-import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.vuk507.menu.product.SelectColorFragment;
-import com.paypad.vuk507.menu.product.adapters.ColorSelectAdapter;
 import com.paypad.vuk507.menu.product.interfaces.ColorImageReturnCallback;
-import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.UnitModel;
-import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Category;
+import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.PhotoSelectUtil;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -249,7 +243,7 @@ public class CategoryEditFragment extends BaseFragment
     private void initVariables() {
         realm = Realm.getDefaultInstance();
         CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
-        CommonUtils.setBtnFirstCondition(getContext(), btnDelete, getContext().getResources().getString(R.string.delete_unit));
+        CommonUtils.setBtnFirstCondition(getContext(), btnDelete, getContext().getResources().getString(R.string.delete_category));
 
         mColorId = CommonUtils.getItemColors()[0];
 
@@ -293,7 +287,7 @@ public class CategoryEditFragment extends BaseFragment
         if(baseResponse.isSuccess()){
             deleteButtonStatus = 1;
             CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
-                    getContext().getResources().getString(R.string.delete_unit));
+                    getContext().getResources().getString(R.string.delete_category));
             btnDelete.setEnabled(false);
 
             returnCategoryCallback.OnReturn((Category) baseResponse.getObject());

@@ -1,11 +1,8 @@
 package com.paypad.vuk507.db;
 
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.BaseResponse;
-import com.paypad.vuk507.model.pojo.SaleModel;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -64,5 +61,20 @@ public class TransactionDBHelper {
                 .equalTo("saleUuid", saleId)
                 .findAll();
         return transactions;
+    }
+
+    public static RealmResults<Transaction> getTransactionsByZNum(long zNum){
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Transaction> transactions = realm.where(Transaction.class)
+                .equalTo("zNum", zNum)
+                .equalTo("isEODProcessed", false)
+                .findAll();
+        return transactions;
+    }
+
+    public static Transaction getTransactionById(String id){
+        Realm realm = Realm.getDefaultInstance();
+        Transaction transaction = realm.where(Transaction.class).equalTo("transactionId", id).findFirst();
+        return transaction;
     }
 }

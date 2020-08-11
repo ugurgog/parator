@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.OrderManager;
-import com.paypad.vuk507.charge.payment.utils.PrintReceiptManager;
-import com.paypad.vuk507.db.SaleDBHelper;
+import com.paypad.vuk507.charge.payment.utils.PrintOrderManager;
+import com.paypad.vuk507.db.RefundDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
@@ -29,7 +29,10 @@ import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.transactions.adapters.ItemsServicesAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentDetailAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentTotalAdapter;
+import com.paypad.vuk507.menu.transactions.adapters.RefundedTransactionAdapter;
 import com.paypad.vuk507.menu.transactions.util.PaymentTotalManager;
+import com.paypad.vuk507.model.DynamicBoxModel;
+import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.PaymentDetailModel;
@@ -41,6 +44,7 @@ import com.sunmi.peripheral.printer.InnerResultCallbcak;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -49,6 +53,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_CANCEL;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
@@ -74,22 +79,27 @@ public class TransactionDetailFragment extends BaseFragment {
     RecyclerView saleItemsRv;
     @BindView(R.id.totalRv)
     RecyclerView totalRv;
+    @BindView(R.id.refundsRv)
+    RecyclerView refundsRv;
     @BindView(R.id.printReceiptBtn)
     Button printReceiptBtn;
     @BindView(R.id.mainll)
     LinearLayout mainll;
+    @BindView(R.id.refundsll)
+    LinearLayout refundsll;
 
 
     private User user;
 
     private PaymentDetailAdapter paymentDetailAdapter;
+    private RefundedTransactionAdapter refundedTransactionAdapter;
     private ItemsServicesAdapter itemsServicesAdapter;
     private PaymentTotalAdapter paymentTotalAdapter;
 
     private SaleModel saleModel;
     private OrderManager orderManager;
-    private PrintReceiptManager printReceiptManager;
-    private RefundOrCancelListFragment refundOrCancelListFragment;
+    private PrintOrderManager printOrderManager;
+    private SelectPaymentForRefundFragment selectPaymentForRefundFragment;
 
     private int refundCancellationStatus = TYPE_REFUND;
 
@@ -168,7 +178,7 @@ public class TransactionDetailFragment extends BaseFragment {
         printReceiptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                printReceiptManager.printCustomerReceipt();
+                printOrderManager.printCustomerReceipt();
             }
         });
 
@@ -188,6 +198,7 @@ public class TransactionDetailFragment extends BaseFragment {
 
         setPaymentDetailAdapter();
         setItemsServicesAdapter();
+        setRefundsAdapter();
         setPaymentTotalAdapter();
     }
 
@@ -201,32 +212,45 @@ public class TransactionDetailFragment extends BaseFragment {
                 CommonUtils.snackbarDisplay(mainll, getContext(), getResources().getString(R.string.no_item_for_cancel_found));
             }
         }else {
-            initRefundOrCancelListFragment();
-            mFragmentNavigation.pushFragment(refundOrCancelListFragment);
+            initSelectPaymentForRefundFragment();
+            mFragmentNavigation.pushFragment(selectPaymentForRefundFragment);
         }
     }
 
-    private void initRefundOrCancelListFragment(){
-        refundOrCancelListFragment = new RefundOrCancelListFragment(refundCancellationStatus, saleModel);
+    private void initSelectPaymentForRefundFragment(){
+        selectPaymentForRefundFragment = new SelectPaymentForRefundFragment(refundCancellationStatus, saleModel);
     }
 
     private boolean checkRefundAndCancellation(){
         for(Transaction transaction : saleModel.getTransactions()){
-            if(transaction.getPaymentTypeId() == PaymentTypeEnum.CREDIT_CARD.getId() &&
-                transaction.getTransactionType() == TransactionTypeEnum.SALE.getId()){
-                return true;
+            if(transaction.getTransactionType() == TransactionTypeEnum.SALE.getId()){
+
+                RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfTransaction(transaction.getTransactionId(), true);
+
+                if(refunds != null){
+                    double totalRefundAmount = 0d;
+                    for(Refund refund : refunds)
+                        totalRefundAmount = CommonUtils.round(totalRefundAmount + refund.getRefundAmount(), 2);
+
+                    if(totalRefundAmount < transaction.getTotalAmount())
+                        return true;
+
+                }else
+                    return true;
             }
         }
         return false;
     }
 
     private void initPrinter() {
-        printReceiptManager = new PrintReceiptManager(getContext(), saleModel,false);
-        printReceiptManager.setCallback(mCallback);
+        printOrderManager = new PrintOrderManager(getContext(), saleModel,false);
+        printOrderManager.setCallback(mCallback);
     }
 
     private void setRefundStatus(){
-        if(saleModel.getSale().isEndOfDayProcessed()){
+        Transaction transaction = saleModel.getTransactions().get(0);
+
+        if(transaction.isEODProcessed()){
             issueRefundBtn.setText(getResources().getString(R.string.order_refund));
             refundCancellationStatus = TYPE_REFUND;
         } else {
@@ -236,7 +260,7 @@ public class TransactionDetailFragment extends BaseFragment {
     }
 
     private void setToolbarTitle(){
-        double amount = CommonUtils.round((saleModel.getSale().getSubTotalAmount() + OrderManager.getTotalTipAmountOfSale(saleModel)), 2);
+        double amount = CommonUtils.round((saleModel.getSale().getDiscountedAmount() + OrderManager.getTotalTipAmountOfSale(saleModel)), 2);
         String amountStr = CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()).concat(" ")
                 .concat(getResources().getString(R.string.sale));
         toolbarTitleTv.setText(amountStr);
@@ -270,6 +294,24 @@ public class TransactionDetailFragment extends BaseFragment {
 
         itemsServicesAdapter = new ItemsServicesAdapter(getContext(), saleModel.getSaleItems());
         saleItemsRv.setAdapter(itemsServicesAdapter);
+    }
+
+    private void setRefundsAdapter() {
+        RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(saleModel.getSale().getSaleUuid(), true);
+
+        if(refunds == null || refunds.size() == 0){
+            refundsll.setVisibility(View.GONE);
+            return;
+        }
+
+        List<Refund> refundList = new ArrayList(refunds);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        refundsRv.setLayoutManager(linearLayoutManager);
+
+        refundedTransactionAdapter = new RefundedTransactionAdapter(getContext(), refundList, saleModel.getSale().getSaleUuid());
+        refundsRv.setAdapter(refundedTransactionAdapter);
     }
 
     private void setPaymentTotalAdapter() {

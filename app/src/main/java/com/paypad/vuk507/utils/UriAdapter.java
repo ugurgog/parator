@@ -14,8 +14,6 @@ import android.text.TextUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.paypad.vuk507.R;
-
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayOutputStream;

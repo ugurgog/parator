@@ -7,7 +7,6 @@ import android.widget.TextView;
 import com.paypad.vuk507.R;
 import com.squareup.timessquare.CalendarCellView;
 
-import static android.view.Gravity.CENTER_HORIZONTAL;
 import static android.view.Gravity.CENTER_VERTICAL;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;

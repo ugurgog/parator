@@ -2,7 +2,6 @@ package com.paypad.vuk507.contact;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.provider.ContactsContract;
 
 import com.paypad.vuk507.interfaces.CompleteCallback;
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 

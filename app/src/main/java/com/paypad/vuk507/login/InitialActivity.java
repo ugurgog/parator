@@ -1,12 +1,11 @@
 package com.paypad.vuk507.login;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.paypad.vuk507.MainActivity;
@@ -14,13 +13,11 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CustomRealmHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.login.utils.LoginUtils;
 
 import org.greenrobot.eventbus.EventBus;
-
-import java.util.Objects;
 
 
 public class InitialActivity extends AppCompatActivity {

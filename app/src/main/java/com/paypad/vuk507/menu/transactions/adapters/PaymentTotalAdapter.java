@@ -1,8 +1,6 @@
 package com.paypad.vuk507.menu.transactions.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,22 +9,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.login.InitialActivity;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.pojo.PaymentDetailModel;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.DataUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class PaymentTotalAdapter extends RecyclerView.Adapter<PaymentTotalAdapter.SaleItemHolder> {
 

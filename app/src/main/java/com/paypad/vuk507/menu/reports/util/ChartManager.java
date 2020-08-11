@@ -1,53 +1,5 @@
 package com.paypad.vuk507.menu.reports.util;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.util.Log;
-
-import androidx.core.content.ContextCompat;
-
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
-import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.IOrderManager;
-import com.paypad.vuk507.charge.order.OrderManager;
-import com.paypad.vuk507.enums.ChartSaleSelectionEnum;
-import com.paypad.vuk507.enums.DayEnum;
-import com.paypad.vuk507.enums.MonthEnum;
-import com.paypad.vuk507.enums.ReportSelectionEnum;
-import com.paypad.vuk507.menu.reports.saleReport.SalesTopCategoriesFragment;
-import com.paypad.vuk507.menu.reports.saleReport.TopCategory;
-import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.pojo.SaleModel;
-import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.DataUtils;
-import com.paypad.vuk507.utils.LogUtil;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
-import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
-
 public class ChartManager {
 
     /*private Context mContext;

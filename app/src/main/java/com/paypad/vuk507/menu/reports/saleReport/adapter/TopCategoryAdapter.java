@@ -6,8 +6,6 @@ import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,8 +19,6 @@ import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder;
 import com.thoughtbot.expandablerecyclerview.viewholders.GroupViewHolder;
 
 import java.util.List;
-
-import static android.view.animation.Animation.RELATIVE_TO_SELF;
 
 public class TopCategoryAdapter extends ExpandableRecyclerViewAdapter<TopCategoryAdapter.CategoryViewHolder, TopCategoryAdapter.ItemViewHolder> {
 

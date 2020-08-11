@@ -2,13 +2,11 @@ package com.paypad.vuk507.menu.reports.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -19,14 +17,12 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.XAxisValueFormatter;
 import com.github.mikephil.charting.formatter.YAxisValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.enums.ChartSaleSelectionEnum;
 import com.paypad.vuk507.enums.DayEnum;
-import com.paypad.vuk507.enums.MonthEnum;
 import com.paypad.vuk507.enums.ReportSelectionEnum;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.pojo.SaleModel;

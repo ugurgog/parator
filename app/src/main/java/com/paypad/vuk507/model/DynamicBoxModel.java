@@ -6,6 +6,7 @@ import io.realm.RealmObject;
 
 public class DynamicBoxModel extends RealmObject {
 
+
     private int structId;
     private long itemId;
     private Date createDate;

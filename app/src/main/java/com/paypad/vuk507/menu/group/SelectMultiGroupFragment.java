@@ -20,17 +20,12 @@ import com.paypad.vuk507.db.GroupDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.ReturnObjectCallback;
-import com.paypad.vuk507.menu.group.adapters.GroupSelectListAdapter;
 import com.paypad.vuk507.menu.group.adapters.MultiGroupSelectListAdapter;
 import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
-import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.User;
-import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
-import com.paypad.vuk507.utils.CommonUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,7 +37,6 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class SelectMultiGroupFragment extends BaseFragment {

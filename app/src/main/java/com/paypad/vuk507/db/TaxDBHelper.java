@@ -1,9 +1,8 @@
 package com.paypad.vuk507.db;
 
 
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.TaxModel;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 
 import io.realm.Realm;
 import io.realm.RealmResults;

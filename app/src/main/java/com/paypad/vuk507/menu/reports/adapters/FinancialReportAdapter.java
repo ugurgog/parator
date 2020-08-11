@@ -11,9 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.FinancialReportsEnum;
-import com.paypad.vuk507.enums.ReportsEnum;
 import com.paypad.vuk507.menu.reports.interfaces.ReturnFinancialReportItemCallback;
-import com.paypad.vuk507.menu.reports.interfaces.ReturnReportItemCallback;
 import com.paypad.vuk507.utils.CommonUtils;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;

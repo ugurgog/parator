@@ -1,17 +1,9 @@
 package com.paypad.vuk507.menu.item;
 
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,7 +17,6 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.enums.ItemsEnum;
-import com.paypad.vuk507.enums.ReportsEnum;
 import com.paypad.vuk507.interfaces.MenuItemCallback;
 import com.paypad.vuk507.menu.category.CategoryFragment;
 import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
@@ -33,9 +24,6 @@ import com.paypad.vuk507.menu.discount.DiscountFragment;
 import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.menu.product.ProductFragment;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
-import com.paypad.vuk507.menu.reports.adapters.ReportAdapter;
-import com.paypad.vuk507.menu.reports.interfaces.ReturnReportItemCallback;
-import com.paypad.vuk507.menu.tax.TaxEditFragment;
 import com.paypad.vuk507.menu.tax.TaxFragment;
 import com.paypad.vuk507.menu.unit.UnitFragment;
 import com.paypad.vuk507.model.Category;
@@ -43,14 +31,11 @@ import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.ShapeUtil;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 

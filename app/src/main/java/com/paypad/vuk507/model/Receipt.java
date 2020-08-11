@@ -1,6 +1,7 @@
 package com.paypad.vuk507.model;
 
 import java.util.Date;
+import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Index;

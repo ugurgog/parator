@@ -3,18 +3,14 @@ package com.paypad.vuk507.menu.transactions;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.RemoteException;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,20 +19,20 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.payment.MailResultFragment;
-import com.paypad.vuk507.charge.payment.utils.PrintReceiptManager;
+import com.paypad.vuk507.charge.payment.utils.PrintOrderManager;
+import com.paypad.vuk507.charge.payment.utils.PrintRefundManager;
 import com.paypad.vuk507.charge.payment.utils.SendMail;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.login.utils.Validation;
-import com.paypad.vuk507.model.Customer;
+import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+import com.paypad.vuk507.model.pojo.PrintRefundCancelModel;
 import com.paypad.vuk507.model.pojo.SaleModel;
-import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
@@ -52,10 +48,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
-import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_CANCEL;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_REFUND;
 
 public class SendNewReceiptFragment extends BaseFragment implements SendMail.MailSendCallback {
@@ -79,16 +72,19 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
 
     private User user;
     private Transaction mTransaction;
+    private Refund refund;
     private String email;
     private Integer refundCancelStatus = null;
     private double refundAmount;
 
-    private PrintReceiptManager printReceiptManager;
+    private PrintOrderManager printOrderManager;
+    private PrintRefundManager printRefundManager;
 
-    SendNewReceiptFragment(Transaction transaction, Integer refundCancelStatus, double refundAmount) {
+    SendNewReceiptFragment(Transaction transaction, Refund refund, Integer refundCancelStatus, double refundAmount) {
         mTransaction = transaction;
         this.refundCancelStatus = refundCancelStatus;
         this.refundAmount = refundAmount;
+        this.refund = refund;
     }
 
     @Override
@@ -154,9 +150,12 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
         backImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(refundCancelStatus != null)
-                    mFragmentNavigation.popFragments(3);
-                else
+                if(refundCancelStatus != null){
+                    if(refundCancelStatus == TYPE_REFUND)
+                        mFragmentNavigation.popFragments(4);
+                    else if(refundCancelStatus == TYPE_CANCEL)
+                        mFragmentNavigation.popFragments(3);
+                } else
                     Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
@@ -165,9 +164,9 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
             @Override
             public void onClick(View view) {
                 if(refundCancelStatus != null && (refundCancelStatus == TYPE_REFUND || refundCancelStatus == TYPE_CANCEL))
-                    printReceiptManager.printRefundOrCancelReceipt();
+                    printRefundManager.printRefundOrCancelReceipt();
                 else
-                    printReceiptManager.printCustomerReceipt();
+                    printOrderManager.printCustomerReceipt();
             }
         });
     }
@@ -175,12 +174,13 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     private void initPrinter() {
         SaleModel saleModel = SaleDBHelper.getSaleModelBySaleId(mTransaction.getSaleUuid());
 
-        if(refundCancelStatus != null)
-            printReceiptManager = new PrintReceiptManager(getContext(), mTransaction,false,  refundAmount, refundCancelStatus);
-        else
-            printReceiptManager = new PrintReceiptManager(getContext(), saleModel,false);
-
-        printReceiptManager.setCallback(mCallback);
+        if(refundCancelStatus != null){
+            printRefundManager = new PrintRefundManager(getContext(), false, refund, refundCancelStatus, saleModel, mTransaction);
+            printRefundManager.setCallback(mCallback);
+        } else{
+            printOrderManager = new PrintOrderManager(getContext(), saleModel,false);
+            printOrderManager.setCallback(mCallback);
+        }
     }
 
     private void sendMail(){

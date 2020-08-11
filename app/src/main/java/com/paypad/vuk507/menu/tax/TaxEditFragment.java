@@ -22,18 +22,15 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.ProductDBHelper;
 import com.paypad.vuk507.db.TaxDBHelper;
-import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.UnitModel;
-import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
@@ -52,7 +49,6 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static com.paypad.vuk507.constants.CustomConstants.MAX_RATE_VALUE;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 
 public class TaxEditFragment extends BaseFragment {
@@ -282,7 +278,7 @@ public class TaxEditFragment extends BaseFragment {
             inserted = true;
         }
 
-        TaxModel tempTax = realm.copyToRealm(taxModel);
+        TaxModel tempTax = realm.copyFromRealm(taxModel);
 
         tempTax.setName(taxNameEt.getText().toString());
 

@@ -1,7 +1,7 @@
 package com.paypad.vuk507.model.pojo;
 
-import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.order.OrderItemTax;
+import com.paypad.vuk507.model.OrderItemTax;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.utils.CommonUtils;
 
 import java.util.List;
@@ -19,7 +19,8 @@ public class SaleItemPojo {
     private List<DiscountPojo> discounts;
     private long productId;
     private boolean isDynamicAmount;
-    private List<OrderItemTax> orderItemTaxes;
+    //private List<OrderItemTax> orderItemTaxes;
+    private OrderItemTax taxModel;
     private int colorId;
     private byte[] itemImage;
     private String categoryName;
@@ -112,12 +113,12 @@ public class SaleItemPojo {
         this.discounts = discounts;
     }
 
-    public List<OrderItemTax> getOrderItemTaxes() {
-        return orderItemTaxes;
+    public OrderItemTax getTaxModel() {
+        return taxModel;
     }
 
-    public void setOrderItemTaxes(List<OrderItemTax> orderItemTaxes) {
-        this.orderItemTaxes = orderItemTaxes;
+    public void setTaxModel(OrderItemTax taxModel) {
+        this.taxModel = taxModel;
     }
 
     public int getColorId() {

@@ -2,8 +2,6 @@ package com.paypad.vuk507.charge.sale;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -15,7 +13,6 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,30 +23,16 @@ import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.order.IOrderManager;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.sale.adapters.SaleListAdapter;
-import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
-import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
-import com.paypad.vuk507.menu.group.GroupFragment;
-import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
-import com.paypad.vuk507.menu.tax.TaxEditFragment;
-import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.DynamicBoxModel;
-import com.paypad.vuk507.model.Group;
-import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.Sale;
+import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
-import com.paypad.vuk507.model.order.OrderItemDiscount;
-import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -215,7 +198,7 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
     }
 
     private void setToolbarTitle() {
-        double totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount();
+        double totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount();
         String amountStr;
 
         if(totalAmount == 0d)
@@ -235,7 +218,7 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
         double totalDiscountAmount = orderManager.getTotalDiscountAmountOfSale();
 
         //Indirim tutar toplamnin toplam tutar dan buyuk olmasi durumu
-        if(SaleModelInstance.getInstance().getSaleModel().getSale().getSubTotalAmount() == 0)
+        if(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount() == 0)
             totalDiscountAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount();
 
         if(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts() != null &&
@@ -290,16 +273,16 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
     }
 
     @Override
-    public void OnRemoved(RealmList<Discount> discounts) {
-        for(Discount discount : discounts){
+    public void OnRemoved(RealmList<OrderItemDiscount> discounts) {
+        for(OrderItemDiscount discount : discounts){
 
             SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts().remove(discount);
 
             for(SaleItem saleItem: SaleModelInstance.getInstance().getSaleModel().getSaleItems()){
 
                 if(saleItem.getDiscounts() != null){
-                    for(Iterator<Discount> it = saleItem.getDiscounts().iterator(); it.hasNext();) {
-                        Discount discount1 = it.next();
+                    for(Iterator<OrderItemDiscount> it = saleItem.getDiscounts().iterator(); it.hasNext();) {
+                        OrderItemDiscount discount1 = it.next();
 
                         if(discount.getId() == discount1.getId()){
                             it.remove();
@@ -307,15 +290,6 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
                         }
                     }
                 }
-
-
-
-                /*for(Discount discount1 : saleItem.getDiscounts()){
-                    if(discount.getId() == discount1.getId()){
-                        saleItem.getDiscounts().remove(discount);
-                        break;
-                    }
-                }*/
             }
         }
         updateAdapterWithCurrentList();

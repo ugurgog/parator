@@ -1,6 +1,5 @@
 package com.paypad.vuk507.menu.unit.adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +14,8 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.tax.adapters.TaxSelectListAdapter;
 import com.paypad.vuk507.menu.unit.UnitEditFragment;
 import com.paypad.vuk507.menu.unit.interfaces.ReturnUnitCallback;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.UnitModel;
 
 import java.util.ArrayList;

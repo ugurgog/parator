@@ -127,7 +127,7 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
 
         private void setSaleItemsDesc() {
 
-            if(transactionItem.getTransaction() == null){
+            if(transactionItem.getTransaction() == null && transactionItem.getRefund() == null){
                 saleItemDescTv.setVisibility(View.VISIBLE);
                 String desc = "";
                 for(SaleItem saleItem: transactionItem.getSaleModel().getSaleItems()){
@@ -141,10 +141,16 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
                         break;
                 }
 
-                String desc1 = desc.substring(0, desc.length() - 2);
+                String desc1 = "";
 
-                if(desc1.length() > 40)
-                    desc1 = desc1.substring(0, 40).concat("...");
+                try{
+                    desc1 = desc.substring(0, desc.length() - 2);
+
+                    if(desc1.length() > 40)
+                        desc1 = desc1.substring(0, 40).concat("...");
+                }catch (Exception e){
+
+                }
 
                 saleItemDescTv.setText(desc1);
             }else
@@ -156,11 +162,13 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
 
             if(transactionItem.getTransaction() != null)
                 amount = CommonUtils.round((transactionItem.getTransaction().getTotalAmount()), 2);
+            else if(transactionItem.getRefund() != null)
+                amount = CommonUtils.round((transactionItem.getRefund().getRefundAmount()), 2);
             else
-                amount = CommonUtils.round((transactionItem.getSaleModel().getSale().getSubTotalAmount()
+                amount = CommonUtils.round((transactionItem.getSaleModel().getSale().getDiscountedAmount()
                         + OrderManager.getTotalTipAmountOfSale(transactionItem.getSaleModel())), 2);
 
-            String amountStr = (transactionItem.getTransaction() != null ? "- " : "") +
+            String amountStr = ((transactionItem.getTransaction() != null || transactionItem.getRefund() != null) ? "- " : "") +
                     CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
             amountTv.setText(amountStr);
         }
@@ -172,7 +180,7 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
         private void setIcon() {
             setIconForSaleModel();
 
-            if(transactionItem.getTransaction() == null){
+            if(transactionItem.getTransaction() == null && transactionItem.getRefund() == null){
                 cancelImgv.setVisibility(View.GONE);
             } else {
                 cancelImgv.setVisibility(View.VISIBLE);
@@ -213,7 +221,7 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
         }
 
         private void setIconForTransaction(){
-            if(transactionItem.getTransaction().getTransactionType() == TransactionTypeEnum.REFUND.getId()){
+            if(transactionItem.getRefund() != null){
 
                 Glide.with(mContext).load(R.drawable.ic_arrow_back_white_24dp).into(cancelImgv);
 

@@ -8,20 +8,11 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.enums.ReportsEnum;
-import com.paypad.vuk507.menu.reports.adapters.ReportAdapter;
 import com.paypad.vuk507.menu.reports.interfaces.ReturnReportDateCallback;
-import com.paypad.vuk507.menu.reports.interfaces.ReturnReportItemCallback;
 import com.paypad.vuk507.model.pojo.ReportDate;
-import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
-
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

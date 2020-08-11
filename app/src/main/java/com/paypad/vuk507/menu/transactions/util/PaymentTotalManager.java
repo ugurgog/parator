@@ -1,14 +1,15 @@
 package com.paypad.vuk507.menu.transactions.util;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.OrderItemDiscount;
+import com.paypad.vuk507.model.OrderItemTax;
 import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
-import com.paypad.vuk507.model.order.OrderItemTax;
 import com.paypad.vuk507.model.pojo.PaymentDetailModel;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -55,7 +56,7 @@ public class PaymentTotalManager {
             saleItems.add(saleItem1);
         }
 
-        for(Discount discount : mSaleModel.getSale().getDiscounts()){
+        for(OrderItemDiscount discount : mSaleModel.getSale().getDiscounts()){
 
             PaymentDetailModel paymentDetailModel = new PaymentDetailModel();
             paymentDetailModel.setDescBold(false);
@@ -74,7 +75,7 @@ public class PaymentTotalManager {
 
                 for(SaleItem saleItem : saleItems){
                     if(saleItem.getDiscounts() != null && saleItem.getDiscounts().size() > 0){
-                        for(Discount discount1 : saleItem.getDiscounts()){
+                        for(OrderItemDiscount discount1 : saleItem.getDiscounts()){
 
                             if(discount.getId() == discount1.getId()){
                                 discountAmount = discountAmount + ((saleItem.getAmount() / 100d)  * discount.getRate());
@@ -103,7 +104,7 @@ public class PaymentTotalManager {
         paymentDetailModel.setDescBold(false);
         paymentDetailModel.setDrawableId(R.drawable.icon_paym_total_subtotal);
         paymentDetailModel.setItemName(mContext.getResources().getString(R.string.subtotal));
-        String amountStr = CommonUtils.getDoubleStrValueForView(mSaleModel.getSale().getSubTotalAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+        String amountStr = CommonUtils.getDoubleStrValueForView(mSaleModel.getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
         paymentDetailModel.setItemDesc(amountStr);
         paymentDetailModels.add(paymentDetailModel);
     }
@@ -111,13 +112,16 @@ public class PaymentTotalManager {
     private void addTaxModels(){
 
         for(SaleItem saleItem : mSaleModel.getSaleItems()){
-            OrderItemTax orderItemTax = saleItem.getOrderItemTaxes().get(0);
+
+            OrderItemTax orderItemTax = saleItem.getTaxModel();
+            //TaxModel taxModel = saleItem.getTaxModel();
+            //OrderItemTax orderItemTax = saleItem.getOrderItemTaxes().get(0);
 
 
             boolean isExist = false;
 
             for(PaymentDetailModel paymentDetailModel : paymentDetailModels){
-                if(paymentDetailModel.getItemId() == orderItemTax.getTaxId() && paymentDetailModel.getItemType().equals(TAX_TYPE)){
+                if(paymentDetailModel.getItemId() == orderItemTax.getId() && paymentDetailModel.getItemType().equals(TAX_TYPE)){
                     paymentDetailModel.setAmount(CommonUtils.round(paymentDetailModel.getAmount() + (saleItem.getTaxAmount() * saleItem.getQuantity()), 2));
                     isExist = true;
                     break;
@@ -132,7 +136,7 @@ public class PaymentTotalManager {
                         .concat(" (").concat(CommonUtils.getDoubleStrValueForView(orderItemTax.getTaxRate(), TYPE_RATE))
                         .concat("%)"));
                 paymentDetailModel.setItemType(TAX_TYPE);
-                paymentDetailModel.setItemId((int)orderItemTax.getTaxId());
+                paymentDetailModel.setItemId((int)orderItemTax.getId());
                 paymentDetailModel.setAmount(CommonUtils.round(saleItem.getTaxAmount() * saleItem.getQuantity(), 2));
                 paymentDetailModels.add(paymentDetailModel);
             }
@@ -166,7 +170,7 @@ public class PaymentTotalManager {
         paymentDetailModel.setDescBold(true);
         paymentDetailModel.setDrawableId(R.drawable.icon_paym_total_subtotal);
         paymentDetailModel.setItemName(mContext.getResources().getString(R.string.total));
-        double totalAmount = CommonUtils.round(mSaleModel.getSale().getSubTotalAmount() + totalTipAmount, 2);
+        double totalAmount = CommonUtils.round(mSaleModel.getSale().getDiscountedAmount() + totalTipAmount, 2);
         String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
         paymentDetailModel.setItemDesc(amountStr);
         paymentDetailModels.add(paymentDetailModel);

@@ -2,7 +2,6 @@ package com.paypad.vuk507.httpprocess;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.paypad.vuk507.enums.CountryDataEnum;
 import com.paypad.vuk507.httpprocess.interfaces.OnEventListener;
@@ -10,18 +9,11 @@ import com.paypad.vuk507.model.pojo.CountryPhoneCode;
 import com.paypad.vuk507.utils.network.NetworkUtils;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;

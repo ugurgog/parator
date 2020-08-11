@@ -8,34 +8,21 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.dynamicStruct.StructSelectFragment;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
-import com.paypad.vuk507.db.DynamicBoxModelDBHelper;
-import com.paypad.vuk507.enums.DynamicStructEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
-import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
-import com.paypad.vuk507.model.Category;
-import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.DynamicBoxModel;
-import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class DynamicPaymentSelectAdapter extends RecyclerView.Adapter {
 

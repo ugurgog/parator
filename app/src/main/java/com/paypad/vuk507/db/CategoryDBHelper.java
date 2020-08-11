@@ -2,10 +2,8 @@ package com.paypad.vuk507.db;
 
 import androidx.annotation.NonNull;
 
-import com.paypad.vuk507.interfaces.CompleteCallback;
-import com.paypad.vuk507.model.UnitModel;
-import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.Category;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 
 import io.realm.Realm;
 import io.realm.RealmResults;

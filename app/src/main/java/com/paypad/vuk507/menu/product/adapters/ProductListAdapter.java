@@ -22,16 +22,12 @@ import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.interfaces.ReturnViewCallback;
 import com.paypad.vuk507.menu.product.ProductEditFragment;
 import com.paypad.vuk507.menu.product.interfaces.ReturnItemCallback;
-import com.paypad.vuk507.menu.tax.TaxEditFragment;
-import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.ProductHolder> {

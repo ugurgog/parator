@@ -7,25 +7,9 @@ public class AutoIncrement extends RealmObject {
 
     @PrimaryKey
     private String userId;
-    private long batchNum;
-    private long receiptNum;
-    private long retrefNumCounter;
-
-    public long getBatchNum() {
-        return batchNum;
-    }
-
-    public void setBatchNum(long batchNum) {
-        this.batchNum = batchNum;
-    }
-
-    public long getReceiptNum() {
-        return receiptNum;
-    }
-
-    public void setReceiptNum(long receiptNum) {
-        this.receiptNum = receiptNum;
-    }
+    private long zNum;
+    private long fNum;
+    private long orderNumCounter;
 
     public String getUserId() {
         return userId;
@@ -35,11 +19,27 @@ public class AutoIncrement extends RealmObject {
         this.userId = userId;
     }
 
-    public long getRetrefNumCounter() {
-        return retrefNumCounter;
+    public long getzNum() {
+        return zNum;
     }
 
-    public void setRetrefNumCounter(long retrefNumCounter) {
-        this.retrefNumCounter = retrefNumCounter;
+    public void setzNum(long zNum) {
+        this.zNum = zNum;
+    }
+
+    public long getfNum() {
+        return fNum;
+    }
+
+    public void setfNum(long fNum) {
+        this.fNum = fNum;
+    }
+
+    public long getOrderNumCounter() {
+        return orderNumCounter;
+    }
+
+    public void setOrderNumCounter(long orderNumCounter) {
+        this.orderNumCounter = orderNumCounter;
     }
 }

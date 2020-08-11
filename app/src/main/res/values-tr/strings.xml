@@ -69,6 +69,7 @@
     <string name="order_refund">İade Et</string>
     <string name="order_cancel">İptal Et</string>
     <string name="items_and_services">ÜRÜNLER</string>
+    <string name="payments">ÖDEMELER</string>
     <string name="cash_payment">NAKİT ÖDEME</string>
     <string name="card_payment">KARTLI ÖDEME</string>
     <string name="card_price_upper" tools:ignore="ExtraTranslation">KART TUTARI</string>
@@ -400,7 +401,9 @@
     <string name="unit_delete_question_description2">adet ürün var. Bu işlem yapılamaz.</string>
     <string name="tax_delete_question_description1">Bu KDV nin altında</string>
     <string name="tax_delete_question_description2">adet ürün var. Bu işlem yapılamaz.</string>
-
+    <string name="transaction_cancelled_desc">Bu işlem iptal edildi. İade edilemez veya iptal edilemez!</string>
+    <string name="transaction_fully_refunded">Bu işlem full iade yapildi. İade yada iptal edilemez!</string>
+    <string name="refund_amount_cannot_be_bigger_trx_amount">İade tutarı işlem tutarından büyük olamaz, lütfen tutar bazında iade yapmayı deneyin.</string>
 
     <string name="select_picture">Fotoğraf Seçin</string>
     <string name="open_camera">Kamerayı Aç</string>
@@ -447,7 +450,7 @@
     <string name="select_to_cancel">İptal edilecek işlemi seçin</string>
     <string name="read_credit_card">Kartı Okutun</string>
     <string name="read_card_to_refund">İade işlemi için lütfen kartı yaklaştırınız</string>
-    <string name="type_payment_id_to_refund">İade işlemine devam edebilmek için lütfen fiş üzerindeki referans numarasını giriniz</string>
+    <string name="check_payment_id_to_refund">İade işlemine devam edebilmek için lütfen fiş üzerindeki zNum/fNum kontrol ediniz.</string>
     <string name="reference_number">Referans Numarası</string>
     <string name="refund_including_tip_amount">Bahşiş tutarını da iade et</string>
     <string name="refund">İade</string>
@@ -455,5 +458,7 @@
     <string name="cancel_receipt">İptal Makbuzu</string>
     <string name="payment_refunded_upper">ÖDEME İADE EDİLDİ</string>
     <string name="payment_cancelled_upper">ÖDEME İPTAL EDİLDİ</string>
+    <string name="amount_to_refund_upper">İADE EDİLECEK TUTAR</string>
+    <string name="refund_amount_desc">Tutar ile geri ödeme (belirli bir ürünün değil) envanterinizde, ürün satış raporlarınızda ve hediye kartı bakiyelerinizde tutarsızlığa neden olabilir.</string>
 
 </resources>

@@ -68,6 +68,7 @@
     <string name="order_refund">Order Refund</string>
     <string name="order_cancel">Order Cancel</string>
     <string name="items_and_services">ITEMS AND SERVICES</string>
+    <string name="payments">PAYMENTS</string>
     <string name="cash_payment">CASH PAYMENT</string>
     <string name="card_payment">CARD PAYMENT</string>
     <!--string name="card_price_upper">CARD PRICE</string-->
@@ -264,6 +265,8 @@
     <string name="mersis_upper" tools:ignore="ExtraTranslation">MERSİS</string>
     <string name="eku_no_upper" tools:ignore="ExtraTranslation">EKÜ NO</string>
     <string name="z_no_upper" tools:ignore="ExtraTranslation">Z NO</string>
+    <string name="f_no_upper" tools:ignore="ExtraTranslation,MissingTranslation">F NO</string>
+    <string name="order_num" tools:ignore="MissingTranslation">SİPARİŞ NO</string>
     <!--string name="sale_upper">SALE</string-->
     <!--string name="merchant_no_upper">MERC. NO</string-->
     <!--string name="terminal_upper">TERMINAL</string-->
@@ -335,6 +338,7 @@
     <string name="cancel_count_upper">İPTAL ADEDİ</string>
     <string name="cancel_amount_upper">İPTAL TUTAR</string>
     <string name="refund_amount_upper">İADE TUTAR</string>
+    <string name="sequence_number" tools:ignore="MissingTranslation">SIRA NO</string>
 
 
     <!--string name="payment_information_upper">PAYMENT INFORMATION</string>
@@ -476,7 +480,9 @@
     <string name="unit_delete_question_description2">products under this unit. This operation cannot be done.</string>
     <string name="tax_delete_question_description1">There are</string>
     <string name="tax_delete_question_description2">products under this tax. This operation cannot be done.</string>
-
+    <string name="transaction_cancelled_desc">This transaction is cancelled. It can not be refunded or cancelled!</string>
+    <string name="transaction_fully_refunded">This transaction has been fully refunded. Cannot be returned or canceled!</string>
+    <string name="refund_amount_cannot_be_bigger_trx_amount">Return amount cannot be bigger than transaction amount, please try to refund by amount.</string>
 
     <string name="select_picture">Select Picture</string>
     <string name="open_camera">Open Camera</string>
@@ -523,7 +529,7 @@
     <string name="select_to_cancel">Select to Cancel</string>
     <string name="read_credit_card">Read Card</string>
     <string name="read_card_to_refund">Please read your card to refund payment</string>
-    <string name="type_payment_id_to_refund">Please type original payment reference number to continue refund process</string>
+    <string name="check_payment_id_to_refund">Please check original payment zNum/fNum to continue refund process</string>
     <string name="reference_number">Reference Number</string>
     <string name="refund_including_tip_amount">Refund the tip amount</string>
     <string name="refund">Refund</string>
@@ -531,5 +537,7 @@
     <string name="cancel_receipt">Cancel Receipt</string>
     <string name="payment_refunded_upper">PAYMENT REFUNDED</string>
     <string name="payment_cancelled_upper">PAYMENT CANCELLED</string>
+    <string name="amount_to_refund_upper">AMOUNT TO REFUND</string>
+    <string name="refund_amount_desc">Refunding an amount (and not a specific item) may cause a discrepancy in your inventory, item sales reports, and gift card balances.</string>
 
 </resources>

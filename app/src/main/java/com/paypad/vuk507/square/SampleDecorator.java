@@ -3,8 +3,10 @@ package com.paypad.vuk507.square;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
+
 import com.squareup.timessquare.CalendarCellDecorator;
 import com.squareup.timessquare.CalendarCellView;
+
 import java.util.Date;
 
 public class SampleDecorator implements CalendarCellDecorator {

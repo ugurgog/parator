@@ -1,11 +1,7 @@
 package com.paypad.vuk507.charge.sale;
 
-import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +10,6 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,21 +17,9 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.OnKeyboardVisibilityListener;
-import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.User;
-import com.paypad.vuk507.uiUtils.keypad.KeyPadClick;
-import com.paypad.vuk507.uiUtils.keypad.KeyPadSingleNumberListener;
-import com.paypad.vuk507.uiUtils.keypad.KeyPadWithoutAdd;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.DataUtils;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Objects;
 

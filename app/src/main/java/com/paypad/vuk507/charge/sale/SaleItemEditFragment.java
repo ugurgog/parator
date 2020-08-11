@@ -3,13 +3,11 @@ package com.paypad.vuk507.charge.sale;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,28 +21,21 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
-import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
 import com.paypad.vuk507.charge.order.IOrderManager;
 import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.sale.adapters.SaleItemDiscountListAdapter;
-import com.paypad.vuk507.charge.sale.adapters.SaleListAdapter;
-import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.tax.TaxSelectFragment;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
-import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.OrderItemTax;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
-import com.paypad.vuk507.model.order.OrderItemTax;
-import com.paypad.vuk507.model.pojo.BaseResponse;
-import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
@@ -59,7 +50,6 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
@@ -116,9 +106,9 @@ public class SaleItemEditFragment extends BaseFragment {
     private int quantityCount = 0;
     private ReturnSaleItemCallback returnSaleItemCallback;
     private int deleteButtonStatus = 1;
-    private OrderItemTax orderItemTax;
+    //private OrderItemTax orderItemTax;
     private boolean isTaxUpdated = false;
-    private TaxModel mTaxModel;
+    private OrderItemTax orderItemTax;
     private IOrderManager orderManager;
 
     SaleItemEditFragment(SaleItem saleItem, ReturnSaleItemCallback callback) {
@@ -185,6 +175,7 @@ public class SaleItemEditFragment extends BaseFragment {
             public void onClick(View view) {
                 saleItem.setAmount(saleAmount);
                 //saleItem.setTaxAmount(CommonUtils.round((saleAmount / 100d) * orderItemTax.getTaxRate(), 2));
+
                 saleItem.setTaxAmount(OrderManager.getTaxAmount(saleAmount, orderItemTax));
                 saleItem.setGrossAmount(OrderManager.getGrossAmount(saleAmount, orderItemTax));
 
@@ -192,8 +183,8 @@ public class SaleItemEditFragment extends BaseFragment {
                 saleItem.setNote(noteEt.getText().toString());
                 orderManager.getOrderItemCount();
 
-                if(isTaxUpdated && mTaxModel != null)
-                    orderManager.setOrderItemTaxForCustomItem(saleItem, mTaxModel);
+                if(isTaxUpdated && orderItemTax != null)
+                    orderManager.setOrderItemTaxForCustomItem(saleItem, orderItemTax);
 
                 orderManager.setDiscountedAmountOfSale();
 
@@ -263,7 +254,6 @@ public class SaleItemEditFragment extends BaseFragment {
                         @Override
                         public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
                             if(taxModel != null && taxModel.getName() != null && !taxModel.getName().isEmpty()){
-                                mTaxModel = taxModel;
                                 orderItemTax = ConversionHelper.convertTaxModelToOrderItemTax(taxModel);
                                 setTaxFields();
                                 isTaxUpdated = true;
@@ -293,7 +283,8 @@ public class SaleItemEditFragment extends BaseFragment {
 
     private void setSaleItemVariables() {
         saleAmount = saleItem.getAmount();
-        orderItemTax = saleItem.getOrderItemTaxes().get(0);
+        orderItemTax = saleItem.getTaxModel();
+        //orderItemTax = saleItem.getOrderItemTaxes().get(0);
         quantityCount = saleItem.getQuantity();
 
         setItemPrice();

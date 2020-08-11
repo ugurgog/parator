@@ -14,7 +14,6 @@ import com.paypad.vuk507.utils.UriAdapter;
 import java.io.IOException;
 import java.util.Objects;
 
-
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 import static com.paypad.vuk507.constants.CustomConstants.CAMERA_TEXT;
 import static com.paypad.vuk507.constants.CustomConstants.FROM_FILE_TEXT;

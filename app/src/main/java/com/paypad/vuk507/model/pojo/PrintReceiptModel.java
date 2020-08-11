@@ -1,7 +1,5 @@
 package com.paypad.vuk507.model.pojo;
 
-import com.paypad.vuk507.model.SaleItem;
-
 import java.util.Date;
 import java.util.List;
 
@@ -14,13 +12,12 @@ public class PrintReceiptModel {
     private String taxOffice;
     private String taxNumber;
 
-    private String receiptId;
     private Date receiptDate;
     private double totalAmount;
     private double totalTipAmount;
     private double totalTaxAmount;
-    private int receiptNum;
-    private int batchNum;
+    private String orderNum;
+    private long zNum;
 
     private int chequeNo;
     private int tableNo;
@@ -30,6 +27,7 @@ public class PrintReceiptModel {
     private String merchantNum;
     private String terminalNum;
     private int approveCode;
+    private int batchNum;
     private int stanNum;
     private String deviceRegisterId;
     private Date fDate;
@@ -38,6 +36,30 @@ public class PrintReceiptModel {
     private List<ReceiptDiscountModel> discounts;
     private List<ReceiptTaxModel> receiptTaxModels;
     private List<ReceiptPaymentModel> receiptPaymentModels;
+
+    public long getzNum() {
+        return zNum;
+    }
+
+    public void setzNum(long zNum) {
+        this.zNum = zNum;
+    }
+
+    public int getBatchNum() {
+        return batchNum;
+    }
+
+    public void setBatchNum(int batchNum) {
+        this.batchNum = batchNum;
+    }
+
+    public String getOrderNum() {
+        return orderNum;
+    }
+
+    public void setOrderNum(String orderNum) {
+        this.orderNum = orderNum;
+    }
 
     public Date getfDate() {
         return fDate;
@@ -101,14 +123,6 @@ public class PrintReceiptModel {
 
     public void setApproveCode(int approveCode) {
         this.approveCode = approveCode;
-    }
-
-    public int getBatchNum() {
-        return batchNum;
-    }
-
-    public void setBatchNum(int batchNum) {
-        this.batchNum = batchNum;
     }
 
     public int getStanNum() {
@@ -183,14 +197,6 @@ public class PrintReceiptModel {
         this.receiptTaxModels = receiptTaxModels;
     }
 
-    public String getReceiptId() {
-        return receiptId;
-    }
-
-    public void setReceiptId(String receiptId) {
-        this.receiptId = receiptId;
-    }
-
     public Date getReceiptDate() {
         return receiptDate;
     }
@@ -247,14 +253,6 @@ public class PrintReceiptModel {
         this.totalTaxAmount = totalTaxAmount;
     }
 
-    public int getReceiptNum() {
-        return receiptNum;
-    }
-
-    public void setReceiptNum(int receiptNum) {
-        this.receiptNum = receiptNum;
-    }
-
     public static class ReceiptDiscountModel{
         private int discountId;
         private String discountName;
@@ -290,7 +288,8 @@ public class PrintReceiptModel {
         private long paymentType;
         private String cardNumber;
         private String cardName;
-        private String retrefNum;
+        private long zNum;
+        private long fNum;
 
         public double getAmount() {
             return amount;
@@ -324,12 +323,20 @@ public class PrintReceiptModel {
             this.cardName = cardName;
         }
 
-        public String getRetrefNum() {
-            return retrefNum;
+        public long getzNum() {
+            return zNum;
         }
 
-        public void setRetrefNum(String retrefNum) {
-            this.retrefNum = retrefNum;
+        public void setzNum(long zNum) {
+            this.zNum = zNum;
+        }
+
+        public long getfNum() {
+            return fNum;
+        }
+
+        public void setfNum(long fNum) {
+            this.fNum = fNum;
         }
     }
 

@@ -1,7 +1,5 @@
 package com.paypad.vuk507.enums;
 
-import java.util.List;
-
 public enum ItemsEnum {
 
     ALL_ITEMS("All Items", "Tüm Ürünler", 0),

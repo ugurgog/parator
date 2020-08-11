@@ -1,14 +1,11 @@
 package com.paypad.vuk507.menu.reports.saleReport;
 
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,20 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.db.DiscountDBHelper;
-import com.paypad.vuk507.enums.ItemProcessEnum;
-import com.paypad.vuk507.menu.discount.adapters.DiscountListAdapter;
-import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.vuk507.menu.reports.saleReport.adapter.TopItemsAdapter;
-import com.paypad.vuk507.menu.transactions.TransactionDetailFragment;
-import com.paypad.vuk507.model.Discount;
-import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.ReportModel;
 import com.paypad.vuk507.model.pojo.ReportOrderItem;
-import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;

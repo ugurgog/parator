@@ -1,7 +1,6 @@
 package com.paypad.vuk507.menu.reports;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +16,6 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.enums.ReportSelectionEnum;
 import com.paypad.vuk507.menu.reports.interfaces.ReturnReportDateCallback;
 import com.paypad.vuk507.model.pojo.ReportDate;
 import com.paypad.vuk507.square.DayViewAdapter;
@@ -33,15 +31,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.squareup.timessquare.CalendarPickerView.SelectionMode.RANGE;
 
 public class CustomizeReportFragment extends BaseFragment implements TimePickerDialog.OnTimeSetListener {
 
