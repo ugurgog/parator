@@ -1,5 +1,6 @@
 package com.paypad.vuk507.menu.transactions.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
@@ -93,6 +94,7 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
         TextView amountTv;
         TextView saleItemDescTv;
         TextView hourTv;
+        TextView orderNumTv;
 
         TransactionsFragment.TransactionItem transactionItem;
         int position;
@@ -106,6 +108,7 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
             saleItemDescTv = view.findViewById(R.id.saleItemDescTv);
             hourTv = view.findViewById(R.id.hourTv);
             cancelImgv = view.findViewById(R.id.cancelImgv);
+            orderNumTv = view.findViewById(R.id.orderNumTv);
 
             transactionCv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -123,6 +126,23 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
             setSaleItemsDesc();
             setSaleHour();
             setIcon();
+            setOrderNumTv();
+        }
+
+        @SuppressLint("DefaultLocale")
+        private void setOrderNumTv() {
+            String orderNumText;
+
+            orderNumText = transactionItem.getSaleModel().getSale().getOrderNum();
+
+            if(transactionItem.getTransaction() != null){
+                orderNumText = orderNumText.concat("/").concat(String.format("%06d", transactionItem.getTransaction().getzNum()).concat("/"))
+                        .concat(String.format("%06d", transactionItem.getTransaction().getfNum()));
+            }else if(transactionItem.getRefund() != null){
+                orderNumText = orderNumText.concat("/").concat(String.format("%06d", transactionItem.getRefund().getzNum()).concat("/"))
+                        .concat(String.format("%06d", transactionItem.getRefund().getfNum()));
+            }
+            orderNumTv.setText(orderNumText);
         }
 
         private void setSaleItemsDesc() {
@@ -271,25 +291,39 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
             return 0;
     }
 
+    @SuppressLint("DefaultLocale")
     public void updateAdapter(String searchText, ReturnSizeCallback returnSizeCallback) {
-        /*if (searchText.trim().isEmpty()){
-            taxModels = orgTaxModels;
+        if (searchText.trim().isEmpty()){
+            transactionItems = orgTransactionItems;
         } else {
 
-            List<TaxModel> tempTaxList = new ArrayList<>();
-            for (TaxModel tax : orgTaxModels) {
-                if (tax.getName() != null &&
-                        tax.getName().toLowerCase().contains(searchText.toLowerCase()))
-                    tempTaxList.add(tax);
+            List<TransactionsFragment.TransactionItem> tempTransactionItems = new ArrayList<>();
+
+            for(TransactionsFragment.TransactionItem transactionItem : orgTransactionItems){
+                if(transactionItem.getSaleModel() != null && transactionItem.getSaleModel().getSale() != null){
+                    String orderNum = transactionItem.getSaleModel().getSale().getOrderNum();
+                    String zNum = "", fNum = "";
+
+                    if(transactionItem.getRefund() != null){
+                        zNum = String.format("%06d", transactionItem.getRefund().getzNum());
+                        fNum = String.format("%06d", transactionItem.getRefund().getfNum());
+                    }else if(transactionItem.getTransaction() != null){
+                        zNum = String.format("%06d", transactionItem.getTransaction().getzNum());
+                        fNum = String.format("%06d", transactionItem.getTransaction().getfNum());
+                    }
+
+                    if(orderNum.contains(searchText) || zNum.contains(searchText) || fNum.contains(searchText))
+                        tempTransactionItems.add(transactionItem);
+                }
             }
-            taxModels = tempTaxList;
+            transactionItems = tempTransactionItems;
         }
 
         this.notifyDataSetChanged();
 
-        if (taxModels != null)
-            returnSizeCallback.OnReturn(taxModels.size());
+        if (transactionItems != null)
+            returnSizeCallback.OnReturn(transactionItems.size());
         else
-            returnSizeCallback.OnReturn(0);*/
+            returnSizeCallback.OnReturn(0);
     }
 }

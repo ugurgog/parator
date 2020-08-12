@@ -50,7 +50,7 @@ public class RefundDBHelper {
                     realm.insertOrUpdate(refund);
 
                     baseResponse.setObject(refund);
-                    baseResponse.setMessage("Refund is saved!");
+                    //baseResponse.setMessage("Refund is saved!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Refund cannot be saved!");

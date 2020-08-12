@@ -75,6 +75,7 @@ public class PaymentDetailAdapter extends RecyclerView.Adapter {
 
         TextView paymentDateTv;
         TextView cashAmountTv;
+        TextView trxSeqDescTv;
 
         LinearLayout cancelledll;
         ImageView cancelImgv;
@@ -88,11 +89,11 @@ public class PaymentDetailAdapter extends RecyclerView.Adapter {
             super(view);
             paymentDateTv = view.findViewById(R.id.paymentDateTv);
             cashAmountTv = view.findViewById(R.id.cashAmountTv);
-
             cancelledll = view.findViewById(R.id.cancelledll);
             cancelImgv = view.findViewById(R.id.cancelImgv);
             cancelTv = view.findViewById(R.id.cancelTv);
             cancelDateTv = view.findViewById(R.id.cancelDateTv);
+            trxSeqDescTv = view.findViewById(R.id.trxSeqDescTv);
         }
 
         void setData(Transaction transaction, int position) {
@@ -102,6 +103,18 @@ public class PaymentDetailAdapter extends RecyclerView.Adapter {
             setTransactionDate();
             setCashAmount();
             checkCancelViews();
+            setTrxZnoFno();
+        }
+
+        private void setTrxZnoFno() {
+            @SuppressLint("DefaultLocale") String desc = mContext.getResources().getString(R.string.z_no_upper)
+                    .concat(" : ")
+                    .concat(String.format("%06d", transaction.getzNum()))
+                    .concat(" / ")
+                    .concat(mContext.getResources().getString(R.string.f_no_upper))
+                    .concat(" : ")
+                    .concat(String.format("%06d", transaction.getfNum()));
+            trxSeqDescTv.setText(desc);
         }
 
         private void setTransactionDate() {
@@ -144,6 +157,7 @@ public class PaymentDetailAdapter extends RecyclerView.Adapter {
         TextView amountTv;
         TextView tipAmountTv;
         TextView cardAmountTv;
+        TextView trxSeqDescTv;
 
         LinearLayout refundedll;
         ImageView refundImgv;
@@ -163,6 +177,7 @@ public class PaymentDetailAdapter extends RecyclerView.Adapter {
             refundImgv = view.findViewById(R.id.refundImgv);
             refundCancelTv = view.findViewById(R.id.refundCancelTv);
             refundDateTv = view.findViewById(R.id.refundDateTv);
+            trxSeqDescTv = view.findViewById(R.id.trxSeqDescTv);
         }
 
         void setData(Transaction transaction, int position) {
@@ -174,6 +189,18 @@ public class PaymentDetailAdapter extends RecyclerView.Adapter {
             setTipAmount();
             setTotalAmount();
             checkCancelViews();
+            setTrxZnoFno();
+        }
+
+        private void setTrxZnoFno() {
+            @SuppressLint("DefaultLocale") String desc = mContext.getResources().getString(R.string.z_no_upper)
+                    .concat(" : ")
+                    .concat(String.format("%06d", transaction.getzNum()))
+                    .concat(" / ")
+                    .concat(mContext.getResources().getString(R.string.f_no_upper))
+                    .concat(" : ")
+                    .concat(String.format("%06d", transaction.getfNum()));
+            trxSeqDescTv.setText(desc);
         }
 
         private void setTransactionDate() {

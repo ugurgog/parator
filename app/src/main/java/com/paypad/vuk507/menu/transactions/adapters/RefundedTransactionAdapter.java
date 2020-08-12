@@ -75,6 +75,7 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
         private TextView refundDateTv;
         private TextView refundReasonTv;
         private RecyclerView itemsRv;
+        private TextView trxSeqDescTv;
 
         private ImageView paymentTypeImgv;
         private TextView paymentTypeTv;
@@ -93,6 +94,7 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
             paymentTypeImgv = view.findViewById(R.id.paymentTypeImgv);
             paymentTypeTv = view.findViewById(R.id.paymentTypeTv);
             paymTypeAmountTv = view.findViewById(R.id.paymTypeAmountTv);
+            trxSeqDescTv = view.findViewById(R.id.trxSeqDescTv);
         }
 
         public void setData(Refund refund, int position) {
@@ -103,6 +105,18 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
             setRefundDateTv();
             setItemsAdapter();
             setPaymentTypeImgv();
+            setTrxZnoFno();
+        }
+
+        private void setTrxZnoFno() {
+            @SuppressLint("DefaultLocale") String desc = context.getResources().getString(R.string.z_no_upper)
+                    .concat(" : ")
+                    .concat(String.format("%06d", refund.getzNum()))
+                    .concat(" / ")
+                    .concat(context.getResources().getString(R.string.f_no_upper))
+                    .concat(" : ")
+                    .concat(String.format("%06d", refund.getfNum()));
+            trxSeqDescTv.setText(desc);
         }
 
         private void setRefundImgv(){
@@ -132,20 +146,22 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
                 OrderRefundItem saleItem = new OrderRefundItem();
                 saleItem.setName(context.getResources().getString(R.string.custom_amount));
                 saleItem.setAmount(refund.getRefundAmount());
+                saleItem.setQuantity(1);
                 paymTypeAmount = refund.getRefundAmount();
                 saleItems.add(saleItem);
             }else {
                 RealmList<OrderRefundItem> refundItems = refund.getRefundItems();
 
                 for (OrderRefundItem orderRefundItem : refundItems) {
-                    double discountedByRateAmount = OrderManager.getTotalDiscountAmountOfOrderRefundItem(orderRefundItem);
-                    double discountedByAmountAmount = getDiscountAmountByAmount(orderItemsTotalAmount, orderRefundItem.getAmount() * orderRefundItem.getQuantity());
+                    //double discountedByRateAmount = OrderManager.getTotalDiscountAmountOfOrderRefundItem(orderRefundItem);
+                    //double discountedByAmountAmount = getDiscountAmountByAmount(orderItemsTotalAmount, orderRefundItem.getAmount() * orderRefundItem.getQuantity());
 
                     Realm realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
 
                     OrderRefundItem orderRefundItem1 = realm.copyFromRealm(orderRefundItem);
-                    orderRefundItem1.setAmount(CommonUtils.round((orderRefundItem.getAmount() * orderRefundItem.getQuantity()) - (discountedByRateAmount + discountedByAmountAmount), 2));
+                    //orderRefundItem1.setAmount(CommonUtils.round((orderRefundItem.getAmount() * orderRefundItem.getQuantity()) - (discountedByRateAmount + discountedByAmountAmount), 2));
+                    orderRefundItem1.setAmount(CommonUtils.round((orderRefundItem.getAmount() * orderRefundItem.getQuantity()), 2));
 
                     realm.commitTransaction();
 

@@ -5,7 +5,8 @@ public enum RefundReasonEnum {
     RETURNED_GOODS("İade Edilen Mallar", "Returned Goods"),
     ACCIDENTAL_CHARGE("Yanlışlıkla Ödeme", "Accidental Charge"),
     CANCELED_ORDER("İptal Edilen Sipariş", "Canceled Order"),
-    FRADULENT_CHARGE("Hileli Ödeme", "Fradulent Charge");
+    FRADULENT_CHARGE("Hileli Ödeme", "Fradulent Charge"),
+    OTHER("Diğer", "Other");
 
     private final String labelTr;
     private final String labelEn;

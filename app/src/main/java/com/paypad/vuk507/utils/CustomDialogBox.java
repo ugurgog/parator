@@ -8,9 +8,11 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.interfaces.CustomDialogBoxTextListener;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
 
 import java.util.Objects;
@@ -24,11 +26,12 @@ public class CustomDialogBox {
         Activity activity = builder.activity;
         CustomDialogListener pListener = builder.pListener;
         CustomDialogListener nListener = builder.nListener;
+        CustomDialogBoxTextListener textListener = builder.textListener;
         int pBtnColor = builder.pBtnColor;
         int nBtnColor = builder.nBtnColor;
         int pBtnVisibleType = builder.pBtnVisibleType;
         int nBtnVisibleType = builder.nBtnVisibleType;
-        int editTextVisibleType = builder.editTextVisibleType;
+        String edittextHint = builder.edittextHint;
         String positiveBtnText = builder.positiveBtnText;
         String negativeBtnText = builder.negativeBtnText;
         boolean cancel = builder.cancel;
@@ -44,10 +47,12 @@ public class CustomDialogBox {
         private int nBtnColor;
         private int pBtnVisibleType;
         private int nBtnVisibleType;
-        private int editTextVisibleType;
+        private int pEtVisibleType = View.GONE;
+        private String edittextHint;
         private Activity activity;
         private CustomDialogListener pListener;
         private CustomDialogListener nListener;
+        private CustomDialogBoxTextListener textListener;
         private boolean cancel;
         private long durationTime;
 
@@ -60,11 +65,6 @@ public class CustomDialogBox {
             return this;
         }
 
-        public CustomDialogBox.Builder setEditTextVisibility(int visibleType) {
-            this.editTextVisibleType = visibleType;
-            return this;
-        }
-
         public CustomDialogBox.Builder setMessage(String message) {
             this.message = message;
             return this;
@@ -72,6 +72,11 @@ public class CustomDialogBox {
 
         public CustomDialogBox.Builder setPositiveBtnText(String positiveBtnText) {
             this.positiveBtnText = positiveBtnText;
+            return this;
+        }
+
+        public CustomDialogBox.Builder setEdittextHint(String hint) {
+            this.edittextHint = hint;
             return this;
         }
 
@@ -100,6 +105,10 @@ public class CustomDialogBox {
             return this;
         }
 
+        public CustomDialogBox.Builder setEdittextVisibility(int visibleType) {
+            this.pEtVisibleType = visibleType;
+            return this;
+        }
 
         public CustomDialogBox.Builder setDurationTime(long durationTime) {
             this.durationTime = durationTime;
@@ -113,6 +122,11 @@ public class CustomDialogBox {
 
         public CustomDialogBox.Builder OnNegativeClicked(CustomDialogListener nListener) {
             this.nListener = nListener;
+            return this;
+        }
+
+        public CustomDialogBox.Builder OnTextReturn(CustomDialogBoxTextListener textListener) {
+            this.textListener = textListener;
             return this;
         }
 
@@ -131,10 +145,15 @@ public class CustomDialogBox {
             TextView message1 = dialog.findViewById(R.id.message);
             Button nBtn = dialog.findViewById(R.id.negativeBtn);
             Button pBtn = dialog.findViewById(R.id.positiveBtn);
+            EditText editText = dialog.findViewById(R.id.editText);
             View buttonsView = dialog.findViewById(R.id.buttonsView);
 
             nBtn.setVisibility(nBtnVisibleType);
             pBtn.setVisibility(pBtnVisibleType);
+            editText.setVisibility(pEtVisibleType);
+
+            if(this.edittextHint != null)
+                editText.setHint(this.edittextHint);
 
             if(nBtnVisibleType == View.GONE || pBtnVisibleType == View.GONE)
                 buttonsView.setVisibility(View.GONE);
@@ -169,6 +188,10 @@ public class CustomDialogBox {
             if (this.pListener != null) {
                 pBtn.setOnClickListener(view -> {
                     Builder.this.pListener.OnClick();
+
+                    if(Builder.this.textListener != null)
+                        Builder.this.textListener.OnTextReturn(editText.getText().toString());
+
                     dialog.dismiss();
                 });
             } else {

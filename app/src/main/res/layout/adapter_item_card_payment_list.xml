@@ -246,8 +246,7 @@
                     android:layout_marginStart="10dp"
                     android:maxLines="1"
                     android:textSize="@dimen/default_size_15sp"
-                    android:text="Receipt #wh3T"
-                    android:id="@+id/receiptDescTv"
+                    android:id="@+id/trxSeqDescTv"
                     android:layout_gravity="center">
                 </TextView>
 

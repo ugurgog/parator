@@ -78,6 +78,7 @@
     <string name="subtotal">Alt Toplam</string>
     <string name="sales_tax">KDV</string>
     <string name="included">Dahil</string>
+    <string name="reason_for_refund">İADE NEDENİ</string>
 
     <string name="cancel">İptal</string>
     <string name="ok">Tamam</string>
@@ -404,6 +405,8 @@
     <string name="transaction_cancelled_desc">Bu işlem iptal edildi. İade edilemez veya iptal edilemez!</string>
     <string name="transaction_fully_refunded">Bu işlem full iade yapildi. İade yada iptal edilemez!</string>
     <string name="refund_amount_cannot_be_bigger_trx_amount">İade tutarı işlem tutarından büyük olamaz, lütfen tutar bazında iade yapmayı deneyin.</string>
+    <string name="please_select_refund_reason">Lütfen iade nedenini seçiniz</string>
+    <string name="search_by_order_zno_fno">Sipariş no, z no, f no ile arayın</string>
 
     <string name="select_picture">Fotoğraf Seçin</string>
     <string name="open_camera">Kamerayı Aç</string>

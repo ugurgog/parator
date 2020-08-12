@@ -79,6 +79,7 @@
     <string name="subtotal">Subtotal</string>
     <string name="sales_tax">Sales Tax</string>
     <string name="included">Included</string>
+    <string name="reason_for_refund">REASON FOR REFUND</string>
 
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -483,6 +484,8 @@
     <string name="transaction_cancelled_desc">This transaction is cancelled. It can not be refunded or cancelled!</string>
     <string name="transaction_fully_refunded">This transaction has been fully refunded. Cannot be returned or canceled!</string>
     <string name="refund_amount_cannot_be_bigger_trx_amount">Return amount cannot be bigger than transaction amount, please try to refund by amount.</string>
+    <string name="please_select_refund_reason">Please select refund reason</string>
+    <string name="search_by_order_zno_fno">Search by order num, znum, fnum</string>
 
     <string name="select_picture">Select Picture</string>
     <string name="open_camera">Open Camera</string>

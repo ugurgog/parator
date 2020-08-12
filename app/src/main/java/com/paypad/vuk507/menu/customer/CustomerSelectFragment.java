@@ -229,7 +229,7 @@ public class CustomerSelectFragment extends BaseFragment {
                             .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
                             .setDurationTime(0)
                             .isCancellable(true)
-                            .setEditTextVisibility(View.GONE)
+                            .setEdittextVisibility(View.GONE)
                             .OnPositiveClicked(new CustomDialogListener() {
                                 @Override
                                 public void OnClick() {

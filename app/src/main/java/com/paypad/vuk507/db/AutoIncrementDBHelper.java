@@ -33,7 +33,7 @@ public class AutoIncrementDBHelper {
                     realm.insertOrUpdate(autoIncrement);
 
                     baseResponse.setObject(autoIncrement);
-                    baseResponse.setMessage("AutoIncrement is saved!");
+                    //baseResponse.setMessage("AutoIncrement is saved!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("AutoIncrement cannot be saved!");

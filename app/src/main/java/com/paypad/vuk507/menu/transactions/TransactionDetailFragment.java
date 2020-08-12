@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -87,6 +88,8 @@ public class TransactionDetailFragment extends BaseFragment {
     LinearLayout mainll;
     @BindView(R.id.refundsll)
     LinearLayout refundsll;
+    @BindView(R.id.orderNumTv)
+    TextView orderNumTv;
 
 
     private User user;
@@ -149,8 +152,6 @@ public class TransactionDetailFragment extends BaseFragment {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_transaction_detail, container, false);
             ButterKnife.bind(this, mView);
-            //initVariables();
-            //initListeners();
         }
         return mView;
     }
@@ -192,6 +193,8 @@ public class TransactionDetailFragment extends BaseFragment {
 
     private void initVariables() {
         orderManager = new OrderManager();
+        orderNumTv.setText(saleModel.getSale().getOrderNum());
+        refundsll.setVisibility(View.VISIBLE);
         setToolbarTitle();
         initPrinter();
         setRefundStatus();
@@ -324,20 +327,6 @@ public class TransactionDetailFragment extends BaseFragment {
 
         paymentTotalAdapter = new PaymentTotalAdapter(getContext(), paymentDetailModels);
         totalRv.setAdapter(paymentTotalAdapter);
-    }
-
-    public void updateAdapter(String searchText) {
-       /* if (searchText != null && taxSelectListAdapter != null) {
-            taxSelectListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
-                @Override
-                public void OnReturn(int size) {
-                    if (size == 0 && (taxModelList != null && taxModelList.size() > 0))
-                        searchResultTv.setVisibility(View.VISIBLE);
-                    else
-                        searchResultTv.setVisibility(View.GONE);
-                }
-            });
-        }*/
     }
 
     InnerResultCallbcak mCallback = new InnerResultCallbcak() {

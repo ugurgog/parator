@@ -6,7 +6,6 @@ import android.util.Log;
 import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.DynamicBoxModel;
-import com.paypad.vuk507.model.Receipt;
 import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.Transaction;

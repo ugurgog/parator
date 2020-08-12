@@ -68,6 +68,7 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
     private CustomViewPagerAdapter customViewPagerAdapter;
     private double returnAmount;
     private double returnAmountFromFrag;
+    private String refundReasonText;
 
     private RefundByItemsFragment refundByItemsFragment;
     private RefundByAmountFragment refundByAmountFragment;
@@ -79,10 +80,11 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
 
     private List<OrderRefundItem> orderRefundItems;
 
-    public RefundFragment(Transaction transaction, int refundCancelStatus, double returnAmount) {
+    public RefundFragment(Transaction transaction, int refundCancelStatus, double returnAmount, String refundReasonText) {
         this.transaction = transaction;
         this.refundCancelStatus = refundCancelStatus;
         this.returnAmount = returnAmount;
+        this.refundReasonText = refundReasonText;
     }
 
     @Override
@@ -154,7 +156,7 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
                     }
 
                     mFragmentNavigation.pushFragment(new NFCReadForReturnFragment(transaction, refundAmount,
-                            TYPE_REFUND, false, orderRefundItems, "XXXXX"));
+                            TYPE_REFUND, false, orderRefundItems, refundReasonText));
 
                 }else if(selectedTab == SELECTED_BY_AMOUNT){
 
@@ -164,7 +166,7 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
                     }
 
                     mFragmentNavigation.pushFragment(new NFCReadForReturnFragment(transaction, returnAmountFromFrag,
-                            TYPE_REFUND, true, null, "XXXXX"));
+                            TYPE_REFUND, true, null, refundReasonText));
                 }
             }
         });
@@ -211,7 +213,7 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
     }
 
     private void initRefundByAmountFragment(){
-        refundByAmountFragment = new RefundByAmountFragment(transaction, false, returnAmount);
+        refundByAmountFragment = new RefundByAmountFragment(transaction, false, returnAmount, refundReasonText);
         refundByAmountFragment.setReturnAmountCallback(this);
     }
 

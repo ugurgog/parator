@@ -61,11 +61,13 @@ public class RefundByAmountFragment extends BaseFragment {
     private double refundAmount;
     private Transaction transaction;
     private ReturnAmountCallback returnAmountCallback;
+    private String refundReasonText;
 
-    public RefundByAmountFragment(Transaction transaction, boolean isToolbarVisible, double returnAmount) {
+    public RefundByAmountFragment(Transaction transaction, boolean isToolbarVisible, double returnAmount, String refundReasonText) {
         this.transaction = transaction;
         this.isToolbarVisible = isToolbarVisible;
         this.returnAmount = returnAmount;
+        this.refundReasonText = refundReasonText;
     }
 
     public void setReturnAmountCallback(ReturnAmountCallback returnAmountCallback) {
@@ -156,7 +158,7 @@ public class RefundByAmountFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 mFragmentNavigation.pushFragment(new NFCReadForReturnFragment(transaction, refundAmount,
-                        TYPE_REFUND, true, null, "XXXXX"));
+                        TYPE_REFUND, true, null, refundReasonText));
             }
         });
     }

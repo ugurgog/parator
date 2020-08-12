@@ -75,6 +75,16 @@
                     android:id="@+id/saleItemDescTv">
                 </TextView>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/Gray"
+                    android:maxLines="1"
+                    android:textSize="@dimen/default_size_11sp"
+                    android:id="@+id/orderNumTv">
+                </TextView>
+
+
 
             </LinearLayout>
 

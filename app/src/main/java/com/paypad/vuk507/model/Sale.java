@@ -19,6 +19,7 @@ public class Sale extends RealmObject {
     private RealmList<OrderItemDiscount> discounts;
     private double totalAmount;            // Split dahil edilmemis Total Amount
     private double discountedAmount;         // Indirimlerin uygulanmis tutarin son hali
+    private double totalDiscountAmount;        // Uygulanan toplam indirim tutari
     private boolean paymentCompleted;
     private double remainAmount;           // Parcali odeme sonrasi kalan tutar
     private Date createDate;
@@ -48,6 +49,13 @@ public class Sale extends RealmObject {
         this.saleCount = saleCount;
     }
 
+    public double getTotalDiscountAmount() {
+        return totalDiscountAmount;
+    }
+
+    public void setTotalDiscountAmount(double totalDiscountAmount) {
+        this.totalDiscountAmount = totalDiscountAmount;
+    }
 
     public long getCustomerId() {
         return customerId;

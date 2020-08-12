@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.transactions.adapters.SaleModelListAdapter;
 import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Transaction;
@@ -71,6 +73,7 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
 
     private User user;
     private SaleModelListAdapter saleModelListAdapter;
+    private List<TransactionItem> adapterModel;
 
     public TransactionsFragment() {
 
@@ -86,6 +89,14 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
         super.onResume();
         initVariables();
         initListeners();
+
+        if (searchEdittext.getText() != null && !searchEdittext.getText().toString().isEmpty()) {
+            updateAdapter(searchEdittext.getText().toString());
+            searchCancelImgv.setVisibility(View.VISIBLE);
+        } else {
+            updateAdapter("");
+            searchCancelImgv.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -118,8 +129,6 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_transactions, container, false);
             ButterKnife.bind(this, mView);
-            //initVariables();
-            //initListeners();
         }
         return mView;
     }
@@ -171,6 +180,8 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
     private void initVariables() {
         toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.transactions));
         addItemImgv.setVisibility(View.GONE);
+        searchEdittext.setHint(getContext().getResources().getString(R.string.search_by_order_zno_fno));
+        adapterModel = new ArrayList<>();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -178,6 +189,7 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
         transactionsRv.setLayoutManager(linearLayoutManager);
         updateAdapterWithCurrentList();
     }
+
 
     public static class DateComparator implements Comparator<TransactionItem> {
         @Override
@@ -233,8 +245,6 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
 
         Collections.sort(transactionItems, new DateComparator());
 
-        List<TransactionItem> adapterModel = new ArrayList<>();
-
         Date previousDate = null;
 
         for(TransactionItem transactionItem : transactionItems){
@@ -259,7 +269,20 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
     }
 
     public void updateAdapter(String searchText) {
+        if (searchText != null && saleModelListAdapter != null) {
 
+            Log.i("Info", "searchText:" + searchText);
+
+            saleModelListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
+                @Override
+                public void OnReturn(int size) {
+                    if (size == 0 && (adapterModel != null && adapterModel.size() > 0))
+                        searchResultTv.setVisibility(View.VISIBLE);
+                    else
+                        searchResultTv.setVisibility(View.GONE);
+                }
+            });
+        }
     }
 
     @Override

@@ -142,6 +142,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
         mTransaction.setzNum(autoIncrement.getzNum());
         mTransaction.setfNum(autoIncrement.getfNum());
         mTransaction.setEODProcessed(false);
+        mTransaction.setTransferred(false);
 
         LogUtil.logTransaction("saveTransaction", mTransaction);
 
@@ -174,6 +175,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
         //SaleModelInstance.getInstance().getSaleModel().getSale().setEndOfDayProcessed(false);
         SaleModelInstance.getInstance().getSaleModel().getSale().setOrderNum(DataUtils.getOrderRetrefNum(user.getUuid()));
         SaleModelInstance.getInstance().getSaleModel().getSale().setzNum(autoIncrement.getzNum());
+        SaleModelInstance.getInstance().getSaleModel().getSale().setTransferred(false);
 
         LogUtil.logSale(SaleModelInstance.getInstance().getSaleModel().getSale());
 

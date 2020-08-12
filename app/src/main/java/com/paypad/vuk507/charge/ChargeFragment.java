@@ -550,6 +550,7 @@ public class ChargeFragment extends BaseFragment implements
         saleItem.setNote(saleNote != null ? saleNote : "");
         saleItem.setCategoryName(DataUtils.getCategoryName(getContext(), 0));
         saleItem.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
+        saleItem.setTransferred(false);
 
         totalAmount = orderManager.getDiscountedAmountByAddingCustomItem(saleItem);
 
