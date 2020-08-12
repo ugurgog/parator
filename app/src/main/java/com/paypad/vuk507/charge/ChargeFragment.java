@@ -626,7 +626,6 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void setChargeAmountTv(){
-        //SaleModelInstance.getInstance().getSaleModel().setDiscountedAmountOfSale();
         orderManager.setDiscountedAmountOfSale();
 
         double amountx = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount();

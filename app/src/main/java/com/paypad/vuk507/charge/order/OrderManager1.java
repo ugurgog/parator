@@ -27,7 +27,7 @@ import java.util.UUID;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
-public class OrderManager implements IOrderManager{
+public class OrderManager1 implements IOrderManager1{
 
     @Override
     public String addProductToOrder(Context context, Product product, double amount, boolean isDynamicAmount) {
@@ -55,6 +55,7 @@ public class OrderManager implements IOrderManager{
 
         addAllDiscountsToSaleItem(saleItem);
         saleItems.add(saleItem);
+        calculateDiscounts(SaleModelInstance.getInstance().getSaleModel());
 
         setDiscountedAmountOfSale();
 
@@ -73,27 +74,24 @@ public class OrderManager implements IOrderManager{
 
         addAllDiscountsToSaleItem(saleItem);
         saleItems.add(saleItem);
+        calculateDiscounts(SaleModelInstance.getInstance().getSaleModel());
 
         setDiscountedAmountOfSale();
 
         return saleItem.getUuid();
     }
 
-    @Override
-    public void setOrderItemTaxForProduct(SaleItem saleItem, Product product) {
+    private void setOrderItemTaxForProduct(SaleItem saleItem, Product product) {
         TaxModel taxModel = DataUtils.getTaxModelById(product.getTaxId());
         OrderItemTax orderItemTax = ConversionHelper.convertTaxModelToOrderItemTax(taxModel);
-        addTaxAmount(saleItem, orderItemTax);
-    }
 
-    @Override
-    public void setOrderItemTaxForCustomItem(SaleItem saleItem, OrderItemTax orderItemTax) {
-        addTaxAmount(saleItem, orderItemTax);
-    }
-
-    private void addTaxAmount(SaleItem saleItem, OrderItemTax orderItemTax){
         saleItem.setTaxModel(orderItemTax);
+        saleItem.setGrossAmount(getGrossAmount(saleItem.getAmount(), orderItemTax));
+        saleItem.setTaxAmount(getTaxAmount(saleItem.getAmount(), orderItemTax));
+    }
 
+    private void setOrderItemTaxForCustomItem(SaleItem saleItem, OrderItemTax orderItemTax) {
+        saleItem.setTaxModel(orderItemTax);
         saleItem.setGrossAmount(getGrossAmount(saleItem.getAmount(), orderItemTax));
         saleItem.setTaxAmount(getTaxAmount(saleItem.getAmount(), orderItemTax));
     }
@@ -163,8 +161,7 @@ public class OrderManager implements IOrderManager{
         return CommonUtils.round(discountedAmount, 2);
     }
 
-    @Override
-    public long getMaxSplitSequenceNumber() {
+    private long getMaxSplitSequenceNumber() {
         List<Transaction> transactions = SaleModelInstance.getInstance().getSaleModel().getTransactions();
 
         long maxValue = 0;
@@ -257,7 +254,6 @@ public class OrderManager implements IOrderManager{
                 if(saleItem.getDiscounts() == null)
                     saleItem.setDiscounts(new RealmList<>());
 
-
                 saleItem.getDiscounts().add(ConversionHelper.convertDiscountToOrderItemDiscount(discount));
             }
         }
@@ -273,10 +269,10 @@ public class OrderManager implements IOrderManager{
             }
         }
 
-        if(!exist){
+        if(!exist)
             sale.getDiscounts().add(ConversionHelper.convertDiscountToOrderItemDiscount(discount));
-            setDiscountedAmountOfSale();
-        }
+
+        calculateDiscounts(SaleModelInstance.getInstance().getSaleModel());
     }
 
     @Override
@@ -289,14 +285,7 @@ public class OrderManager implements IOrderManager{
             totalAmnt = totalAmnt + (saleItem.getAmount() * saleItem.getQuantity());
 
         sale.setTotalAmount(CommonUtils.round(totalAmnt, 2));
-
-        if(sale.getTotalAmount() > 0)
-            sale.setDiscountedAmount(CommonUtils.round(sale.getTotalAmount() - getTotalDiscountAmountOfSale(), 2));
-        else
-            sale.setDiscountedAmount(0d);
-
-        if(sale.getDiscountedAmount() <= 0)
-            sale.setDiscountedAmount(0d);
+        calculateDiscounts(SaleModelInstance.getInstance().getSaleModel());
     }
 
     @Override
@@ -394,15 +383,11 @@ public class OrderManager implements IOrderManager{
 
         if(sale.getDiscounts() != null){
             for(OrderItemDiscount discount : sale.getDiscounts()){
-                if(discount.getRate() > 0d){
+                if(saleItem.getDiscounts() == null)
+                    saleItem.setDiscounts(new RealmList<>());
 
-                    if(saleItem.getDiscounts() == null)
-                        saleItem.setDiscounts(new RealmList<>());
-
-                    saleItem.getDiscounts().add(discount);
-                }
+                saleItem.getDiscounts().add(discount);
             }
-            setDiscountedAmountOfSale();
         }
     }
 
@@ -473,5 +458,63 @@ public class OrderManager implements IOrderManager{
             }
         }
         return false;
+    }
+
+    public static void calculateDiscounts(SaleModel saleModel){
+        double totalSaleItemsAmount = 0d;
+        double totalDiscountAmountOfOrder = 0d;
+
+        //Tutar tanimli indirimlerde toplam item tutari uzerinden hesaplama yapacagız
+        for(SaleItem saleItem : saleModel.getSaleItems())
+            totalSaleItemsAmount = CommonUtils.round(totalSaleItemsAmount + (saleItem.getAmount() * saleItem.getQuantity()), 2);
+
+        //Her item ozelinde tanımlı indirim tutarları hesaplanır
+        for(SaleItem saleItem : saleModel.getSaleItems()){
+
+            double totalAmount = CommonUtils.round(saleItem.getAmount() * (double) saleItem.getQuantity(), 2);
+            double totalDiscountAmountOfItem = 0d;
+
+            for(OrderItemDiscount orderItemDiscount : saleItem.getDiscounts()){
+
+                double discountAmount = 0d;
+
+                if(orderItemDiscount.getRate() > 0d)
+                    discountAmount = (totalAmount / 100d)  * orderItemDiscount.getRate();
+                else if(orderItemDiscount.getAmount() > 0d){
+                    discountAmount = CommonUtils.round((orderItemDiscount.getAmount() / totalSaleItemsAmount) * (saleItem.getAmount() * saleItem.getQuantity()), 2);
+                }
+
+                totalAmount = totalAmount - discountAmount;
+                totalDiscountAmountOfItem = totalDiscountAmountOfItem + discountAmount;
+                totalDiscountAmountOfOrder = totalDiscountAmountOfOrder + totalDiscountAmountOfItem;
+                orderItemDiscount.setDiscountAmount(discountAmount);
+            }
+            saleItem.setTotalDiscountAmount(totalDiscountAmountOfItem);
+        }
+        //Order toplam indirim tutari set edilir
+        saleModel.getSale().setTotalDiscountAmount(totalDiscountAmountOfOrder);
+
+        //Order indirimli tutar set edilir
+        if(saleModel.getSale().getTotalAmount() > 0)
+            saleModel.getSale().setDiscountedAmount(CommonUtils.round(saleModel.getSale().getTotalAmount() - totalDiscountAmountOfOrder, 2));
+        else
+            saleModel.getSale().setDiscountedAmount(0d);
+
+        if(saleModel.getSale().getDiscountedAmount() <= 0)
+            saleModel.getSale().setDiscountedAmount(0d);
+
+        //Order abagli indirim tutarlari set edilir
+        for(OrderItemDiscount orderItemDiscount : saleModel.getSale().getDiscounts()){
+
+            double totalDiscountAmount = 0d;
+
+            for(SaleItem saleItem : saleModel.getSaleItems()){
+                for(OrderItemDiscount orderItemDiscount1 : saleItem.getDiscounts()){
+                    if(orderItemDiscount.getId() == orderItemDiscount1.getId())
+                        totalDiscountAmount = CommonUtils.round(totalDiscountAmount + orderItemDiscount1.getDiscountAmount(), 2);
+                }
+            }
+            orderItemDiscount.setDiscountAmount(totalDiscountAmount);
+        }
     }
 }
