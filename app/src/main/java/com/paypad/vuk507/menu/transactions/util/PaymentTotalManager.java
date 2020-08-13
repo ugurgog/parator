@@ -6,6 +6,7 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.OrderItemTax;
+import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.PaymentDetailModel;
@@ -44,7 +45,7 @@ public class PaymentTotalManager {
         return paymentDetailModels;
     }
 
-    private void addDiscountItems(){
+    /*private void addDiscountItems(){
         List<SaleItem> saleItems = new ArrayList<>();
 
         for(SaleItem saleItem : mSaleModel.getSaleItems()){
@@ -93,6 +94,26 @@ public class PaymentTotalManager {
                 paymentDetailModel.setItemDesc("-".concat(amountStr));
             }
 
+            paymentDetailModels.add(paymentDetailModel);
+        }
+    }*/
+
+    private void addDiscountItems(){
+        for(OrderItemDiscount orderItemDiscount: mSaleModel.getSale().getDiscounts()){
+            PaymentDetailModel paymentDetailModel = new PaymentDetailModel();
+            paymentDetailModel.setDescBold(false);
+            paymentDetailModel.setDrawableId(R.drawable.icon_paym_total_discount);
+
+            if(orderItemDiscount.getAmount() > 0d){
+                paymentDetailModel.setItemName(orderItemDiscount.getName());
+                String amountStr = CommonUtils.getDoubleStrValueForView(orderItemDiscount.getDiscountAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                paymentDetailModel.setItemDesc("-".concat(amountStr));
+            }else {
+                paymentDetailModel.setItemName(orderItemDiscount.getName()
+                        .concat(" (%").concat(CommonUtils.getDoubleStrValueForView(orderItemDiscount.getRate(), TYPE_RATE)).concat(")"));
+                String amountStr = CommonUtils.getDoubleStrValueForView(orderItemDiscount.getDiscountAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                paymentDetailModel.setItemDesc("-".concat(amountStr));
+            }
             paymentDetailModels.add(paymentDetailModel);
         }
     }

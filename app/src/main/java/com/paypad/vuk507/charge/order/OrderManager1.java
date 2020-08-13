@@ -444,6 +444,8 @@ public class OrderManager1 implements IOrderManager1{
                 if(saleItem.getDiscounts() == null)
                     saleItem.setDiscounts(new RealmList<>());
 
+
+
                 saleItem.getDiscounts().add(discount);
             }
         }
@@ -493,6 +495,9 @@ public class OrderManager1 implements IOrderManager1{
         for(SaleItem saleItem1 : saleModel.getSaleItems())
             totalSaleItemsAmount = CommonUtils.round(totalSaleItemsAmount + (saleItem1.getAmount() * saleItem1.getQuantity()), 2);
 
+
+        totalSaleItemsAmount = CommonUtils.round(totalSaleItemsAmount + (saleItem.getAmount() * saleItem.getQuantity()), 2);
+
         double totalAmount = CommonUtils.round(saleItem.getAmount() * (double) saleItem.getQuantity(), 2);
         double totalDiscountAmountOfItem = 0d;
 
@@ -504,12 +509,13 @@ public class OrderManager1 implements IOrderManager1{
                 if (orderItemDiscount.getRate() > 0d)
                     discountAmount = CommonUtils.round((totalAmount / 100d) * orderItemDiscount.getRate(), 2);
                 else if (orderItemDiscount.getAmount() > 0d) {
-                    discountAmount = CommonUtils.round((orderItemDiscount.getAmount() / totalSaleItemsAmount) * (saleItem.getAmount() * saleItem.getQuantity()), 2);
+                    double amount1 = CommonUtils.round((orderItemDiscount.getAmount() / totalSaleItemsAmount), 2);
+                    discountAmount = CommonUtils.round(amount1 * (saleItem.getAmount() * saleItem.getQuantity()), 2);
                 }
 
                 totalAmount = CommonUtils.round(totalAmount - discountAmount, 2);
                 totalDiscountAmountOfItem = CommonUtils.round(totalDiscountAmountOfItem + discountAmount, 2);
-                totalDiscountAmountOfOrder = CommonUtils.round(totalDiscountAmountOfOrder + totalDiscountAmountOfItem, 2);
+                totalDiscountAmountOfOrder = CommonUtils.round(totalDiscountAmountOfOrder + discountAmount, 2);
             }
         }
 
