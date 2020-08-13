@@ -20,11 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.charge.payment.utils.PrintOrderManager;
 import com.paypad.vuk507.db.RefundDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
-import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.transactions.adapters.ItemsServicesAdapter;
@@ -32,7 +31,6 @@ import com.paypad.vuk507.menu.transactions.adapters.PaymentDetailAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentTotalAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.RefundedTransactionAdapter;
 import com.paypad.vuk507.menu.transactions.util.PaymentTotalManager;
-import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
@@ -100,7 +98,7 @@ public class TransactionDetailFragment extends BaseFragment {
     private PaymentTotalAdapter paymentTotalAdapter;
 
     private SaleModel saleModel;
-    private OrderManager orderManager;
+    private OrderManager1 orderManager;
     private PrintOrderManager printOrderManager;
     private SelectPaymentForRefundFragment selectPaymentForRefundFragment;
 
@@ -192,7 +190,7 @@ public class TransactionDetailFragment extends BaseFragment {
     }
 
     private void initVariables() {
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
         orderNumTv.setText(saleModel.getSale().getOrderNum());
         refundsll.setVisibility(View.VISIBLE);
         setToolbarTitle();
@@ -263,7 +261,7 @@ public class TransactionDetailFragment extends BaseFragment {
     }
 
     private void setToolbarTitle(){
-        double amount = CommonUtils.round((saleModel.getSale().getDiscountedAmount() + OrderManager.getTotalTipAmountOfSale(saleModel)), 2);
+        double amount = CommonUtils.round((saleModel.getSale().getDiscountedAmount() + OrderManager1.getTotalTipAmountOfSale(saleModel)), 2);
         String amountStr = CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()).concat(" ")
                 .concat(getResources().getString(R.string.sale));
         toolbarTitleTv.setText(amountStr);

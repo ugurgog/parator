@@ -2,8 +2,6 @@ package com.paypad.vuk507.menu.transactions.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,19 +10,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.SaleItemDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
-import com.paypad.vuk507.enums.TransactionTypeEnum;
-import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.OrderRefundItem;
 import com.paypad.vuk507.model.Refund;
@@ -32,7 +26,6 @@ import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import java.text.SimpleDateFormat;
@@ -43,8 +36,6 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
-
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTransactionAdapter.RefundItemHolder> {
 

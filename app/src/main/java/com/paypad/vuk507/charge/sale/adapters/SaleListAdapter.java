@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.utils.CommonUtils;
 
@@ -94,11 +95,17 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
         }
 
         private void setSaleItemDiscountImgv() {
-            if(saleItem != null && saleItem.getDiscounts() != null
-                && saleItem.getDiscounts().size() > 0){
-                discountImgv.setVisibility(View.VISIBLE);
-            }else
-                discountImgv.setVisibility(View.GONE);
+            discountImgv.setVisibility(View.GONE);
+
+            if(saleItem != null && saleItem.getDiscounts() != null){
+
+                for(OrderItemDiscount orderItemDiscount : saleItem.getDiscounts()){
+                    if(orderItemDiscount.getRate() > 0d){
+                        discountImgv.setVisibility(View.VISIBLE);
+                        break;
+                    }
+                }
+            }
         }
 
         private void setSaleItemNoteInfo() {

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.SaleItemDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
@@ -21,7 +21,6 @@ import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnOrderItemCallback;
 import com.paypad.vuk507.menu.transactions.adapters.RefundItemsAdapter;
-import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.OrderRefundItem;
 import com.paypad.vuk507.model.Sale;
@@ -158,18 +157,22 @@ public class RefundByItemsFragment extends BaseFragment {
 
            orderItemsTotalAmount = CommonUtils.round(orderItemsTotalAmount + saleItem.getAmount(), 2);
 
-           if(OrderManager.isSaleItemRefunded(saleItem, mTransaction.getSaleUuid()))
+           if(OrderManager1.isSaleItemRefunded(saleItem, mTransaction.getSaleUuid()))
                it.remove();
         }
 
         for(SaleItem saleItem : saleItemList){
 
-            double discountedByRateAmount = OrderManager.getTotalDiscountAmountOfSaleItem(saleItem);
-            double discountedByAmountAmount = getDiscountAmountByAmount(orderItemsTotalAmount, saleItem.getAmount() * saleItem.getQuantity());
+            //double discountedByRateAmount = OrderManager1.getTotalDiscountAmountOfSaleItem(saleItem);
+            double discountedByRateAmount = saleItem.getTotalDiscountAmount();
+
+            //double discountedByAmountAmount = getDiscountAmountByAmount(orderItemsTotalAmount, saleItem.getAmount() * saleItem.getQuantity());
 
             realm.beginTransaction();
             SaleItem tempSaleItem = realm.copyFromRealm(saleItem);
-            tempSaleItem.setAmount(CommonUtils.round((saleItem.getAmount() * saleItem.getQuantity()) - (discountedByRateAmount + discountedByAmountAmount), 2));
+
+            //tempSaleItem.setAmount(CommonUtils.round((saleItem.getAmount() * saleItem.getQuantity()) - (discountedByRateAmount + discountedByAmountAmount), 2));
+            tempSaleItem.setAmount(CommonUtils.round((saleItem.getAmount() * saleItem.getQuantity()) - (discountedByRateAmount), 2));
 
             realm.commitTransaction();
 

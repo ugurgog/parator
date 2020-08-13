@@ -14,7 +14,7 @@ public class Sale extends RealmObject {
     @PrimaryKey
     @Index
     private String saleUuid;
-    private int saleCount;
+    private int totalItemCount;
     private long customerId;
     private RealmList<OrderItemDiscount> discounts;
     private double totalAmount;            // Split dahil edilmemis Total Amount
@@ -41,12 +41,12 @@ public class Sale extends RealmObject {
         this.zNum = zNum;
     }
 
-    public int getSaleCount() {
-        return saleCount;
+    public int getTotalItemCount() {
+        return totalItemCount;
     }
 
-    public void setSaleCount(int saleCount) {
-        this.saleCount = saleCount;
+    public void setTotalItemCount(int totalItemCount) {
+        this.totalItemCount = totalItemCount;
     }
 
     public double getTotalDiscountAmount() {

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
@@ -186,7 +186,7 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
                 amount = CommonUtils.round((transactionItem.getRefund().getRefundAmount()), 2);
             else
                 amount = CommonUtils.round((transactionItem.getSaleModel().getSale().getDiscountedAmount()
-                        + OrderManager.getTotalTipAmountOfSale(transactionItem.getSaleModel())), 2);
+                        + OrderManager1.getTotalTipAmountOfSale(transactionItem.getSaleModel())), 2);
 
             String amountStr = ((transactionItem.getTransaction() != null || transactionItem.getRefund() != null) ? "- " : "") +
                     CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());

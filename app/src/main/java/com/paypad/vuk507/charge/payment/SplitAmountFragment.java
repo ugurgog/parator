@@ -15,8 +15,8 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.IOrderManager;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.IOrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
@@ -78,7 +78,7 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
     private CompleteCallback completeCallback;
     private CustomSplitFragment customSplitFragment;
     private NumberFormatWatcher numberFormatWatcher;
-    private IOrderManager orderManager;
+    private IOrderManager1 orderManager;
 
     public SplitAmountFragment(Transaction transaction, CompleteCallback completeCallback) {
         this.mTransaction = transaction;
@@ -198,7 +198,7 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
     }
 
     private void initVariables() {
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
         initNumberFormatWatcher();
         amountEt.addTextChangedListener(numberFormatWatcher);
         amountEt.setHint("0.00 ".concat(CommonUtils.getCurrency().getSymbol()));

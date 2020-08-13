@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.IOrderManager;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.IOrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.enums.CurrencyEnum;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
@@ -32,7 +32,7 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnDiscountCallback returnDiscountCallback;
     private ItemProcessEnum processType;
-    private IOrderManager orderManager;
+    private IOrderManager1 orderManager;
 
     public DiscountListAdapter(Context context, List<Discount> discounts,
                                BaseFragment.FragmentNavigation fragmentNavigation,
@@ -44,7 +44,7 @@ public class DiscountListAdapter extends RecyclerView.Adapter<DiscountListAdapte
         this.fragmentNavigation = fragmentNavigation;
         this.returnDiscountCallback = returnDiscountCallback;
         this.processType = processType;
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
     }
 
     @NonNull

@@ -24,8 +24,8 @@ import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicStructListAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
-import com.paypad.vuk507.charge.order.IOrderManager;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.IOrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.charge.payment.CashSelectFragment;
 import com.paypad.vuk507.charge.payment.CreditCardSelectFragment;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
@@ -126,7 +126,7 @@ public class KeypadFragment extends BaseFragment implements
     private SaleCalculateCallback saleCalculateCallback;
 
     private Transaction mTransaction;
-    private IOrderManager orderManager;
+    private IOrderManager1 orderManager;
 
     public KeypadFragment() {
 
@@ -196,7 +196,7 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     private void initVariables() {
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
         realm = Realm.getDefaultInstance();
         keypad = mView.findViewById(R.id.keypad);
         saleAmountTv.setHint("0,00".concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
@@ -226,9 +226,8 @@ public class KeypadFragment extends BaseFragment implements
                             saleCalculateCallback.onItemsCleared();
                         }
 
-
                     }else {
-                        if(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleCount() > 0 ||
+                        if(SaleModelInstance.getInstance().getSaleModel().getSale().getTotalItemCount() > 0 ||
                                 (SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts() != null &&
                                         SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts().size() > 0)){
                             clearItems();

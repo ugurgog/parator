@@ -28,8 +28,8 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.adapter.CustomViewPagerAdapter;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
-import com.paypad.vuk507.charge.order.IOrderManager;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.IOrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.charge.payment.SelectChargePaymentFragment;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
@@ -133,7 +133,7 @@ public class ChargeFragment extends BaseFragment implements
     private SaleItem saleItem = null;
     //private OrderItemTax orderItemTax = null;
     private TaxModel mTaxModel = null;
-    private IOrderManager orderManager;
+    private IOrderManager1 orderManager;
 
     private TextView animationTextView;
 
@@ -194,7 +194,7 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void initVariables() {
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
         chargeAmountTv.setHint("0,00".concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
         chargell.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.DodgerBlue, null),
                 getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 20, 0));

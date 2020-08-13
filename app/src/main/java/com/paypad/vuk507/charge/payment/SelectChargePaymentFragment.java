@@ -20,8 +20,8 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
-import com.paypad.vuk507.charge.order.IOrderManager;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.IOrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.payment.utils.CancelTransactionManager;
 import com.paypad.vuk507.db.UserDBHelper;
@@ -78,7 +78,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     private PaymentStatusCallback paymentStatusCallback;
     private CreditCardSelectFragment creditCardSelectFragment;
     private SaleCalculateCallback saleCalculateCallback;
-    private IOrderManager orderManager;
+    private IOrderManager1 orderManager;
 
     public SelectChargePaymentFragment() {
 
@@ -178,7 +178,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     }
 
     private void initVariables() {
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
         createInitialTransaction();
         //splitAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount();
         setChargeAmount();

@@ -26,9 +26,8 @@ public interface IOrderManager1 {
     void setDiscountedAmountOfSale();
     Transaction addTransactionToOrder(double splitAmount);
     double getRemainAmount();
-    double getTotalDiscountAmountOfSale();
-    void addDiscountToSaleItem(String saleItemUuid, Discount discount);
-    void removeDiscountFromSaleItem(String saleItemUuid, Discount discount);
+    void addDiscountToSaleItem(SaleItem saleItem, Discount discount);
+    void removeDiscountFromSaleItem(SaleItem saleItem, Discount discount);
     void addDiscount(Discount discount);
 
     //void addDiscountToOrder(Discount discount);

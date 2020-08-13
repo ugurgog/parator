@@ -20,8 +20,8 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
-import com.paypad.vuk507.charge.order.IOrderManager;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.IOrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.charge.sale.adapters.SaleListAdapter;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
@@ -29,7 +29,6 @@ import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.model.Customer;
-import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.User;
@@ -73,7 +72,7 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
     private SaleCalculateCallback saleCalculateCallback;
     private SaleListAdapter saleListAdapter;
     private SaleDiscountListFragment saleDiscountListFragment;
-    private IOrderManager orderManager;
+    private IOrderManager1 orderManager;
 
     public SaleListFragment() {
 
@@ -179,7 +178,7 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
     }
 
     private void initVariables() {
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
         realm = Realm.getDefaultInstance();
         setToolbarTitle();
 
@@ -215,7 +214,8 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
         List<SaleItem> saleItems = new ArrayList<>();
         saleItems.addAll(SaleModelInstance.getInstance().getSaleModel().getSaleItems());
 
-        double totalDiscountAmount = orderManager.getTotalDiscountAmountOfSale();
+        //double totalDiscountAmount = orderManager.getTotalDiscountAmountOfSale();
+        double totalDiscountAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalDiscountAmount();
 
         //Indirim tutar toplamnin toplam tutar dan buyuk olmasi durumu
         if(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount() == 0)

@@ -3,12 +3,10 @@ package com.paypad.vuk507.menu.transactions.util;
 import android.content.Context;
 
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager;
-import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.OrderItemTax;
 import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.PaymentDetailModel;
 import com.paypad.vuk507.model.pojo.SaleModel;
@@ -25,7 +23,7 @@ public class PaymentTotalManager {
     private SaleModel mSaleModel;
     private Context mContext;
     private List<PaymentDetailModel> paymentDetailModels = new ArrayList<>();
-    private OrderManager orderManager;
+    private OrderManager1 orderManager;
     private double totalTipAmount = 0d;
     private List<Long> taxes = new ArrayList<>();
 
@@ -34,7 +32,7 @@ public class PaymentTotalManager {
     public PaymentTotalManager(Context context, SaleModel saleModel) {
         mContext = context;
         mSaleModel = saleModel;
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
     }
 
     public List<PaymentDetailModel> getPaymentDetails(){

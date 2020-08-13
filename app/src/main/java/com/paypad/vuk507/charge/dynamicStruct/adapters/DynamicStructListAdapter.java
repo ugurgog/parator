@@ -18,8 +18,8 @@ import com.bumptech.glide.Glide;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
-import com.paypad.vuk507.charge.order.IOrderManager;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.IOrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.ProductDBHelper;
@@ -53,7 +53,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnDynamicBoxListener dynamicBoxListener;
     private boolean maxBoxExceeded= false;
-    private IOrderManager orderManager;
+    private IOrderManager1 orderManager;
     private ReturnViewCallback returnViewCallback;
 
     public DynamicStructListAdapter(Context context, List<DynamicBoxModel> boxModels,
@@ -63,7 +63,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
         this.boxModels.addAll(boxModels);
         this.fragmentNavigation = fragmentNavigation;
         this.dynamicBoxListener = listener;
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
         setMaxBoxExceeded();
     }
 

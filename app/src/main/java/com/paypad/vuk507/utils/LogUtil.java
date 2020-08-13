@@ -50,7 +50,7 @@ public class LogUtil {
                     ", Discounts:" + sale.getDiscounts().toString() +
                     ", DiscountedAmount:" + sale.getDiscountedAmount() +
                     ", TotalAmount:" + sale.getTotalAmount() +
-                    ", SaleCount:" + sale.getSaleCount() +
+                    ", SaleCount:" + sale.getTotalItemCount() +
                     ", SaleUuid:" + sale.getSaleUuid() +
                     ", RemainAmount:" + sale.getRemainAmount() +
                     ", UserUuid:" + sale.getUserUuid() +

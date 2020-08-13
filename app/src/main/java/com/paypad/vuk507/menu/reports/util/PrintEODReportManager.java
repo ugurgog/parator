@@ -5,12 +5,9 @@ import android.content.Context;
 import android.os.RemoteException;
 
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager;
-import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.db.SaleItemDBHelper;
 import com.paypad.vuk507.enums.FinancialReportsEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
-import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.OrderItemTax;
 import com.paypad.vuk507.model.Sale;
 import com.paypad.vuk507.model.SaleItem;
@@ -18,7 +15,6 @@ import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.PrintSaleReportModel;
-import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.sunmiutils.PrintHelper;
@@ -31,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import io.realm.RealmResults;
 
@@ -210,7 +205,8 @@ public class PrintEODReportManager {
         for(Sale sale : sales){
             RealmResults<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(sale.getSaleUuid());
 
-            double discountAmountOfSale = OrderManager.getTotalDiscountAmountOfSale(sale, saleItems);
+            //double discountAmountOfSale = OrderManager.getTotalDiscountAmountOfSale(sale, saleItems);
+            double discountAmountOfSale = sale.getTotalDiscountAmount();
             printSaleReportModel.setTotDiscountAmount(CommonUtils.round(discountAmountOfSale + printSaleReportModel.getTotDiscountAmount(), 2));
         }
 

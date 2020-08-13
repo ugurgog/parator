@@ -14,20 +14,18 @@ import androidx.annotation.Nullable;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.IOrderManager;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.IOrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.SaleItemDBHelper;
-import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.model.AutoIncrement;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
@@ -59,7 +57,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     //private ProgressDialog progressDialog;
     private PaymentCompletedFragment paymentCompletedFragment;
     private PaymentStatusCallback paymentStatusCallback;
-    private IOrderManager orderManager;
+    private IOrderManager1 orderManager;
     private AutoIncrement autoIncrement;
     private Realm realm;
 
@@ -125,7 +123,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     private void initVariables() {
         realm = Realm.getDefaultInstance();
         autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getUuid());
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
         completePayment();
     }
 

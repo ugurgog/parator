@@ -12,8 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.IOrderManager;
-import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.order.IOrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager1;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.SaleItem;
@@ -30,12 +30,12 @@ public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDi
 
     private List<Discount> discounts = new ArrayList<>();
     private SaleItem saleItem;
-    private IOrderManager orderManager;
+    private IOrderManager1 orderManager;
 
     public SaleItemDiscountListAdapter(List<Discount> discounts, SaleItem saleItem) {
         this.discounts.addAll(discounts);
         this.saleItem = saleItem;
-        orderManager = new OrderManager();
+        orderManager = new OrderManager1();
     }
 
     @NonNull
@@ -62,14 +62,14 @@ public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDi
                     if(saleItem.getDiscounts() == null)
                         saleItem.setDiscounts(new RealmList<>());
 
-                    orderManager.addDiscountToSaleItem(saleItem.getUuid(), discount);
+                    orderManager.addDiscountToSaleItem(saleItem, discount);
 
                 }else {
 
                     if(saleItem.getDiscounts() == null)
                         saleItem.setDiscounts(new RealmList<>());
 
-                    orderManager.removeDiscountFromSaleItem(saleItem.getUuid(), discount);
+                    orderManager.removeDiscountFromSaleItem(saleItem, discount);
                 }
             }
         };
