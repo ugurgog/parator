@@ -486,6 +486,8 @@
     <string name="refund_amount_cannot_be_bigger_trx_amount">Return amount cannot be bigger than transaction amount, please try to refund by amount.</string>
     <string name="please_select_refund_reason">Please select refund reason</string>
     <string name="search_by_order_zno_fno">Search by order num, znum, fnum</string>
+    <string name="location_req_desc">Location Services must be turned on at all times when using Paratör. Paratör needs to know where transactions take place in order to reduce the risks associated with those transactions and to minimize payment disputes.</string>
+    <string name="enable_loc_services">Enable Location Services</string>
 
     <string name="select_picture">Select Picture</string>
     <string name="open_camera">Open Camera</string>

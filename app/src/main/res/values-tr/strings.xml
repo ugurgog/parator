@@ -407,6 +407,8 @@
     <string name="refund_amount_cannot_be_bigger_trx_amount">İade tutarı işlem tutarından büyük olamaz, lütfen tutar bazında iade yapmayı deneyin.</string>
     <string name="please_select_refund_reason">Lütfen iade nedenini seçiniz</string>
     <string name="search_by_order_zno_fno">Sipariş no, z no, f no ile arayın</string>
+    <string name="location_req_desc">Paratör kullanılırken Konum Servisleri her zaman açık olmalıdır. Paratör\'ün bu işlemlerle ilgili riskleri azaltmak ve ödeme anlaşmazlıklarını en aza indirmek için işlemlerin nerede gerçekleştiğini bilmesi gerekiyor.</string>
+    <string name="enable_loc_services">Konum Hizmetlerini Etkinleştir</string>
 
     <string name="select_picture">Fotoğraf Seçin</string>
     <string name="open_camera">Kamerayı Aç</string>

@@ -32,6 +32,7 @@
     <color name="style_color_accent">#01bcd5</color>
     <color name="fab_color_pressed">#007787</color>
     <color name="fab_color_shadow">#44000000</color>
+    <color name="loc_bg_color">#212F3D</color>
 
     <color name="blue_color_picker">#0066FF</color>
     <color name="brown_color_picker">#AF593E</color>

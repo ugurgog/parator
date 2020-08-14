@@ -222,9 +222,8 @@ public class KeypadFragment extends BaseFragment implements
                         saleCalculateCallback.onRemoveCustomAmount(amount);
                         clearAmountFields();
 
-                        if(orderManager.getOrderItemCount() == 0){
+                        if(orderManager.getOrderItemCount() == 0)
                             saleCalculateCallback.onItemsCleared();
-                        }
 
                     }else {
                         if(SaleModelInstance.getInstance().getSaleModel().getSale().getTotalItemCount() > 0 ||

@@ -51,6 +51,7 @@ import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ConversionHelper;
@@ -564,7 +565,12 @@ public class ChargeFragment extends BaseFragment implements
 
     @Override
     public void onRemoveCustomAmount(double amount) {
-        totalAmount = totalAmount - amount;
+        saleItem = null;
+        OrderManager1.calculateDiscounts(SaleModelInstance.getInstance().getSaleModel());
+        totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount();
+        //totalAmount = totalAmount - amount;
+
+
         String amountStr = CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
 
         if(totalAmount <= 0d)
@@ -608,6 +614,7 @@ public class ChargeFragment extends BaseFragment implements
     public void onSaleItemDeleted() {
 
         //currentSaleCount = SaleModelInstance.getInstance().getSaleModel().getSaleCount();
+        OrderManager1.calculateDiscounts(SaleModelInstance.getInstance().getSaleModel());
         currentSaleCount = orderManager.getOrderItemCount();
         setCurrentSaleCount();
         setChargeAmountTv();
