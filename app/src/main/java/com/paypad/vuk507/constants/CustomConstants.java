@@ -38,4 +38,7 @@ public class CustomConstants {
 
     public static final int TYPE_REFUND = 0;
     public static final int TYPE_CANCEL = 1;
+
+    public static final int TYPE_ORDER_PAYMENT = 0;
+    public static final int TYPE_CANCEL_PAYMENT = 1;
 }

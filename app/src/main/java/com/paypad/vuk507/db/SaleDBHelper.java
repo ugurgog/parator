@@ -3,9 +3,9 @@ package com.paypad.vuk507.db;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import com.paypad.vuk507.model.Order;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.Refund;
-import com.paypad.vuk507.model.Sale;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModel;
@@ -21,7 +21,7 @@ import io.realm.RealmResults;
 
 public class SaleDBHelper {
 
-    public static BaseResponse createOrUpdateSale(Sale sale) {
+    public static BaseResponse createOrUpdateSale(Order order) {
         Realm realm = Realm.getDefaultInstance();
 
         BaseResponse baseResponse = new BaseResponse();
@@ -32,50 +32,50 @@ public class SaleDBHelper {
             @Override
             public void execute(Realm realm) {
                 try{
-                    realm.insertOrUpdate(sale);
+                    realm.insertOrUpdate(order);
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Sale cannot be saved!");
+                    baseResponse.setMessage("Order cannot be saved!");
                 }
             }
         });
         return baseResponse;
     }
 
-    public static Sale getSaleById(String saleId){
+    public static Order getSaleById(String id){
         Realm realm = Realm.getDefaultInstance();
-        Sale sale = realm.where(Sale.class).equalTo("saleUuid", saleId).findFirst();
-        return sale;
+        Order order = realm.where(Order.class).equalTo("id", id).findFirst();
+        return order;
     }
 
-    public static RealmResults<Sale> getOrdersByUserId(String userId){
+    public static RealmResults<Order> getOrdersByUserId(String userId){
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<Sale> saleList = realm.where(Sale.class).equalTo("userUuid", userId).findAll();
-        return saleList;
+        RealmResults<Order> orderList = realm.where(Order.class).equalTo("userId", userId).findAll();
+        return orderList;
     }
 
-    public static RealmResults<Sale> getOrdersByZNum(long zNum){
+    public static RealmResults<Order> getOrdersByZNum(long zNum){
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<Sale> saleList = realm.where(Sale.class).equalTo("zNum", zNum).findAll();
-        return saleList;
+        RealmResults<Order> orderList = realm.where(Order.class).equalTo("zNum", zNum).findAll();
+        return orderList;
     }
 
-    public static RealmResults<Sale> getOrdersByUserIdAndDeviceId(String userId, String deviceId){
+    public static RealmResults<Order> getOrdersByUserIdAndDeviceId(String userId, String deviceId){
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<Sale> saleList = realm.where(Sale.class)
-                .equalTo("userUuid", userId)
+        RealmResults<Order> orderList = realm.where(Order.class)
+                .equalTo("userId", userId)
                 .equalTo("deviceId", deviceId)
                 .findAll();
-        return saleList;
+        return orderList;
     }
 
     public static SaleModel getSaleModelBySaleId(String saleId){
         SaleModel saleModel = new SaleModel();
 
-        saleModel.setSale(getSaleById(saleId));
+        saleModel.setOrder(getSaleById(saleId));
 
-        List<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
-        saleModel.setSaleItems(saleItems);
+        List<OrderItem> orderItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
+        saleModel.setOrderItems(orderItems);
 
         List<Transaction> transactions = TransactionDBHelper.getTransactionsBySaleId(saleId);
         saleModel.setTransactions(transactions);
@@ -86,21 +86,21 @@ public class SaleDBHelper {
     public static List<SaleModel> getSaleModelsForTransactionList(String userId){
 
         List<SaleModel> saleModels = new ArrayList<>();
-        List<Sale> sales = getOrdersByUserId(userId);
+        List<Order> orders = getOrdersByUserId(userId);
 
-        for(Sale sale : sales){
+        for(Order order : orders){
 
-            LogUtil.logSale(sale);
+            LogUtil.logSale(order);
 
-            if(sale.isPaymentCompleted()){
+            if(order.isPaymentCompleted()){
                 SaleModel saleModel = new SaleModel();
 
-                String saleId = sale.getSaleUuid();
+                String saleId = order.getId();
 
-                saleModel.setSale(sale);
+                saleModel.setOrder(order);
 
-                List<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
-                saleModel.setSaleItems(saleItems);
+                List<OrderItem> orderItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
+                saleModel.setOrderItems(orderItems);
 
                 List<Transaction> transactions = TransactionDBHelper.getTransactionsBySaleId(saleId);
                 saleModel.setTransactions(transactions);
@@ -116,38 +116,38 @@ public class SaleDBHelper {
         List<SaleModel> saleModels = new ArrayList<>();
 
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<Sale> saleList;
+        RealmResults<Order> orderList;
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         Log.i("Info", "getSaleModelsForReport   "
                 + simpleDateFormat.format(startDate) + "  " + simpleDateFormat.format(endDate) );
 
         if(deviceId != null){
-            saleList = realm.where(Sale.class)
-                    .equalTo("userUuid", userId)
+            orderList = realm.where(Order.class)
+                    .equalTo("userId", userId)
                     .equalTo("deviceId", deviceId)
                     .between("createDate", startDate, endDate)
                     .findAll();
         }else{
-            saleList = realm.where(Sale.class)
-                    .equalTo("userUuid", userId)
+            orderList = realm.where(Order.class)
+                    .equalTo("userId", userId)
                     .between("createDate", startDate, endDate)
                     .findAll();
         }
 
-        for(Sale sale : saleList){
+        for(Order order : orderList){
 
-            LogUtil.logSale(sale);
+            LogUtil.logSale(order);
 
-            if(sale.isPaymentCompleted()){
+            if(order.isPaymentCompleted()){
                 SaleModel saleModel = new SaleModel();
 
-                String saleId = sale.getSaleUuid();
+                String saleId = order.getId();
 
-                saleModel.setSale(sale);
+                saleModel.setOrder(order);
 
-                List<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
-                saleModel.setSaleItems(saleItems);
+                List<OrderItem> orderItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
+                saleModel.setOrderItems(orderItems);
 
                 List<Transaction> transactions = TransactionDBHelper.getTransactionsBySaleId(saleId);
                 saleModel.setTransactions(transactions);
@@ -164,27 +164,27 @@ public class SaleDBHelper {
         List<SaleModel> saleModels = new ArrayList<>();
 
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<Sale> saleList;
+        RealmResults<Order> orderList;
 
-        saleList = realm.where(Sale.class)
-                .equalTo("userUuid", userId)
+        orderList = realm.where(Order.class)
+                .equalTo("userId", userId)
                 .equalTo("isEndOfDayProcessed", false)
                 .equalTo("paymentCompleted", true)
                 .findAll();
 
-        for(Sale sale : saleList){
+        for(Order order : orderList){
 
-            LogUtil.logSale(sale);
+            LogUtil.logSale(order);
 
-            if(sale.isPaymentCompleted()){
+            if(order.isPaymentCompleted()){
                 SaleModel saleModel = new SaleModel();
 
-                String saleId = sale.getSaleUuid();
+                String saleId = order.getId();
 
-                saleModel.setSale(sale);
+                saleModel.setOrder(order);
 
-                List<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
-                saleModel.setSaleItems(saleItems);
+                List<OrderItem> orderItems = SaleItemDBHelper.getSaleItemsBySaleId(saleId);
+                saleModel.setOrderItems(orderItems);
 
                 List<Transaction> transactions = TransactionDBHelper.getTransactionsBySaleId(saleId);
                 saleModel.setTransactions(transactions);
@@ -201,8 +201,8 @@ public class SaleDBHelper {
             @Override
             public void execute(Realm realm) {
                 try{
-                    RealmResults<Sale> sales = realm.where(Sale.class).findAll();
-                    sales.deleteAllFromRealm();
+                    RealmResults<Order> orders = realm.where(Order.class).findAll();
+                    orders.deleteAllFromRealm();
                 }catch (Exception e){
 
                 }
@@ -213,8 +213,8 @@ public class SaleDBHelper {
             @Override
             public void execute(Realm realm) {
                 try{
-                    RealmResults<SaleItem> saleItems = realm.where(SaleItem.class).findAll();
-                    saleItems.deleteAllFromRealm();
+                    RealmResults<OrderItem> orderItems = realm.where(OrderItem.class).findAll();
+                    orderItems.deleteAllFromRealm();
                 }catch (Exception e){
 
                 }

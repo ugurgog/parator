@@ -184,7 +184,7 @@ public class CategorySelectFragment extends BaseFragment {
 
     public void updateAdapterWithCurrentList(){
 
-        categories = CategoryDBHelper.getAllCategories(user.getUsername());
+        categories = CategoryDBHelper.getAllCategories(user.getId());
         categoryList = new ArrayList(categories);
 
         if(classTag != null && classTag.equals(ProductEditFragment.class.getName())){

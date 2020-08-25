@@ -318,12 +318,6 @@ public class ProductEditFragment extends BaseFragment implements
             return;
         }
 
-        /*if(myCategory == null || myCategory.getName() == null || myCategory.getName().isEmpty()){
-            CommonUtils.snackbarDisplay(productMainll,
-                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.product_category_can_not_be_empty));
-            return;
-        }*/
-
         if(unitTypeTv.getText() == null || unitTypeTv.getText().toString().isEmpty()){
             CommonUtils.snackbarDisplay(productMainll,
                     Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.product_unit_type_can_not_be_empty));
@@ -345,40 +339,38 @@ public class ProductEditFragment extends BaseFragment implements
         realm.beginTransaction();
 
         if(productXX.getId() == 0){
-            productXX.setCreateDate(new Date());
             productXX.setId(ProductDBHelper.getCurrentPrimaryKeyId());
-            productXX.setUserUuid(user.getUuid());
+            productXX.setCreateDate(new Date());
+            productXX.setUserId(user.getId());
+            productXX.setDeleted(false);
             inserted = true;
+        }else {
+            productXX.setUpdateDate(new Date());
+            productXX.setUpdateUserId(user.getId());
         }
-
-        Product tempProduct = realm.copyToRealm(productXX);
 
         if(amountRateEt.getText() != null && !amountRateEt.getText().toString().isEmpty()){
             double amount = DataUtils.getDoubleValueFromFormattedString(amountRateEt.getText().toString());
-            tempProduct.setAmount(amount);
+            productXX.setAmount(amount);
         }else
-            tempProduct.setAmount(0);
+            productXX.setAmount(0);
 
-        tempProduct.setUnitId(mUnitModel.getId());
+        productXX.setUnitId(mUnitModel.getId());
 
         if(myTaxModel != null)
-            tempProduct.setTaxId(myTaxModel.getId());
-            //tempProduct.setTaxId(myTaxModel.getId());
+            productXX.setTaxId(myTaxModel.getId());
 
         if(myCategory != null)
-            tempProduct.setCategoryId(myCategory.getId());
+            productXX.setCategoryId(myCategory.getId());
 
-        tempProduct.setName(productNameEt.getText().toString());
-
-        tempProduct.setColorId(mColorId);
-
-        tempProduct.setProductImage(itemPictureByteArray);
-
-        tempProduct.setDescription(productDescriptionEt.getText().toString());
+        productXX.setName(productNameEt.getText().toString());
+        productXX.setColorId(mColorId);
+        productXX.setProductImage(itemPictureByteArray);
+        productXX.setDescription(productDescriptionEt.getText().toString());
 
         realm.commitTransaction();
 
-        BaseResponse baseResponse = ProductDBHelper.createOrUpdateProduct(tempProduct);
+        BaseResponse baseResponse = ProductDBHelper.createOrUpdateProduct(productXX);
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
         if(baseResponse.isSuccess()){

@@ -167,8 +167,7 @@
     <string name="keep">Devam Et</string>
     <string name="cancel_transaction">İşlemi İptal Et</string>
     <string name="refunded_items_desc">Ürün tutarı uygulanabilir KDV ve indirimleri içerir</string>
-    <string name="sales">Satışlar</string>
-    <string name="sale">Satış</string>
+    <string name="order">Satış</string>
     <string name="customize_report">Raporu Özelleştir</string>
     <string name="all_devices">Tüm Cihazlar</string>
     <string name="this_device_only">Sadece Bu Cihaz</string>
@@ -465,5 +464,13 @@
     <string name="payment_cancelled_upper">ÖDEME İPTAL EDİLDİ</string>
     <string name="amount_to_refund_upper">İADE EDİLECEK TUTAR</string>
     <string name="refund_amount_desc">Tutar ile geri ödeme (belirli bir ürünün değil) envanterinizde, ürün satış raporlarınızda ve hediye kartı bakiyelerinizde tutarsızlığa neden olabilir.</string>
+    <string name="needs_your_current_location">uygulaması konum bilgisine erişmek istiyor</string>
+    <string name="refunded">İade Edilenler</string>
+    <string name="available_refund_amount">İade edilebilecek toplam tutar</string>
+    <string name="select_transaction_for_refund">İade için işlem seçin</string>
+    <string name="select_transaction_for_cancel">İptal için işlem seçin</string>
+    <string name="remaining">Kalan</string>
+    <string name="cancel_all_transactions">Tüm Ödemeleri İptal Et</string>
+    <string name="select_payment_for_cancel">İPTAL İÇİN İŞLEM SEÇİN</string>
 
 </resources>

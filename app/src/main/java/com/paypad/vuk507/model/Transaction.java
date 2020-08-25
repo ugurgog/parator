@@ -10,9 +10,9 @@ public class Transaction extends RealmObject {
 
     @Index
     @PrimaryKey
-    private String transactionId;
+    private String id;
     @Index
-    private String saleUuid;
+    private String orderId;
     private int transactionType;
     private long seqNumber;                 // Sequence number
     private double transactionAmount;       // Split amount tutari
@@ -31,7 +31,7 @@ public class Transaction extends RealmObject {
     private Date createDate;
     private Date cancellationDate;
     @Index
-    private String userUuid;
+    private String userId;
     @Index
     private long zNum;
     private long fNum;
@@ -55,12 +55,12 @@ public class Transaction extends RealmObject {
         this.fNum = fNum;
     }
 
-    public String getTransactionId() {
-        return transactionId;
+    public String getId() {
+        return id;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getTransactionType() {
@@ -79,12 +79,12 @@ public class Transaction extends RealmObject {
         this.cancellationDate = cancellationDate;
     }
 
-    public String getSaleUuid() {
-        return saleUuid;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setSaleUuid(String saleUuid) {
-        this.saleUuid = saleUuid;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public double getTransactionAmount() {
@@ -175,12 +175,12 @@ public class Transaction extends RealmObject {
         this.createDate = createDate;
     }
 
-    public String getUserUuid() {
-        return userUuid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserUuid(String userUuid) {
-        this.userUuid = userUuid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public long getSeqNumber() {

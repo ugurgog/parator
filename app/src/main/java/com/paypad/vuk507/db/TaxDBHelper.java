@@ -9,10 +9,11 @@ import io.realm.RealmResults;
 
 public class TaxDBHelper {
 
-    public static RealmResults<TaxModel> getAllTaxes(String username){
+    public static RealmResults<TaxModel> getAllTaxes(String userId){
         Realm realm = Realm.getDefaultInstance();
         RealmResults<TaxModel> taxModels = realm.where(TaxModel.class)
-                .equalTo("createUsername", username)
+                .equalTo("userId", userId)
+                .equalTo("isDeleted", false)
                 .findAll();
         return taxModels;
     }
@@ -29,13 +30,8 @@ public class TaxDBHelper {
 
                 try{
                     TaxModel taxModel = realm.where(TaxModel.class).equalTo("id", id).findFirst();
-
-                    try{
-
-                    }catch (Exception e){
-                        taxModel.deleteFromRealm();
-                        baseResponse.setMessage("Tax deleted successfully");
-                    }
+                    taxModel.deleteFromRealm();
+                    baseResponse.setMessage("Tax deleted successfully");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Tax cannot be deleted");

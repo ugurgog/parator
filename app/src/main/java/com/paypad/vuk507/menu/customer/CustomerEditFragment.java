@@ -26,23 +26,25 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.contact.ContactDialogFragment;
 import com.paypad.vuk507.contact.interfaces.ReturnContactListener;
 import com.paypad.vuk507.db.CustomerDBHelper;
+import com.paypad.vuk507.db.CustomerGroupDBHelper;
 import com.paypad.vuk507.db.GroupDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.ReturnObjectCallback;
 import com.paypad.vuk507.login.utils.Validation;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.group.SelectMultiGroupFragment;
 import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
 import com.paypad.vuk507.model.Customer;
+import com.paypad.vuk507.model.CustomerGroup;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.Contact;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.PermissionModule;
 import com.paypad.vuk507.utils.PhoneNumberTextWatcher;
 
@@ -56,11 +58,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class CustomerEditFragment extends BaseFragment
@@ -140,7 +144,7 @@ public class CustomerEditFragment extends BaseFragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
             Objects.requireNonNull(getActivity()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-            mView = inflater.inflate(R.layout.fragment_customer_create, container, false);
+            mView = inflater.inflate(R.layout.fragment_customer_edit, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -293,15 +297,18 @@ public class CustomerEditFragment extends BaseFragment
     }
 
     private void setGroupNames() {
-        RealmResults<Group> allGroups = GroupDBHelper.getUserGroups(user.getUuid());
+        RealmResults<Group> allGroups = GroupDBHelper.getUserGroups(user.getId());
         List<Group> groups = new ArrayList<>();
         groups.addAll( new ArrayList(allGroups));
 
         if(groups.size() > 0){
             String groupNames = "";
             for(Group group : groups){
-                for(Long customerId : group.getCustomerIds()){
-                    if(customerId == customer.getId()){
+
+                RealmList<Customer> customers = CustomerGroupDBHelper.getCustomersOfGroup(group.getId(), user.getId());
+
+                for(Customer customer1 : customers){
+                    if(customer1.getId() == customer.getId()){
                         groupNames = groupNames.concat(group.getName()).concat(",");
                         selectedGroupList.add(group);
                         initialSelectedGroupList.add(group);
@@ -405,32 +412,32 @@ public class CustomerEditFragment extends BaseFragment
         realm.beginTransaction();
 
         if(customer.getId() == 0){
-            customer.setCreateDate(new Date());
             customer.setId(CustomerDBHelper.getCustomerCurrentPrimaryKeyId());
-            customer.setUserUuid(user.getUuid());
+            customer.setCreateDate(new Date());
+            customer.setUserId(user.getId());
             customer.setColorId(CommonUtils.getDarkRandomColor(getContext()));
+            customer.setDeleted(false);
             inserted = true;
+        }else {
+            customer.setUpdateDate(new Date());
+            customer.setUpdateUserId(user.getId());
         }
 
-        Customer tempCustomer = realm.copyToRealm(customer);
-
-        tempCustomer.setName(firstNameEt.getText().toString());
-        tempCustomer.setSurname(lastNameEt.getText().toString());
-        tempCustomer.setEmail(emailEt.getText().toString());
-        tempCustomer.setPhoneNumber(phoneNumberEt.getText().toString());
-        tempCustomer.setCountry(countryEt.getText().toString());
-        tempCustomer.setCity(cityEt.getText().toString());
-        tempCustomer.setAddress(addressEt.getText().toString());
-        tempCustomer.setPostalCode(postalCodeEt.getText().toString());
-        tempCustomer.setCompany(companyEt.getText().toString());
-        tempCustomer.setOtherInformation(otherInfoEt.getText().toString());
-
-        long customerId = tempCustomer.getId();
+        customer.setName(firstNameEt.getText().toString());
+        customer.setSurname(lastNameEt.getText().toString());
+        customer.setEmail(emailEt.getText().toString());
+        customer.setPhoneNumber(phoneNumberEt.getText().toString());
+        customer.setCountry(countryEt.getText().toString());
+        customer.setCity(cityEt.getText().toString());
+        customer.setAddress(addressEt.getText().toString());
+        customer.setPostalCode(postalCodeEt.getText().toString());
+        customer.setCompany(companyEt.getText().toString());
+        customer.setOtherInformation(otherInfoEt.getText().toString());
 
         try {
             if(birthDayEt.getText() != null && !birthDayEt.getText().toString().isEmpty()){
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                tempCustomer.setBirthday(formatter.parse(birthDayEt.getText().toString()));
+                customer.setBirthday(formatter.parse(birthDayEt.getText().toString()));
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -440,7 +447,7 @@ public class CustomerEditFragment extends BaseFragment
 
         boolean finalInserted = inserted;
 
-        BaseResponse baseResponse = CustomerDBHelper.createOrUpdateCustomer(tempCustomer);
+        BaseResponse baseResponse = CustomerDBHelper.createOrUpdateCustomer(customer);
 
         if(baseResponse.isSuccess()){
             if(finalInserted)
@@ -449,12 +456,27 @@ public class CustomerEditFragment extends BaseFragment
                 returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.CHANGED);
         }
 
-        // Secilen gruplara customer dahil edilir
-        // TODO - unselected yapilan gruplardan da customer cikartilmali ???
+        RealmResults<CustomerGroup> customerGroups = CustomerGroupDBHelper.getCustomerGroupsOfCustomer(customer.getId(), user.getId());
+        BaseResponse baseResponse1 = CustomerGroupDBHelper.deleteCustomerGroupsByGivenList(customerGroups);
+        DataUtils.showBaseResponseMessage(getContext(), baseResponse1);
+
+        if(!baseResponse1.isSuccess())
+            return;
+
         if(selectedGroupList != null && selectedGroupList.size() > 0){
             for(Group group : selectedGroupList){
-                if(!group.getCustomerIds().contains(customerId))
-                    updateGroup(group, tempCustomer);
+
+                CustomerGroup customerGroup = new CustomerGroup();
+                customerGroup.setId(UUID.randomUUID().toString());
+                customerGroup.setCustomerId(customer.getId());
+                customerGroup.setGroupId(group.getId());
+                customerGroup.setUserId(user.getId());
+                customerGroup.setCreateDate(new Date());
+
+                BaseResponse baseResponse2 = CustomerGroupDBHelper.createOrUpdateCustomerGroup(customerGroup);
+
+                if(baseResponse2.isSuccess())
+                    returnGroupCallback.OnGroupReturn(group, ItemProcessEnum.INSERTED);
             }
         }
 
@@ -470,35 +492,17 @@ public class CustomerEditFragment extends BaseFragment
                     }
                 }
                 if(!exist){
-                    GroupDBHelper.deleteCustomerFromAGroup(customerId, initial, new CompleteCallback() {
-                        @Override
-                        public void onComplete(BaseResponse baseResponse) {
-                            if(baseResponse.isSuccess()){
-                                returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.DELETED);
-                            }
-                        }
-                    });
+
+                    BaseResponse baseResponse3 = CustomerGroupDBHelper.deleteCustomerGroupByGroupIdAndCustomerId(initial.getId(), customer.getId(), user.getId());
+                    DataUtils.showBaseResponseMessage(getContext(), baseResponse3);
+
+                    if(baseResponse3.isSuccess())
+                        returnGroupCallback.OnGroupReturn(initial, ItemProcessEnum.DELETED);
                 }
             }
         }
 
         Objects.requireNonNull(getActivity()).onBackPressed();
-    }
-
-    public void updateGroup(Group group, Customer customer){
-        realm.beginTransaction();
-
-        Group tempGroup = realm.copyToRealm(group);
-
-        tempGroup.getCustomerIds().add(customer.getId());
-
-        realm.commitTransaction();
-
-        BaseResponse baseResponse = GroupDBHelper.createOrUpdateGroup(tempGroup);
-
-        if(baseResponse.isSuccess()){
-            returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.INSERTED);
-        }
     }
 
     private void getContactList() {

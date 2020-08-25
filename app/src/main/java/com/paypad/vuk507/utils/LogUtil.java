@@ -6,8 +6,9 @@ import android.util.Log;
 import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.Category;
 import com.paypad.vuk507.model.DynamicBoxModel;
+import com.paypad.vuk507.model.OrderRefundItem;
 import com.paypad.vuk507.model.Refund;
-import com.paypad.vuk507.model.Sale;
+import com.paypad.vuk507.model.Order;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.ReportDiscountModel;
 import com.paypad.vuk507.model.pojo.ReportModel;
@@ -24,8 +25,8 @@ public class LogUtil {
         try{
             for(Transaction transaction : transactions){
                 Log.i("Info", "::logTransactions Transactions +++++++++++++++++++++++++");
-                Log.i("Info", "::logTransactions Transaction: SaleUuid         :" + transaction.getSaleUuid() );
-                Log.i("Info", "::logTransactions Transaction: TransactionUuid  :" + transaction.getTransactionId() );
+                Log.i("Info", "::logTransactions Transaction: Orderid          :" + transaction.getOrderId() );
+                Log.i("Info", "::logTransactions Transaction: Id               :" + transaction.getId() );
                 Log.i("Info", "::logTransactions Transaction: SeqNumber        :" + transaction.getSeqNumber() );
                 Log.i("Info", "::logTransactions Transaction: TransactionAmount:" + transaction.getTransactionAmount() );
                 Log.i("Info", "::logTransactions Transaction: CashAmount       :" + transaction.getCashAmount() );
@@ -41,23 +42,25 @@ public class LogUtil {
         }
     }
 
-    public static void logSale(Sale sale){
+    public static void logSale(Order order){
         try{
             @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
             Log.i("Info", "::logSale Transactions +++++++++++++++++++++++++");
-            Log.i("Info", "::logSale CustomerId:" + sale.getCustomerId() +
-                    ", Discounts:" + sale.getDiscounts().toString() +
-                    ", DiscountedAmount:" + sale.getDiscountedAmount() +
-                    ", TotalAmount:" + sale.getTotalAmount() +
-                    ", SaleCount:" + sale.getTotalItemCount() +
-                    ", SaleUuid:" + sale.getSaleUuid() +
-                    ", RemainAmount:" + sale.getRemainAmount() +
-                    ", UserUuid:" + sale.getUserUuid() +
-                    ", CreateDate:" + simpleDateFormat.format(sale.getCreateDate()) +
-                    ", PaymentCompleted:" + sale.isPaymentCompleted() +
-                    ", DeviceId:" + sale.getDeviceId() +
-                    ", OrderNum:" + sale.getOrderNum() );
+            Log.i("Info", "::logSale CustomerId:" + order.getCustomerId() +
+                    ", Discounts:" + order.getDiscounts().toString() +
+                    ", DiscountedAmount:" + order.getDiscountedAmount() +
+                    ", TotalAmount:" + order.getTotalAmount() +
+                    ", SaleCount:" + order.getTotalItemCount() +
+                    ", Id:" + order.getId() +
+                    ", RemainAmount:" + order.getRemainAmount() +
+                    ", UserId:" + order.getUserId() +
+                    ", CreateDate:" + simpleDateFormat.format(order.getCreateDate()) +
+                    ", PaymentCompleted:" + order.isPaymentCompleted() +
+                    ", DeviceId:" + order.getDeviceId() +
+                    ", OrderNum:" + order.getOrderNum() +
+                    ", Longitude:" + order.getLongitude() +
+                    ", Latitude:" + order.getLatitude() );
         }catch (Exception e){
 
         }
@@ -67,8 +70,8 @@ public class LogUtil {
         try{
 
             Log.i("Info", methodName + "+++++++++++++++++++++++++");
-            Log.i("Info", methodName + " SaleUuid:" + transaction.getSaleUuid() +
-                    ", TransactionUuid:" + transaction.getTransactionId() +
+            Log.i("Info", methodName + " OrderId:" + transaction.getOrderId() +
+                    ", Id:" + transaction.getId() +
                     ", SeqNumber:" + transaction.getSeqNumber() +
                     ", TransactionAmount:" + transaction.getTransactionAmount() +
                     ", TotalAmount:" + transaction.getTotalAmount() +
@@ -77,7 +80,7 @@ public class LogUtil {
                     ", CreateDate:" + transaction.getCreateDate() +
                     ", ChangeAmount:" + transaction.getChangeAmount() +
                     ", CashAmount:" + transaction.getCashAmount() +
-                    ", UserUuid:" + transaction.getUserUuid() +
+                    ", UserId:" + transaction.getUserId() +
                     ", isMailSend:" + transaction.isMailSend() +
                     ", mailAddress:" + transaction.getMailAdress() +
                     ", transactionType:" + transaction.getTransactionType() +
@@ -94,14 +97,42 @@ public class LogUtil {
             Log.i("Info", "logRefund +++++++++++++++++++++++++");
             Log.i("Info", "logRefund Id:" + refund.getId() +
                     ", TransactionId:" + refund.getTransactionId() +
-                    ", RefundAmount:" + refund.getRefundAmount() +
                     ", OrderId:" + refund.getOrderId() +
+                    ", RefundGroupId:" + refund.getRefundGroupId() +
+                    ", RefundAmount:" + refund.getRefundAmount() +
                     ", RefundReason:" + refund.getRefundReason() +
                     ", isRefundByAmount:" + refund.isRefundByAmount() +
                     ", isSuccessful:" + refund.isSuccessful() +
                     ", ZNum:" + refund.getzNum() +
                     ", FNum:" + refund.getfNum() +
-                    ", RefundItems:" + refund.getRefundItems().toString());
+                    ", Latitude:" + refund.getLatitude() +
+                    ", Longitude:" + refund.getLongitude() +
+                    ", isTransferred:" + refund.isTransferred() +
+                    ", isEODProcessed:" + refund.isEODProcessed() +
+                    ", EodDate:" + refund.getEodDate());
+        }catch (Exception e){
+
+        }
+    }
+
+    public static void logOrderRefundItem(OrderRefundItem orderRefundItem){
+        try{
+
+            Log.i("Info", "logOrderRefundItem +++++++++++++++++++++++++");
+            Log.i("Info", "logOrderRefundItem Id:" + orderRefundItem.getId() +
+                    ", OrderItemId:" + orderRefundItem.getOrderItemId() +
+                    ", OrderId:" + orderRefundItem.getOrderId() +
+                    ", RefundGroupId:" + orderRefundItem.getRefundGroupId() +
+                    ", Name:" + orderRefundItem.getName() +
+                    ", Amount:" + orderRefundItem.getAmount() +
+                    ", GrossAmount:" + orderRefundItem.getGrossAmount() +
+                    ", Note:" + orderRefundItem.getNote() +
+                    ", ProductId:" + orderRefundItem.getProductId() +
+                    ", isDynamicAmount:" + orderRefundItem.isDynamicAmount() +
+                    ", OrderItemTax:" + orderRefundItem.getOrderItemTax() +
+                    ", ColorId:" + orderRefundItem.getColorId() +
+                    ", CategoryName:" + orderRefundItem.getCategoryName() +
+                    ", isTransferred:" + orderRefundItem.isTransferred());
         }catch (Exception e){
 
         }
@@ -115,7 +146,10 @@ public class LogUtil {
                     ", Name:" + category.getName() +
                     ", ColorId:" + category.getColorId() +
                     ", CreateDate:" + category.getCreateDate() +
-                    ", userName:" + category.getCreateUsername());
+                    ", UserId:" + category.getUserId() +
+                    ", UpdateDate:" + category.getUpdateDate() +
+                    ", UpdateUserId:" + category.getUpdateUserId() +
+                    ", isDeleted:" + category.isDeleted());
         }catch (Exception e){
 
         }
@@ -125,10 +159,14 @@ public class LogUtil {
         try{
             for(DynamicBoxModel dynamicBoxModel : dynamicBoxModelList){
                 Log.i("Info", "::logDynamicBoxList +++++++++++++++++++++++++");
-                Log.i("Info", "::logDynamicBoxList itemId:" + dynamicBoxModel.getItemId() +
+                Log.i("Info", "::logDynamicBoxList Id:" + dynamicBoxModel.getId() +
+                        ", itemId:" +  dynamicBoxModel.getItemId() +
                         ", StructId:" +  dynamicBoxModel.getStructId() +
-                        ", createUserId:" +  dynamicBoxModel.getCreateUserId()+
-                        ", createDate:" + dynamicBoxModel.getCreateDate());
+                        ", UserId:" +  dynamicBoxModel.getUserId()+
+                        ", createDate:" + dynamicBoxModel.getCreateDate() +
+                        ", UpdateUserId:" +  dynamicBoxModel.getUpdateUserId()+
+                        ", UpdateDate:" +  dynamicBoxModel.getUpdateDate()+
+                        ", isDeleted:" +  dynamicBoxModel.isDeleted());
             }
 
         }catch (Exception e){

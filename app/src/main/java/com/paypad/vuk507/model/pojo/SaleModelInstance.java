@@ -11,7 +11,7 @@ public class SaleModelInstance {
 
         if(instance == null) {
             saleModel = new SaleModel();
-            saleModel.getSale().setSaleUuid(UUID.randomUUID().toString());
+            saleModel.getOrder().setId(UUID.randomUUID().toString());
             instance = new SaleModelInstance();
         }
         return instance;

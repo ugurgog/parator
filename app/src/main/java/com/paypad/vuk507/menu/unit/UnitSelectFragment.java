@@ -199,7 +199,7 @@ public class UnitSelectFragment extends BaseFragment {
         addDefaultUnitTitle(getResources().getString(R.string.system_units));
         fillItems();
 
-        unitModels = UnitDBHelper.getAllUnits(user.getUsername());
+        unitModels = UnitDBHelper.getAllUnits(user.getId());
 
         if(unitModels != null && unitModels.size() > 0)
             addDefaultUnitTitle(getResources().getString(R.string.user_defined_units));

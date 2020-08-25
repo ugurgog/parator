@@ -215,7 +215,7 @@ public class GroupFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
-        groups = GroupDBHelper.getUserGroups(user.getUuid());
+        groups = GroupDBHelper.getUserGroups(user.getId());
         groupList = new ArrayList(groups);
 
         groupListAdapter = new GroupListAdapter(groupList, new ReturnGroupCallback() {

@@ -281,14 +281,14 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
     private void setProductAdapter(){
         RealmResults<Product> products;
-        products = ProductDBHelper.getAllProducts(user.getUuid());
+        products = ProductDBHelper.getAllProducts(user.getId());
         productList = new ArrayList(products);
 
         boolean dataExist = productList.size() > 0;
 
         for(Iterator<Product> it = productList.iterator(); it.hasNext();) {
             Product product = it.next();
-            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.PRODUCT_SET.getId(), product.getId(), user.getUuid());
+            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.PRODUCT_SET.getId(), product.getId(), user.getId());
 
             if(dynamicBoxModel != null)
                 it.remove();
@@ -341,14 +341,14 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
     }
 
     private void setDiscountAdapter(){
-        RealmResults<Discount> discounts = DiscountDBHelper.getAllDiscounts(user.getUsername());
+        RealmResults<Discount> discounts = DiscountDBHelper.getAllDiscounts(user.getId());
         discountList = new ArrayList(discounts);
 
         boolean dataExist = discountList.size() > 0;
 
         for(Iterator<Discount> it = discountList.iterator(); it.hasNext();) {
             Discount discount = it.next();
-            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.DISCOUNT_SET.getId(), discount.getId(), user.getUuid());
+            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.DISCOUNT_SET.getId(), discount.getId(), user.getId());
 
             if(dynamicBoxModel != null)
                 it.remove();
@@ -377,14 +377,14 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
     }
 
     private void setCategoryAdapter(){
-        RealmResults<Category> categories = CategoryDBHelper.getAllCategories(user.getUsername());
+        RealmResults<Category> categories = CategoryDBHelper.getAllCategories(user.getId());
         categoryList = new ArrayList(categories);
 
         boolean dataExist = categoryList.size() > 0;
 
         for(Iterator<Category> it = categoryList.iterator(); it.hasNext();) {
             Category category = it.next();
-            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.CATEGORY_SET.getId(), category.getId(), user.getUuid());
+            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.CATEGORY_SET.getId(), category.getId(), user.getId());
 
             if(dynamicBoxModel != null)
                 it.remove();
@@ -412,7 +412,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
     }
 
     private void setTaxAdapter(){
-        RealmResults<TaxModel> taxModels = TaxDBHelper.getAllTaxes(user.getUsername());
+        RealmResults<TaxModel> taxModels = TaxDBHelper.getAllTaxes(user.getId());
         taxModelList = new ArrayList(taxModels);
 
         for(TaxRateEnum taxRateEnum : TaxRateEnum.values()){
@@ -427,7 +427,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
         for(Iterator<TaxModel> it = taxModelList.iterator(); it.hasNext();) {
             TaxModel taxModel = it.next();
-            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.TAX_SET.getId(), taxModel.getId(), user.getUuid());
+            DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.TAX_SET.getId(), taxModel.getId(), user.getId());
 
             if(dynamicBoxModel != null)
                 it.remove();
@@ -461,7 +461,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         for(Iterator<PaymentTypeEnum> it = paymentTypes.iterator(); it.hasNext();) {
             PaymentTypeEnum paymentTypeEnum = it.next();
             DynamicBoxModel dynamicBoxModel = DynamicBoxModelDBHelper.getDynamicBoxModel(DynamicStructEnum.PAYMENT_SET.getId(),
-                    paymentTypeEnum.getId(), user.getUuid());
+                    paymentTypeEnum.getId(), user.getId());
 
             if(dynamicBoxModel != null)
                 it.remove();

@@ -181,7 +181,7 @@ public class CategoryFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
-        categories = CategoryDBHelper.getAllCategories(user.getUsername());
+        categories = CategoryDBHelper.getAllCategories(user.getId());
         categoryList = new ArrayList(categories);
         categoryListAdapter = new CategoryListAdapter(getContext(), categoryList, mFragmentNavigation, new ReturnCategoryCallback() {
             @Override

@@ -14,7 +14,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 
@@ -26,11 +26,11 @@ import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 public class ItemsServicesAdapter extends RecyclerView.Adapter<ItemsServicesAdapter.SaleItemHolder> {
 
     private Context context;
-    private List<SaleItem> saleItems = new ArrayList<>();
+    private List<OrderItem> orderItems = new ArrayList<>();
 
-    public ItemsServicesAdapter(Context context, List<SaleItem> saleItems) {
+    public ItemsServicesAdapter(Context context, List<OrderItem> orderItems) {
         this.context = context;
-        this.saleItems.addAll(saleItems);
+        this.orderItems.addAll(orderItems);
     }
 
     @NonNull
@@ -52,7 +52,7 @@ public class ItemsServicesAdapter extends RecyclerView.Adapter<ItemsServicesAdap
         private TextView itemAmountTv;
 
         int position;
-        private SaleItem saleItem;
+        private OrderItem orderItem;
 
         public SaleItemHolder(View view) {
             super(view);
@@ -65,8 +65,8 @@ public class ItemsServicesAdapter extends RecyclerView.Adapter<ItemsServicesAdap
             itemAmountTv = view.findViewById(R.id.itemAmountTv);
         }
 
-        public void setData(SaleItem saleItem, int position) {
-            this.saleItem = saleItem;
+        public void setData(OrderItem orderItem, int position) {
+            this.orderItem = orderItem;
             this.position = position;
             setItemTile();
             setItemName();
@@ -75,41 +75,41 @@ public class ItemsServicesAdapter extends RecyclerView.Adapter<ItemsServicesAdap
         }
 
         private void setItemTile() {
-            shortNameTv.setText(DataUtils.getProductNameShortenName(saleItem.getName()));
+            shortNameTv.setText(DataUtils.getProductNameShortenName(orderItem.getName()));
 
-            if(saleItem.getItemImage() != null){
+            if(orderItem.getItemImage() != null){
                 shortNameTv.setText("");
                 itemImgv.post(new Runnable() {
                     @Override
                     public void run() {
-                        Bitmap bmp = BitmapFactory.decodeByteArray(saleItem.getItemImage(), 0, saleItem.getItemImage().length);
+                        Bitmap bmp = BitmapFactory.decodeByteArray(orderItem.getItemImage(), 0, orderItem.getItemImage().length);
                         itemImgv.setImageBitmap(Bitmap.createScaledBitmap(bmp, itemImgv.getWidth(),
                                 itemImgv.getHeight(), false));
                     }
                 });
-            }else if(saleItem.getColorId() != 0){
-                itemImgv.setBackgroundColor(context.getResources().getColor(saleItem.getColorId(), null));
+            }else if(orderItem.getColorId() != 0){
+                itemImgv.setBackgroundColor(context.getResources().getColor(orderItem.getColorId(), null));
             }else {
                 itemImgv.setBackgroundColor(CommonUtils.getItemColors()[0]);
             }
         }
 
         private void setItemName(){
-            if(saleItem.getName() != null){
-                if(saleItem.getQuantity() > 1)
-                    itemNameTv.setText(saleItem.getName().concat(" x ").concat(String.valueOf(saleItem.getQuantity())));
+            if(orderItem.getName() != null){
+                if(orderItem.getQuantity() > 1)
+                    itemNameTv.setText(orderItem.getName().concat(" x ").concat(String.valueOf(orderItem.getQuantity())));
                 else
-                    itemNameTv.setText(saleItem.getName());
+                    itemNameTv.setText(orderItem.getName());
             }
         }
 
         private void setItemNote(){
-            if(saleItem.getNote() != null)
-                itemNoteTv.setText(saleItem.getNote());
+            if(orderItem.getNote() != null)
+                itemNoteTv.setText(orderItem.getNote());
         }
 
         private void setItemAmount(){
-            double itemAmount = CommonUtils.round(saleItem.getAmount() * saleItem.getQuantity() , 2);
+            double itemAmount = CommonUtils.round(orderItem.getAmount() * orderItem.getQuantity() , 2);
             String amountStr = CommonUtils.getDoubleStrValueForView(itemAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
             itemAmountTv.setText(amountStr);
         }
@@ -117,14 +117,14 @@ public class ItemsServicesAdapter extends RecyclerView.Adapter<ItemsServicesAdap
 
     @Override
     public void onBindViewHolder(final ItemsServicesAdapter.SaleItemHolder holder, final int position) {
-        SaleItem saleItem = saleItems.get(position);
-        holder.setData(saleItem, position);
+        OrderItem orderItem = orderItems.get(position);
+        holder.setData(orderItem, position);
     }
 
     @Override
     public int getItemCount() {
-        if(saleItems != null)
-            return saleItems.size();
+        if(orderItems != null)
+            return orderItems.size();
         else
             return 0;
     }

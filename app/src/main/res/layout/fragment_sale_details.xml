@@ -6,7 +6,7 @@
     android:id="@+id/mainll">
 
 
-    <!-- Gross sales-->
+    <!-- Gross orders-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -181,7 +181,7 @@
 
     </LinearLayout>
 
-    <!-- Net sales-->
+    <!-- Net orders-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -306,7 +306,7 @@
 
     </LinearLayout>
 
-    <!-- Total sales-->
+    <!-- Total orders-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

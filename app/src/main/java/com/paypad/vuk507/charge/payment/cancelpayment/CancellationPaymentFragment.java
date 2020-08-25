@@ -1,6 +1,7 @@
-package com.paypad.vuk507.charge.payment;
+package com.paypad.vuk507.charge.payment.cancelpayment;
 
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,22 +15,22 @@ import androidx.annotation.Nullable;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.IOrderManager1;
-import com.paypad.vuk507.charge.order.OrderManager1;
+import com.paypad.vuk507.adapter.LocationTrackerAdapter;
+import com.paypad.vuk507.charge.order.CancellationManager;
+import com.paypad.vuk507.charge.order.ICancellationManager;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.db.AutoIncrementDBHelper;
-import com.paypad.vuk507.db.SaleDBHelper;
-import com.paypad.vuk507.db.SaleItemDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ProcessDirectionEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.LocationCallback;
 import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
-import com.paypad.vuk507.model.pojo.SaleModelInstance;
+import com.paypad.vuk507.model.pojo.CancelPaymentModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.LogUtil;
@@ -45,7 +46,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import pl.droidsonroids.gif.GifImageView;
 
-public class PaymentFragment extends BaseFragment implements PaymentStatusCallback {
+public class CancellationPaymentFragment extends BaseFragment implements PaymentStatusCallback {
 
     private View mView;
 
@@ -55,13 +56,13 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     private User user;
     private Transaction mTransaction;
     //private ProgressDialog progressDialog;
-    private PaymentCompletedFragment paymentCompletedFragment;
+    private CancellationPaymentCompletedFragment cancellationPaymentCompletedFragment;
     private PaymentStatusCallback paymentStatusCallback;
-    private IOrderManager1 orderManager;
     private AutoIncrement autoIncrement;
     private Realm realm;
+    private LocationTrackerAdapter locationTrackObj;
 
-    public PaymentFragment(Transaction transaction) {
+    public CancellationPaymentFragment(Transaction transaction) {
         mTransaction = transaction;
     }
 
@@ -122,9 +123,18 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getUuid());
-        orderManager = new OrderManager1();
+        initLocationTracker();
+        autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getId());
         completePayment();
+    }
+
+    private void initLocationTracker() {
+        locationTrackObj = new LocationTrackerAdapter(getContext(), new LocationCallback() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+            }
+        });
     }
 
     private void completePayment() {
@@ -134,7 +144,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
     public void saveTransaction(){
         mTransaction.setPaymentCompleted(true);
         mTransaction.setCreateDate(new Date());
-        mTransaction.setUserUuid(user.getUuid());
+        mTransaction.setUserId(user.getId());
         mTransaction.setTotalAmount(mTransaction.getTransactionAmount() + mTransaction.getTipAmount());
         mTransaction.setTransactionType(TransactionTypeEnum.SALE.getId());
         mTransaction.setzNum(autoIncrement.getzNum());
@@ -152,53 +162,22 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
 
             BaseResponse baseResponse = AutoIncrementDBHelper.updateFnumByNextValue(autoIncrement);
             DataUtils.showBaseResponseMessage(getContext(), baseResponse);
-            autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getUuid());
+            autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getId());
 
-            LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
+            CancelPaymentModelInstance.getInstance().getCancelPaymentModel().setRemainAmount(
+                    CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getRemainAmount()- mTransaction.getTransactionAmount());
 
-            orderManager.setRemainAmount(orderManager.getRemainAmount() - mTransaction.getTransactionAmount());
-
-            if(orderManager.isExistNotCompletedTransaction()){
+            if(CancellationManager.isExistNotCompletedTransaction(CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getTransactions())){
                 initPaymentCompletedFragment(ProcessDirectionEnum.PAYMENT_PARTIALLY_COMPLETED);
-                mFragmentNavigation.pushFragment(paymentCompletedFragment);
-            }else {
-                saveSaleAndItems();
-            }
-        }
-    }
-
-    private void saveSaleAndItems(){
-        SaleModelInstance.getInstance().getSaleModel().getSale().setCreateDate(new Date());
-        SaleModelInstance.getInstance().getSaleModel().getSale().setPaymentCompleted(true);
-        //SaleModelInstance.getInstance().getSaleModel().getSale().setEndOfDayProcessed(false);
-        SaleModelInstance.getInstance().getSaleModel().getSale().setOrderNum(DataUtils.getOrderRetrefNum(user.getUuid()));
-        SaleModelInstance.getInstance().getSaleModel().getSale().setzNum(autoIncrement.getzNum());
-        SaleModelInstance.getInstance().getSaleModel().getSale().setTransferred(false);
-
-        LogUtil.logSale(SaleModelInstance.getInstance().getSaleModel().getSale());
-
-        BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel().getSale());
-        DataUtils.showBaseResponseMessage(getContext(), saleBaseResponse);
-
-        if(saleBaseResponse.isSuccess()){
-
-            LogUtil.logAutoIncrement(autoIncrement);
-
-            BaseResponse baseResponseAI = AutoIncrementDBHelper.updateOrderNumByNextValue(autoIncrement);
-            DataUtils.showBaseResponseMessage(getContext(), baseResponseAI);
-            autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getUuid());
-
-            BaseResponse baseResponse = SaleItemDBHelper.saveSaleItems(SaleModelInstance.getInstance().getSaleModel());
-            DataUtils.showBaseResponseMessage(getContext(), baseResponse);
-
-            if(baseResponse.isSuccess())
+                mFragmentNavigation.pushFragment(cancellationPaymentCompletedFragment);
+            }else
                 showCompletedScreen();
         }
     }
 
     private void initPaymentCompletedFragment(ProcessDirectionEnum processType){
-        paymentCompletedFragment = new PaymentCompletedFragment(mTransaction, processType);
-        paymentCompletedFragment.setPaymentStatusCallback(this);
+        cancellationPaymentCompletedFragment = new CancellationPaymentCompletedFragment(mTransaction, processType);
+        cancellationPaymentCompletedFragment.setPaymentStatusCallback(this);
     }
 
     private void showCompletedScreen(){
@@ -219,7 +198,7 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
             public void run() {
                 //progressDialog.dismiss();
                 initPaymentCompletedFragment(ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED);
-                mFragmentNavigation.pushFragment(paymentCompletedFragment);
+                mFragmentNavigation.pushFragment(cancellationPaymentCompletedFragment);
 
             }
         }, 4000);
@@ -227,12 +206,24 @@ public class PaymentFragment extends BaseFragment implements PaymentStatusCallba
 
     @Override
     public void OnPaymentReturn(int status) {
-        if(paymentCompletedFragment != null){
+        if(cancellationPaymentCompletedFragment != null){
             Log.i("Info", "::OnPaymentReturn paymentCompletedFragment closed");
-            Objects.requireNonNull(paymentCompletedFragment.getActivity()).onBackPressed();
+            Objects.requireNonNull(cancellationPaymentCompletedFragment.getActivity()).onBackPressed();
         }
 
-        Log.i("Info", "::OnPaymentReturn PaymentFragment paymentStatusCallback triggered");
+        Log.i("Info", "::OnPaymentReturn OrderPaymentFragment paymentStatusCallback triggered");
         paymentStatusCallback.OnPaymentReturn(status);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        locationTrackObj.removeUpdates();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        locationTrackObj.removeUpdates();
     }
 }

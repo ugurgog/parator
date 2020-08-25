@@ -14,10 +14,10 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.db.PrinterSettingsDBHelper;
+import com.paypad.vuk507.db.GlobalSettingsDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.model.PrinterSettings;
+import com.paypad.vuk507.model.GlobalSettings;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -49,7 +49,7 @@ public class PrintOrdersFragment extends BaseFragment {
 
     private User user;
     private Realm realm;
-    private PrinterSettings printerSettings;
+    private GlobalSettings globalSettings;
 
     public PrintOrdersFragment() {
     }
@@ -127,15 +127,15 @@ public class PrintOrdersFragment extends BaseFragment {
     private void initVariables() {
         realm = Realm.getDefaultInstance();
         toolbarTitleTv.setText(getContext().getResources().getString(R.string.print_orders));
-        printerSettings = PrinterSettingsDBHelper.getPrinterSetting(user.getUuid());
+        globalSettings = GlobalSettingsDBHelper.getPrinterSetting(user.getId());
 
-        if(printerSettings == null){
+        if(globalSettings == null){
             autoPrintCustomerSwitch.setChecked(false);
             autoPrintMerchantSwitch.setChecked(false);
-            printerSettings = new PrinterSettings();
+            globalSettings = new GlobalSettings();
         } else {
-            autoPrintCustomerSwitch.setChecked(printerSettings.isCustomerAutoPrint());
-            autoPrintMerchantSwitch.setChecked(printerSettings.isMerchantAutoPrint());
+            autoPrintCustomerSwitch.setChecked(globalSettings.isCustomerAutoPrint());
+            autoPrintMerchantSwitch.setChecked(globalSettings.isMerchantAutoPrint());
         }
     }
 
@@ -143,28 +143,28 @@ public class PrintOrdersFragment extends BaseFragment {
 
         realm.beginTransaction();
 
-        if(printerSettings.getUserId() == null || printerSettings.getUserId().isEmpty()){
-            printerSettings.setCreateDate(new Date());
-            printerSettings.setUpdateDate(new Date());
-            printerSettings.setUserId(user.getUuid());
-            printerSettings.setCreateUserId(user.getUuid());
-            printerSettings.setUpdateUserId(user.getUuid());
+        if(globalSettings.getUserId() == null || globalSettings.getUserId().isEmpty()){
+            globalSettings.setCreateDate(new Date());
+            globalSettings.setUpdateDate(new Date());
+            globalSettings.setUserId(user.getId());
+            globalSettings.setCreateUserId(user.getId());
+            globalSettings.setUpdateUserId(user.getId());
         }else {
-            printerSettings.setUpdateDate(new Date());
-            printerSettings.setUpdateUserId(user.getUuid());
+            globalSettings.setUpdateDate(new Date());
+            globalSettings.setUpdateUserId(user.getId());
         }
 
-        PrinterSettings tempPrinterSettings = realm.copyToRealm(printerSettings);
+        GlobalSettings tempGlobalSettings = realm.copyToRealm(globalSettings);
 
         if(isCustomerPrint != null)
-            tempPrinterSettings.setCustomerAutoPrint(isCustomerPrint);
+            tempGlobalSettings.setCustomerAutoPrint(isCustomerPrint);
 
         if(isMerchantPrint != null)
-            tempPrinterSettings.setMerchantAutoPrint(isMerchantPrint);
+            tempGlobalSettings.setMerchantAutoPrint(isMerchantPrint);
 
         realm.commitTransaction();
 
-        BaseResponse baseResponse = PrinterSettingsDBHelper.updatePrinterSettings(tempPrinterSettings);
+        BaseResponse baseResponse = GlobalSettingsDBHelper.updatePrinterSettings(tempGlobalSettings);
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
     }
 }

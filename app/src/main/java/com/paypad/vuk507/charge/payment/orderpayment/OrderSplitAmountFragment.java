@@ -1,4 +1,4 @@
-package com.paypad.vuk507.charge.payment;
+package com.paypad.vuk507.charge.payment.orderpayment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,8 +15,9 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.IOrderManager1;
-import com.paypad.vuk507.charge.order.OrderManager1;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.payment.CustomSplitFragment;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CompleteCallback;
@@ -43,7 +44,7 @@ import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 
-public class SplitAmountFragment extends BaseFragment implements NumberFormatWatcher.ReturnEtTextCallback {
+public class OrderSplitAmountFragment extends BaseFragment implements NumberFormatWatcher.ReturnEtTextCallback {
 
     private View mView;
 
@@ -78,9 +79,9 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
     private CompleteCallback completeCallback;
     private CustomSplitFragment customSplitFragment;
     private NumberFormatWatcher numberFormatWatcher;
-    private IOrderManager1 orderManager;
+    private IOrderManager orderManager;
 
-    public SplitAmountFragment(Transaction transaction, CompleteCallback completeCallback) {
+    public OrderSplitAmountFragment(Transaction transaction, CompleteCallback completeCallback) {
         this.mTransaction = transaction;
         this.completeCallback = completeCallback;
     }
@@ -180,13 +181,17 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
                     Objects.requireNonNull(getActivity()).onBackPressed();
                 }else {
                     removeNotPayedSplits();
-                    orderManager.addTransactionToOrder(firstAmount);
+                    OrderManager.addTransactionToOrder(firstAmount,
+                            SaleModelInstance.getInstance().getSaleModel().getTransactions(),
+                            SaleModelInstance.getInstance().getSaleModel().getOrder().getId());
                     //decideSplitCountByAmount(firstAmount);
 
                     double secondAmount = mTransaction.getTransactionAmount() - firstAmount;
 
                     if(secondAmount > 0)
-                        orderManager.addTransactionToOrder(secondAmount);
+                        OrderManager.addTransactionToOrder(secondAmount,
+                                SaleModelInstance.getInstance().getSaleModel().getTransactions(),
+                                SaleModelInstance.getInstance().getSaleModel().getOrder().getId());
 
                     LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
 
@@ -198,13 +203,13 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
     }
 
     private void initVariables() {
-        orderManager = new OrderManager1();
+        orderManager = new OrderManager();
         initNumberFormatWatcher();
         amountEt.addTextChangedListener(numberFormatWatcher);
         amountEt.setHint("0.00 ".concat(CommonUtils.getCurrency().getSymbol()));
         CommonUtils.setAmountToView(mTransaction.getTransactionAmount(), amountEt, TYPE_PRICE);
         saveBtn.setVisibility(View.GONE);
-        String amountStr = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount(), TYPE_PRICE)
+        String amountStr = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount(), TYPE_PRICE)
                 .concat(" ")
                 .concat(CommonUtils.getCurrency().getSymbol());
         toolbarTitleTv.setText(amountStr);
@@ -212,24 +217,24 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
     }
 
     private void initNumberFormatWatcher(){
-        numberFormatWatcher = new NumberFormatWatcher(amountEt, TYPE_PRICE, SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount());
+        numberFormatWatcher = new NumberFormatWatcher(amountEt, TYPE_PRICE, SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount());
         numberFormatWatcher.setReturnEtTextCallback(this);
     }
 
     private void setSplitInfoTv(double amount) {
         String infoText = "";
 
-        double remainAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount() - amount;
+        double remainAmount = SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount() - amount;
 
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
-            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" toplam tutardan, ödeme sonrası kalacak tutar ")
                     .concat(CommonUtils.getDoubleStrValueForView(remainAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
                     .concat(".");
         }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
             infoText = CommonUtils.getDoubleStrValueForView(remainAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" of ")
-                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
+                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()))
                     .concat(" will remain after this transaction.");
         }
         splitInfoTv.setText(infoText);
@@ -261,10 +266,12 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
     }
 
     private void decideSplitCount(int splitCount){
-        double splitAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount() / (double) splitCount;
+        double splitAmount = SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount() / (double) splitCount;
 
         for(int count = 0; count < splitCount; count ++){
-            orderManager.addTransactionToOrder(splitAmount);
+            OrderManager.addTransactionToOrder(splitAmount,
+                    SaleModelInstance.getInstance().getSaleModel().getTransactions(),
+                    SaleModelInstance.getInstance().getSaleModel().getOrder().getId());
         }
 
         LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
@@ -272,15 +279,6 @@ public class SplitAmountFragment extends BaseFragment implements NumberFormatWat
         completeCallback.onComplete(null);
         Objects.requireNonNull(getActivity()).onBackPressed();
     }
-
-    /*private void decideSplitCountByAmount(double amountx){
-        Transaction transaction = new Transaction();
-        transaction.setTransactionUuid(UUID.randomUUID().toString());
-        transaction.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
-        transaction.setTransactionAmount(amountx);
-        transaction.setSeqNumber(SaleModelInstance.getInstance().getSaleModel().getMaxSplitId() + 1);
-        SaleModelInstance.getInstance().getSaleModel().getTransactions().add(transaction);
-    }*/
 
     @Override
     public void OnReturnEtValue(String text) {

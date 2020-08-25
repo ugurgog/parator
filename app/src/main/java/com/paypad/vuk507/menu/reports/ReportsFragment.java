@@ -33,7 +33,7 @@ import com.paypad.vuk507.menu.reports.interfaces.ReturnReportItemCallback;
 import com.paypad.vuk507.menu.reports.util.PrintEODReportManager;
 import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.Refund;
-import com.paypad.vuk507.model.Sale;
+import com.paypad.vuk507.model.Order;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
@@ -78,7 +78,7 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
     private PrintEODReportManager printEODReportManager;
     private User user;
     //private List<SaleModel> saleModels;
-    private List<Sale> sales;
+    private List<Order> orders;
     private Realm realm;
     private String eodResultStr;
     private AutoIncrement autoIncrement;
@@ -208,14 +208,14 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
 
         boolean isSuccess = true;
         for(SaleModel saleModel : saleModels){
-            isSuccess = updateSale(saleModel.getSale(), true);
+            isSuccess = updateSale(saleModel.getOrder(), true);
             if(!isSuccess)
                 break;
         }
 
         if(!isSuccess){
             for(SaleModel saleModel : saleModels)
-                updateSale(saleModel.getSale(), false);
+                updateSale(saleModel.getOrder(), false);
 
             CommonUtils.showToastShort(getContext(), getContext().getResources().getString(R.string.eod_failed));
         }else{
@@ -234,8 +234,8 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
             return;
         }
 
-        sales = SaleDBHelper.getOrdersByZNum(autoIncrement.getzNum());
-        printEODReportManager = new PrintEODReportManager(getContext(), FinancialReportsEnum.DAILY_X_REPORT, sales, user, new Date(), new Date(), autoIncrement.getzNum(),
+        orders = SaleDBHelper.getOrdersByZNum(autoIncrement.getzNum());
+        printEODReportManager = new PrintEODReportManager(getContext(), FinancialReportsEnum.DAILY_X_REPORT, orders, user, new Date(), new Date(), autoIncrement.getzNum(),
                 transactions);
         printEODReportManager.setCallback(mCallback);
 
@@ -244,7 +244,7 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getUuid());
+        autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getId());
         toolbarTitleTv.setText(getContext().getResources().getString(R.string.reports));
         nameTv.setText(getContext().getResources().getString(R.string.sales_report));
 
@@ -296,14 +296,14 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
 
                         /*boolean isSuccess = true;
                         for(SaleModel saleModel : saleModels){
-                            isSuccess = updateSale(saleModel.getSale(), true);
+                            isSuccess = updateSale(saleModel.getOrder(), true);
                             if(!isSuccess)
                                 break;
                         }
 
                         if(!isSuccess){
                             for(SaleModel saleModel : saleModels)
-                                updateSale(saleModel.getSale(), false);
+                                updateSale(saleModel.getOrder(), false);
 
                             CommonUtils.showToastShort(getContext(), getContext().getResources().getString(R.string.eod_failed));
                         }else{
@@ -319,10 +319,10 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
         }
     };
 
-    /*private boolean updateSale(Sale sale, boolean isEndOfDayProcessed){
+    /*private boolean updateSale(Order sale, boolean isEndOfDayProcessed){
         realm.beginTransaction();
 
-        Sale tempSale = realm.copyFromRealm(sale);
+        Order tempSale = realm.copyFromRealm(sale);
         tempSale.setEndOfDayProcessed(isEndOfDayProcessed);
 
         realm.commitTransaction();

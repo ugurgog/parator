@@ -3,17 +3,21 @@ package com.paypad.vuk507.db;
 import androidx.annotation.NonNull;
 
 import com.paypad.vuk507.model.Category;
+import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class CategoryDBHelper {
 
-    public static RealmResults<Category> getAllCategories(String username){
+    public static RealmResults<Category> getAllCategories(String userId){
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Category> categories = realm.where(Category.class)
-                .equalTo("createUsername", username)
+                .equalTo("userId", userId)
+                .equalTo("isDeleted", false)
                 .findAll();
         //realm.close();
         return categories;
@@ -25,7 +29,29 @@ public class CategoryDBHelper {
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setSuccess(true);
 
-        realm.executeTransaction(new Realm.Transaction() {
+        try{
+            Category category = getCategory(id);
+
+            realm.beginTransaction();
+
+            category.setDeleted(true);
+            category.setDeleteDate(new Date());
+
+            realm.copyToRealm(category);
+
+            realm.commitTransaction();
+        }catch (Exception e){
+            baseResponse.setSuccess(false);
+            baseResponse.setMessage("Unexpected error:" + e.getMessage());
+        }
+
+        return baseResponse;
+
+
+
+
+
+        /*realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
 
@@ -45,12 +71,15 @@ public class CategoryDBHelper {
                 }
             }
         });
-        return baseResponse;
+        return baseResponse;*/
     }
 
     public static Category getCategory(long id){
         Realm realm = Realm.getDefaultInstance();
-        Category category = realm.where(Category.class).equalTo("id", id).findFirst();
+        Category category = realm.where(Category.class)
+                .equalTo("id", id)
+                .equalTo("isDeleted", false)
+                .findFirst();
         //realm.close();
         return category;
     }

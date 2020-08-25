@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,20 +14,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager1;
-import com.paypad.vuk507.db.SaleDBHelper;
+import com.paypad.vuk507.db.OrderRefundItemDBHelper;
 import com.paypad.vuk507.db.SaleItemDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnOrderItemCallback;
-import com.paypad.vuk507.menu.transactions.adapters.RefundItemsAdapter;
+import com.paypad.vuk507.menu.transactions.adapters.NotRefundedItemsAdapter;
+import com.paypad.vuk507.menu.transactions.adapters.RefundedItemsAdapter;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.OrderRefundItem;
-import com.paypad.vuk507.model.Sale;
-import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ConversionHelper;
 
@@ -49,18 +49,24 @@ public class RefundByItemsFragment extends BaseFragment {
     @BindView(R.id.refundItemsRv)
     RecyclerView refundItemsRv;
 
-    private User user;
-    private Transaction mTransaction;
-    private double returnAmount;
-    private Sale sale;
-    private Realm realm;
+    @BindView(R.id.refundedLL)
+    LinearLayout refundedLL;
+    @BindView(R.id.refundedItemsRv)
+    RecyclerView refundedItemsRv;
 
-    private RefundItemsAdapter refundItemsAdapter;
+    private User user;
+    private Realm realm;
+    private SaleModel saleModel;
+
+    private NotRefundedItemsAdapter notRefundedItemsAdapter;
+    private RefundedItemsAdapter refundedItemsAdapter;
     private ReturnOrderItemCallback returnOrderItemCallback;
 
-    public RefundByItemsFragment(Transaction transaction, double returnAmount) {
-        mTransaction = transaction;
-        this.returnAmount = returnAmount;
+    private List<OrderRefundItem> notRefundedItems;
+    private List<OrderRefundItem> refundedItems;
+
+    public RefundByItemsFragment(SaleModel saleModel) {
+        this.saleModel = saleModel;
     }
 
     public void setReturnOrderItemCallback(ReturnOrderItemCallback returnOrderItemCallback) {
@@ -119,72 +125,83 @@ public class RefundByItemsFragment extends BaseFragment {
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        sale = SaleDBHelper.getSaleById(mTransaction.getSaleUuid());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
-
         refundItemsRv.setLayoutManager(linearLayoutManager);
+
+        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(getContext());
+        linearLayoutManager1.setOrientation(RecyclerView.VERTICAL);
+        refundedItemsRv.setLayoutManager(linearLayoutManager1);
+
         updateAdapterWithCurrentList();
     }
 
     public void updateAdapterWithCurrentList(){
-        List<SaleItem> saleItems = getSaleItems();
-        List<OrderRefundItem> orderRefundItems = new ArrayList<>();
+        setRefundedItems();
 
-        for(SaleItem saleItem : saleItems)
-            orderRefundItems.add(ConversionHelper.convertSaleItemToOrderRefundItem(saleItem));
-
-        refundItemsAdapter = new RefundItemsAdapter(getContext(), orderRefundItems, new ReturnOrderItemCallback() {
+        notRefundedItemsAdapter = new NotRefundedItemsAdapter(getContext(), notRefundedItems, new ReturnOrderItemCallback() {
             @Override
             public void onReturn(OrderRefundItem orderRefundItem, ItemProcessEnum processType) {
                 returnOrderItemCallback.onReturn(orderRefundItem, processType);
             }
         });
 
+        refundItemsRv.setAdapter(notRefundedItemsAdapter);
 
-        refundItemsRv.setAdapter(refundItemsAdapter);
-    }
-
-    private List<SaleItem> getSaleItems() {
-        RealmResults<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(mTransaction.getSaleUuid());
-        List<SaleItem> saleItemList = new ArrayList(saleItems);
-        List<SaleItem> adapterOrderItemList = new ArrayList<>();
-
-        double orderItemsTotalAmount = 0d;
-
-        for(Iterator<SaleItem> it = saleItemList.iterator(); it.hasNext();) {
-           SaleItem saleItem = it.next();
-
-           orderItemsTotalAmount = CommonUtils.round(orderItemsTotalAmount + saleItem.getAmount(), 2);
-
-           if(OrderManager1.isSaleItemRefunded(saleItem, mTransaction.getSaleUuid()))
-               it.remove();
+        if(refundedItems == null || refundedItems.size() == 0){
+            refundedLL.setVisibility(View.GONE);
+            return;
         }
 
-        for(SaleItem saleItem : saleItemList){
+        refundedItemsAdapter = new RefundedItemsAdapter(getContext(), refundedItems);
+        refundedItemsRv.setAdapter(refundedItemsAdapter);
+    }
 
-            //double discountedByRateAmount = OrderManager1.getTotalDiscountAmountOfSaleItem(saleItem);
-            double discountedByRateAmount = saleItem.getTotalDiscountAmount();
+    private void setRefundedItems() {
+        RealmResults<OrderItem> orderItems = SaleItemDBHelper.getSaleItemsBySaleId(saleModel.getOrder().getId());
+        List<OrderItem> orderItemList = new ArrayList(orderItems);
 
-            //double discountedByAmountAmount = getDiscountAmountByAmount(orderItemsTotalAmount, saleItem.getAmount() * saleItem.getQuantity());
+        notRefundedItems = new ArrayList<>();
+        refundedItems = new ArrayList<>();
+
+        for (OrderItem orderItem : orderItemList) {
+
+            double discountedByRateAmount = orderItem.getTotalDiscountAmount();
 
             realm.beginTransaction();
-            SaleItem tempSaleItem = realm.copyFromRealm(saleItem);
+            OrderItem tempOrderItem = realm.copyFromRealm(orderItem);
 
-            //tempSaleItem.setAmount(CommonUtils.round((saleItem.getAmount() * saleItem.getQuantity()) - (discountedByRateAmount + discountedByAmountAmount), 2));
-            tempSaleItem.setAmount(CommonUtils.round((saleItem.getAmount() * saleItem.getQuantity()) - (discountedByRateAmount), 2));
+            tempOrderItem.setAmount(CommonUtils.round((orderItem.getAmount() * orderItem.getQuantity()) - (discountedByRateAmount), 2));
 
             realm.commitTransaction();
 
-            adapterOrderItemList.add(tempSaleItem);
+            for (int i = 1; i <= orderItem.getQuantity(); i++) {
+                OrderRefundItem orderRefundItem = ConversionHelper.convertSaleItemToOrderRefundItem(orderItem);
+                orderRefundItem.setAmount(CommonUtils.round(tempOrderItem.getAmount() / orderItem.getQuantity(), 2));
+                notRefundedItems.add(ConversionHelper.convertSaleItemToOrderRefundItem(tempOrderItem));
+            }
         }
 
-        return adapterOrderItemList;
+        RealmResults<OrderRefundItem> refundedOrderItems = OrderRefundItemDBHelper.getRefundItemsByOrderId(saleModel.getOrder().getId());
+        refundedItems = new ArrayList(refundedOrderItems);
+
+        for(Iterator<OrderRefundItem> it = refundedOrderItems.iterator(); it.hasNext();) {
+            OrderRefundItem orderRefundItem = it.next();
+
+            for(Iterator<OrderRefundItem> its = notRefundedItems.iterator(); its.hasNext();) {
+                OrderRefundItem orderRefundItem1 = its.next();
+
+                if(orderRefundItem.getOrderItemId().equals(orderRefundItem1.getOrderItemId())){
+                    its.remove();
+                    break;
+                }
+            }
+        }
     }
 
     private double getDiscountAmountByAmount(double orderItemsTotalAmount, double orderItemAmount){
         double discountedByAmount = 0d;
-        for(OrderItemDiscount discount : sale.getDiscounts()){
+        for(OrderItemDiscount discount : saleModel.getOrder().getDiscounts()){
             if(discount.getAmount() > 0d){
                 discountedByAmount = CommonUtils.round(discountedByAmount + (
                         (discount.getAmount() / orderItemsTotalAmount) * orderItemAmount), 2);

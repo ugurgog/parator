@@ -18,9 +18,10 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.payment.PaymentCompletedFragment;
+import com.paypad.vuk507.charge.payment.orderpayment.OrderPaymentCompletedFragment;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
 import com.paypad.vuk507.db.CustomerDBHelper;
+import com.paypad.vuk507.db.CustomerGroupDBHelper;
 import com.paypad.vuk507.db.GroupDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
@@ -29,6 +30,7 @@ import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
+import com.paypad.vuk507.charge.payment.cancelpayment.CancellationPaymentCompletedFragment;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.User;
@@ -47,6 +49,7 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class CustomerViewFragment extends BaseFragment{
@@ -201,7 +204,8 @@ public class CustomerViewFragment extends BaseFragment{
                 PopupMenu popupMenu = new PopupMenu(getContext(), selectionImgv);
                 popupMenu.inflate(R.menu.menu_customer_view);
 
-                if(classTag.equals(SaleListFragment.class.getName()) || classTag.equals(PaymentCompletedFragment.class.getName()))
+                if(classTag.equals(SaleListFragment.class.getName()) || classTag.equals(OrderPaymentCompletedFragment.class.getName()) ||
+                        classTag.equals(CancellationPaymentCompletedFragment.class.getName()))
                     popupMenu.getMenu().findItem(R.id.deleteCustomer).setVisible(false);
                 else
                     popupMenu.getMenu().findItem(R.id.addToSale).setVisible(false);
@@ -272,22 +276,12 @@ public class CustomerViewFragment extends BaseFragment{
     }
 
     private void approveDeleteCustomer(){
-        BaseResponse baseResponse = CustomerDBHelper.deleteCustomer(mCustomer.getId());
+        BaseResponse baseResponse = CustomerDBHelper.deleteCustomer(mCustomer.getId(), user.getId());
 
-        if(baseResponse.isSuccess())
-            deleteCustomerFromGroups();
-    }
-
-    private void deleteCustomerFromGroups(){
-        GroupDBHelper.deleteCustomerFromGroups(customerId, user.getUuid(), new CompleteCallback() {
-            @Override
-            public void onComplete(BaseResponse baseResponse) {
-                if(baseResponse.isSuccess()){
-                    returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.DELETED);
-                    Objects.requireNonNull(getActivity()).onBackPressed();
-                }
-            }
-        });
+        if(baseResponse.isSuccess()){
+            returnCustomerCallback.OnReturn((Customer) baseResponse.getObject(), ItemProcessEnum.DELETED);
+            Objects.requireNonNull(getActivity()).onBackPressed();
+        }
     }
 
     private void initVariables() {
@@ -363,15 +357,16 @@ public class CustomerViewFragment extends BaseFragment{
     }
 
     private void setGroupNames() {
-        RealmResults<Group> allGroups = GroupDBHelper.getUserGroups(user.getUuid());
+        RealmResults<Group> allGroups = GroupDBHelper.getUserGroups(user.getId());
         List<Group> groups = new ArrayList<>();
         groups.addAll( new ArrayList(allGroups));
 
         if(groups.size() > 0){
             String groupNames = "";
             for(Group group : groups){
-                for(Long customerId : group.getCustomerIds()){
-                    if(customerId == mCustomer.getId()){
+                RealmList<Customer> customers = CustomerGroupDBHelper.getCustomersOfGroup(group.getId(), user.getId());
+                for(Customer customer : customers){
+                    if(customer.getId() == mCustomer.getId()){
                         groupNames = groupNames.concat(group.getName()).concat(",");
                         break;
                     }

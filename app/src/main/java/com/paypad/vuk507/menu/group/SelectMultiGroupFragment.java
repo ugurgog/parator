@@ -157,7 +157,7 @@ public class SelectMultiGroupFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
-        groups = GroupDBHelper.getUserGroups(user.getUuid());
+        groups = GroupDBHelper.getUserGroups(user.getId());
         groupList = new ArrayList(groups);
 
         multiGroupSelectListAdapter = new MultiGroupSelectListAdapter(selectedGroupList, groupList, new ReturnGroupCallback() {

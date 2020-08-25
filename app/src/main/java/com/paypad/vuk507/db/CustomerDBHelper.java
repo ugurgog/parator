@@ -1,6 +1,8 @@
 package com.paypad.vuk507.db;
 
 import com.paypad.vuk507.model.Customer;
+import com.paypad.vuk507.model.CustomerGroup;
+import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 
 import io.realm.Realm;
@@ -8,47 +10,42 @@ import io.realm.RealmResults;
 
 public class CustomerDBHelper {
 
-    public static RealmResults<Customer> getAllCustomers(String userUuid){
+    public static RealmResults<Customer> getAllCustomers(String userId){
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Customer> customers = realm.where(Customer.class)
-                .equalTo("userUuid" , userUuid)
+                .equalTo("userId" , userId)
+                .equalTo("isDeleted" , false)
                 .findAll();
         return customers;
     }
 
-    public static BaseResponse deleteCustomer(long customerId){
+    public static BaseResponse deleteCustomer(long customerId, String userId){
+
         Realm realm = Realm.getDefaultInstance();
+        Customer customer = getCustomer(customerId, userId);
+        realm.beginTransaction();
 
-        BaseResponse baseResponse = new BaseResponse();
-        baseResponse.setSuccess(true);
+        customer.setDeleted(true);
 
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                try{
-                    Customer customer = realm.where(Customer.class).equalTo("id", customerId).findFirst();
+        realm.commitTransaction();
 
-                    if(customer != null){
-                        customer.deleteFromRealm();
-                        baseResponse.setMessage("Customer deleted successfully");
+        BaseResponse baseResponse = createOrUpdateCustomer(customer);
 
-                    }else {
-                        baseResponse.setSuccess(false);
-                        baseResponse.setMessage("Customer could not be found !!");
-                    }
+        if(baseResponse.isSuccess()){
+            BaseResponse baseResponse1 = CustomerGroupDBHelper.deleteCustomerGroupsByCustomerId(customerId, userId);
+            return baseResponse1;
+        }
 
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Customer cannot be deleted !!");
-                }
-            }
-        });
         return baseResponse;
     }
 
-    public static Customer getCustomer(long id){
+    public static Customer getCustomer(long id, String userId){
         Realm realm = Realm.getDefaultInstance();
-        Customer customer = realm.where(Customer.class).equalTo("id", id).findFirst();
+        Customer customer = realm.where(Customer.class)
+                .equalTo("id", id)
+                .equalTo("isDeleted", false)
+                .equalTo("userId", userId)
+                .findFirst();
         return customer;
     }
 

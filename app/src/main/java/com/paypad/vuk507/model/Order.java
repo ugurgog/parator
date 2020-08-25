@@ -9,11 +9,11 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class Sale extends RealmObject {
+public class Order extends RealmObject {
 
     @PrimaryKey
     @Index
-    private String saleUuid;
+    private String id;
     private int totalItemCount;
     private long customerId;
     private RealmList<OrderItemDiscount> discounts;
@@ -23,14 +23,15 @@ public class Sale extends RealmObject {
     private boolean paymentCompleted;
     private double remainAmount;           // Parcali odeme sonrasi kalan tutar
     private Date createDate;
-    private String userUuid;
+    @Index
+    private String userId;
     @Index
     private String deviceId;
     private String orderNum;              // julian date + year son 2 hane + 6 hane counter (25920000025) (259. gun gelen 25. i order)
     @Index
     private long zNum;
-    private Double latitude;
-    private Double longitude;
+    private double latitude;
+    private double longitude;
     private boolean isTransferred;
 
     public long getzNum() {
@@ -97,12 +98,12 @@ public class Sale extends RealmObject {
         this.createDate = createDate;
     }
 
-    public String getUserUuid() {
-        return userUuid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserUuid(String userUuid) {
-        this.userUuid = userUuid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public double getDiscountedAmount() {
@@ -121,12 +122,12 @@ public class Sale extends RealmObject {
         this.remainAmount = remainAmount;
     }
 
-    public String getSaleUuid() {
-        return saleUuid;
+    public String getId() {
+        return id;
     }
 
-    public void setSaleUuid(String saleUuid) {
-        this.saleUuid = saleUuid;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDeviceId() {
@@ -149,7 +150,7 @@ public class Sale extends RealmObject {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
@@ -157,7 +158,7 @@ public class Sale extends RealmObject {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

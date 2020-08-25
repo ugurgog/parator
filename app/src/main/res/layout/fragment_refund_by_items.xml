@@ -47,6 +47,36 @@
                         android:layout_marginStart="30dp"
                         android:layout_marginEnd="30dp"/>
 
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/refundedLL">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/refunded"
+                        android:textSize="@dimen/select_list_tv_size"
+                        android:textAllCaps="false"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/Black"
+                        android:textStyle="bold"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/refundedItemsRv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+
+
+
                 </LinearLayout>
 
             </LinearLayout>

@@ -242,15 +242,19 @@ public class UnitEditFragment extends BaseFragment {
         realm.beginTransaction();
 
         if(unitModel.getId() == 0){
-            unitModel.setCreateDate(new Date());
             unitModel.setId(UnitDBHelper.getCurrentPrimaryKeyId());
+            unitModel.setCreateDate(new Date());
+            unitModel.setUserId(user.getId());
+            unitModel.setDeleted(false);
             inserted = true;
+        }else {
+            unitModel.setUpdateDate(new Date());
+            unitModel.setUpdateUserId(user.getId());
         }
 
-        UnitModel tempUnit = realm.copyToRealm(unitModel);
+        unitModel.setName(unitNameEt.getText().toString());
 
-        tempUnit.setName(unitNameEt.getText().toString());
-        tempUnit.setCreateUsername(user.getUsername());
+        UnitModel tempUnit = realm.copyToRealm(unitModel);
 
         realm.commitTransaction();
 

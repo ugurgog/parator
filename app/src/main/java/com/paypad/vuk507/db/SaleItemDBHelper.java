@@ -1,6 +1,6 @@
 package com.paypad.vuk507.db;
 
-import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModel;
 
@@ -20,11 +20,11 @@ public class SaleItemDBHelper {
             @Override
             public void execute(Realm realm) {
                 try{
-                    for(SaleItem saleItem : saleModel.getSaleItems())
-                        realm.insertOrUpdate(saleItem);
+                    for(OrderItem orderItem : saleModel.getOrderItems())
+                        realm.insertOrUpdate(orderItem);
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Some of Sale Items cannot be saved!");
+                    baseResponse.setMessage("Some of Order Items cannot be saved!");
                 }
             }
         });
@@ -32,12 +32,12 @@ public class SaleItemDBHelper {
         return baseResponse;
     }
 
-    public static RealmResults<SaleItem> getSaleItemsBySaleId(String saleId){
+    public static RealmResults<OrderItem> getSaleItemsBySaleId(String orderId){
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<SaleItem> saleItems = realm.where(SaleItem.class)
-                .equalTo("saleUuid", saleId)
+        RealmResults<OrderItem> orderItems = realm.where(OrderItem.class)
+                .equalTo("orderId", orderId)
                 .findAll();
-        return saleItems;
+        return orderItems;
     }
 
 }

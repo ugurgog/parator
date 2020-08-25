@@ -172,7 +172,7 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
     }
 
     private void initPrinter() {
-        SaleModel saleModel = SaleDBHelper.getSaleModelBySaleId(mTransaction.getSaleUuid());
+        SaleModel saleModel = SaleDBHelper.getSaleModelBySaleId(mTransaction.getOrderId());
 
         if(refundCancelStatus != null){
             printRefundManager = new PrintRefundManager(getContext(), false, refund, refundCancelStatus, saleModel, mTransaction);

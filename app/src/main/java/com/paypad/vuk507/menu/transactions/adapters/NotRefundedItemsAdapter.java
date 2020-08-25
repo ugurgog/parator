@@ -20,14 +20,14 @@ import com.paypad.vuk507.utils.CommonUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RefundItemsAdapter extends RecyclerView.Adapter<RefundItemsAdapter.RefundItemHolder> {
+public class NotRefundedItemsAdapter extends RecyclerView.Adapter<NotRefundedItemsAdapter.RefundItemHolder> {
 
     private Context context;
     private List<OrderRefundItem> orderRefundItems = new ArrayList<>();
     private ReturnOrderItemCallback returnOrderItemCallback;
 
-    public RefundItemsAdapter(Context context, List<OrderRefundItem> orderRefundItems,
-                              ReturnOrderItemCallback returnOrderItemCallback) {
+    public NotRefundedItemsAdapter(Context context, List<OrderRefundItem> orderRefundItems,
+                                   ReturnOrderItemCallback returnOrderItemCallback) {
         this.context = context;
         this.orderRefundItems.addAll(orderRefundItems);
         this.returnOrderItemCallback = returnOrderItemCallback;
@@ -35,11 +35,11 @@ public class RefundItemsAdapter extends RecyclerView.Adapter<RefundItemsAdapter.
 
     @NonNull
     @Override
-    public RefundItemsAdapter.RefundItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NotRefundedItemsAdapter.RefundItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
         itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.adapter_refund_item, parent, false);
-        return new RefundItemsAdapter.RefundItemHolder(itemView);
+        return new NotRefundedItemsAdapter.RefundItemHolder(itemView);
     }
 
     public class RefundItemHolder extends RecyclerView.ViewHolder {
@@ -97,19 +97,16 @@ public class RefundItemsAdapter extends RecyclerView.Adapter<RefundItemsAdapter.
         }
 
         private void setItemName(){
-            if(orderRefundItem.getQuantity() > 1){
-                itemNameTv.setText(String.valueOf(orderRefundItem.getQuantity()).concat(" X ").concat(orderRefundItem.getName()));
-            }else
-                itemNameTv.setText(orderRefundItem.getName());
+            itemNameTv.setText(orderRefundItem.getName());
         }
 
         private void setItemAmount(){
-            itemAmountTv.setText(CommonUtils.getAmountTextWithCurrency(orderRefundItem.getAmount() * orderRefundItem.getQuantity()));
+            itemAmountTv.setText(CommonUtils.getAmountTextWithCurrency(orderRefundItem.getAmount()));
         }
     }
 
     @Override
-    public void onBindViewHolder(final RefundItemsAdapter.RefundItemHolder holder, final int position) {
+    public void onBindViewHolder(final NotRefundedItemsAdapter.RefundItemHolder holder, final int position) {
         OrderRefundItem orderRefundItem = orderRefundItems.get(position);
         holder.setData(orderRefundItem, position);
     }

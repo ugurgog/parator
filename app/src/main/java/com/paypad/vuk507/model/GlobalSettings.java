@@ -6,7 +6,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class PrinterSettings extends RealmObject {
+public class GlobalSettings extends RealmObject {
 
     @Index
     @PrimaryKey

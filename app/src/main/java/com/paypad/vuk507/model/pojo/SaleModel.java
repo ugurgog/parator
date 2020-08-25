@@ -1,7 +1,7 @@
 package com.paypad.vuk507.model.pojo;
 
-import com.paypad.vuk507.model.Sale;
-import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.Order;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.Transaction;
 
 import java.io.Serializable;
@@ -12,31 +12,31 @@ import io.realm.RealmList;
 
 public class SaleModel implements Serializable {
 
-    private Sale sale;
-    private List<SaleItem> saleItems;
+    private Order order;
+    private List<OrderItem> orderItems;
     private List<Transaction> transactions;
 
     public SaleModel() {
-        sale = new Sale();
-        sale.setDiscounts(new RealmList<>());
+        order = new Order();
+        order.setDiscounts(new RealmList<>());
         setTransactions(new ArrayList<>());
-        setSaleItems(new ArrayList<>());
+        setOrderItems(new ArrayList<>());
     }
 
-    public Sale getSale() {
-        return sale;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setSale(Sale sale) {
-        this.sale = sale;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
-    public List<SaleItem> getSaleItems() {
-        return saleItems;
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
     }
 
-    public void setSaleItems(List<SaleItem> saleItems) {
-        this.saleItems = saleItems;
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 
     public List<Transaction> getTransactions() {

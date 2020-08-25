@@ -2,9 +2,12 @@ package com.paypad.vuk507.menu.transactions.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,12 +20,16 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.RefundDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
+import com.paypad.vuk507.interfaces.ReturnAmountCallback;
+import com.paypad.vuk507.menu.transactions.interfaces.RefundableTrxModelCallback;
 import com.paypad.vuk507.menu.transactions.interfaces.ReturnTransactionCallback;
+import com.paypad.vuk507.menu.transactions.model.RefundableTrxModel;
 import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
+import com.paypad.vuk507.utils.NumberFormatWatcher;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import java.util.ArrayList;
@@ -31,21 +38,25 @@ import java.util.List;
 import io.realm.RealmResults;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class PaymentListForRefundAdapter extends RecyclerView.Adapter<PaymentListForRefundAdapter.TransactionHolder> {
 
     private Context context;
-    private List<Transaction> transactions = new ArrayList<>();
-    private ReturnTransactionCallback returnTransactionCallback;
+    private List<RefundableTrxModel> refundableTrxModels = new ArrayList<>();
+    private RefundableTrxModelCallback refundableTrxModelCallback;
+    private double availableRefundAmount;
+    private double totalRefundAmount = 0d;
 
-    public PaymentListForRefundAdapter(Context context, List<Transaction> transactions) {
+    public PaymentListForRefundAdapter(Context context, List<RefundableTrxModel> refundableTrxModels, double availableRefundAmount) {
         this.context = context;
-        this.transactions.addAll(transactions);
+        this.refundableTrxModels.addAll(refundableTrxModels);
+        this.availableRefundAmount = availableRefundAmount;
     }
 
-    public void setReturnTransactionCallback(ReturnTransactionCallback returnTransactionCallback) {
-        this.returnTransactionCallback = returnTransactionCallback;
+    public void setRefundableTrxModelCallback(RefundableTrxModelCallback refundableTrxModelCallback) {
+        this.refundableTrxModelCallback = refundableTrxModelCallback;
     }
 
     @NonNull
@@ -59,66 +70,82 @@ public class PaymentListForRefundAdapter extends RecyclerView.Adapter<PaymentLis
 
     public class TransactionHolder extends RecyclerView.ViewHolder {
 
-        private CardView transactionCv;
         private ImageView paymentIconImgv;
         private TextView paymentTypeTv;
         private TextView refundDescTv;
-        private TextView amountTv;
-        private ImageView cancelImgv;
+        private EditText amountEt;
 
         int position;
-        private Transaction transaction;
-        private double refundAmount = 0d;
+        private RefundableTrxModel refundableTrxModel;
+        private TextWatcher textWatcher;
 
         public TransactionHolder(View view) {
             super(view);
 
-            transactionCv = view.findViewById(R.id.transactionCv);
             paymentIconImgv = view.findViewById(R.id.paymentIconImgv);
             paymentTypeTv = view.findViewById(R.id.paymentTypeTv);
             refundDescTv = view.findViewById(R.id.refundDescTv);
-            amountTv = view.findViewById(R.id.amountTv);
-            cancelImgv = view.findViewById(R.id.cancelImgv);
+            amountEt = view.findViewById(R.id.amountEt);
+        }
 
-            transactionCv.setOnClickListener(new View.OnClickListener() {
+        public void setData(RefundableTrxModel refundableTrxModel, int position) {
+            this.refundableTrxModel = refundableTrxModel;
+            this.position = position;
+
+            setIconAndPaymentTypeText();
+            getRefundDescriptionResult();
+
+            amountEt.setHint("0.00 ".concat(CommonUtils.getCurrency().getSymbol()));
+            amountEt.addTextChangedListener(new NumberFormatWatcher(amountEt, TYPE_PRICE, refundableTrxModel.getMaxRefundAmount()));
+
+            amountEt.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void onClick(View view) {
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                    BaseResponse baseResponse = getRefundDescriptionResult();
+                }
 
-                    if(!baseResponse.isSuccess()){
-                        DataUtils.showBaseResponseMessage(context, baseResponse);
-                        return;
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    if (editable != null && !editable.toString().trim().isEmpty()) {
+                        double refundAmount = DataUtils.getDoubleValueFromFormattedString(amountEt.getText().toString());
+
+                        refundableTrxModel.setRefundAmount(refundAmount);
+
+                        double amount = 0d;
+                        for(RefundableTrxModel refundableTrxModel1 : refundableTrxModels)
+                            amount = CommonUtils.round(amount + refundableTrxModel1.getRefundAmount(), 2);
+
+                        if(amount > availableRefundAmount){
+
+                            double amountX = 0d;
+                            for(RefundableTrxModel refundableTrxModel1 : refundableTrxModels){
+                                if(!refundableTrxModel1.getTransaction().getId().equals(refundableTrxModel.getTransaction().getId()))
+                                    amountX = CommonUtils.round(amountX + refundableTrxModel1.getRefundAmount(), 2);
+                            }
+
+                            refundAmount = CommonUtils.round(availableRefundAmount - amountX, 2);
+                            refundableTrxModel.setRefundAmount(refundAmount);
+                            amountEt.setText(CommonUtils.getAmountText(refundAmount));
+                        }
+
+                        refundableTrxModelCallback.OnReturnTrxList(refundableTrxModels);
                     }
-
-                    returnTransactionCallback.OnTransactionReturn(transaction, refundAmount);
                 }
             });
         }
 
-        public void setData(Transaction transaction, int position) {
-            this.transaction = transaction;
-            this.position = position;
-
-            setIconAndPaymentTypeText();
-            setCancelIcon();
-            setAmountTv();
-            getRefundDescriptionResult();
-        }
-
-        private void setAmountTv() {
-            double amount = CommonUtils.round(transaction.getTotalAmount(), 2);
-            String amountStr = CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-            amountTv.setText(amountStr);
-        }
-
         private void setIconAndPaymentTypeText() {
-            if(transaction.getPaymentTypeId() == PaymentTypeEnum.CASH.getId()){
+            if(refundableTrxModel.getTransaction().getPaymentTypeId() == PaymentTypeEnum.CASH.getId()){
                 Glide.with(context)
                         .load(R.drawable.icon_payment_cash_type)
                         .into(paymentIconImgv);
                 paymentTypeTv.setText(context.getResources().getString(R.string.cash));
-            }else if(transaction.getPaymentTypeId() == PaymentTypeEnum.CREDIT_CARD.getId()){
+            }else if(refundableTrxModel.getTransaction().getPaymentTypeId() == PaymentTypeEnum.CREDIT_CARD.getId()){
                 Glide.with(context)
                         .load(R.drawable.icon_payment_card_type)
                         .into(paymentIconImgv);
@@ -128,38 +155,15 @@ public class PaymentListForRefundAdapter extends RecyclerView.Adapter<PaymentLis
             }
         }
 
-        private void setCancelIcon(){
-            RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfTransaction(transaction.getTransactionId(), true);
-
-            cancelImgv.setVisibility(View.VISIBLE);
-
-            if(transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId()){
-                Glide.with(context).load(R.drawable.ic_close_gray_24dp).into(cancelImgv);
-
-                cancelImgv.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.Red, null),
-                        context.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 20, 3));
-            }else {
-
-                if(refunds != null && refunds.size() > 0){
-                    Glide.with(context).load(R.drawable.ic_arrow_back_white_24dp).into(cancelImgv);
-
-                    cancelImgv.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.Orange, null),
-                            context.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 20, 3));
-                }else {
-                    cancelImgv.setVisibility(View.GONE);
-                }
-            }
-        }
-
         private BaseResponse getRefundDescriptionResult(){
-            RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfTransaction(transaction.getTransactionId(), true);
+            RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfTransaction(refundableTrxModel.getTransaction().getId(), true);
 
             BaseResponse baseResponse = new BaseResponse();
             baseResponse.setSuccess(true);
 
-            refundAmount = 0d;
+            double refundAmount = 0d;
 
-            if(transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId()){
+            if(refundableTrxModel.getTransaction().getTransactionType() == TransactionTypeEnum.CANCEL.getId()){
                 refundDescTv.setText(context.getResources().getString(R.string.transaction_cancelled_desc));
                 baseResponse.setSuccess(false);
                 baseResponse.setMessage(context.getResources().getString(R.string.transaction_cancelled_desc));
@@ -173,37 +177,38 @@ public class PaymentListForRefundAdapter extends RecyclerView.Adapter<PaymentLis
                     }
                 }
 
-                if (totalRefundAmount >= transaction.getTotalAmount()) {
+                if (totalRefundAmount >= refundableTrxModel.getTransaction().getTotalAmount()) {
                     refundDescTv.setText(context.getResources().getString(R.string.transaction_fully_refunded));
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage(context.getResources().getString(R.string.transaction_fully_refunded));
                 } else {
                     String refundDesc;
-                    refundAmount = CommonUtils.round(transaction.getTotalAmount() - totalRefundAmount, 2);
 
                     if (CommonUtils.getLanguage().equals(LANGUAGE_TR)) {
-                        refundDesc = "Yapılabilecek maximum iade veya iptal tutarı ".concat(CommonUtils.getAmountTextWithCurrency(refundAmount));
+                        refundDesc = "Yapılabilecek maximum iade tutarı ".concat(CommonUtils.getAmountTextWithCurrency(refundableTrxModel.getMaxRefundAmount()));
                     } else {
-                        refundDesc = "Max ".concat(CommonUtils.getAmountTextWithCurrency(refundAmount))
-                                .concat(" available for refund/cancel");
+                        refundDesc = "Max ".concat(CommonUtils.getAmountTextWithCurrency(refundableTrxModel.getMaxRefundAmount()))
+                                .concat(" available for refund");
                     }
                     refundDescTv.setText(refundDesc);
                 }
             }
             return baseResponse;
         }
+
+
     }
 
     @Override
     public void onBindViewHolder(final PaymentListForRefundAdapter.TransactionHolder holder, final int position) {
-        Transaction transaction = transactions.get(position);
-        holder.setData(transaction, position);
+        RefundableTrxModel refundableTrxModel = refundableTrxModels.get(position);
+        holder.setData(refundableTrxModel, position);
     }
 
     @Override
     public int getItemCount() {
-        if(transactions != null)
-            return transactions.size();
+        if(refundableTrxModels != null)
+            return refundableTrxModels.size();
         else
             return 0;
     }

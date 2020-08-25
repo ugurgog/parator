@@ -273,27 +273,28 @@ public class TaxEditFragment extends BaseFragment {
         realm.beginTransaction();
 
         if(taxModel.getId() == 0){
-            taxModel.setCreateDate(new Date());
             taxModel.setId(TaxDBHelper.getCurrentPrimaryKeyId());
+            taxModel.setUserId(user.getId());
+            taxModel.setCreateDate(new Date());
+            taxModel.setDeleted(false);
             inserted = true;
+        }else {
+            taxModel.setUpdateUserId(user.getId());
+            taxModel.setUpdateDate(new Date());
         }
 
-        TaxModel tempTax = realm.copyFromRealm(taxModel);
-
-        tempTax.setName(taxNameEt.getText().toString());
+        taxModel.setName(taxNameEt.getText().toString());
 
         if(amountRateEt.getText() != null && !amountRateEt.getText().toString().isEmpty()){
-            double amount = Double.valueOf(amountRateEt.getText().toString());
-            tempTax.setTaxRate(amount);
+            double amount = DataUtils.getDoubleValueFromFormattedString(amountRateEt.getText().toString());
+            taxModel.setTaxRate(amount);
         }
-
-        tempTax.setCreateUsername(user.getUsername());
 
         realm.commitTransaction();
 
         boolean finalInserted = inserted;
 
-        BaseResponse baseResponse = TaxDBHelper.createOrUpdateTax(tempTax);
+        BaseResponse baseResponse = TaxDBHelper.createOrUpdateTax(taxModel);
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
         if(baseResponse.isSuccess()){

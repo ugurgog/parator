@@ -31,10 +31,12 @@ class KeyPadLogic {
             return 8;
         } else if (i == R.id.btnNumpad9) {
             return 9;
-        } else if (i == R.id.btnNumpadBack) {
+        } else if (i == R.id.btnNumpadClear) {
             return -1; // C
-        } else {
-            return -2; //Add
+        } else if (i == R.id.btnNumpadBack) {
+            return -2; // <-
+        }else {
+            return -3; // Undefined
         }
     }
 

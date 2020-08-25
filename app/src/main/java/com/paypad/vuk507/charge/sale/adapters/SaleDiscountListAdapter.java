@@ -13,11 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.interfaces.ReturnOrderItemDiscountCallback;
-import com.paypad.vuk507.menu.discount.interfaces.ReturnDiscountCallback;
-import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.OrderItemDiscount;
-import com.paypad.vuk507.model.OrderItemTax;
-import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 
@@ -103,11 +100,11 @@ public class SaleDiscountListAdapter extends RecyclerView.Adapter<SaleDiscountLi
                 discNameTv.setText(discount.getName().concat("(").concat(context.getResources().getString(R.string.all_items)).concat(")"));
 
             }else {
-                for(SaleItem saleItem: SaleModelInstance.getInstance().getSaleModel().getSaleItems()){
+                for(OrderItem orderItem : SaleModelInstance.getInstance().getSaleModel().getOrderItems()){
                     saleItemCount++;
 
-                    if(saleItem.getDiscounts() != null){
-                        for(OrderItemDiscount discount1 : saleItem.getDiscounts()){
+                    if(orderItem.getDiscounts() != null){
+                        for(OrderItemDiscount discount1 : orderItem.getDiscounts()){
                             if(discount1.getId() == discount.getId()){
                                 itemCount++;
                                 break;

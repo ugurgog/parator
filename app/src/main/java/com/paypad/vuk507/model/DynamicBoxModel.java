@@ -3,14 +3,31 @@ package com.paypad.vuk507.model;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
+import io.realm.annotations.PrimaryKey;
 
 public class DynamicBoxModel extends RealmObject {
 
-
+    @PrimaryKey
+    private String id;
+    @Index
     private int structId;
+    @Index
     private long itemId;
     private Date createDate;
-    private String createUserId;
+    private String userId;
+    private Date updateDate;
+    private String updateUserId;
+    private boolean isDeleted;
+    private Date deleteDate;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public int getStructId() {
         return structId;
@@ -36,11 +53,43 @@ public class DynamicBoxModel extends RealmObject {
         this.createDate = createDate;
     }
 
-    public String getCreateUserId() {
-        return createUserId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setCreateUserId(String createUserId) {
-        this.createUserId = createUserId;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public String getUpdateUserId() {
+        return updateUserId;
+    }
+
+    public void setUpdateUserId(String updateUserId) {
+        this.updateUserId = updateUserId;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public Date getDeleteDate() {
+        return deleteDate;
+    }
+
+    public void setDeleteDate(Date deleteDate) {
+        this.deleteDate = deleteDate;
     }
 }

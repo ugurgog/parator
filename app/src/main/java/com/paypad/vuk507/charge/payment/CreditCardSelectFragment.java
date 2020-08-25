@@ -18,9 +18,11 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
+import com.paypad.vuk507.charge.payment.orderpayment.OrderPaymentFragment;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.charge.payment.cancelpayment.CancellationPaymentFragment;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -37,6 +39,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_CANCEL_PAYMENT;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_ORDER_PAYMENT;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class CreditCardSelectFragment extends BaseFragment implements PaymentStatusCallback {
@@ -55,11 +59,14 @@ public class CreditCardSelectFragment extends BaseFragment implements PaymentSta
     private User user;
     private Transaction mTransaction;
     private double totalAmount;
-    private PaymentFragment paymentFragment;
+    private OrderPaymentFragment orderPaymentFragment;
+    private CancellationPaymentFragment cancellationPaymentFragment;
     private PaymentStatusCallback paymentStatusCallback;
+    private int type;
 
-    public CreditCardSelectFragment(Transaction transaction) {
+    public CreditCardSelectFragment(Transaction transaction, int type) {
         mTransaction = transaction;
+        this.type = type;
     }
 
     public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
@@ -128,8 +135,13 @@ public class CreditCardSelectFragment extends BaseFragment implements PaymentSta
                 mTransaction.setTotalAmount(totalAmount);
                 mTransaction.setTipAmount(tipAmount);
 
-                initPaymentFragment();
-                mFragmentNavigation.pushFragment(paymentFragment);
+                if(type == TYPE_ORDER_PAYMENT){
+                    initPaymentFragment();
+                    mFragmentNavigation.pushFragment(orderPaymentFragment);
+                } else if(type == TYPE_CANCEL_PAYMENT){
+                    initCancellationPaymentFragment();
+                    mFragmentNavigation.pushFragment(cancellationPaymentFragment);
+                }
             }
         });
 
@@ -173,8 +185,13 @@ public class CreditCardSelectFragment extends BaseFragment implements PaymentSta
     }
 
     private void initPaymentFragment(){
-        paymentFragment = new PaymentFragment(mTransaction);
-        paymentFragment.setPaymentStatusCallback(this);
+        orderPaymentFragment = new OrderPaymentFragment(mTransaction);
+        orderPaymentFragment.setPaymentStatusCallback(this);
+    }
+
+    private void initCancellationPaymentFragment(){
+        cancellationPaymentFragment = new CancellationPaymentFragment(mTransaction);
+        cancellationPaymentFragment.setPaymentStatusCallback(this);
     }
 
     private void setToolbarTitleInitValue(){
@@ -198,9 +215,14 @@ public class CreditCardSelectFragment extends BaseFragment implements PaymentSta
     @Override
     public void OnPaymentReturn(int status) {
         try{
-            if(paymentFragment != null){
-                Log.i("Info", "::OnPaymentReturn paymentFragment closed");
-                paymentFragment.getActivity().onBackPressed();
+            if(type == TYPE_ORDER_PAYMENT && orderPaymentFragment != null){
+                Log.i("Info", "::OnPaymentReturn orderPaymentFragment closed");
+                orderPaymentFragment.getActivity().onBackPressed();
+            }
+
+            if(type == TYPE_CANCEL_PAYMENT && cancellationPaymentFragment != null){
+                Log.i("Info", "::OnPaymentReturn orderPaymentFragment closed");
+                cancellationPaymentFragment.getActivity().onBackPressed();
             }
 
             paymentStatusCallback.OnPaymentReturn(status);

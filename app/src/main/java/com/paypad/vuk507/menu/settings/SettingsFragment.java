@@ -136,7 +136,7 @@ public class SettingsFragment extends BaseFragment{
         boolean commit = LoginUtils.deleteSharedPreferences(getContext());
 
         if(commit){
-            BaseResponse baseResponse = UserDBHelper.updateUserLoggedInStatus(user.getUsername(), false);
+            BaseResponse baseResponse = UserDBHelper.updateUserLoggedInStatus(user.getId(), false);
             DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
             if(baseResponse.isSuccess()){

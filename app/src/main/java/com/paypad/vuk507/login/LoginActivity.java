@@ -190,11 +190,11 @@ public class LoginActivity extends AppCompatActivity
         progressDialog.dismiss();
 
         if(user != null){
-            BaseResponse baseResponse = UserDBHelper.updateUserLoggedInStatus(username, true);
+            BaseResponse baseResponse = UserDBHelper.updateUserLoggedInStatus(user.getId(), true);
 
             if(baseResponse.isSuccess()){
                 LoginUtils.applySharedPreferences(LoginActivity.this, user.getUsername(),
-                        user.getPassword(), user.getUuid());
+                        user.getPassword(), user.getId());
                 startMainPage();
             }
 

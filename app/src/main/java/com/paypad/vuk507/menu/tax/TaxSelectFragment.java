@@ -195,7 +195,7 @@ public class TaxSelectFragment extends BaseFragment {
         addDefaultTaxTitle(getResources().getString(R.string.system_taxes));
         fillItems();
 
-        taxModels = TaxDBHelper.getAllTaxes(user.getUsername());
+        taxModels = TaxDBHelper.getAllTaxes(user.getId());
 
         if(taxModels != null && taxModels.size() > 0)
             addDefaultTaxTitle(getResources().getString(R.string.user_defined_taxes));

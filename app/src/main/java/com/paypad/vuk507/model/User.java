@@ -3,15 +3,18 @@ package com.paypad.vuk507.model;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject {
 
+    @PrimaryKey
+    private String id;
     private String username;
     private String password;
     private Date createDate;
     private String deviceToken;
     private boolean isLoggedIn;
-    private String uuid;
+
 
     public String getUsername() {
         return username;
@@ -53,11 +56,11 @@ public class User extends RealmObject {
         isLoggedIn = loggedIn;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getId() {
+        return id;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setId(String id) {
+        this.id = id;
     }
 }

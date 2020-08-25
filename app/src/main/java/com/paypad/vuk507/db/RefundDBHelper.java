@@ -28,6 +28,15 @@ public class RefundDBHelper {
         return refunds;
     }
 
+    public static RealmResults<Refund> getAllRefundsByRefundGroupId(String refundGroupId){
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Refund> refunds = realm.where(Refund.class)
+                .equalTo("refundGroupId", refundGroupId)
+                .equalTo("isSuccessful", true)
+                .findAll();
+        return refunds;
+    }
+
     public static RealmResults<Refund> getRefundsByZNum(long zNum){
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Refund> transactions = realm.where(Refund.class)

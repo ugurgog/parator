@@ -132,6 +132,16 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
         super.onStart();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(user == null)
+            user = UserDBHelper.getUserFromCache(getContext());
+
+        initVariables();
+        initListeners();
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -149,9 +159,8 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_library, container, false);
             ButterKnife.bind(this, mView);
-            initVariables();
-            initListeners();
-            setSpinnerAdapter();
+            //initVariables();
+            //initListeners();
         }
         return mView;
     }
@@ -160,6 +169,7 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
         realm = Realm.getDefaultInstance();
         setKeyboardVisibilityListener(this);
         initRecyclerView();
+        setSpinnerAdapter();
     }
 
     @Override
@@ -309,7 +319,7 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
     }
 
     void setDiscountAdapter(){
-        RealmResults<Discount> discounts = DiscountDBHelper.getAllDiscounts(user.getUsername());
+        RealmResults<Discount> discounts = DiscountDBHelper.getAllDiscounts(user.getId());
         discountList = new ArrayList(discounts);
 
         if(discountList.size() == 0){
@@ -332,7 +342,7 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
 
         RealmResults<Product> products;
         if(categoryId == 0)
-            products = ProductDBHelper.getAllProducts(user.getUuid());
+            products = ProductDBHelper.getAllProducts(user.getId());
         else
             products = ProductDBHelper.getProductsByCategoryId(categoryId);
 
@@ -371,7 +381,7 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
 
     void setCategoryAdapter(){
         categoryNameTv.setVisibility(View.GONE);
-        RealmResults<Category> categories = CategoryDBHelper.getAllCategories(user.getUsername());
+        RealmResults<Category> categories = CategoryDBHelper.getAllCategories(user.getId());
         categoryList = new ArrayList(categories);
 
         if(categoryList.size() == 0){

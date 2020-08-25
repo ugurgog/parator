@@ -8,10 +8,11 @@ import io.realm.RealmResults;
 
 public class UnitDBHelper {
 
-    public static RealmResults<UnitModel> getAllUnits(String username){
+    public static RealmResults<UnitModel> getAllUnits(String userId){
         Realm realm = Realm.getDefaultInstance();
         RealmResults<UnitModel> unitModels = realm.where(UnitModel.class)
-                .equalTo("createUsername", username)
+                .equalTo("userId", userId)
+                .equalTo("isDeleted", false)
                 .findAll();
         return unitModels;
     }

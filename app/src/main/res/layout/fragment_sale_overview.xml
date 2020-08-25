@@ -101,7 +101,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/sales"
+                android:text="@string/orders"
                 android:textSize="@dimen/default_size_13sp">
 
             </TextView>

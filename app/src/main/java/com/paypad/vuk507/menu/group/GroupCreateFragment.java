@@ -136,16 +136,12 @@ public class GroupCreateFragment extends BaseFragment {
                             getContext().getResources().getString(R.string.confirm_delete));
                 }else if(deleteButtonStatus == 2){
 
-                    GroupDBHelper.deleteGroup(group.getId(), new CompleteCallback() {
-                        @Override
-                        public void onComplete(BaseResponse baseResponse) {
-                            CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
-                            if(baseResponse.isSuccess()){
-                                returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.DELETED);
-                                //Objects.requireNonNull(getActivity()).onBackPressed();
-                            }
-                        }
-                    });
+                    BaseResponse baseResponse = GroupDBHelper.deleteGroup(group.getId(), user.getId());
+                    DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+
+                    if(baseResponse.isSuccess()){
+                        returnGroupCallback.OnGroupReturn((Group) baseResponse.getObject(), ItemProcessEnum.DELETED);
+                    }
                 }
             }
         });
@@ -182,10 +178,14 @@ public class GroupCreateFragment extends BaseFragment {
         realm.beginTransaction();
 
         if(group.getId() == 0){
-            group.setCreateDate(new Date());
             group.setId(GroupDBHelper.getGroupCurrentPrimaryKeyId());
-            group.setUserUuid(user.getUuid());
+            group.setCreateDate(new Date());
+            group.setUserId(user.getId());
+            group.setDeleted(false);
             inserted = true;
+        }else {
+            group.setUpdateDate(new Date());
+            group.setUpdateUserId(user.getId());
         }
 
         Group tempGroup = realm.copyToRealm(group);

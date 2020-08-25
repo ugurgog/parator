@@ -15,20 +15,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.db.OrderRefundItemDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.transactions.TransactionsFragment;
-import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.menu.transactions.interfaces.TransactionItemCallback;
+import com.paypad.vuk507.model.OrderItem;
+import com.paypad.vuk507.model.OrderRefundItem;
+import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Transaction;
-import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.RealmResults;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
@@ -38,7 +43,7 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
     private List<TransactionsFragment.TransactionItem> orgTransactionItems = new ArrayList<>();
 
     private Context mContext;
-    private ReturnSaleModelCallback returnSaleModelCallback;
+    private TransactionItemCallback transactionItemCallback;
 
     private static final int VIEW_ITEM = 0;
     private static final int VIEW_NONE = 1;
@@ -48,9 +53,6 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
     private static final int PAYMENT_MULTI_CARD = 2;
     private static final int PAYMENT_MULTI_CASH = 3;
 
-    public interface ReturnSaleModelCallback{
-        void OnReturnSaleModel(SaleModel saleModel);
-    }
 
     public SaleModelListAdapter(Context context, List<TransactionsFragment.TransactionItem> transactionItems) {
         this.transactionItems.addAll(transactionItems);
@@ -58,8 +60,8 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
         mContext = context;
     }
 
-    public void setReturnSaleModelCallback(ReturnSaleModelCallback returnSaleModelCallback) {
-        this.returnSaleModelCallback = returnSaleModelCallback;
+    public void setTransactionItemCallback(TransactionItemCallback transactionItemCallback) {
+        this.transactionItemCallback = transactionItemCallback;
     }
 
     @Override
@@ -113,7 +115,7 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
             transactionCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    returnSaleModelCallback.OnReturnSaleModel(transactionItem.getSaleModel());
+                    transactionItemCallback.onReturnTransactionItem(transactionItem);
                 }
             });
         }
@@ -133,29 +135,29 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
         private void setOrderNumTv() {
             String orderNumText;
 
-            orderNumText = transactionItem.getSaleModel().getSale().getOrderNum();
+            orderNumText = transactionItem.getSaleModel().getOrder().getOrderNum();
 
             if(transactionItem.getTransaction() != null){
                 orderNumText = orderNumText.concat("/").concat(String.format("%06d", transactionItem.getTransaction().getzNum()).concat("/"))
                         .concat(String.format("%06d", transactionItem.getTransaction().getfNum()));
-            }else if(transactionItem.getRefund() != null){
+            }/*else if(transactionItem.getRefund() != null){
                 orderNumText = orderNumText.concat("/").concat(String.format("%06d", transactionItem.getRefund().getzNum()).concat("/"))
                         .concat(String.format("%06d", transactionItem.getRefund().getfNum()));
-            }
+            }*/
             orderNumTv.setText(orderNumText);
         }
 
         private void setSaleItemsDesc() {
 
-            if(transactionItem.getTransaction() == null && transactionItem.getRefund() == null){
+            if(transactionItem.getTransaction() == null && transactionItem.getRefunds() == null){
                 saleItemDescTv.setVisibility(View.VISIBLE);
                 String desc = "";
-                for(SaleItem saleItem: transactionItem.getSaleModel().getSaleItems()){
+                for(OrderItem orderItem : transactionItem.getSaleModel().getOrderItems()){
 
-                    if(saleItem.getQuantity() == 1)
-                        desc = desc.concat(saleItem.getName()).concat(", ");
+                    if(orderItem.getQuantity() == 1)
+                        desc = desc.concat(orderItem.getName()).concat(", ");
                     else
-                        desc = desc.concat(saleItem.getName().concat(" x ").concat(String.valueOf(saleItem.getQuantity()))).concat(", ");
+                        desc = desc.concat(orderItem.getName().concat(" x ").concat(String.valueOf(orderItem.getQuantity()))).concat(", ");
 
                     if(desc.length() > 40)
                         break;
@@ -173,22 +175,54 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
                 }
 
                 saleItemDescTv.setText(desc1);
+            }else if(transactionItem.getRefunds() != null && transactionItem.getRefunds().size() > 0){
+                saleItemDescTv.setVisibility(View.VISIBLE);
+
+                String refundGroupId = transactionItem.getRefunds().get(0).getRefundGroupId();
+                RealmResults<OrderRefundItem> orderRefundItems = OrderRefundItemDBHelper.getRefundItemsByRefundGroupId(refundGroupId);
+
+                if(orderRefundItems == null || orderRefundItems.size() == 0){
+                    saleItemDescTv.setVisibility(View.GONE);
+                }else {
+                    String desc = "";
+                    for(OrderRefundItem orderRefundItem: orderRefundItems){
+                        desc = desc.concat(orderRefundItem.getName()).concat(", ");
+                        if(desc.length() > 40)
+                            break;
+                    }
+
+                    String desc1 = "";
+
+                    try{
+                        desc1 = desc.substring(0, desc.length() - 2);
+
+                        if(desc1.length() > 40)
+                            desc1 = desc1.substring(0, 40).concat("...");
+                    }catch (Exception e){
+
+                    }
+                    saleItemDescTv.setText(desc1);
+                }
             }else
                 saleItemDescTv.setVisibility(View.GONE);
         }
 
         private void setSaleAmount() {
-            double amount;
+            double amount = 0d;
 
             if(transactionItem.getTransaction() != null)
                 amount = CommonUtils.round((transactionItem.getTransaction().getTotalAmount()), 2);
-            else if(transactionItem.getRefund() != null)
-                amount = CommonUtils.round((transactionItem.getRefund().getRefundAmount()), 2);
-            else
-                amount = CommonUtils.round((transactionItem.getSaleModel().getSale().getDiscountedAmount()
-                        + OrderManager1.getTotalTipAmountOfSale(transactionItem.getSaleModel())), 2);
+            else if(transactionItem.getRefunds() != null){
 
-            String amountStr = ((transactionItem.getTransaction() != null || transactionItem.getRefund() != null) ? "- " : "") +
+                for(Refund refund : transactionItem.getRefunds())
+                    amount = CommonUtils.round(amount + refund.getRefundAmount(), 2);
+
+                amount = CommonUtils.round(amount, 2);
+            } else
+                amount = CommonUtils.round((transactionItem.getSaleModel().getOrder().getDiscountedAmount()
+                        + OrderManager.getTotalTipAmountOfSale(transactionItem.getSaleModel())), 2);
+
+            String amountStr = ((transactionItem.getTransaction() != null || transactionItem.getRefunds() != null) ? "- " : "") +
                     CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
             amountTv.setText(amountStr);
         }
@@ -200,7 +234,7 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
         private void setIcon() {
             setIconForSaleModel();
 
-            if(transactionItem.getTransaction() == null && transactionItem.getRefund() == null){
+            if(transactionItem.getTransaction() == null && transactionItem.getRefunds() == null){
                 cancelImgv.setVisibility(View.GONE);
             } else {
                 cancelImgv.setVisibility(View.VISIBLE);
@@ -241,7 +275,7 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
         }
 
         private void setIconForTransaction(){
-            if(transactionItem.getRefund() != null){
+            if(transactionItem.getRefunds() != null){
 
                 Glide.with(mContext).load(R.drawable.ic_arrow_back_white_24dp).into(cancelImgv);
 
@@ -300,13 +334,15 @@ public class SaleModelListAdapter extends RecyclerView.Adapter {
             List<TransactionsFragment.TransactionItem> tempTransactionItems = new ArrayList<>();
 
             for(TransactionsFragment.TransactionItem transactionItem : orgTransactionItems){
-                if(transactionItem.getSaleModel() != null && transactionItem.getSaleModel().getSale() != null){
-                    String orderNum = transactionItem.getSaleModel().getSale().getOrderNum();
+                if(transactionItem.getSaleModel() != null && transactionItem.getSaleModel().getOrder() != null){
+                    String orderNum = transactionItem.getSaleModel().getOrder().getOrderNum();
                     String zNum = "", fNum = "";
 
-                    if(transactionItem.getRefund() != null){
-                        zNum = String.format("%06d", transactionItem.getRefund().getzNum());
-                        fNum = String.format("%06d", transactionItem.getRefund().getfNum());
+                    if(transactionItem.getRefunds() != null){
+                        for(Refund refund : transactionItem.getRefunds()){
+                            zNum = zNum.concat(",").concat(String.format("%06d", refund.getzNum()));
+                            fNum = fNum.concat(",").concat(String.format("%06d", refund.getfNum()));
+                        }
                     }else if(transactionItem.getTransaction() != null){
                         zNum = String.format("%06d", transactionItem.getTransaction().getzNum());
                         fNum = String.format("%06d", transactionItem.getTransaction().getfNum());

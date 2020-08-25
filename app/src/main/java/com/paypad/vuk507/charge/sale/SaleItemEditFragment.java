@@ -21,8 +21,8 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.AmountCallback;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
-import com.paypad.vuk507.charge.order.IOrderManager1;
-import com.paypad.vuk507.charge.order.OrderManager1;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.sale.adapters.SaleItemDiscountListAdapter;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
@@ -31,9 +31,9 @@ import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.tax.TaxSelectFragment;
 import com.paypad.vuk507.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.OrderItemTax;
 import com.paypad.vuk507.model.Product;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
@@ -100,7 +100,7 @@ public class SaleItemEditFragment extends BaseFragment {
 
 
     private User user;
-    private SaleItem saleItem;
+    private OrderItem orderItem;
     private SaleItemDiscountListAdapter saleItemDiscountListAdapter;
     private double saleAmount;
     private int quantityCount = 0;
@@ -109,10 +109,10 @@ public class SaleItemEditFragment extends BaseFragment {
     //private OrderItemTax orderItemTax;
     private boolean isTaxUpdated = false;
     private OrderItemTax orderItemTax;
-    private IOrderManager1 orderManager;
+    private IOrderManager orderManager;
 
-    SaleItemEditFragment(SaleItem saleItem, ReturnSaleItemCallback callback) {
-        this.saleItem = saleItem;
+    SaleItemEditFragment(OrderItem orderItem, ReturnSaleItemCallback callback) {
+        this.orderItem = orderItem;
         this.returnSaleItemCallback = callback;
     }
 
@@ -173,22 +173,22 @@ public class SaleItemEditFragment extends BaseFragment {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saleItem.setAmount(saleAmount);
-                //saleItem.setTaxAmount(CommonUtils.round((saleAmount / 100d) * orderItemTax.getTaxRate(), 2));
+                orderItem.setAmount(saleAmount);
+                //orderItem.setTaxAmount(CommonUtils.round((saleAmount / 100d) * orderItemTax.getTaxRate(), 2));
 
-                saleItem.setTaxAmount(OrderManager1.getTaxAmount(saleAmount, orderItemTax));
-                saleItem.setGrossAmount(OrderManager1.getGrossAmount(saleAmount, orderItemTax));
+                orderItem.setTaxAmount(OrderManager.getTaxAmount(saleAmount, orderItemTax));
+                orderItem.setGrossAmount(OrderManager.getGrossAmount(saleAmount, orderItemTax));
 
-                saleItem.setQuantity(quantityCount);
-                saleItem.setNote(noteEt.getText().toString());
+                orderItem.setQuantity(quantityCount);
+                orderItem.setNote(noteEt.getText().toString());
                 orderManager.getOrderItemCount();
 
                 if(isTaxUpdated && orderItemTax != null)
-                    OrderManager1.setOrderItemTaxForCustomItem(saleItem, orderItemTax);
+                    OrderManager.setOrderItemTaxForCustomItem(orderItem, orderItemTax);
 
                 orderManager.setDiscountedAmountOfSale();
 
-                returnSaleItemCallback.onReturn(saleItem, ItemProcessEnum.CHANGED);
+                returnSaleItemCallback.onReturn(orderItem, ItemProcessEnum.CHANGED);
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
@@ -221,7 +221,7 @@ public class SaleItemEditFragment extends BaseFragment {
                     CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
                             getContext().getResources().getString(R.string.confirm_delete));
                 }else if(deleteButtonStatus == 2){
-                    SaleModelInstance.getInstance().getSaleModel().getSaleItems().remove(saleItem);
+                    SaleModelInstance.getInstance().getSaleModel().getOrderItems().remove(orderItem);
                     returnSaleItemCallback.onReturn(null, ItemProcessEnum.DELETED);
                     Objects.requireNonNull(getActivity()).onBackPressed();
                 }
@@ -231,10 +231,10 @@ public class SaleItemEditFragment extends BaseFragment {
         pricell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(saleItem.isDynamicAmount()){
+                if(orderItem.isDynamicAmount()){
                     Product product = new Product();
-                    product.setName(saleItem.getName());
-                    product.setAmount(saleItem.getAmount());
+                    product.setName(orderItem.getName());
+                    product.setAmount(orderItem.getAmount());
                     mFragmentNavigation.pushFragment(new DynamicAmountFragment(product, new AmountCallback() {
                         @Override
                         public void OnDynamicAmountReturn(double amount) {
@@ -249,7 +249,7 @@ public class SaleItemEditFragment extends BaseFragment {
         taxSelectrl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(saleItem.getProductId() <= 0){
+                if(orderItem.getProductId() <= 0){
                     mFragmentNavigation.pushFragment(new TaxSelectFragment(new ReturnTaxCallback() {
                         @Override
                         public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
@@ -266,10 +266,10 @@ public class SaleItemEditFragment extends BaseFragment {
     }
 
     private void initVariables() {
-        orderManager = new OrderManager1();
+        orderManager = new OrderManager();
         discountsRv.setNestedScrollingEnabled(false);
 
-        //if(!saleItem.isDynamicAmount())
+        //if(!orderItem.isDynamicAmount())
         //    priceLayout.setVisibility(View.GONE);
 
         setSaleItemVariables();
@@ -282,16 +282,16 @@ public class SaleItemEditFragment extends BaseFragment {
     }
 
     private void setSaleItemVariables() {
-        saleAmount = saleItem.getAmount();
-        orderItemTax = saleItem.getTaxModel();
-        //orderItemTax = saleItem.getOrderItemTaxes().get(0);
-        quantityCount = saleItem.getQuantity();
+        saleAmount = orderItem.getAmount();
+        orderItemTax = orderItem.getTaxModel();
+        //orderItemTax = orderItem.getOrderItemTaxes().get(0);
+        quantityCount = orderItem.getQuantity();
 
         setItemPrice();
         setTaxFields();
 
-        if(saleItem.getNote() != null && !saleItem.getNote().isEmpty())
-            noteEt.setText(saleItem.getNote());
+        if(orderItem.getNote() != null && !orderItem.getNote().isEmpty())
+            noteEt.setText(orderItem.getNote());
 
         quantityCountTv.setText(String.valueOf(quantityCount));
     }
@@ -300,7 +300,7 @@ public class SaleItemEditFragment extends BaseFragment {
         priceTv.setText(CommonUtils.getDoubleStrValueForView(saleAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
         setToolbarTitle(saleAmount);
 
-        if(saleItem.isDynamicAmount())
+        if(orderItem.isDynamicAmount())
             priceTv.setTextColor(getResources().getColor(R.color.Black, null));
         else
             priceTv.setTextColor(getResources().getColor(R.color.Gray, null));
@@ -309,7 +309,7 @@ public class SaleItemEditFragment extends BaseFragment {
     }
 
     private void setToolbarTitle(double amount) {
-        String amountStr = saleItem.getName().concat(" ").concat(CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+        String amountStr = orderItem.getName().concat(" ").concat(CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
         toolbarTitleTv.setText(amountStr);
     }
 
@@ -317,7 +317,7 @@ public class SaleItemEditFragment extends BaseFragment {
         taxNameTv.setText((orderItemTax != null && orderItemTax.getName() != null) ? orderItemTax.getName() : "");
         taxRateTv.setText("% ".concat(CommonUtils.getDoubleStrValueForView(orderItemTax.getTaxRate(), TYPE_RATE)));
 
-        if(saleItem.getProductId() <= 0){
+        if(orderItem.getProductId() <= 0){
             taxNameTv.setTextColor(getResources().getColor(R.color.Black, null));
             taxRateTv.setTextColor(getResources().getColor(R.color.Black, null));
         }else {
@@ -330,20 +330,20 @@ public class SaleItemEditFragment extends BaseFragment {
 
     private void setIncludingTaxAmount(){
         //double taxAmount = CommonUtils.round(((saleAmount / 100d) * orderItemTax.getTaxRate()), 2);
-        double taxAmount = OrderManager1.getTaxAmount(saleAmount, orderItemTax);
+        double taxAmount = OrderManager.getTaxAmount(saleAmount, orderItemTax);
         includingTaxPriceTv.setText(CommonUtils.getDoubleStrValueForView(taxAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
     }
 
     public void updateAdapterWithCurrentList(){
         List<Discount> discountList = new ArrayList<>();
 
-        for(Discount discount : DiscountDBHelper.getAllDiscounts(user.getUsername())){
+        for(Discount discount : DiscountDBHelper.getAllDiscounts(user.getId())){
             if(discount.getRate() > 0d){
                 discountList.add(discount);
             }
         }
 
-        saleItemDiscountListAdapter = new SaleItemDiscountListAdapter(discountList, saleItem);
+        saleItemDiscountListAdapter = new SaleItemDiscountListAdapter(discountList, orderItem);
         discountsRv.setAdapter(saleItemDiscountListAdapter);
     }
 }

@@ -2,12 +2,15 @@ package com.paypad.vuk507.menu.transactions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,48 +21,55 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager1;
+import com.paypad.vuk507.adapter.LocationTrackerAdapter;
+import com.paypad.vuk507.db.AutoIncrementDBHelper;
+import com.paypad.vuk507.db.OrderRefundItemDBHelper;
 import com.paypad.vuk507.db.RefundDBHelper;
-import com.paypad.vuk507.db.SaleItemDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.RefundReasonEnum;
+import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.CustomDialogBoxTextListener;
 import com.paypad.vuk507.interfaces.CustomDialogListener;
+import com.paypad.vuk507.interfaces.LocationCallback;
 import com.paypad.vuk507.interfaces.RefundReasonTypeCallback;
-import com.paypad.vuk507.interfaces.ReturnAmountCallback;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentListForRefundAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.RefundReasonsAdapter;
-import com.paypad.vuk507.menu.transactions.interfaces.ReturnTransactionCallback;
+import com.paypad.vuk507.menu.transactions.interfaces.RefundableTrxModelCallback;
+import com.paypad.vuk507.menu.transactions.model.RefundableTrxModel;
+import com.paypad.vuk507.model.AutoIncrement;
+import com.paypad.vuk507.model.OrderRefundItem;
 import com.paypad.vuk507.model.Refund;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
+import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.LogUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import io.realm.RealmResults;
+import pl.droidsonroids.gif.GifImageView;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_CANCEL;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_REFUND;
 
-public class SelectPaymentForRefundFragment extends BaseFragment implements ReturnTransactionCallback, RefundReasonTypeCallback {
+public class SelectPaymentForRefundFragment extends BaseFragment
+            implements RefundReasonTypeCallback, RefundableTrxModelCallback {
 
     private View mView;
 
@@ -73,22 +83,37 @@ public class SelectPaymentForRefundFragment extends BaseFragment implements Retu
     RecyclerView itemRv;
     @BindView(R.id.refundReasonRv)
     RecyclerView refundReasonRv;
-    @BindView(R.id.refundDescTv)
-    TextView refundDescTv;
+    @BindView(R.id.remainingAmountTv)
+    TextView remainingAmountTv;
     @BindView(R.id.refundReasonll)
     LinearLayout refundReasonll;
+    @BindView(R.id.mainrl)
+    RelativeLayout mainrl;
 
     private User user;
     private PaymentListForRefundAdapter paymentListForRefundAdapter;
     private RefundReasonsAdapter refundReasonsAdapter;
     private SaleModel saleModel;
     private int refundCancellationStatus;
-    private RefundReasonEnum mRefundReasonType;
     private String refundReasonText = null;
+    private boolean isRefundByAmount;
+    private double refundAmount;
+    private double remainingAmount;
+    private double returnAmount = 0d;
+    private List<RefundableTrxModel> mRefundableTrxModels;
+    private List<OrderRefundItem> orderRefundItems;
+    private Realm realm;
+    private LocationTrackerAdapter locationTrackObj;
+    private AutoIncrement autoIncrement;
 
-    public SelectPaymentForRefundFragment(int refundCancellationStatus, SaleModel saleModel) {
+    public SelectPaymentForRefundFragment(int refundCancellationStatus, SaleModel saleModel, boolean isRefundByAmount,
+                                          double refundAmount, List<OrderRefundItem> orderRefundItems) {
         this.saleModel = saleModel;
         this.refundCancellationStatus = refundCancellationStatus;
+        this.isRefundByAmount = isRefundByAmount;
+        this.refundAmount = refundAmount;
+        this.orderRefundItems = orderRefundItems;
+        remainingAmount = refundAmount;
     }
 
     @Override
@@ -142,6 +167,15 @@ public class SelectPaymentForRefundFragment extends BaseFragment implements Retu
 
     }
 
+    private void initLocationTracker() {
+        locationTrackObj = new LocationTrackerAdapter(getContext(), new LocationCallback() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+            }
+        });
+    }
+
     private void initListeners() {
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,18 +183,72 @@ public class SelectPaymentForRefundFragment extends BaseFragment implements Retu
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
+
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String refundGroupId = UUID.randomUUID().toString();
+
+                boolean refundSuccess = true;
+                for(RefundableTrxModel refundableTrxModel : mRefundableTrxModels){
+
+                    if(refundableTrxModel.getRefundAmount() > 0d){
+                        refundSuccess = refundTransaction(refundableTrxModel, refundGroupId);
+                        if(!refundSuccess)
+                            break;
+                    }
+                }
+
+                if(refundSuccess)
+                    refundSuccess = saveRefundItems(refundGroupId);
+
+                if(refundSuccess)
+                    refundCompletedProcess();
+            }
+        });
+    }
+
+    private void refundCompletedProcess(){
+        View child = getLayoutInflater().inflate(R.layout.layout_payment_fully_completed, null);
+
+        GifImageView gifImageView = child.findViewById(R.id.gifImageView);
+
+        gifImageView.setLayoutParams(new LinearLayout.LayoutParams(
+                CommonUtils.getScreenWidth(getContext()),
+                CommonUtils.getScreenHeight(getContext()) + CommonUtils.getNavigationBarHeight(getContext())
+        ));
+
+        mainrl.addView(child);
+
+        //initSendNewReceiptFragment();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //mFragmentNavigation.pushFragment(sendNewReceiptFragment);
+                mFragmentNavigation.popFragments(3);
+
+            }
+        }, 4000);
     }
 
     private void initVariables() {
-        saveBtn.setVisibility(View.GONE);
+        realm = Realm.getDefaultInstance();
+        initLocationTracker();
+        saveBtn.setText(getResources().getString(R.string.continue_text));
+        CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+        mRefundableTrxModels = new ArrayList<>();
+        autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getId());
 
         if(refundCancellationStatus == TYPE_CANCEL)
             refundReasonll.setVisibility(View.GONE);
 
         setToolbarTitle();
-        setRefundDescription();
         setItemsRv();
         setRefundReasonsRv();
+        remainingAmountTv.setText(CommonUtils.getAmountTextWithCurrency(refundAmount).concat(" ")
+                .concat(getResources().getString(R.string.remaining)));
     }
 
     private void setItemsRv() {
@@ -177,26 +265,15 @@ public class SelectPaymentForRefundFragment extends BaseFragment implements Retu
         updateReasonsAdapter();
     }
 
-    private void setRefundDescription() {
-
-        String desc;
-        if (CommonUtils.getLanguage().equals(LANGUAGE_TR))
-            desc = refundCancellationStatus == TYPE_REFUND ? "İADE İÇİN İŞLEM SEÇİN" : "İPTAL İÇİN İŞLEM SEÇİN";
-         else
-            desc = refundCancellationStatus == TYPE_REFUND ? "SELECT TRANSACTION FOR REFUND" : "SELECT TRANSACTION FOR CANCEL";
-
-         refundDescTv.setText(desc);
-    }
-
     private void setToolbarTitle() {
-        if(refundCancellationStatus == TYPE_REFUND)
-            toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.select_to_refund));
-        else if(refundCancellationStatus == TYPE_CANCEL)
-            toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.select_to_cancel));
+        toolbarTitleTv.setText(getResources().getString(R.string.refund)
+            .concat(" ")
+            .concat(CommonUtils.getAmountTextWithCurrency(refundAmount)));
     }
 
     @Override
     public void OnRefundReasonReturn(RefundReasonEnum refundReasonType) {
+        CommonUtils.hideKeyBoard(getActivity());
         refundReasonText = null;
         if(refundReasonType == RefundReasonEnum.OTHER){
             new CustomDialogBox.Builder((Activity) getContext())
@@ -232,25 +309,63 @@ public class SelectPaymentForRefundFragment extends BaseFragment implements Retu
         }else {
             refundReasonText = CommonUtils.getLanguage().equals(LANGUAGE_TR) ? refundReasonType.getLabelTr() : refundReasonType.getLabelEn();
         }
+        checkSaveBtnEnability();
     }
 
-    public static class DateComparator implements Comparator<Transaction> {
-        @Override
-        public int compare(Transaction o1, Transaction o2) {
-            return o2.getCreateDate().compareTo(o1.getCreateDate());
+    @Override
+    public void OnReturnTrxList(List<RefundableTrxModel> refundableTrxModels) {
+        mRefundableTrxModels = refundableTrxModels;
+        double returnAmount = 0d;
+        for(RefundableTrxModel refundableTrxModel : refundableTrxModels){
+            returnAmount = CommonUtils.round(returnAmount + refundableTrxModel.getRefundAmount(), 2);
         }
+        remainingAmount = CommonUtils.round(refundAmount - returnAmount, 2);
+        remainingAmountTv.setText(CommonUtils.getAmountTextWithCurrency(remainingAmount).concat(" ")
+                .concat(getResources().getString(R.string.remaining)));
+
+        checkSaveBtnEnability();
+    }
+
+    private void checkSaveBtnEnability(){
+        if(remainingAmount > 0d || refundReasonText == null)
+            CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+        else
+            CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
     }
 
     public void updatePaymentsAdapter(){
-        List<Transaction> trxlist = new ArrayList<>();
+        List<RefundableTrxModel> refundableTrxModels = new ArrayList<>();
 
-        for(Transaction transaction : saleModel.getTransactions())
-            trxlist.add(transaction);
+        for(Transaction transaction : saleModel.getTransactions()){
 
-        Collections.sort(trxlist, new DateComparator());
+            if(transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId())
+                continue;
 
-        paymentListForRefundAdapter = new PaymentListForRefundAdapter(getContext(), trxlist);
-        paymentListForRefundAdapter.setReturnTransactionCallback(this);
+            RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfTransaction(transaction.getId(), true);
+
+            double totalRefundAmount = 0d;
+            for(Refund refund : refunds){
+                totalRefundAmount = CommonUtils.round(totalRefundAmount + refund.getRefundAmount(), 2);
+            }
+
+            if(totalRefundAmount >= transaction.getTransactionAmount())
+                continue;
+
+            RefundableTrxModel refundableTrxModel = new RefundableTrxModel();
+            refundableTrxModel.setTransaction(transaction);
+            refundableTrxModel.setRefundAmount(0d);
+
+            double availableRefundAmount = CommonUtils.round(transaction.getTransactionAmount() - totalRefundAmount, 2);
+
+            if(availableRefundAmount > refundAmount)
+                availableRefundAmount = refundAmount;
+
+            refundableTrxModel.setMaxRefundAmount(CommonUtils.round(availableRefundAmount, 2));
+            refundableTrxModels.add(refundableTrxModel);
+        }
+
+        paymentListForRefundAdapter = new PaymentListForRefundAdapter(getContext(), refundableTrxModels, refundAmount);
+        paymentListForRefundAdapter.setRefundableTrxModelCallback(this);
         itemRv.setAdapter(paymentListForRefundAdapter);
     }
 
@@ -263,60 +378,60 @@ public class SelectPaymentForRefundFragment extends BaseFragment implements Retu
         refundReasonRv.setAdapter(refundReasonsAdapter);
     }
 
-    @Override
-    public void OnTransactionReturn(Transaction transaction, double returnAmount) {
+    private boolean refundTransaction(RefundableTrxModel refundableTrxModel, String refundGroupId){
+        realm.beginTransaction();
 
-        if(refundCancellationStatus == TYPE_CANCEL)
-            mFragmentNavigation.pushFragment(new NFCReadForReturnFragment(transaction, transaction.getTotalAmount(),
-                    refundCancellationStatus, false, null, null));
-        else if(refundCancellationStatus == TYPE_REFUND){
+        Refund refund = new Refund();
+        refund.setId(UUID.randomUUID().toString());
+        refund.setTransactionId(refundableTrxModel.getTransaction().getId());
+        refund.setOrderId(refundableTrxModel.getTransaction().getOrderId());
+        refund.setRefundByAmount(isRefundByAmount);
+        refund.setRefundAmount(refundableTrxModel.getRefundAmount());
+        refund.setRefundGroupId(refundGroupId);
 
-            if(refundReasonText == null || refundReasonText.isEmpty()){
-                CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_refund_reason));
-                return;
-            }
-
-            boolean isExistByAmount = isExistRefundedByAmount(transaction);
-            int notRefundedItemCount = getNotRefundedItemSize(transaction);
-
-            if(isExistByAmount || notRefundedItemCount == 0){
-                RefundByAmountFragment refundByAmountFragment = new RefundByAmountFragment(transaction, true, returnAmount, refundReasonText);
-                refundByAmountFragment.setReturnAmountCallback(new ReturnAmountCallback() {
-                    @Override
-                    public void OnReturnAmount(double amount) {
-
-                    }
-                });
-                mFragmentNavigation.pushFragment(refundByAmountFragment);
-            }else {
-                mFragmentNavigation.pushFragment(new RefundFragment(transaction, refundCancellationStatus, returnAmount, refundReasonText));
+        if (locationTrackObj.canGetLocation()){
+            Location location = locationTrackObj.getLocation();
+            if(location != null){
+                refund.setLatitude(location.getLatitude());
+                refund.setLongitude(location.getLongitude());
             }
         }
+
+        refund.setRefundReason(refundReasonText);
+        refund.setSuccessful(true);
+        refund.setCreateDate(new Date());
+        refund.setzNum(autoIncrement.getzNum());
+        refund.setfNum(autoIncrement.getfNum());
+        refund.setEODProcessed(false);
+
+        //tempRefund = realm.copyToRealm(refund);
+
+        LogUtil.logRefund(refund);
+
+        realm.commitTransaction();
+
+        BaseResponse baseResponse = RefundDBHelper.createOrUpdateRefund(refund);
+        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+
+        if(baseResponse.isSuccess()){
+            AutoIncrementDBHelper.updateFnumByNextValue(autoIncrement);
+            return true;
+        }else
+            return false;
     }
 
-    private boolean isExistRefundedByAmount(Transaction transaction){
-        RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(transaction.getSaleUuid(), true);
+    private boolean saveRefundItems(String refundGroupId){
 
-        for(Refund refund : refunds){
-            LogUtil.logRefund(refund);
-            if(refund.isRefundByAmount()){
-                return true;
+        if(orderRefundItems != null && orderRefundItems.size() > 0){
+            for(OrderRefundItem orderRefundItem : orderRefundItems){
+                LogUtil.logOrderRefundItem(orderRefundItem);
+                orderRefundItem.setRefundGroupId(refundGroupId);
+                BaseResponse baseResponse = OrderRefundItemDBHelper.createOrUpdateRefundItem(orderRefundItem);
+
+                if(!baseResponse.isSuccess())
+                    return false;
             }
         }
-        return false;
-    }
-
-    private int getNotRefundedItemSize(Transaction transaction) {
-        RealmResults<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(transaction.getSaleUuid());
-        List<SaleItem> saleItemList = new ArrayList(saleItems);
-
-        for (Iterator<SaleItem> it = saleItemList.iterator(); it.hasNext(); ) {
-            SaleItem saleItem = it.next();
-
-            if (OrderManager1.isSaleItemRefunded(saleItem, transaction.getSaleUuid()))
-                it.remove();
-        }
-
-        return saleItemList.size();
+        return true;
     }
 }

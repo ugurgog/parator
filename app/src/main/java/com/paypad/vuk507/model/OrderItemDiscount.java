@@ -12,7 +12,9 @@ public class OrderItemDiscount extends RealmObject {
     private double amount;
     private double discountAmount;
     private Date createDate;
-    private String createUsername;
+    private String userId;
+    private Date updateDate;
+    private String updateUserId;
 
     public long getId() {
         return id;
@@ -46,12 +48,28 @@ public class OrderItemDiscount extends RealmObject {
         this.createDate = createDate;
     }
 
-    public String getCreateUsername() {
-        return createUsername;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setCreateUsername(String createUsername) {
-        this.createUsername = createUsername;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public String getUpdateUserId() {
+        return updateUserId;
+    }
+
+    public void setUpdateUserId(String updateUserId) {
+        this.updateUserId = updateUserId;
     }
 
     public double getAmount() {

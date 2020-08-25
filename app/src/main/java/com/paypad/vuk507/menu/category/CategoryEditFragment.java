@@ -269,19 +269,21 @@ public class CategoryEditFragment extends BaseFragment
         realm.beginTransaction();
 
         if(category.getId() == 0){
-            category.setCreateDate(new Date());
             category.setId(CategoryDBHelper.getCurrentPrimaryKeyId());
+            category.setCreateDate(new Date());
+            category.setUserId(user.getId());
+            category.setDeleted(false);
+        }else {
+            category.setUpdateDate(new Date());
+            category.setUpdateUserId(user.getId());
         }
 
-        Category tempCategory = realm.copyToRealm(category);
-
-        tempCategory.setName(categoryNameEt.getText().toString());
-        tempCategory.setCreateUsername(user.getUsername());
-        tempCategory.setColorId(mColorId);
+        category.setName(categoryNameEt.getText().toString());
+        category.setColorId(mColorId);
 
         realm.commitTransaction();
 
-        BaseResponse baseResponse = CategoryDBHelper.createOrUpdateCategory(tempCategory);
+        BaseResponse baseResponse = CategoryDBHelper.createOrUpdateCategory(category);
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
         if(baseResponse.isSuccess()){

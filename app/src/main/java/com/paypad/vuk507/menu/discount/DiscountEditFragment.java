@@ -240,31 +240,33 @@ public class DiscountEditFragment extends BaseFragment {
         realm.beginTransaction();
 
         if(discount.getId() == 0){
-            discount.setCreateDate(new Date());
             discount.setId(DiscountDBHelper.getCurrentPrimaryKeyId());
+            discount.setCreateDate(new Date());
+            discount.setUserId(user.getId());
+            discount.setDeleted(false);
             inserted = true;
+        }else {
+            discount.setUpdateDate(new Date());
+            discount.setUpdateUserId(user.getId());
         }
-
-        Discount tempDiscount = realm.copyToRealm(discount);
 
         double amountRateValue = DataUtils.getDoubleValueFromFormattedString(amountRateEt.getText().toString());
 
         if(selectionType == TYPE_PRICE){
-            tempDiscount.setAmount(amountRateValue);
-            tempDiscount.setRate(0);
+            discount.setAmount(amountRateValue);
+            discount.setRate(0);
         } else if(selectionType == TYPE_RATE){
-            tempDiscount.setRate(amountRateValue);
-            tempDiscount.setAmount(0);
+            discount.setRate(amountRateValue);
+            discount.setAmount(0);
         }
 
-        tempDiscount.setName(discountNameEt.getText().toString());
-        tempDiscount.setCreateUsername(user.getUsername());
+        discount.setName(discountNameEt.getText().toString());
 
         realm.commitTransaction();
 
         boolean finalInserted = inserted;
 
-        BaseResponse baseResponse = DiscountDBHelper.createOrUpdateDiscount(tempDiscount);
+        BaseResponse baseResponse = DiscountDBHelper.createOrUpdateDiscount(discount);
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
         if(baseResponse.isSuccess()){

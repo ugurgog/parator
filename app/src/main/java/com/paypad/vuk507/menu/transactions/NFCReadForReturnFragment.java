@@ -2,6 +2,7 @@ package com.paypad.vuk507.menu.transactions;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.adapter.LocationTrackerAdapter;
 import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.db.RefundDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
@@ -25,12 +27,14 @@ import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.LocationCallback;
 import com.paypad.vuk507.model.AutoIncrement;
 import com.paypad.vuk507.model.OrderRefundItem;
 import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
@@ -88,6 +92,7 @@ public class NFCReadForReturnFragment extends BaseFragment {
     private String refundReason;
     private AutoIncrement autoIncrement;
     private Refund tempRefund;
+    private LocationTrackerAdapter locationTrackObj;
 
     public NFCReadForReturnFragment(Transaction transaction, double returnAmount, int refundCancelStatus, boolean isRefundByAmount,
                                     List<OrderRefundItem> refundedItems, String refundReason) {
@@ -163,11 +168,12 @@ public class NFCReadForReturnFragment extends BaseFragment {
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getUuid());
+        autoIncrement = AutoIncrementDBHelper.getAutoIncrementByUserId(user.getId());
         saveBtn.setText(getResources().getString(R.string.continue_text));
         CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
         setToolbarTitle(returnAmount);
         setZNumFNum();
+        initLocationTracker();
 
         if(transaction.getPaymentTypeId() == PaymentTypeEnum.CASH.getId()){
 
@@ -184,14 +190,27 @@ public class NFCReadForReturnFragment extends BaseFragment {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    nfcInfoll.setVisibility(View.VISIBLE);
-                    receiptInfoll.setVisibility(View.VISIBLE);
-                    cardInfoll.setVisibility(View.VISIBLE);
-                    CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
+                    try{
+                        nfcInfoll.setVisibility(View.VISIBLE);
+                        receiptInfoll.setVisibility(View.VISIBLE);
+                        cardInfoll.setVisibility(View.VISIBLE);
+                        CommonUtils.setSaveBtnEnability(true, saveBtn, getActivity());
+                    }catch (Exception e){
+
+                    }
                 }
             }, 5000);
 
         }
+    }
+
+    private void initLocationTracker() {
+        locationTrackObj = new LocationTrackerAdapter(getContext(), new LocationCallback() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+            }
+        });
     }
 
     @SuppressLint("DefaultLocale")
@@ -225,15 +244,22 @@ public class NFCReadForReturnFragment extends BaseFragment {
 
         Refund refund = new Refund();
         refund.setId(UUID.randomUUID().toString());
-        refund.setTransactionId(transaction.getTransactionId());
-        refund.setOrderId(transaction.getSaleUuid());
+        refund.setTransactionId(transaction.getId());
+        refund.setOrderId(transaction.getOrderId());
         refund.setRefundByAmount(isRefundByAmount);
         refund.setRefundAmount(returnAmount);
+
+        if (locationTrackObj.canGetLocation()){
+            Location location = locationTrackObj.getLocation();
+            if(location != null){
+                refund.setLatitude(location.getLatitude());
+                refund.setLongitude(location.getLongitude());
+            }
+        }
 
         if(refundedItems != null && refundedItems.size() > 0)
             saleItems.addAll(refundedItems);
 
-        refund.setRefundItems(saleItems);
         refund.setRefundReason(refundReason);
         refund.setSuccessful(true);
         refund.setCreateDate(new Date());
@@ -301,5 +327,17 @@ public class NFCReadForReturnFragment extends BaseFragment {
 
     private void initSendNewReceiptFragment(){
         sendNewReceiptFragment = new SendNewReceiptFragment(transaction, tempRefund, refundCancelStatus, totalAmount);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        locationTrackObj.removeUpdates();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        locationTrackObj.removeUpdates();
     }
 }

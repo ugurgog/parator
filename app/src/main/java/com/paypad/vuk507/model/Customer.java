@@ -22,7 +22,11 @@ public class Customer extends RealmObject {
     private String otherInformation;
     private int colorId;
     private Date createDate;
-    private String userUuid;
+    private String userId;
+    private Date updateDate;
+    private String updateUserId;
+    private boolean isDeleted;
+    private Date deleteDate;
 
     public long getId() {
         return id;
@@ -128,12 +132,28 @@ public class Customer extends RealmObject {
         this.createDate = createDate;
     }
 
-    public String getUserUuid() {
-        return userUuid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserUuid(String userUuid) {
-        this.userUuid = userUuid;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public String getUpdateUserId() {
+        return updateUserId;
+    }
+
+    public void setUpdateUserId(String updateUserId) {
+        this.updateUserId = updateUserId;
     }
 
     public String getFullName(){
@@ -146,5 +166,21 @@ public class Customer extends RealmObject {
 
     public void setColorId(int colorId) {
         this.colorId = colorId;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public Date getDeleteDate() {
+        return deleteDate;
+    }
+
+    public void setDeleteDate(Date deleteDate) {
+        this.deleteDate = deleteDate;
     }
 }

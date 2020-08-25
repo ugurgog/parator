@@ -8,39 +8,16 @@ import io.realm.RealmResults;
 
 public class DynamicBoxModelDBHelper {
 
-    public static RealmResults<DynamicBoxModel> getAllDynamicBoxes(String uuid){
+    public static RealmResults<DynamicBoxModel> getAllDynamicBoxes(String userId){
         Realm realm = Realm.getDefaultInstance();
         RealmResults<DynamicBoxModel> dynamicBoxModels = realm.where(DynamicBoxModel.class)
-                .equalTo("createUserId", uuid)
+                .equalTo("userId", userId)
+                .equalTo("isDeleted", false)
                 .findAll();
         return dynamicBoxModels;
     }
 
-    /*public static void deleteDynamicBoxByStructId(long id, String uuid, CompleteCallback completeCallback){
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
-                try{
-                    DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
-                            .equalTo("structId", id)
-                            .equalTo("createUserId", uuid)
-                            .findFirst();
-
-                    dynamicBoxModel.deleteFromRealm();
-                    baseResponse.setMessage("Dynamic Box deleted successfully");
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Dynamic Box cannot be deleted");
-                }
-                completeCallback.onComplete(baseResponse);
-            }
-        });
-    }*/
-
-    public static BaseResponse deleteDynamicBoxByStructAndItemId(long structId, long itemId, String uuid){
+    public static BaseResponse deleteDynamicBoxById(String id){
         Realm realm = Realm.getDefaultInstance();
 
         BaseResponse baseResponse = new BaseResponse();
@@ -51,9 +28,7 @@ public class DynamicBoxModelDBHelper {
             public void execute(Realm realm) {
                 try{
                     DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
-                            .equalTo("structId", structId)
-                            .equalTo("createUserId", uuid)
-                            .equalTo("itemId", itemId)
+                            .equalTo("id", id)
                             .findFirst();
 
                     dynamicBoxModel.deleteFromRealm();
@@ -67,12 +42,19 @@ public class DynamicBoxModelDBHelper {
         return baseResponse;
     }
 
-    public static DynamicBoxModel getDynamicBoxModel(long structId, long itemId, String uuid){
+    public static DynamicBoxModel getDynamicBoxModel(long structId, long itemId, String userId){
         Realm realm = Realm.getDefaultInstance();
         DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
                 .equalTo("structId", structId)
                 .equalTo("itemId", itemId)
-                .equalTo("createUserId", uuid).findFirst();
+                .equalTo("userId", userId).findFirst();
+        return dynamicBoxModel;
+    }
+
+    public static DynamicBoxModel getDynamicBoxModelById(String id){
+        Realm realm = Realm.getDefaultInstance();
+        DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
+                .equalTo("id", id).findFirst();
         return dynamicBoxModel;
     }
 

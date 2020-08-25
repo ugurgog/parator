@@ -8,10 +8,10 @@ import io.realm.RealmResults;
 
 public class DiscountDBHelper {
 
-    public static RealmResults<Discount> getAllDiscounts(String username){
+    public static RealmResults<Discount> getAllDiscounts(String userId){
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Discount> discounts = realm.where(Discount.class)
-                .equalTo("createUsername", username)
+                .equalTo("userId", userId)
                 .findAll();
         return discounts;
     }
@@ -38,7 +38,7 @@ public class DiscountDBHelper {
         return baseResponse;
     }
 
-    public static Discount getDiscount(long id){
+    public static Discount getDiscountById(long id){
         Realm realm = Realm.getDefaultInstance();
         Discount discount = realm.where(Discount.class).equalTo("id", id).findFirst();
         return discount;

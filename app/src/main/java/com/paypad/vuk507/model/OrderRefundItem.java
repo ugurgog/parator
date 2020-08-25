@@ -4,17 +4,24 @@ import com.paypad.vuk507.utils.CommonUtils;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class OrderRefundItem extends RealmObject {
 
-    private String uuid;
-    private String saleUuid;
+    @Index
+    @PrimaryKey
+    private String id;
+    @Index
+    private String orderItemId;
+    @Index
+    private String orderId;
+    @Index
+    private String refundGroupId;
     private String name;
     private double amount;              // Item Amount = 10
     private double taxAmount;           // Item Amount - Gross Amount = 10 -  9.26 = 0.74
     private double grossAmount;         // Item Amount - Tax Amount = 10 - 0.74 = 9.26
-    private int quantity;
     private String note;
     private RealmList<OrderItemDiscount> discounts;
     private long productId;
@@ -24,6 +31,22 @@ public class OrderRefundItem extends RealmObject {
     private byte[] itemImage;
     private String categoryName;
     private boolean isTransferred;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getRefundGroupId() {
+        return refundGroupId;
+    }
+
+    public void setRefundGroupId(String refundGroupId) {
+        this.refundGroupId = refundGroupId;
+    }
 
     public String getName() {
         return name;
@@ -57,14 +80,6 @@ public class OrderRefundItem extends RealmObject {
         this.grossAmount = grossAmount;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     public String getNote() {
         return note;
     }
@@ -89,12 +104,12 @@ public class OrderRefundItem extends RealmObject {
         this.productId = productId;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getOrderItemId() {
+        return orderItemId;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setOrderItemId(String orderItemId) {
+        this.orderItemId = orderItemId;
     }
 
     public boolean isDynamicAmount() {
@@ -105,12 +120,12 @@ public class OrderRefundItem extends RealmObject {
         isDynamicAmount = dynamicAmount;
     }
 
-    public String getSaleUuid() {
-        return saleUuid;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setSaleUuid(String saleUuid) {
-        this.saleUuid = saleUuid;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public OrderItemTax getOrderItemTax() {

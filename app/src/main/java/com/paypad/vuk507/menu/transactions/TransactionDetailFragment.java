@@ -20,16 +20,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.OrderManager1;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.payment.utils.PrintOrderManager;
 import com.paypad.vuk507.db.RefundDBHelper;
+import com.paypad.vuk507.db.SaleDBHelper;
+import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.ReturnAmountCallback;
 import com.paypad.vuk507.menu.transactions.adapters.ItemsServicesAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentDetailAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.PaymentTotalAdapter;
 import com.paypad.vuk507.menu.transactions.adapters.RefundedTransactionAdapter;
+import com.paypad.vuk507.menu.transactions.model.RefundedTrxModel;
 import com.paypad.vuk507.menu.transactions.util.PaymentTotalManager;
 import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Transaction;
@@ -38,6 +42,7 @@ import com.paypad.vuk507.model.pojo.PaymentDetailModel;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.DeviceUtil;
 import com.sunmi.peripheral.printer.InnerResultCallbcak;
 
 import org.greenrobot.eventbus.EventBus;
@@ -52,13 +57,13 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_CANCEL;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_REFUND;
 
-public class TransactionDetailFragment extends BaseFragment {
+public class TransactionDetailFragment extends BaseFragment implements ReturnAmountCallback {
 
     private View mView;
 
@@ -97,15 +102,14 @@ public class TransactionDetailFragment extends BaseFragment {
     private ItemsServicesAdapter itemsServicesAdapter;
     private PaymentTotalAdapter paymentTotalAdapter;
 
-    private SaleModel saleModel;
-    private OrderManager1 orderManager;
+    private TransactionsFragment.TransactionItem transactionItem;
     private PrintOrderManager printOrderManager;
-    private SelectPaymentForRefundFragment selectPaymentForRefundFragment;
+    private SelectPaymentForCancelFragment selectPaymentForCancelFragment;
 
     private int refundCancellationStatus = TYPE_REFUND;
 
-    public TransactionDetailFragment(SaleModel saleModel) {
-        this.saleModel = saleModel;
+    public TransactionDetailFragment(TransactionsFragment.TransactionItem transactionItem) {
+        this.transactionItem = transactionItem;
     }
 
     @Override
@@ -170,7 +174,7 @@ public class TransactionDetailFragment extends BaseFragment {
         newReceiptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new SelectNewReceiptFragment(saleModel.getTransactions()));
+                mFragmentNavigation.pushFragment(new SelectNewReceiptFragment(transactionItem.getSaleModel().getTransactions()));
             }
         });
 
@@ -190,8 +194,7 @@ public class TransactionDetailFragment extends BaseFragment {
     }
 
     private void initVariables() {
-        orderManager = new OrderManager1();
-        orderNumTv.setText(saleModel.getSale().getOrderNum());
+        orderNumTv.setText(transactionItem.getSaleModel().getOrder().getOrderNum());
         refundsll.setVisibility(View.VISIBLE);
         setToolbarTitle();
         initPrinter();
@@ -201,6 +204,9 @@ public class TransactionDetailFragment extends BaseFragment {
         setItemsServicesAdapter();
         setRefundsAdapter();
         setPaymentTotalAdapter();
+
+        //String deviceName = DeviceUtil.getDeviceName();
+        //Log.i("Info", "deviceName:" + deviceName);
     }
 
     private void processRefundOrCancel(){
@@ -213,20 +219,72 @@ public class TransactionDetailFragment extends BaseFragment {
                 CommonUtils.snackbarDisplay(mainll, getContext(), getResources().getString(R.string.no_item_for_cancel_found));
             }
         }else {
-            initSelectPaymentForRefundFragment();
-            mFragmentNavigation.pushFragment(selectPaymentForRefundFragment);
+            if(refundCancellationStatus == TYPE_CANCEL){
+                initSelectPaymentForRefundFragment();
+                mFragmentNavigation.pushFragment(selectPaymentForCancelFragment);
+            }else {
+
+                if(isRefundedByAmount() || !isTrxesAndSaleAmountEquals())
+                    startRefundByAmountFragment();
+                else
+                    mFragmentNavigation.pushFragment(new RefundFragment(transactionItem.getSaleModel(), refundCancellationStatus));
+            }
         }
     }
 
+    private void startRefundByAmountFragment(){
+        double availableRefundAmount = OrderManager.getAvailableRefundAmount(transactionItem.getSaleModel());
+        RefundByAmountFragment refundByAmountFragment = new RefundByAmountFragment(transactionItem.getSaleModel(), true, availableRefundAmount);
+        refundByAmountFragment.setReturnAmountCallback(this);
+        mFragmentNavigation.pushFragment(refundByAmountFragment);
+    }
+
+    private boolean isRefundedByAmount(){
+        RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(transactionItem.getSaleModel().getOrder().getId(), true);
+
+        for(Refund refund : refunds){
+            if(refund.isRefundByAmount())
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isTrxesAndSaleAmountEquals(){
+        double trxesAmount = 0d;
+        SaleModel saleModel = SaleDBHelper.getSaleModelBySaleId(transactionItem.getSaleModel().getOrder().getId());
+
+        for(Transaction transaction : saleModel.getTransactions()){
+            if(transaction.getTransactionType() == TransactionTypeEnum.SALE.getId() &&
+                    transaction.isPaymentCompleted())
+                trxesAmount = CommonUtils.round(trxesAmount + transaction.getTotalAmount(), 2);
+        }
+
+        if(trxesAmount == saleModel.getOrder().getDiscountedAmount())
+            return true;
+        else
+            return false;
+    }
+
+    private boolean isExistCancelledTransaction(){
+        RealmResults<Transaction> transactions = TransactionDBHelper.getTransactionsBySaleId(transactionItem.getSaleModel().getOrder().getId());
+
+        for(Transaction transaction : transactions){
+            if(transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId() &&
+                transaction.isPaymentCompleted())
+                return true;
+        }
+        return false;
+    }
+
     private void initSelectPaymentForRefundFragment(){
-        selectPaymentForRefundFragment = new SelectPaymentForRefundFragment(refundCancellationStatus, saleModel);
+        selectPaymentForCancelFragment = new SelectPaymentForCancelFragment(transactionItem.getSaleModel());
     }
 
     private boolean checkRefundAndCancellation(){
-        for(Transaction transaction : saleModel.getTransactions()){
+        for(Transaction transaction : transactionItem.getSaleModel().getTransactions()){
             if(transaction.getTransactionType() == TransactionTypeEnum.SALE.getId()){
 
-                RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfTransaction(transaction.getTransactionId(), true);
+                RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfTransaction(transaction.getId(), true);
 
                 if(refunds != null){
                     double totalRefundAmount = 0d;
@@ -244,12 +302,12 @@ public class TransactionDetailFragment extends BaseFragment {
     }
 
     private void initPrinter() {
-        printOrderManager = new PrintOrderManager(getContext(), saleModel,false);
+        printOrderManager = new PrintOrderManager(getContext(), transactionItem.getSaleModel(),false);
         printOrderManager.setCallback(mCallback);
     }
 
     private void setRefundStatus(){
-        Transaction transaction = saleModel.getTransactions().get(0);
+        Transaction transaction = transactionItem.getSaleModel().getTransactions().get(0);
 
         if(transaction.isEODProcessed()){
             issueRefundBtn.setText(getResources().getString(R.string.order_refund));
@@ -261,10 +319,29 @@ public class TransactionDetailFragment extends BaseFragment {
     }
 
     private void setToolbarTitle(){
-        double amount = CommonUtils.round((saleModel.getSale().getDiscountedAmount() + OrderManager1.getTotalTipAmountOfSale(saleModel)), 2);
-        String amountStr = CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()).concat(" ")
-                .concat(getResources().getString(R.string.sale));
-        toolbarTitleTv.setText(amountStr);
+        String title;
+        if(transactionItem.getTransaction() != null){
+            title = CommonUtils.getAmountTextWithCurrency(transactionItem.getTransaction().getTotalAmount()).concat(" ")
+                    .concat(getResources().getString(R.string.cancel));
+        }else if(transactionItem.getRefunds() != null && transactionItem.getRefunds().size() > 0){
+            double totalRefundAmount = 0d;
+
+            for(Refund refund : transactionItem.getRefunds())
+                totalRefundAmount = CommonUtils.round(totalRefundAmount + refund.getRefundAmount(), 2);
+
+            title = CommonUtils.getAmountTextWithCurrency(totalRefundAmount).concat(" ").concat(getResources().getString(R.string.refund));
+        }else {
+            double amount = CommonUtils.round((transactionItem.getSaleModel().getOrder().getDiscountedAmount() + OrderManager.getTotalTipAmountOfSale(transactionItem.getSaleModel())), 2);
+            title = CommonUtils.getAmountTextWithCurrency(amount).concat(" ")
+                    .concat(getResources().getString(R.string.order));
+        }
+
+        toolbarTitleTv.setText(title);
+    }
+
+    @Override
+    public void OnReturnAmount(double amount) {
+
     }
 
     public static class TrxSeqNumComparator implements Comparator<Transaction> {
@@ -280,7 +357,7 @@ public class TransactionDetailFragment extends BaseFragment {
         paymentsRv.setLayoutManager(linearLayoutManager);
 
         Realm realm = Realm.getDefaultInstance();
-        List<Transaction> trxlist = realm.copyFromRealm(saleModel.getTransactions());
+        List<Transaction> trxlist = realm.copyFromRealm(transactionItem.getSaleModel().getTransactions());
 
         Collections.sort(trxlist, new TrxSeqNumComparator());
 
@@ -293,12 +370,19 @@ public class TransactionDetailFragment extends BaseFragment {
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         saleItemsRv.setLayoutManager(linearLayoutManager);
 
-        itemsServicesAdapter = new ItemsServicesAdapter(getContext(), saleModel.getSaleItems());
+        itemsServicesAdapter = new ItemsServicesAdapter(getContext(), transactionItem.getSaleModel().getOrderItems());
         saleItemsRv.setAdapter(itemsServicesAdapter);
     }
 
+    public static class RefundGroupIdComparator implements Comparator<Refund> {
+        @Override
+        public int compare(Refund o1, Refund o2) {
+            return o2.getRefundGroupId().compareTo(o1.getRefundGroupId());
+        }
+    }
+
     private void setRefundsAdapter() {
-        RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(saleModel.getSale().getSaleUuid(), true);
+        RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(transactionItem.getSaleModel().getOrder().getId(), true);
 
         if(refunds == null || refunds.size() == 0){
             refundsll.setVisibility(View.GONE);
@@ -306,12 +390,42 @@ public class TransactionDetailFragment extends BaseFragment {
         }
 
         List<Refund> refundList = new ArrayList(refunds);
+        Collections.sort(refundList, new RefundGroupIdComparator());
+
+        List<RefundedTrxModel> refundedTrxModels = new ArrayList<>();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         refundsRv.setLayoutManager(linearLayoutManager);
 
-        refundedTransactionAdapter = new RefundedTransactionAdapter(getContext(), refundList, saleModel.getSale().getSaleUuid());
+        String prevRefundGroupId = "";
+        RefundedTrxModel refundedTrxModel = null;
+        for(Refund refund : refundList){
+
+            if(!refund.getRefundGroupId().equals(prevRefundGroupId)){
+                if(refundedTrxModel != null) {
+                    refundedTrxModels.add(refundedTrxModel);
+                    refundedTrxModel = null;
+                }
+
+                refundedTrxModel = new RefundedTrxModel();
+                refundedTrxModel.setRefunds(new RealmList<>());
+                refundedTrxModel.setRefundGroupId(refund.getRefundGroupId());
+                refundedTrxModel.getRefunds().add(refund);
+            }else {
+                refundedTrxModel.getRefunds().add(refund);
+            }
+
+
+            prevRefundGroupId = refund.getRefundGroupId();
+        }
+
+        if(refundedTrxModel != null){
+            refundedTrxModels.add(refundedTrxModel);
+        }
+
+
+        refundedTransactionAdapter = new RefundedTransactionAdapter(getContext(), refundedTrxModels, transactionItem.getSaleModel().getOrder().getId());
         refundsRv.setAdapter(refundedTransactionAdapter);
     }
 
@@ -320,7 +434,7 @@ public class TransactionDetailFragment extends BaseFragment {
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         totalRv.setLayoutManager(linearLayoutManager);
 
-        PaymentTotalManager paymentTotalManager = new PaymentTotalManager(getContext(), saleModel);
+        PaymentTotalManager paymentTotalManager = new PaymentTotalManager(getContext(), transactionItem.getSaleModel());
         List<PaymentDetailModel> paymentDetailModels = paymentTotalManager.getPaymentDetails();
 
         paymentTotalAdapter = new PaymentTotalAdapter(getContext(), paymentDetailModels);

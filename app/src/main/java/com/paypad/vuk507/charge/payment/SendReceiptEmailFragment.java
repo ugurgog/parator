@@ -64,7 +64,7 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
     private String email;
     private SendMail.MailSendCallback mailSendCallback;
 
-    SendReceiptEmailFragment(Transaction transaction, Customer customer) {
+    public SendReceiptEmailFragment(Transaction transaction, Customer customer) {
         mTransaction = transaction;
         mCustomer = customer;
     }
@@ -202,7 +202,7 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
     private void setPaymentInfoTv() {
 
         String infoText = "";
-        if(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount() == 0d){
+        if(SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount() == 0d){
 
             if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
                 infoText = CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
@@ -216,12 +216,12 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
             if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
                 infoText = CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                         .concat(" ödendi. Kalan Tutar ")
-                        .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+                        .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                         .concat(".");
             }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
                 infoText = "Out of ".concat(CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                         .concat(". ")
-                        .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+                        .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                         .concat(" payment due.");
             }
             paymentInfoTv.setText(infoText);

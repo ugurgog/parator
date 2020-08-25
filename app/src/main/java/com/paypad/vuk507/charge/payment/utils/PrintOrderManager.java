@@ -5,14 +5,10 @@ import android.content.Context;
 import android.os.RemoteException;
 
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
-import com.paypad.vuk507.model.AutoIncrement;
-import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.OrderItemTax;
-import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.PrintReceiptModel;
 import com.paypad.vuk507.model.pojo.PrintRefundCancelModel;
@@ -26,13 +22,9 @@ import com.sunmi.peripheral.printer.InnerResultCallbcak;
 import com.sunmi.peripheral.printer.SunmiPrinterService;
 import com.sunmi.peripheral.printer.WoyouConsts;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_CANCEL;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_REFUND;
 
 public class PrintOrderManager {
 
@@ -88,11 +80,11 @@ public class PrintOrderManager {
         addTotalTipAmount();
         //setBatchAndReceiptNum();
 
-        printReceiptModel.setzNum(saleModel.getSale().getzNum());
-        printReceiptModel.setOrderNum(saleModel.getSale().getOrderNum());
+        printReceiptModel.setzNum(saleModel.getOrder().getzNum());
+        printReceiptModel.setOrderNum(saleModel.getOrder().getOrderNum());
         printReceiptModel.setfDate(new Date());
-        printReceiptModel.setReceiptDate(saleModel.getSale().getCreateDate());
-        printReceiptModel.setTotalAmount(saleModel.getSale().getDiscountedAmount());
+        printReceiptModel.setReceiptDate(saleModel.getOrder().getCreateDate());
+        printReceiptModel.setTotalAmount(saleModel.getOrder().getDiscountedAmount());
 
 
         printReceiptModel.setChequeNo(7867);                        //TODO
@@ -114,13 +106,13 @@ public class PrintOrderManager {
     /*private void setBatchAndReceiptNum(){
 
         if(isFinancialReceipt){
-            AutoIncrement autoIncrement = AutoIncrementDBHelper.getAutoIncrement(saleModel.getSale().getUserUuid());
+            AutoIncrement autoIncrement = AutoIncrementDBHelper.getAutoIncrement(saleModel.getOrder().getUserUuid());
 
-            printReceiptModel.setReceiptNum(AutoIncrementDBHelper.getCurrentReceiptNum(saleModel.getSale().getUserUuid()));                                //TODO
+            printReceiptModel.setReceiptNum(AutoIncrementDBHelper.getCurrentReceiptNum(saleModel.getOrder().getUserUuid()));                                //TODO
             printReceiptModel.setBatchNum((int)autoIncrement.getBatchNum());                              //TODO
         }else {
-            printReceiptModel.setReceiptNum((int)saleModel.getSale().getReceiptNum());
-            printReceiptModel.setBatchNum((int)saleModel.getSale().getBatchNum());
+            printReceiptModel.setReceiptNum((int)saleModel.getOrder().getReceiptNum());
+            printReceiptModel.setBatchNum((int)saleModel.getOrder().getBatchNum());
         }
     }*/
 
@@ -179,19 +171,19 @@ public class PrintOrderManager {
     }
 
     private void addTaxModels() {
-        for(SaleItem saleItem : saleModel.getSaleItems()){
+        for(OrderItem orderItem : saleModel.getOrderItems()){
 
             boolean isExist = false;
 
-            //OrderItemTax orderItemTax = saleItem.getOrderItemTaxes().get(0);
+            //OrderItemTax orderItemTax = orderItem.getOrderItemTaxes().get(0);
 
-            OrderItemTax taxModel = saleItem.getTaxModel();
+            OrderItemTax taxModel = orderItem.getTaxModel();
 
             for(PrintReceiptModel.ReceiptTaxModel receiptTaxModel : printReceiptModel.getReceiptTaxModels()){
 
                 if(receiptTaxModel.getTaxId() == taxModel.getId()){
-                    receiptTaxModel.setTaxAmount(CommonUtils.round(receiptTaxModel.getTaxAmount() + saleItem.getTaxAmount(), 2));
-                    receiptTaxModel.setTotalAmount(CommonUtils.round(receiptTaxModel.getTotalAmount() + saleItem.getGrossAmount(), 2));
+                    receiptTaxModel.setTaxAmount(CommonUtils.round(receiptTaxModel.getTaxAmount() + orderItem.getTaxAmount(), 2));
+                    receiptTaxModel.setTotalAmount(CommonUtils.round(receiptTaxModel.getTotalAmount() + orderItem.getGrossAmount(), 2));
                     isExist = true;
                     break;
                 }
@@ -201,41 +193,41 @@ public class PrintOrderManager {
                 PrintReceiptModel.ReceiptTaxModel receiptTaxModel = new PrintReceiptModel.ReceiptTaxModel();
                 receiptTaxModel.setTaxId(taxModel.getId());
                 receiptTaxModel.setTaxName(taxModel.getName());
-                receiptTaxModel.setTaxAmount(saleItem.getTaxAmount());
-                receiptTaxModel.setTotalAmount(saleItem.getGrossAmount());
+                receiptTaxModel.setTaxAmount(orderItem.getTaxAmount());
+                receiptTaxModel.setTotalAmount(orderItem.getGrossAmount());
                 printReceiptModel.getReceiptTaxModels().add(receiptTaxModel);
             }
         }
     }
 
     private void addSaleItems() {
-        for(SaleItem saleItem : saleModel.getSaleItems()){
+        for(OrderItem orderItem : saleModel.getOrderItems()){
 
             SaleItemPojo saleItemPojo = new SaleItemPojo();
-            saleItemPojo.setName(saleItem.getName());
-            saleItemPojo.setQuantity(saleItem.getQuantity());
-            saleItemPojo.setAmount(saleItem.getAmount());
-            saleItemPojo.setTaxModel(saleItem.getTaxModel());
-            //saleItemPojo.setOrderItemTaxes(saleItem.getOrderItemTaxes());
+            saleItemPojo.setName(orderItem.getName());
+            saleItemPojo.setQuantity(orderItem.getQuantity());
+            saleItemPojo.setAmount(orderItem.getAmount());
+            saleItemPojo.setTaxModel(orderItem.getTaxModel());
+            //saleItemPojo.setOrderItemTaxes(orderItem.getOrderItemTaxes());
             printReceiptModel.getSaleItems().add(saleItemPojo);
 
-            printReceiptModel.setTotalTaxAmount(CommonUtils.round(printReceiptModel.getTotalTaxAmount() + (saleItem.getTaxAmount() * saleItem.getQuantity()), 2));
+            printReceiptModel.setTotalTaxAmount(CommonUtils.round(printReceiptModel.getTotalTaxAmount() + (orderItem.getTaxAmount() * orderItem.getQuantity()), 2));
         }
 
         printReceiptModel.setTotalTaxAmount(CommonUtils.round(printReceiptModel.getTotalTaxAmount() / saleModel.getTransactions().size(), 2));
     }
 
     private void addDiscountItems(){
-        List<SaleItem> saleItems = new ArrayList<>();
+        List<OrderItem> orderItems = new ArrayList<>();
 
-        for(SaleItem saleItem : saleModel.getSaleItems()){
-            SaleItem saleItem1 = new SaleItem();
-            saleItem1.setDiscounts(saleItem.getDiscounts());
-            saleItem1.setAmount(saleItem.getAmount() * saleItem.getQuantity());
-            saleItems.add(saleItem1);
+        for(OrderItem orderItem : saleModel.getOrderItems()){
+            OrderItem orderItem1 = new OrderItem();
+            orderItem1.setDiscounts(orderItem.getDiscounts());
+            orderItem1.setAmount(orderItem.getAmount() * orderItem.getQuantity());
+            orderItems.add(orderItem1);
         }
 
-        for(OrderItemDiscount discount : saleModel.getSale().getDiscounts()){
+        for(OrderItemDiscount discount : saleModel.getOrder().getDiscounts()){
 
             PrintReceiptModel.ReceiptDiscountModel reportDiscountModel = new PrintReceiptModel.ReceiptDiscountModel();
 
@@ -247,13 +239,13 @@ public class PrintOrderManager {
                 double discountAmount = 0d;
                 double totalDiscAmount = 0d;
 
-                for(SaleItem saleItem : saleItems){
-                    if(saleItem.getDiscounts() != null && saleItem.getDiscounts().size() > 0){
-                        for(OrderItemDiscount discount1 : saleItem.getDiscounts()){
+                for(OrderItem orderItem : orderItems){
+                    if(orderItem.getDiscounts() != null && orderItem.getDiscounts().size() > 0){
+                        for(OrderItemDiscount discount1 : orderItem.getDiscounts()){
 
                             if(discount.getId() == discount1.getId()){
-                                discountAmount = discountAmount + ((saleItem.getAmount() / 100d)  * discount.getRate());
-                                saleItem.setAmount(CommonUtils.round(saleItem.getAmount() - discountAmount, 2));
+                                discountAmount = discountAmount + ((orderItem.getAmount() / 100d)  * discount.getRate());
+                                orderItem.setAmount(CommonUtils.round(orderItem.getAmount() - discountAmount, 2));
                                 totalDiscAmount = totalDiscAmount + discountAmount;
                                 break;
                             }

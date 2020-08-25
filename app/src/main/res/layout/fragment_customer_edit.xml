@@ -10,7 +10,10 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:fillViewport="true"
+        android:background="@color/White">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,7 +21,9 @@
             android:orientation="vertical"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:background="@color/White">
 
             <Button
                 android:id="@+id/btnAddFromAddress"
@@ -35,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/personal_information"
                 android:textStyle="bold"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:textSize="@dimen/select_list_tv_size"
                 android:textColor="@color/Black">
             </TextView>
@@ -45,25 +50,25 @@
                 android:id="@+id/firstNameEt"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/custom_edittext_height_size"
-                android:background="@drawable/custom_edittext_bg"
                 android:drawablePadding="20dp"
                 android:hint="@string/first_name"
                 android:inputType="textCapSentences"
-                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
                 android:textColor="@color/Black"
                 android:textColorHint="@color/DarkGray"
                 android:layout_marginTop="10dp"
+                android:theme="@style/CustomerEditTextTheme"
                 />
 
             <EditText
                 android:id="@+id/lastNameEt"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/custom_edittext_height_size"
-                android:background="@drawable/custom_edittext_bg"
+                android:theme="@style/CustomerEditTextTheme"
                 android:drawablePadding="20dp"
                 android:hint="@string/last_name"
                 android:inputType="textCapSentences"
-                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
                 android:textColor="@color/Black"
                 android:textColorHint="@color/DarkGray"
                 android:layout_marginTop="10dp"
@@ -73,7 +78,7 @@
                 android:id="@+id/emailEt"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/custom_edittext_height_size"
-                android:background="@drawable/custom_edittext_bg"
+                android:theme="@style/CustomerEditTextTheme"
                 android:drawablePadding="20dp"
                 android:hint="@string/email"
                 android:inputType="text"
@@ -87,7 +92,7 @@
                 android:id="@+id/phoneNumberEt"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/custom_edittext_height_size"
-                android:background="@drawable/custom_edittext_bg"
+                android:theme="@style/CustomerEditTextTheme"
                 android:drawablePadding="20dp"
                 android:hint="@string/phone_number"
                 android:inputType="number"
@@ -102,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/address"
                 android:textStyle="bold"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:textSize="@dimen/select_list_tv_size"
                 android:textColor="@color/Black">
             </TextView>
@@ -111,7 +116,7 @@
                 android:id="@+id/countryEt"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/custom_edittext_height_size"
-                android:background="@drawable/custom_edittext_bg"
+                android:theme="@style/CustomerEditTextTheme"
                 android:drawablePadding="20dp"
                 android:hint="@string/country"
                 android:inputType="textCapSentences"
@@ -119,13 +124,16 @@
                 android:textColor="@color/Black"
                 android:textColorHint="@color/DarkGray"
                 android:layout_marginTop="10dp"
+                android:focusableInTouchMode="false"
+                android:singleLine="true"
+                android:focusable="true"
                 />
 
             <EditText
                 android:id="@+id/cityEt"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/custom_edittext_height_size"
-                android:background="@drawable/custom_edittext_bg"
+                android:theme="@style/CustomerEditTextTheme"
                 android:drawablePadding="20dp"
                 android:hint="@string/city"
                 android:inputType="textCapSentences"
@@ -139,7 +147,7 @@
                 android:id="@+id/addressEt"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/custom_edittext_height_size"
-                android:background="@drawable/custom_edittext_bg"
+                android:theme="@style/CustomerEditTextTheme"
                 android:drawablePadding="20dp"
                 android:hint="@string/address2"
                 android:inputType="textCapSentences"
@@ -153,7 +161,7 @@
                 android:id="@+id/postalCodeEt"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/custom_edittext_height_size"
-                android:background="@drawable/custom_edittext_bg"
+                android:theme="@style/CustomerEditTextTheme"
                 android:drawablePadding="20dp"
                 android:hint="@string/postal_code"
                 android:inputType="text"
@@ -168,10 +176,92 @@
                 android:layout_height="wrap_content"
                 android:text="@string/other_information"
                 android:textStyle="bold"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:textSize="@dimen/select_list_tv_size"
                 android:textColor="@color/Black">
             </TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:id="@+id/groupSelectll">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="9"
+                    android:id="@+id/groupDescTv"
+                    android:text="@string/groups"
+                    android:textColor="@color/Gray"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical">
+
+                </TextView>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:tint="@color/Gray"
+                    android:src="@drawable/ic_keyboard_arrow_right_gray_24dp">
+
+                </ImageView>
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/companyEt"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_edittext_height_size"
+                android:theme="@style/CustomerEditTextTheme"
+                android:drawablePadding="20dp"
+                android:hint="@string/company"
+                android:inputType="textCapSentences"
+                android:paddingLeft="8dp"
+                android:textColor="@color/Black"
+                android:textColorHint="@color/DarkGray"
+                android:layout_marginTop="10dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/birthday"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:textSize="@dimen/select_list_tv_size"
+                android:textColor="@color/Black">
+            </TextView>
+
+            <EditText
+                android:id="@+id/birthDayEt"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_edittext_height_size"
+                android:theme="@style/CustomerEditTextTheme"
+                android:clickable="true"
+                android:focusableInTouchMode="false"
+                android:singleLine="true"
+                android:focusable="true"
+                android:hint="_ _ /_ _ /_ _ _ _"
+                android:paddingLeft="8dp"
+                android:layout_marginTop="10dp"/>
+
+            <EditText
+                android:id="@+id/otherInfoEt"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_edittext_height_size"
+                android:theme="@style/CustomerEditTextTheme"
+                android:drawablePadding="20dp"
+                android:hint="@string/other"
+                android:inputType="textCapSentences"
+                android:paddingLeft="8dp"
+                android:textColor="@color/Black"
+                android:textColorHint="@color/DarkGray"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+                />
 
         </LinearLayout>
 

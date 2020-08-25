@@ -1,52 +1,32 @@
 package com.paypad.vuk507.charge;
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.app.ActivityCompat;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.db.CategoryDBHelper;
-import com.paypad.vuk507.db.ProductDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
-import com.paypad.vuk507.interfaces.CustomDialogListener;
-import com.paypad.vuk507.menu.category.interfaces.ReturnCategoryCallback;
-import com.paypad.vuk507.menu.product.SelectColorFragment;
-import com.paypad.vuk507.menu.product.interfaces.ColorImageReturnCallback;
-import com.paypad.vuk507.model.Category;
-import com.paypad.vuk507.model.Product;
+import com.paypad.vuk507.interfaces.LocationGrantedCallback;
 import com.paypad.vuk507.model.User;
-import com.paypad.vuk507.model.pojo.BaseResponse;
-import com.paypad.vuk507.model.pojo.PhotoSelectUtil;
-import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
-import com.paypad.vuk507.utils.CommonUtils;
-import com.paypad.vuk507.utils.CustomDialogBox;
-import com.paypad.vuk507.utils.DataUtils;
+import com.paypad.vuk507.utils.PermissionModule;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.Date;
-import java.util.Objects;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class LocationRequestFragment extends BaseFragment {
 
@@ -58,10 +38,24 @@ public class LocationRequestFragment extends BaseFragment {
     Button btnEnableLocation;
 
     private User user;
-
+    private LocationGrantedCallback locationGrantedCallback;
+    private PermissionModule permissionModule;
 
     public LocationRequestFragment() {
 
+    }
+
+    public void setLocationGrantedCallback(LocationGrantedCallback locationGrantedCallback) {
+        this.locationGrantedCallback = locationGrantedCallback;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        permissionModule = new PermissionModule(getContext());
+
+        if (permissionModule.checkAccessFineLocationPermission())
+            locationGrantedCallback.OnLocationGranted(true);
     }
 
     @Override
@@ -97,7 +91,7 @@ public class LocationRequestFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mView == null) {
-            mView = inflater.inflate(R.layout.fragment_category_edit, container, false);
+            mView = inflater.inflate(R.layout.fragment_location_request, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -111,10 +105,32 @@ public class LocationRequestFragment extends BaseFragment {
     }
 
     private void initListeners() {
-
+        btnEnableLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestPermissions(
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PermissionModule.PERMISSION_ACCESS_FINE_LOCATION);
+            }
+        });
     }
 
     private void initVariables() {
+        locationReqTitleTv.setText(getResources().getString(R.string.app_name)
+            .concat(" ")
+            .concat(getResources().getString(R.string.needs_your_current_location)));
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PermissionModule.PERMISSION_ACCESS_FINE_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                locationGrantedCallback.OnLocationGranted(true);
+            } else {
+                if(!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)){
+
+                }
+                locationGrantedCallback.OnLocationGranted(false);
+            }
+        }
     }
 }

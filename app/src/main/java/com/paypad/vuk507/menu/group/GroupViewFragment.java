@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.CustomerDBHelper;
+import com.paypad.vuk507.db.CustomerGroupDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
@@ -45,6 +46,7 @@ import java.util.Objects;
 
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class GroupViewFragment extends BaseFragment {
@@ -216,14 +218,7 @@ public class GroupViewFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
-        //customerList = new ArrayList(group.getCustomers());
-
-        customerList = new ArrayList<>();
-        for(Long customerId : group.getCustomerIds()){
-            Customer customer = CustomerDBHelper.getCustomer(customerId);
-            if(customer != null)
-                customerList.add(customer);
-        }
+        customerList = CustomerGroupDBHelper.getCustomersOfGroup(group.getId(), user.getId());
 
         customerListAdapter = new CustomerListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
             @Override

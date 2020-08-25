@@ -4,13 +4,22 @@ import java.util.Date;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
+import io.realm.annotations.PrimaryKey;
 
 public class CustomerGroup extends RealmObject {
 
+    @PrimaryKey
+    private String id;
+    @Index
     private long customerId;
-    private RealmList<Group> groups;
+    @Index
+    private long groupId;
     private Date createDate;
-    private String userUuid;
+    @Index
+    private String userId;
+    private Date updateDateDate;
+    private String updateUserId;
 
     public long getCustomerId() {
         return customerId;
@@ -18,14 +27,6 @@ public class CustomerGroup extends RealmObject {
 
     public void setCustomerId(long customerId) {
         this.customerId = customerId;
-    }
-
-    public RealmList<Group> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(RealmList<Group> groups) {
-        this.groups = groups;
     }
 
     public Date getCreateDate() {
@@ -36,11 +37,43 @@ public class CustomerGroup extends RealmObject {
         this.createDate = createDate;
     }
 
-    public String getUserUuid() {
-        return userUuid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserUuid(String userUuid) {
-        this.userUuid = userUuid;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
+    }
+
+    public Date getUpdateDateDate() {
+        return updateDateDate;
+    }
+
+    public void setUpdateDateDate(Date updateDateDate) {
+        this.updateDateDate = updateDateDate;
+    }
+
+    public String getUpdateUserId() {
+        return updateUserId;
+    }
+
+    public void setUpdateUserId(String updateUserId) {
+        this.updateUserId = updateUserId;
     }
 }

@@ -6,14 +6,9 @@ import android.os.RemoteException;
 
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
-import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Refund;
-import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
-import com.paypad.vuk507.model.pojo.PrintReceiptModel;
 import com.paypad.vuk507.model.pojo.PrintRefundCancelModel;
-import com.paypad.vuk507.model.pojo.SaleItemPojo;
 import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.sunmiutils.ESCUtil;
@@ -24,7 +19,6 @@ import com.sunmi.peripheral.printer.SunmiPrinterService;
 import com.sunmi.peripheral.printer.WoyouConsts;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -80,7 +74,7 @@ public class PrintRefundManager {
         refundCancelModel.setPhoneNumber("0 252 317 37 37");                                    //TODO
         refundCancelModel.setTaxOffice("BODRUM V.D. 1800028646");                               //TODO
 
-        refundCancelModel.setOrderNum(saleModel.getSale().getOrderNum());
+        refundCancelModel.setOrderNum(saleModel.getOrder().getOrderNum());
         refundCancelModel.setfDate(new Date());
         refundCancelModel.setReceiptDate(new Date());
 

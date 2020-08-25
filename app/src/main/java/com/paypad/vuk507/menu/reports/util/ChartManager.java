@@ -307,33 +307,33 @@ public class ChartManager {
 
         for(SaleModel saleModel: saleModels){
 
-            LogUtil.logSale(saleModel.getSale());
+            LogUtil.logSale(saleModel.getOrder());
 
-            if(DataUtils.getHourNumOfDate(saleModel.getSale().getCreateDate()) != previousHour){
+            if(DataUtils.getHourNumOfDate(saleModel.getOrder().getCreateDate()) != previousHour){
                 ChartSales chartOneDaySales1 = new ChartSales();
-                chartOneDaySales1.setHour(DataUtils.getHourNumOfDate(saleModel.getSale().getCreateDate()));
+                chartOneDaySales1.setHour(DataUtils.getHourNumOfDate(saleModel.getOrder().getCreateDate()));
 
-                double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+                double grossSalesAmount = getGrossAmount(saleModel.getOrderItems());
 
                 chartOneDaySales1.setGrossAmount(grossSalesAmount);
-                chartOneDaySales1.setNetAmount(grossSalesAmount - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                chartOneDaySales1.setNetAmount(grossSalesAmount - OrderManager.getTotalDiscountAmountOfSale(saleModel.getOrder(), saleModel.getOrderItems()));
                 chartOneDaySales1.setSaleCount(1);
                 chartOneDaySalesList.add(chartOneDaySales1);
             }else {
 
                 for(ChartSales chartOneDaySales : chartOneDaySalesList){
-                    if(chartOneDaySales.getHour() == DataUtils.getHourNumOfDate(saleModel.getSale().getCreateDate())){
+                    if(chartOneDaySales.getHour() == DataUtils.getHourNumOfDate(saleModel.getOrder().getCreateDate())){
 
-                        double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+                        double grossSalesAmount = getGrossAmount(saleModel.getOrderItems());
 
                         chartOneDaySales.setGrossAmount(chartOneDaySales.getGrossAmount() + grossSalesAmount);
-                        chartOneDaySales.setNetAmount(chartOneDaySales.getGrossAmount() - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                        chartOneDaySales.setNetAmount(chartOneDaySales.getGrossAmount() - OrderManager.getTotalDiscountAmountOfSale(saleModel.getOrder(), saleModel.getOrderItems()));
                         chartOneDaySales.setSaleCount(chartOneDaySales.getSaleCount() + 1);
                         break;
                     }
                 }
             }
-            previousHour = DataUtils.getHourNumOfDate(saleModel.getSale().getCreateDate());
+            previousHour = DataUtils.getHourNumOfDate(saleModel.getOrder().getCreateDate());
         }
         return chartOneDaySalesList;
     }
@@ -345,12 +345,12 @@ public class ChartManager {
 
         for(SaleModel saleModel: saleModels){
 
-            LogUtil.logSale(saleModel.getSale());
+            LogUtil.logSale(saleModel.getOrder());
 
             @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateformat = new SimpleDateFormat("EEEE");
 
-            String dayCode = simpleDateformat.format(saleModel.getSale().getCreateDate());
+            String dayCode = simpleDateformat.format(saleModel.getOrder().getCreateDate());
 
             int currentDay = Objects.requireNonNull(DayEnum.getByCode(dayCode)).getId();
 
@@ -358,20 +358,20 @@ public class ChartManager {
                 ChartSales chartOneDaySales1 = new ChartSales();
                 chartOneDaySales1.setDay(currentDay);
 
-                double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+                double grossSalesAmount = getGrossAmount(saleModel.getOrderItems());
 
                 chartOneDaySales1.setGrossAmount(grossSalesAmount);
-                chartOneDaySales1.setNetAmount(grossSalesAmount - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                chartOneDaySales1.setNetAmount(grossSalesAmount - OrderManager.getTotalDiscountAmountOfSale(saleModel.getOrder(), saleModel.getOrderItems()));
                 chartOneDaySales1.setSaleCount(1);
                 chartOneDaySalesList.add(chartOneDaySales1);
             }else {
                 for(ChartSales chartOneDaySales : chartOneDaySalesList){
                     if(chartOneDaySales.getDay() == currentDay){
 
-                        double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+                        double grossSalesAmount = getGrossAmount(saleModel.getOrderItems());
 
                         chartOneDaySales.setGrossAmount(chartOneDaySales.getGrossAmount() + grossSalesAmount);
-                        chartOneDaySales.setNetAmount(chartOneDaySales.getGrossAmount() - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                        chartOneDaySales.setNetAmount(chartOneDaySales.getGrossAmount() - OrderManager.getTotalDiscountAmountOfSale(saleModel.getOrder(), saleModel.getOrderItems()));
                         chartOneDaySales.setSaleCount(chartOneDaySales.getSaleCount() + 1);
                         break;
                     }
@@ -389,28 +389,28 @@ public class ChartManager {
 
         for(SaleModel saleModel: saleModels){
 
-            LogUtil.logSale(saleModel.getSale());
+            LogUtil.logSale(saleModel.getOrder());
 
-            int currentDay = DataUtils.getDateNumFromDate(saleModel.getSale().getCreateDate());
+            int currentDay = DataUtils.getDateNumFromDate(saleModel.getOrder().getCreateDate());
 
             if(currentDay != previousDay){
                 ChartSales chartOneDaySales1 = new ChartSales();
                 chartOneDaySales1.setDay(currentDay);
 
-                double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+                double grossSalesAmount = getGrossAmount(saleModel.getOrderItems());
 
                 chartOneDaySales1.setGrossAmount(grossSalesAmount);
-                chartOneDaySales1.setNetAmount(grossSalesAmount - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                chartOneDaySales1.setNetAmount(grossSalesAmount - OrderManager.getTotalDiscountAmountOfSale(saleModel.getOrder(), saleModel.getOrderItems()));
                 chartOneDaySales1.setSaleCount(1);
                 chartOneDaySalesList.add(chartOneDaySales1);
             }else {
                 for(ChartSales chartOneDaySales : chartOneDaySalesList){
                     if(chartOneDaySales.getDay() == currentDay){
 
-                        double grossSalesAmount = getGrossAmount(saleModel.getSaleItems());
+                        double grossSalesAmount = getGrossAmount(saleModel.getOrderItems());
 
                         chartOneDaySales.setGrossAmount(chartOneDaySales.getGrossAmount() + grossSalesAmount);
-                        chartOneDaySales.setNetAmount(chartOneDaySales.getGrossAmount() - OrderManager.getTotalDiscountAmountOfSale(saleModel.getSale(), saleModel.getSaleItems()));
+                        chartOneDaySales.setNetAmount(chartOneDaySales.getGrossAmount() - OrderManager.getTotalDiscountAmountOfSale(saleModel.getOrder(), saleModel.getOrderItems()));
                         chartOneDaySales.setSaleCount(chartOneDaySales.getSaleCount() + 1);
                         break;
                     }
@@ -421,9 +421,9 @@ public class ChartManager {
         return chartOneDaySalesList;
     }
 
-    private double getGrossAmount(List<SaleItem> saleItems){
+    private double getGrossAmount(List<OrderItem> saleItems){
         double grossSalesAmount = 0d;
-        for (SaleItem saleItem : saleItems) {
+        for (OrderItem saleItem : saleItems) {
             grossSalesAmount = grossSalesAmount + saleItem.getGrossAmount();
         }
         return grossSalesAmount;

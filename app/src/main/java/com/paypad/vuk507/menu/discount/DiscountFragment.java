@@ -189,7 +189,7 @@ public class DiscountFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
-        discounts = DiscountDBHelper.getAllDiscounts(user.getUsername());
+        discounts = DiscountDBHelper.getAllDiscounts(user.getId());
         discountList = new ArrayList(discounts);
         discountListAdapter = new DiscountListAdapter(getContext(), discountList, mFragmentNavigation, new ReturnDiscountCallback() {
             @Override

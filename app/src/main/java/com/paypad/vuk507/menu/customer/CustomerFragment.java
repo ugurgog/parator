@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.payment.PaymentCompletedFragment;
+import com.paypad.vuk507.charge.payment.orderpayment.OrderPaymentCompletedFragment;
 import com.paypad.vuk507.charge.sale.SaleListFragment;
 import com.paypad.vuk507.db.CustomerDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
@@ -35,6 +35,7 @@ import com.paypad.vuk507.menu.customer.adapters.CustomerListAdapter;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.menu.group.GroupFragment;
 import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
+import com.paypad.vuk507.charge.payment.cancelpayment.CancellationPaymentCompletedFragment;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.User;
@@ -262,7 +263,8 @@ public class CustomerFragment extends BaseFragment {
         addItemImgv.setVisibility(View.GONE);
 
         if(classTag.equals(SaleListFragment.class.getName()) ||
-                classTag.equals(PaymentCompletedFragment.class.getName()))
+                classTag.equals(OrderPaymentCompletedFragment.class.getName()) ||
+                classTag.equals(CancellationPaymentCompletedFragment.class.getName()))
             selectionImgv.setVisibility(View.GONE);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -273,7 +275,7 @@ public class CustomerFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
-        customers = CustomerDBHelper.getAllCustomers(user.getUuid());
+        customers = CustomerDBHelper.getAllCustomers(user.getId());
         customerList = new ArrayList(customers);
         customerListAdapter = new CustomerListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
             @Override

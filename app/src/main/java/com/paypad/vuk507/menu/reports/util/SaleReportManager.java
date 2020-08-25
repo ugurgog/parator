@@ -4,9 +4,8 @@ import android.util.Log;
 
 import com.paypad.vuk507.enums.PaymentTypeEnum;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
-import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.OrderItemDiscount;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.DiscountPojo;
 import com.paypad.vuk507.model.pojo.ReportDiscountModel;
@@ -58,8 +57,8 @@ public class SaleReportManager {
     private void setGroosAmount() {
         double grossSalesAmount = 0d;
         for(SaleModel saleModel : saleModels){
-            for(SaleItem saleItem: saleModel.getSaleItems()){
-                grossSalesAmount = grossSalesAmount + saleItem.getGrossAmount();
+            for(OrderItem orderItem : saleModel.getOrderItems()){
+                grossSalesAmount = grossSalesAmount + orderItem.getGrossAmount();
             }
         }
         reportModel.setGrossSalesAmount(grossSalesAmount);
@@ -94,7 +93,7 @@ public class SaleReportManager {
 
         for(SaleModel saleModel : saleModels){
 
-            for(OrderItemDiscount discount : saleModel.getSale().getDiscounts()){
+            for(OrderItemDiscount discount : saleModel.getOrder().getDiscounts()){
 
                 if(discount.getAmount() > 0d){
                     if(!discountModelMap.containsKey(discount.getId())){
@@ -110,17 +109,17 @@ public class SaleReportManager {
 
                     List<SaleItemPojo> saleItems = new ArrayList<>();
 
-                    for(SaleItem saleItem : saleModel.getSaleItems()){
+                    for(OrderItem orderItem : saleModel.getOrderItems()){
                         SaleItemPojo saleItem1 = new SaleItemPojo();
 
                         List<DiscountPojo> discountPojos = new ArrayList<>();
 
-                        for(OrderItemDiscount discount1 : saleItem.getDiscounts()){
+                        for(OrderItemDiscount discount1 : orderItem.getDiscounts()){
                             discountPojos.add(ConversionHelper.convertDiscountToDiscountPojo(discount1));
                         }
 
                         saleItem1.setDiscounts(discountPojos);
-                        saleItem1.setAmount(saleItem.getAmount() * saleItem.getQuantity());
+                        saleItem1.setAmount(orderItem.getAmount() * orderItem.getQuantity());
                         saleItems.add(saleItem1);
                     }
 
@@ -193,8 +192,8 @@ public class SaleReportManager {
     private void setTaxAmount() {
         double totalTaxAmount = 0d;
         for(SaleModel saleModel : saleModels){
-            for(SaleItem saleItem : saleModel.getSaleItems()){
-                totalTaxAmount = CommonUtils.round(totalTaxAmount + saleItem.getTaxAmount(), 2);
+            for(OrderItem orderItem : saleModel.getOrderItems()){
+                totalTaxAmount = CommonUtils.round(totalTaxAmount + orderItem.getTaxAmount(), 2);
             }
         }
         reportModel.setTaxAmount(totalTaxAmount);
@@ -238,7 +237,7 @@ public class SaleReportManager {
 
         for(SaleModel saleModel: saleModels){
 
-            for(SaleItem saleItem : saleModel.getSaleItems()){
+            for(OrderItem saleItem : saleModel.getOrderItems()){
 
                 Log.i("Info", "setOrderItems saleItemName:" + saleItem.getName());
 

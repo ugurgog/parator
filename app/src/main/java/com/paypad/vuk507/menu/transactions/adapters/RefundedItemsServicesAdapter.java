@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.model.OrderRefundItem;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 
@@ -97,10 +96,7 @@ public class RefundedItemsServicesAdapter extends RecyclerView.Adapter<RefundedI
 
         private void setItemName(){
             if(saleItem.getName() != null){
-                if(saleItem.getQuantity() > 1)
-                    itemNameTv.setText(saleItem.getName().concat(" x ").concat(String.valueOf(saleItem.getQuantity())));
-                else
-                    itemNameTv.setText(saleItem.getName());
+                itemNameTv.setText(saleItem.getName());
             }
         }
 
@@ -110,7 +106,7 @@ public class RefundedItemsServicesAdapter extends RecyclerView.Adapter<RefundedI
         }
 
         private void setItemAmount(){
-            double itemAmount = CommonUtils.round(saleItem.getAmount() * saleItem.getQuantity() , 2);
+            double itemAmount = CommonUtils.round(saleItem.getAmount() , 2);
             String amountStr = CommonUtils.getDoubleStrValueForView(itemAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
             itemAmountTv.setText(amountStr);
         }

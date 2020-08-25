@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,14 +16,15 @@ import com.google.android.material.tabs.TabLayout;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.adapter.CustomViewPagerAdapter;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnAmountCallback;
 import com.paypad.vuk507.interfaces.ReturnOrderItemCallback;
 import com.paypad.vuk507.model.OrderRefundItem;
-import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 
@@ -38,9 +38,6 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-
-import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
-import static com.paypad.vuk507.constants.CustomConstants.TYPE_REFUND;
 
 public class RefundFragment extends BaseFragment implements ReturnOrderItemCallback, ReturnAmountCallback {
 
@@ -57,11 +54,10 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
     TabLayout tablayout;
     @BindView(R.id.viewPager)
     ViewPager viewPager;
-    @BindView(R.id.refundDescTv)
-    TextView refundDescTv;
+    //@BindView(R.id.refundDescTv)
+    //TextView refundDescTv;
 
     private User user;
-    private Transaction transaction;
     private double totalAmount;
     private Realm realm;
     private int refundCancelStatus;
@@ -69,6 +65,8 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
     private double returnAmount;
     private double returnAmountFromFrag;
     private String refundReasonText;
+    private SaleModel saleModel;
+    private double availableRefundAmount = 0d;
 
     private RefundByItemsFragment refundByItemsFragment;
     private RefundByAmountFragment refundByAmountFragment;
@@ -80,11 +78,9 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
 
     private List<OrderRefundItem> orderRefundItems;
 
-    public RefundFragment(Transaction transaction, int refundCancelStatus, double returnAmount, String refundReasonText) {
-        this.transaction = transaction;
+    public RefundFragment(SaleModel saleModel, int refundCancelStatus) {
         this.refundCancelStatus = refundCancelStatus;
-        this.returnAmount = returnAmount;
-        this.refundReasonText = refundReasonText;
+        this.saleModel = saleModel;
     }
 
     @Override
@@ -150,23 +146,27 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
                     for(OrderRefundItem orderRefundItem : orderRefundItems)
                         refundAmount = CommonUtils.round(refundAmount + orderRefundItem.getAmount(), 2);
 
-                    if(refundAmount > returnAmount){
+                    /*if(refundAmount > returnAmount){
                         CommonUtils.showToastShort(getContext(), getResources().getString(R.string.refund_amount_cannot_be_bigger_trx_amount));
                         return;
-                    }
+                    }*/
 
-                    mFragmentNavigation.pushFragment(new NFCReadForReturnFragment(transaction, refundAmount,
-                            TYPE_REFUND, false, orderRefundItems, refundReasonText));
+                    mFragmentNavigation.pushFragment(new SelectPaymentForRefundFragment(refundCancelStatus, saleModel, false, refundAmount, orderRefundItems));
+
+                    //mFragmentNavigation.pushFragment(new NFCReadForReturnFragment(null, refundAmount,
+                    //        TYPE_REFUND, false, orderRefundItems, refundReasonText));
 
                 }else if(selectedTab == SELECTED_BY_AMOUNT){
 
-                    if(returnAmountFromFrag > returnAmount){
+                    /*if(returnAmountFromFrag > returnAmount){
                         CommonUtils.showToastShort(getContext(), getResources().getString(R.string.refund_amount_cannot_be_bigger_trx_amount));
                         return;
-                    }
+                    }*/
 
-                    mFragmentNavigation.pushFragment(new NFCReadForReturnFragment(transaction, returnAmountFromFrag,
-                            TYPE_REFUND, true, null, refundReasonText));
+                    mFragmentNavigation.pushFragment(new SelectPaymentForRefundFragment(refundCancelStatus, saleModel, true, returnAmountFromFrag, null));
+
+                    //mFragmentNavigation.pushFragment(new NFCReadForReturnFragment(null, returnAmountFromFrag,
+                    //        TYPE_REFUND, true, null, refundReasonText));
                 }
             }
         });
@@ -176,23 +176,13 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
         orderRefundItems = new ArrayList<>();
         realm = Realm.getDefaultInstance();
         saveBtn.setText(getResources().getString(R.string.continue_text));
+        toolbarTitleTv.setText(getContext().getResources().getString(R.string.refund));
         CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
-        setToolbarTitle(transaction.getTotalAmount());
-        setRefundDescTv();
+        availableRefundAmount = OrderManager.getAvailableRefundAmount(saleModel);
 
         setupViewPager();
         tablayout.setupWithViewPager(viewPager);
         setTabListener();
-    }
-
-    private void setRefundDescTv() {
-        String refundDesc;
-        if (CommonUtils.getLanguage().equals(LANGUAGE_TR))
-            refundDesc = "Yapılabilecek maximum iade tutarı ".concat(CommonUtils.getAmountTextWithCurrency(returnAmount));
-        else
-            refundDesc = "Max ".concat(CommonUtils.getAmountTextWithCurrency(returnAmount))
-                    .concat(" available for refund");
-        refundDescTv.setText(refundDesc);
     }
 
     private void setupViewPager() {
@@ -208,12 +198,12 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
     }
 
     private void initRefundByItemsFragment(){
-        refundByItemsFragment = new RefundByItemsFragment(transaction, returnAmount);
+        refundByItemsFragment = new RefundByItemsFragment(saleModel);
         refundByItemsFragment.setReturnOrderItemCallback(this);
     }
 
     private void initRefundByAmountFragment(){
-        refundByAmountFragment = new RefundByAmountFragment(transaction, false, returnAmount, refundReasonText);
+        refundByAmountFragment = new RefundByAmountFragment(saleModel, false, availableRefundAmount);
         refundByAmountFragment.setReturnAmountCallback(this);
     }
 
@@ -240,13 +230,13 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
 
     private void setToolbarTitle(double amount){
         totalAmount = amount;
-        toolbarTitleTv.setText(CommonUtils.getAmountTextWithCurrency(amount).concat(" ").concat(getContext().getResources().getString(R.string.sale)));
+        toolbarTitleTv.setText(CommonUtils.getAmountTextWithCurrency(amount).concat(" ").concat(getContext().getResources().getString(R.string.order)));
     }
 
     @Override
     public void OnReturnAmount(double amount) {
         returnAmountFromFrag = amount;
-        if (returnAmountFromFrag > 0d && returnAmountFromFrag <= returnAmount)
+        if (returnAmountFromFrag > 0d && returnAmountFromFrag <= availableRefundAmount)
             CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
         else
             CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
@@ -259,7 +249,7 @@ public class RefundFragment extends BaseFragment implements ReturnOrderItemCallb
             else
                 CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
         }else if(selectedTab == SELECTED_BY_AMOUNT){
-            if (returnAmountFromFrag > 0d && returnAmountFromFrag <= returnAmount)
+            if (returnAmountFromFrag > 0d && returnAmountFromFrag <= availableRefundAmount)
                 CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
             else
                 CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());

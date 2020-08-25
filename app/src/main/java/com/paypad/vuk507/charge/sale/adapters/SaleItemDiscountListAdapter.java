@@ -12,11 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.charge.order.IOrderManager1;
-import com.paypad.vuk507.charge.order.OrderManager1;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.model.Discount;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.OrderItemDiscount;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.utils.CommonUtils;
 
 import java.util.ArrayList;
@@ -29,13 +29,13 @@ import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDiscountListAdapter.DiscountHolder> {
 
     private List<Discount> discounts = new ArrayList<>();
-    private SaleItem saleItem;
-    private IOrderManager1 orderManager;
+    private OrderItem orderItem;
+    private IOrderManager orderManager;
 
-    public SaleItemDiscountListAdapter(List<Discount> discounts, SaleItem saleItem) {
+    public SaleItemDiscountListAdapter(List<Discount> discounts, OrderItem orderItem) {
         this.discounts.addAll(discounts);
-        this.saleItem = saleItem;
-        orderManager = new OrderManager1();
+        this.orderItem = orderItem;
+        orderManager = new OrderManager();
     }
 
     @NonNull
@@ -59,17 +59,17 @@ public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDi
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
-                    if(saleItem.getDiscounts() == null)
-                        saleItem.setDiscounts(new RealmList<>());
+                    if(orderItem.getDiscounts() == null)
+                        orderItem.setDiscounts(new RealmList<>());
 
-                    orderManager.addDiscountToSaleItem(saleItem, discount);
+                    orderManager.addDiscountToSaleItem(orderItem, discount);
 
                 }else {
 
-                    if(saleItem.getDiscounts() == null)
-                        saleItem.setDiscounts(new RealmList<>());
+                    if(orderItem.getDiscounts() == null)
+                        orderItem.setDiscounts(new RealmList<>());
 
-                    orderManager.removeDiscountFromSaleItem(saleItem, discount);
+                    orderManager.removeDiscountFromSaleItem(orderItem, discount);
                 }
             }
         };
@@ -100,10 +100,10 @@ public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDi
         public boolean isDiscountExist(){
 
             Log.i("Info", "discounts:" + discounts);
-            Log.i("Info", "saleItem.getDiscounts():" + saleItem.getDiscounts());
+            Log.i("Info", "orderItem.getDiscounts():" + orderItem.getDiscounts());
 
-            if(saleItem.getDiscounts() != null && saleItem.getDiscounts().size() > 0){
-                for (OrderItemDiscount discount1 : saleItem.getDiscounts()) {
+            if(orderItem.getDiscounts() != null && orderItem.getDiscounts().size() > 0){
+                for (OrderItemDiscount discount1 : orderItem.getDiscounts()) {
 
                     if (discount1.getId() == discount.getId())
                         return true;

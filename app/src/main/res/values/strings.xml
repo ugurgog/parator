@@ -159,7 +159,7 @@
 
     <string name="change">Change</string>
     <string name="credit_card_payment_info">This amount (including tip) is used for tracking purposes only. You will not receive a deposit for this transaction.</string>
-    <string name="credit_card_tip_info">Tip amounts are listed seperately in your sales reports.</string>
+    <string name="credit_card_tip_info">Tip amounts are listed seperately in your orders reports.</string>
     <string name="tip">Tip</string>
     <string name="provide_email_description">Provide your email to receive a digital receipt from this business.</string>
     <string name="email_address">Email Address</string>
@@ -171,8 +171,7 @@
     <string name="keep">Keep</string>
     <string name="cancel_transaction">Cancel Transaction</string>
     <string name="refunded_items_desc">Item amount includes taxes and discounts where applicable</string>
-    <string name="sales">Sales</string>
-    <string name="sale">Sale</string>
+    <string name="order">Sale</string>
     <string name="customize_report">Customize Report</string>
     <string name="all_devices">All Devices</string>
     <string name="this_device_only">This Device Only</string>
@@ -543,6 +542,14 @@
     <string name="payment_refunded_upper">PAYMENT REFUNDED</string>
     <string name="payment_cancelled_upper">PAYMENT CANCELLED</string>
     <string name="amount_to_refund_upper">AMOUNT TO REFUND</string>
-    <string name="refund_amount_desc">Refunding an amount (and not a specific item) may cause a discrepancy in your inventory, item sales reports, and gift card balances.</string>
+    <string name="refund_amount_desc">Refunding an amount (and not a specific item) may cause a discrepancy in your inventory, item orders reports, and gift card balances.</string>
+    <string name="needs_your_current_location">needs your current location</string>
+    <string name="refunded">Refunded</string>
+    <string name="available_refund_amount">Total refundable amount is</string>
+    <string name="select_transaction_for_refund">Select transaction for Refund</string>
+    <string name="select_transaction_for_cancel">Select transaction for Cancel</string>
+    <string name="remaining">Remaining</string>
+    <string name="cancel_all_transactions">Cancel All Payments</string>
+    <string name="select_payment_for_cancel">SELECT PAYMENT FOR CANCEL</string>
 
 </resources>

@@ -454,7 +454,7 @@ public class SalesDetailFragment extends BaseFragment {
 
     @SuppressLint("HardwareIds")
     private void getSaleModels(){
-        saleModels = SaleDBHelper.getSaleModelsForReport(user.getUuid(),
+        saleModels = SaleDBHelper.getSaleModelsForReport(user.getId(),
                 isThisDevice ? Settings.Secure.getString(Objects.requireNonNull(getContext()).getContentResolver(), Settings.Secure.ANDROID_ID) : null,
                 startDate, endDate);
 

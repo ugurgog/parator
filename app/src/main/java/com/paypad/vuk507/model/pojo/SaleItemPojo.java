@@ -9,7 +9,7 @@ import java.util.List;
 public class SaleItemPojo {
 
     private String uuid;
-    private String saleUuid;
+    private String orderId;
     private String name;
     private double amount;
     private double taxAmount;
@@ -97,12 +97,12 @@ public class SaleItemPojo {
         isDynamicAmount = dynamicAmount;
     }
 
-    public String getSaleUuid() {
-        return saleUuid;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setSaleUuid(String saleUuid) {
-        this.saleUuid = saleUuid;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public List<DiscountPojo> getDiscounts() {

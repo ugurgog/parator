@@ -28,6 +28,7 @@ import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.menu.transactions.adapters.SaleModelListAdapter;
+import com.paypad.vuk507.menu.transactions.interfaces.TransactionItemCallback;
 import com.paypad.vuk507.model.Refund;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
@@ -49,8 +50,10 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
-public class TransactionsFragment extends BaseFragment implements SaleModelListAdapter.ReturnSaleModelCallback {
+public class TransactionsFragment extends BaseFragment implements TransactionItemCallback {
 
     private View mView;
 
@@ -74,6 +77,7 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
     private User user;
     private SaleModelListAdapter saleModelListAdapter;
     private List<TransactionItem> adapterModel;
+    private Realm realm;
 
     public TransactionsFragment() {
 
@@ -178,6 +182,7 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
     }
 
     private void initVariables() {
+        realm = Realm.getDefaultInstance();
         toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.transactions));
         addItemImgv.setVisibility(View.GONE);
         searchEdittext.setHint(getContext().getResources().getString(R.string.search_by_order_zno_fno));
@@ -190,6 +195,11 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
         updateAdapterWithCurrentList();
     }
 
+    @Override
+    public void onReturnTransactionItem(TransactionItem transactionItem) {
+        mFragmentNavigation.pushFragment(new TransactionDetailFragment(transactionItem));
+    }
+
 
     public static class DateComparator implements Comparator<TransactionItem> {
         @Override
@@ -198,26 +208,66 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
         }
     }
 
+    public static class RefundGroupIdComparator implements Comparator<Refund> {
+        @Override
+        public int compare(Refund o1, Refund o2) {
+            return o2.getRefundGroupId().compareTo(o1.getRefundGroupId());
+        }
+    }
+
     @SuppressLint("SimpleDateFormat")
     public void updateAdapterWithCurrentList(){
 
-        List<SaleModel> saleModels = SaleDBHelper.getSaleModelsForTransactionList(user.getUuid());
+        List<SaleModel> saleModels = SaleDBHelper.getSaleModelsForTransactionList(user.getId());
 
         List<TransactionItem> transactionItems = new ArrayList<>();
 
         for(SaleModel saleModel : saleModels){
 
-            List<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(saleModel.getSale().getSaleUuid(), true);
+            RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(saleModel.getOrder().getId(), true);
+            List<Refund> refundList = new ArrayList(refunds);
+
+            Collections.sort(refundList, new RefundGroupIdComparator());
+
+            String previousRefGroupId = "";
+
+            for(Refund refund : refundList){
+
+                LogUtil.logRefund(refund);
+
+                if(!refund.getRefundGroupId().equals(previousRefGroupId)){
+                    RealmResults<Refund> refundsOfGroup = RefundDBHelper.getAllRefundsByRefundGroupId(refund.getRefundGroupId());
+
+                    if(refundsOfGroup != null && refundsOfGroup.size() > 0){
+                        TransactionItem transactionItem = new TransactionItem();
+                        transactionItem.setTrxDate(refundsOfGroup.get(0).getCreateDate());
+                        transactionItem.setTransaction(null);
+                        transactionItem.setSaleModel(saleModel);
+
+                        List<Refund> refunds1 = new ArrayList<>();
+                        for(Refund refund1 : refundsOfGroup)
+                            refunds1.add(refund1);
+                        transactionItem.setRefunds(refunds1);
+
+                        transactionItems.add(transactionItem);
+                    }
+                }
+
+                previousRefGroupId = refund.getRefundGroupId();
+            }
+
 
             //Iade modelleri eklenir
-            for(Refund refund : refunds){
+            /*for(Refund refund : refunds){
                 TransactionItem transactionItem = new TransactionItem();
                 transactionItem.setTrxDate(refund.getCreateDate());
                 transactionItem.setTransaction(null);
                 transactionItem.setSaleModel(saleModel);
                 transactionItem.setRefund(refund);
                 transactionItems.add(transactionItem);
-            }
+
+                previousRefGroupId = refund.getRefundGroupId();
+            }*/
 
             for(Transaction transaction : saleModel.getTransactions()){
 
@@ -229,17 +279,17 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
                     transactionItem.setTrxDate(transaction.getCancellationDate());
                     transactionItem.setTransaction(transaction);
                     transactionItem.setSaleModel(saleModel);
-                    transactionItem.setRefund(null);
+                    transactionItem.setRefunds(null);
                     transactionItems.add(transactionItem);
                 }
             }
 
-            //Sale modeller eklenir
+            //Order modeller eklenir
             TransactionItem transactionItem1 = new TransactionItem();
-            transactionItem1.setTrxDate(saleModel.getSale().getCreateDate());
+            transactionItem1.setTrxDate(saleModel.getOrder().getCreateDate());
             transactionItem1.setTransaction(null);
             transactionItem1.setSaleModel(saleModel);
-            transactionItem1.setRefund(null);
+            transactionItem1.setRefunds(null);
             transactionItems.add(transactionItem1);
         }
 
@@ -256,7 +306,7 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
                 transactionItem1.setTransaction(null);
                 transactionItem1.setSaleModel(null);
                 transactionItem1.setNoItem(true);
-                transactionItem1.setRefund(null);
+                transactionItem1.setRefunds(null);
                 adapterModel.add(transactionItem1);
             }
 
@@ -264,7 +314,7 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
             previousDate = transactionItem.getTrxDate();
         }
         saleModelListAdapter = new SaleModelListAdapter(getContext(), adapterModel);
-        saleModelListAdapter.setReturnSaleModelCallback(this);
+        saleModelListAdapter.setTransactionItemCallback(this);
         transactionsRv.setAdapter(saleModelListAdapter);
     }
 
@@ -285,15 +335,10 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
         }
     }
 
-    @Override
-    public void OnReturnSaleModel(SaleModel saleModel) {
-        mFragmentNavigation.pushFragment(new TransactionDetailFragment(saleModel));
-    }
-
     public class TransactionItem{
         private SaleModel saleModel;
         private Transaction transaction;
-        private Refund refund;
+        private List<Refund> refunds;
         private Date trxDate;
         private boolean noItem;
 
@@ -329,12 +374,12 @@ public class TransactionsFragment extends BaseFragment implements SaleModelListA
             this.noItem = noItem;
         }
 
-        public Refund getRefund() {
-            return refund;
+        public List<Refund> getRefunds() {
+            return refunds;
         }
 
-        public void setRefund(Refund refund) {
-            this.refund = refund;
+        public void setRefunds(List<Refund> refunds) {
+            this.refunds = refunds;
         }
     }
 }

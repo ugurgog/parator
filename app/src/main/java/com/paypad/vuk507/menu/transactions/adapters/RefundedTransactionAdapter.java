@@ -15,16 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.db.OrderRefundItemDBHelper;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.SaleItemDBHelper;
-import com.paypad.vuk507.db.TransactionDBHelper;
-import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.menu.transactions.model.RefundedTrxModel;
+import com.paypad.vuk507.model.Order;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.OrderItemDiscount;
 import com.paypad.vuk507.model.OrderRefundItem;
 import com.paypad.vuk507.model.Refund;
-import com.paypad.vuk507.model.Sale;
-import com.paypad.vuk507.model.SaleItem;
-import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 
@@ -34,19 +33,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTransactionAdapter.RefundItemHolder> {
 
     private Context context;
-    private List<Refund> refunds = new ArrayList<>();
+    private List<RefundedTrxModel> refundedTrxModels = new ArrayList<>();
     private double orderItemsTotalAmount = 0d;
     private String orderId;
 
-    public RefundedTransactionAdapter(Context context, List<Refund> refunds, String orderId) {
+    public RefundedTransactionAdapter(Context context, List<RefundedTrxModel> refundedTrxModels, String orderId) {
         this.context = context;
-        this.refunds.addAll(refunds);
+        this.refundedTrxModels.addAll(refundedTrxModels);
         this.orderId = orderId;
         calculateDiscountAmount();
     }
@@ -66,6 +64,7 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
         private TextView refundDateTv;
         private TextView refundReasonTv;
         private RecyclerView itemsRv;
+        private RecyclerView paymentsRv;
         private TextView trxSeqDescTv;
 
         private ImageView paymentTypeImgv;
@@ -73,7 +72,7 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
         private TextView paymTypeAmountTv;
 
         int position;
-        private Refund refund;
+        private RefundedTrxModel refundedTrxModel;
 
         public RefundItemHolder(View view) {
             super(view);
@@ -81,6 +80,7 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
             refundDateTv = view.findViewById(R.id.refundDateTv);
             refundReasonTv= view.findViewById(R.id.refundReasonTv);
             itemsRv = view.findViewById(R.id.itemsRv);
+            paymentsRv = view.findViewById(R.id.paymentsRv);
 
             paymentTypeImgv = view.findViewById(R.id.paymentTypeImgv);
             paymentTypeTv = view.findViewById(R.id.paymentTypeTv);
@@ -88,18 +88,19 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
             trxSeqDescTv = view.findViewById(R.id.trxSeqDescTv);
         }
 
-        public void setData(Refund refund, int position) {
-            this.refund = refund;
+        public void setData(RefundedTrxModel refundedTrxModel, int position) {
+            this.refundedTrxModel = refundedTrxModel;
             this.position = position;
             setRefundImgv();
             setRefundReasonTv();
             setRefundDateTv();
             setItemsAdapter();
-            setPaymentTypeImgv();
-            setTrxZnoFno();
+            setPaymentTypesAdapter();
+            //setPaymentTypeImgv();
+            //setTrxZnoFno();
         }
 
-        private void setTrxZnoFno() {
+        /*private void setTrxZnoFno() {
             @SuppressLint("DefaultLocale") String desc = context.getResources().getString(R.string.z_no_upper)
                     .concat(" : ")
                     .concat(String.format("%06d", refund.getzNum()))
@@ -108,7 +109,7 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
                     .concat(" : ")
                     .concat(String.format("%06d", refund.getfNum()));
             trxSeqDescTv.setText(desc);
-        }
+        }*/
 
         private void setRefundImgv(){
             Glide.with(context).load(R.drawable.ic_arrow_back_white_24dp).into(refundImgv);
@@ -117,12 +118,12 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
         }
 
         private void setRefundReasonTv() {
-            refundReasonTv.setText(refund.getRefundReason());
+            refundReasonTv.setText(refundedTrxModel.getRefunds().get(0).getRefundReason());
         }
 
         private void setRefundDateTv() {
             @SuppressLint("SimpleDateFormat")
-            String trxDate = new SimpleDateFormat("dd MM yyyy HH:mm").format(refund.getCreateDate());
+            String trxDate = new SimpleDateFormat("dd MM yyyy HH:mm").format(refundedTrxModel.getRefunds().get(0).getCreateDate());
             refundDateTv.setText(trxDate);
         }
 
@@ -133,15 +134,23 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
             List<OrderRefundItem> saleItems = new ArrayList<>();
             double paymTypeAmount = 0d;
 
-            if(refund.isRefundByAmount()){
+            if(refundedTrxModel.getRefunds().get(0).isRefundByAmount()){
                 OrderRefundItem saleItem = new OrderRefundItem();
                 saleItem.setName(context.getResources().getString(R.string.custom_amount));
-                saleItem.setAmount(refund.getRefundAmount());
-                saleItem.setQuantity(1);
-                paymTypeAmount = refund.getRefundAmount();
+
+                double totalRefundAmount = 0d;
+                for(Refund refund : refundedTrxModel.getRefunds())
+                    totalRefundAmount = CommonUtils.round(totalRefundAmount + refund.getRefundAmount(), 2);
+
+                saleItem.setAmount(totalRefundAmount);
+                paymTypeAmount = totalRefundAmount;
                 saleItems.add(saleItem);
             }else {
-                RealmList<OrderRefundItem> refundItems = refund.getRefundItems();
+
+
+                RealmResults<OrderRefundItem> refundItems = OrderRefundItemDBHelper.getRefundItemsByRefundGroupId(refundedTrxModel.getRefundGroupId());
+
+                //RealmList<OrderRefundItem> refundItems = refund.getRefundItems();
 
                 for (OrderRefundItem orderRefundItem : refundItems) {
                     //double discountedByRateAmount = OrderManager.getTotalDiscountAmountOfOrderRefundItem(orderRefundItem);
@@ -152,7 +161,7 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
 
                     OrderRefundItem orderRefundItem1 = realm.copyFromRealm(orderRefundItem);
                     //orderRefundItem1.setAmount(CommonUtils.round((orderRefundItem.getAmount() * orderRefundItem.getQuantity()) - (discountedByRateAmount + discountedByAmountAmount), 2));
-                    orderRefundItem1.setAmount(CommonUtils.round((orderRefundItem.getAmount() * orderRefundItem.getQuantity()), 2));
+                    orderRefundItem1.setAmount(CommonUtils.round((orderRefundItem.getAmount() ), 2));
 
                     realm.commitTransaction();
 
@@ -167,12 +176,21 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
             paymTypeAmountTv.setText(CommonUtils.getAmountTextWithCurrency(paymTypeAmount));
         }
 
+        private void setPaymentTypesAdapter(){
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+            linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+            paymentsRv.setLayoutManager(linearLayoutManager);
+
+            RefundedPaymentsAdapter refundedPaymentsAdapter = new RefundedPaymentsAdapter(context, refundedTrxModel.getRefunds());
+            paymentsRv.setAdapter(refundedPaymentsAdapter);
+        }
+
         private double getDiscountAmountByAmount(double orderItemsTotalAmount, double orderItemAmount){
             double discountedByAmount = 0d;
 
-            Sale sale = SaleDBHelper.getSaleById(refund.getOrderId());
+            Order order = SaleDBHelper.getSaleById(refundedTrxModel.getRefunds().get(0).getOrderId());
 
-            for(OrderItemDiscount discount : sale.getDiscounts()){
+            for(OrderItemDiscount discount : order.getDiscounts()){
                 if(discount.getAmount() > 0d){
                     discountedByAmount = CommonUtils.round(discountedByAmount + (
                             (discount.getAmount() / orderItemsTotalAmount) * orderItemAmount), 2);
@@ -181,7 +199,7 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
             return discountedByAmount;
         }
 
-        private void setPaymentTypeImgv(){
+        /*private void setPaymentTypeImgv(){
             Transaction transaction = TransactionDBHelper.getTransactionById(refund.getTransactionId());
 
             if(transaction.getPaymentTypeId() == PaymentTypeEnum.CASH.getId()){
@@ -192,29 +210,29 @@ public class RefundedTransactionAdapter extends RecyclerView.Adapter<RefundedTra
                 paymentTypeTv.setText(context.getResources().getString(R.string.card));
             }
 
-        }
+        }*/
     }
 
     private void calculateDiscountAmount(){
-        RealmResults<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(orderId);
-        List<SaleItem> saleItemList = new ArrayList(saleItems);
+        RealmResults<OrderItem> orderItems = SaleItemDBHelper.getSaleItemsBySaleId(orderId);
+        List<OrderItem> orderItemList = new ArrayList(orderItems);
 
-        for(Iterator<SaleItem> it = saleItemList.iterator(); it.hasNext();) {
-            SaleItem saleItem = it.next();
-            orderItemsTotalAmount = CommonUtils.round(orderItemsTotalAmount + saleItem.getAmount(), 2);
+        for(Iterator<OrderItem> it = orderItemList.iterator(); it.hasNext();) {
+            OrderItem orderItem = it.next();
+            orderItemsTotalAmount = CommonUtils.round(orderItemsTotalAmount + orderItem.getAmount(), 2);
         }
     }
 
     @Override
     public void onBindViewHolder(final RefundedTransactionAdapter.RefundItemHolder holder, final int position) {
-        Refund refund = refunds.get(position);
-        holder.setData(refund, position);
+        RefundedTrxModel refundedTrxModel = refundedTrxModels.get(position);
+        holder.setData(refundedTrxModel, position);
     }
 
     @Override
     public int getItemCount() {
-        if(refunds != null)
-            return refunds.size();
+        if(refundedTrxModels != null)
+            return refundedTrxModels.size();
         else
             return 0;
     }

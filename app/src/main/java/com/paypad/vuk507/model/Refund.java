@@ -16,9 +16,10 @@ public class Refund extends RealmObject {
     private String transactionId;
     @Index
     private String orderId;
+    @Index
+    private String refundGroupId;
     private boolean isRefundByAmount;
     private double refundAmount;
-    private RealmList<OrderRefundItem> refundItems;
     private String refundReason;
     private boolean isSuccessful;
     private Date createDate;
@@ -28,6 +29,8 @@ public class Refund extends RealmObject {
     private boolean isTransferred;
     private boolean isEODProcessed;
     private Date eodDate;
+    private double latitude;
+    private double longitude;
 
     public long getzNum() {
         return zNum;
@@ -85,12 +88,12 @@ public class Refund extends RealmObject {
         this.refundAmount = refundAmount;
     }
 
-    public RealmList<OrderRefundItem> getRefundItems() {
-        return refundItems;
+    public String getRefundGroupId() {
+        return refundGroupId;
     }
 
-    public void setRefundItems(RealmList<OrderRefundItem> refundItems) {
-        this.refundItems = refundItems;
+    public void setRefundGroupId(String refundGroupId) {
+        this.refundGroupId = refundGroupId;
     }
 
     public String getRefundReason() {
@@ -139,5 +142,21 @@ public class Refund extends RealmObject {
 
     public void setEodDate(Date eodDate) {
         this.eodDate = eodDate;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

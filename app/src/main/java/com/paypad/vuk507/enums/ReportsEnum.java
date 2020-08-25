@@ -2,7 +2,7 @@ package com.paypad.vuk507.enums;
 
 public enum  ReportsEnum {
 
-    SALE_REPORTS("Sale Reports", "Satış Raporları", 0),
+    SALE_REPORTS("Order Reports", "Satış Raporları", 0),
     FINANCIAL_REPORTS("Financial Reports", "Mali Raporlar", 1);
 
     private final String labelTr;

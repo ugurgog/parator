@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.login.utils.LoginUtils;
 import com.paypad.vuk507.login.utils.Validation;
@@ -24,8 +25,11 @@ import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.ShapeUtil;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
+
+import io.realm.Realm;
 
 
 public class RegisterActivity extends AppCompatActivity
@@ -140,16 +144,25 @@ public class RegisterActivity extends AppCompatActivity
     }
 
     private void createUser() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
 
-        String uuid = UUID.randomUUID().toString();
+        User user = new User();
+        user.setId(UUID.randomUUID().toString());
+        user.setUsername(userName);
+        user.setPassword(userPassword);
+        user.setCreateDate(new Date());
+        user.setLoggedIn(true);
 
-        BaseResponse baseResponse = UserDBHelper.createUser(userName, userPassword, uuid, true);
+        realm.commitTransaction();
+
+        BaseResponse baseResponse = UserDBHelper.createOrUpdateUser(user);
 
         progressDialog.dismiss();
 
         if(baseResponse.isSuccess()){
             LoginUtils.applySharedPreferences(RegisterActivity.this,
-                    userName, userPassword, uuid);
+                    user.getUsername(), user.getPassword(), user.getId());
 
             Intent intent = new Intent(RegisterActivity.this, InitialActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -9,7 +9,7 @@ import android.util.Log;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.AutoIncrementDBHelper;
 import com.paypad.vuk507.db.CategoryDBHelper;
-import com.paypad.vuk507.db.PrinterSettingsDBHelper;
+import com.paypad.vuk507.db.GlobalSettingsDBHelper;
 import com.paypad.vuk507.db.TaxDBHelper;
 import com.paypad.vuk507.db.UnitDBHelper;
 import com.paypad.vuk507.enums.DayEnum;
@@ -17,7 +17,7 @@ import com.paypad.vuk507.enums.MonthEnum;
 import com.paypad.vuk507.enums.ProductUnitTypeEnum;
 import com.paypad.vuk507.enums.TaxRateEnum;
 import com.paypad.vuk507.model.AutoIncrement;
-import com.paypad.vuk507.model.PrinterSettings;
+import com.paypad.vuk507.model.GlobalSettings;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.UnitModel;
@@ -249,7 +249,7 @@ public class DataUtils {
         return cal.getTime();
     }
 
-    public static List<TaxModel> getAllTaxes(String userName){
+    public static List<TaxModel> getAllTaxes(String userId){
         List<TaxModel> taxModels = new ArrayList<>();
 
         TaxRateEnum[] taxRateEnums = TaxRateEnum.values();
@@ -261,7 +261,7 @@ public class DataUtils {
             taxModels.add(taxModel);
         }
 
-        taxModels.addAll(TaxDBHelper.getAllTaxes(userName));
+        taxModels.addAll(TaxDBHelper.getAllTaxes(userId));
         return taxModels;
     }
 
@@ -306,28 +306,28 @@ public class DataUtils {
 
     public static void checkPrinterSettings(String userId){
 
-        PrinterSettings printerSettings = PrinterSettingsDBHelper.getPrinterSetting(userId);
+        GlobalSettings globalSettings = GlobalSettingsDBHelper.getPrinterSetting(userId);
 
-        if(printerSettings != null)
+        if(globalSettings != null)
             return;
 
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
-        printerSettings = new PrinterSettings();
-        printerSettings.setCreateDate(new Date());
-        printerSettings.setUpdateDate(new Date());
-        printerSettings.setUserId(userId);
-        printerSettings.setCreateUserId(userId);
-        printerSettings.setUpdateUserId(userId);
-        printerSettings.setCustomerAutoPrint(true);
-        printerSettings.setMerchantAutoPrint(false);
+        globalSettings = new GlobalSettings();
+        globalSettings.setCreateDate(new Date());
+        globalSettings.setUpdateDate(new Date());
+        globalSettings.setUserId(userId);
+        globalSettings.setCreateUserId(userId);
+        globalSettings.setUpdateUserId(userId);
+        globalSettings.setCustomerAutoPrint(true);
+        globalSettings.setMerchantAutoPrint(false);
 
-        PrinterSettings tempPrinterSettings = realm.copyToRealm(printerSettings);
+        GlobalSettings tempGlobalSettings = realm.copyToRealm(globalSettings);
 
         realm.commitTransaction();
 
-        PrinterSettingsDBHelper.updatePrinterSettings(tempPrinterSettings);
+        GlobalSettingsDBHelper.updatePrinterSettings(tempGlobalSettings);
     }
 
     public static void checkAutoIncrement(String userId){

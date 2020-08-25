@@ -6,11 +6,11 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class SaleItem extends RealmObject {
+public class OrderItem extends RealmObject {
 
     @PrimaryKey
-    private String uuid;
-    private String saleUuid;
+    private String id;
+    private String orderId;
     private String name;
     private double amount;              // Item Amount = 10
     private double taxAmount;           // Item Amount - Gross Amount = 10 -  9.26 = 0.74
@@ -83,12 +83,20 @@ public class SaleItem extends RealmObject {
         this.productId = productId;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getId() {
+        return id;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public boolean isDynamicAmount() {
@@ -97,14 +105,6 @@ public class SaleItem extends RealmObject {
 
     public void setDynamicAmount(boolean dynamicAmount) {
         isDynamicAmount = dynamicAmount;
-    }
-
-    public String getSaleUuid() {
-        return saleUuid;
-    }
-
-    public void setSaleUuid(String saleUuid) {
-        this.saleUuid = saleUuid;
     }
 
     public RealmList<OrderItemDiscount> getDiscounts() {

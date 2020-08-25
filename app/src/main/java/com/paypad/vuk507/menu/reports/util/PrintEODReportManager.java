@@ -8,9 +8,9 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.db.SaleItemDBHelper;
 import com.paypad.vuk507.enums.FinancialReportsEnum;
 import com.paypad.vuk507.enums.PaymentTypeEnum;
+import com.paypad.vuk507.model.Order;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.OrderItemTax;
-import com.paypad.vuk507.model.Sale;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
@@ -45,7 +45,7 @@ public class PrintEODReportManager {
     private Context mContext;
     private FinancialReportsEnum financialReportsType;
     //private List<SaleModel> saleModels;
-    private List<Sale> sales;
+    private List<Order> orders;
     private User user;
     private PrintSaleReportModel printSaleReportModel;
     private InnerResultCallbcak callback;
@@ -110,7 +110,7 @@ public class PrintEODReportManager {
         }
     }
 
-    public PrintEODReportManager(Context context, FinancialReportsEnum financialReportsType, List<Sale> sales, User user,
+    public PrintEODReportManager(Context context, FinancialReportsEnum financialReportsType, List<Order> orders, User user,
                                  Date startDate, Date endDate, long zNum,
                                  List<Transaction> transactions) {
         this.helper = SunmiPrintHelper.getInstance();
@@ -118,7 +118,7 @@ public class PrintEODReportManager {
         this.sunmiPrinter = SunmiPrintHelper.getLostSunmiPrinter();
         this.mContext = context;
         this.financialReportsType = financialReportsType;
-        this.sales = sales;
+        this.orders = orders;
         this.user = user;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -170,7 +170,7 @@ public class PrintEODReportManager {
     }
 
     private void setReportTaxModels() {
-        List<TaxModel> taxModels = DataUtils.getAllTaxes(user.getUsername());
+        List<TaxModel> taxModels = DataUtils.getAllTaxes(user.getId());
 
         for(TaxModel taxModel : taxModels){
 
@@ -178,16 +178,16 @@ public class PrintEODReportManager {
             reportTaxModel.setTaxId(taxModel.getId());
             reportTaxModel.setTaxName("%" + CommonUtils.getDoubleStrValueForView(taxModel.getTaxRate(), TYPE_RATE));
 
-            for(Sale sale : sales){
-                RealmResults<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(sale.getSaleUuid());
+            for(Order order : orders){
+                RealmResults<OrderItem> orderItems = SaleItemDBHelper.getSaleItemsBySaleId(order.getId());
 
-                for(SaleItem saleItem : saleItems){
+                for(OrderItem orderItem : orderItems){
 
-                    OrderItemTax taxModel1 = saleItem.getTaxModel();
+                    OrderItemTax taxModel1 = orderItem.getTaxModel();
 
                     if(taxModel.getId() == taxModel1.getId()){
-                        reportTaxModel.setTaxAmount(CommonUtils.round(reportTaxModel.getTaxAmount() + saleItem.getTaxAmount(), 2));
-                        reportTaxModel.setTotalAmount(CommonUtils.round(reportTaxModel.getTotalAmount() + saleItem.getGrossAmount(), 2));
+                        reportTaxModel.setTaxAmount(CommonUtils.round(reportTaxModel.getTaxAmount() + orderItem.getTaxAmount(), 2));
+                        reportTaxModel.setTotalAmount(CommonUtils.round(reportTaxModel.getTotalAmount() + orderItem.getGrossAmount(), 2));
                     }
                 }
             }
@@ -202,11 +202,11 @@ public class PrintEODReportManager {
         }
         printSaleReportModel.setDeclaredTaxAmount(printSaleReportModel.getTotTaxAmount());
 
-        for(Sale sale : sales){
-            RealmResults<SaleItem> saleItems = SaleItemDBHelper.getSaleItemsBySaleId(sale.getSaleUuid());
+        for(Order order : orders){
+            RealmResults<OrderItem> orderItems = SaleItemDBHelper.getSaleItemsBySaleId(order.getId());
 
-            //double discountAmountOfSale = OrderManager.getTotalDiscountAmountOfSale(sale, saleItems);
-            double discountAmountOfSale = sale.getTotalDiscountAmount();
+            //double discountAmountOfSale = OrderManager.getTotalDiscountAmountOfSale(order, orderItems);
+            double discountAmountOfSale = order.getTotalDiscountAmount();
             printSaleReportModel.setTotDiscountAmount(CommonUtils.round(discountAmountOfSale + printSaleReportModel.getTotDiscountAmount(), 2));
         }
 

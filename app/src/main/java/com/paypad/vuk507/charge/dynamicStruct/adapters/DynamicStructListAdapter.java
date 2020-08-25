@@ -18,8 +18,8 @@ import com.bumptech.glide.Glide;
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnDynamicBoxListener;
-import com.paypad.vuk507.charge.order.IOrderManager1;
-import com.paypad.vuk507.charge.order.OrderManager1;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.db.CategoryDBHelper;
 import com.paypad.vuk507.db.DiscountDBHelper;
 import com.paypad.vuk507.db.ProductDBHelper;
@@ -34,6 +34,7 @@ import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
+import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.LogUtil;
 
@@ -53,7 +54,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnDynamicBoxListener dynamicBoxListener;
     private boolean maxBoxExceeded= false;
-    private IOrderManager1 orderManager;
+    private IOrderManager orderManager;
     private ReturnViewCallback returnViewCallback;
 
     public DynamicStructListAdapter(Context context, List<DynamicBoxModel> boxModels,
@@ -63,7 +64,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
         this.boxModels.addAll(boxModels);
         this.fragmentNavigation = fragmentNavigation;
         this.dynamicBoxListener = listener;
-        orderManager = new OrderManager1();
+        orderManager = new OrderManager();
         setMaxBoxExceeded();
     }
 
@@ -201,7 +202,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
                 itemValueTv.setVisibility(View.GONE);
             }else {
                 if(dynamicBoxModel.getStructId() == DynamicStructEnum.DISCOUNT_SET.getId()){
-                    Discount discount = DiscountDBHelper.getDiscount(dynamicBoxModel.getItemId());
+                    Discount discount = DiscountDBHelper.getDiscountById(dynamicBoxModel.getItemId());
                     setDiscountNameText(discount);
                 }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.PRODUCT_SET.getId()){
                     Product product = ProductDBHelper.getProduct(dynamicBoxModel.getItemId());
@@ -273,7 +274,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
         }
 
         private void setEnabilityOfDiscount(Discount discount) {
-            if(orderManager.isDiscountInSale(discount)){
+            if(OrderManager.isDiscountInSale(SaleModelInstance.getInstance().getSaleModel().getOrder(), discount)){
                 itemCv.setEnabled(false);
                 itemNameTv.setTextColor(context.getResources().getColor(R.color.Black, null));
                 itemValueTv.setTextColor(context.getResources().getColor(R.color.Black, null));

@@ -8,10 +8,11 @@ import io.realm.RealmResults;
 
 public class ProductDBHelper {
 
-    public static RealmResults<Product> getAllProducts(String userUuid){
+    public static RealmResults<Product> getAllProducts(String userId){
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Product> products = realm.where(Product.class)
-                .equalTo("userUuid", userUuid)
+                .equalTo("userId", userId)
+                .equalTo("isDeleted", false)
                 .findAll();
         return products;
     }

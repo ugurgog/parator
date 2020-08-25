@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.db.CustomerGroupDBHelper;
 import com.paypad.vuk507.db.GroupDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
@@ -24,24 +25,29 @@ import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.menu.group.adapters.GroupSelectListAdapter;
 import com.paypad.vuk507.menu.group.interfaces.ReturnGroupCallback;
 import com.paypad.vuk507.model.Customer;
+import com.paypad.vuk507.model.CustomerGroup;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
+import com.paypad.vuk507.utils.DataUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import io.realm.annotations.Index;
 
 public class SelectGroupForCustomerAddFragment extends BaseFragment {
 
@@ -156,37 +162,50 @@ public class SelectGroupForCustomerAddFragment extends BaseFragment {
     public void updateGroup(){
         realm.beginTransaction();
 
-        Group tempGroup = realm.copyToRealm(selectedGroup);
-        RealmList<Long> addedCustomers = new RealmList<>();
+        List<Customer> addedCustomers = new ArrayList<>();
 
+        BaseResponse baseResponse1 = new BaseResponse();
+        baseResponse1.setSuccess(true);
 
         for(Customer customer : selectedCustomerList){
-
             boolean customerExist = false;
+            RealmList<Customer> customers = CustomerGroupDBHelper.getCustomersOfGroup(selectedGroup.getId(), user.getId());
 
-            for(Long customerId : selectedGroup.getCustomerIds()){
-                if(customer.getId() == customerId){
+            for(Customer customer1 : customers){
+                if(customer.getId() == customer1.getId()){
                     customerExist = true;
                     break;
                 }
             }
             if(!customerExist)
-                addedCustomers.add(customer.getId());
+                addedCustomers.add(customer);
         }
 
-        tempGroup.getCustomerIds().addAll(addedCustomers);
+        if(addedCustomers.size() > 0){
+            for(Customer customer : addedCustomers){
+                CustomerGroup customerGroup = new CustomerGroup();
+                customerGroup.setId(UUID.randomUUID().toString());
+                customerGroup.setCustomerId(customer.getId());
+                customerGroup.setGroupId(selectedGroup.getId());
+                customerGroup.setUserId(user.getId());
+                customerGroup.setCreateDate(new Date());
 
-        realm.commitTransaction();
+                baseResponse1 = CustomerGroupDBHelper.createOrUpdateCustomerGroup(customerGroup);
 
-        BaseResponse baseResponse = GroupDBHelper.createOrUpdateGroup(tempGroup);
+                if(!baseResponse1.isSuccess()){
+                    DataUtils.showBaseResponseMessage(getContext(), baseResponse1);
+                    break;
+                }
+            }
+        }
 
-        if(baseResponse.isSuccess()){
-            completeCallback.onComplete(baseResponse);
+        if(baseResponse1.isSuccess()){
+            completeCallback.onComplete(baseResponse1);
         }
     }
 
     public void updateAdapterWithCurrentList(){
-        groups = GroupDBHelper.getUserGroups(user.getUuid());
+        groups = GroupDBHelper.getUserGroups(user.getId());
         groupList = new ArrayList(groups);
 
         groupSelectListAdapter = new GroupSelectListAdapter(groupList, new ReturnGroupCallback() {

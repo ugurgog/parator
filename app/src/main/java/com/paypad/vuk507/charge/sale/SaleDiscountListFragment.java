@@ -140,7 +140,7 @@ public class SaleDiscountListFragment extends BaseFragment implements ReturnOrde
     }
 
     public void updateAdapterWithCurrentList(){
-        List<OrderItemDiscount> discountList = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts();
+        List<OrderItemDiscount> discountList = SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscounts();
 
         saleDiscountListAdapter = new SaleDiscountListAdapter(getContext(), discountList);
         saleDiscountListAdapter.setReturnOrderItemDiscountCallback(this);

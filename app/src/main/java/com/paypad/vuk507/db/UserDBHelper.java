@@ -24,19 +24,22 @@ public class UserDBHelper {
 
     public static User getUserByUsername(String username){
         Realm realm = Realm.getDefaultInstance();
-        User user = realm.where(User.class)
-                .equalTo("username", username)
-                .findFirst();
-        //realm.close();
+        User user = realm.where(User.class).equalTo("username", username).findFirst();
+        return user;
+    }
+
+    public static User getUserById(String id){
+        Realm realm = Realm.getDefaultInstance();
+        User user = realm.where(User.class).equalTo("id", id).findFirst();
         return user;
     }
 
     public static User getUserFromCache(Context context){
-        String username = LoginUtils.getUsernameFromCache(context);
-        return getUserByUsername(username);
+        String userId = LoginUtils.getUserIdFromCache(context);
+        return getUserById(userId);
     }
 
-    public static BaseResponse createUser(String username, String password, String uuid, boolean isLoggedIn) {
+    public static BaseResponse createOrUpdateUser(User user) {
         Realm realm = Realm.getDefaultInstance();
 
         BaseResponse baseResponse = new BaseResponse();
@@ -47,16 +50,7 @@ public class UserDBHelper {
             @Override
             public void execute(Realm realm) {
                 try{
-                    User user = realm.createObject(User.class);
-
-                    //User user = new User();
-                    user.setCreateDate(new Date());
-                    user.setUsername(username);
-                    user.setPassword(password);
-                    user.setLoggedIn(isLoggedIn);
-                    user.setUuid(uuid);
-
-                    //realm.insertOrUpdate(user);
+                    realm.insertOrUpdate(user);
 
                     baseResponse.setObject(user);
                     baseResponse.setMessage("User is saved/updated!");
@@ -69,7 +63,7 @@ public class UserDBHelper {
         return baseResponse;
     }
 
-    public static BaseResponse updateUserLoggedInStatus(String username, boolean loggedIn){
+    public static BaseResponse updateUserLoggedInStatus(String userId, boolean loggedIn){
         Realm realm = Realm.getDefaultInstance();
 
         BaseResponse baseResponse = new BaseResponse();
@@ -80,7 +74,7 @@ public class UserDBHelper {
             @Override
             public void execute(Realm realm) {
                 try{
-                    User user = getUserByUsername(username);
+                    User user = getUserById(userId);
                     user.setLoggedIn(loggedIn);
 
                     realm.insertOrUpdate(user);

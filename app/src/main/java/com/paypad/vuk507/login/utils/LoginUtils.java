@@ -33,11 +33,11 @@ public class LoginUtils {
         return sharedPreferences;
     }
 
-    public static void applySharedPreferences(Context context, String username, String password, String uuid){
+    public static void applySharedPreferences(Context context, String username, String password, String id){
         getEncryptedSharedPreferences(context).edit()
                 .putString("username", username)
                 .putString("password", password)
-                .putString("uuid", uuid)
+                .putString("id", id)
                 .apply();
     }
 
@@ -45,7 +45,7 @@ public class LoginUtils {
         boolean commit = getEncryptedSharedPreferences(context).edit()
                 .remove("username")
                 .remove("password")
-                .remove("uuid").commit();
+                .remove("id").commit();
         return commit;
     }
 
@@ -57,5 +57,10 @@ public class LoginUtils {
     public static String getPasswordFromCache(Context context){
         return LoginUtils.getEncryptedSharedPreferences(context)
                 .getString("password", "No password");
+    }
+
+    public static String getUserIdFromCache(Context context){
+        return LoginUtils.getEncryptedSharedPreferences(context)
+                .getString("id", "No ID");
     }
 }

@@ -4,22 +4,32 @@ import androidx.annotation.NonNull;
 
 import com.paypad.vuk507.interfaces.CompleteCallback;
 import com.paypad.vuk507.model.Group;
+import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class GroupDBHelper {
 
-    public static Group getGroup(long id){
+    public static Group getGroup(long id, String userId){
         Realm realm = Realm.getDefaultInstance();
-        Group group = realm.where(Group.class).equalTo("id", id).findFirst();
+        Group group = realm.where(Group.class)
+                .equalTo("id", id)
+                .equalTo("userId", userId)
+                .equalTo("isDeleted", false)
+                .findFirst();
         return group;
     }
 
-    public static RealmResults<Group> getUserGroups(String userUuid){
+    public static RealmResults<Group> getUserGroups(String userId){
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<Group> customerGroup = realm.where(Group.class).equalTo("userUuid", userUuid).findAll();
+        RealmResults<Group> customerGroup = realm.where(Group.class)
+                .equalTo("userId", userId)
+                .equalTo("isDeleted", false)
+                .findAll();
         return customerGroup;
     }
 
@@ -36,7 +46,6 @@ public class GroupDBHelper {
     }
 
 
-    //******************* Creation
     public static BaseResponse createOrUpdateGroup(Group group) {
         Realm realm = Realm.getDefaultInstance();
 
@@ -60,94 +69,22 @@ public class GroupDBHelper {
         return baseResponse;
     }
 
-    public static void deleteGroup(long groupId, CompleteCallback completeCallback){
+    public static BaseResponse deleteGroup(long groupId, String userId){
         Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
-                try{
-                    Group group = realm.where(Group.class).equalTo("id", groupId).findFirst();
+        Group group = getGroup(groupId, userId);
+        realm.beginTransaction();
 
-                    try{
-                        group.deleteFromRealm();
-                        baseResponse.setMessage("Group deleted successfully");
-                    }catch (Exception e){
-                        baseResponse.setSuccess(false);
-                        baseResponse.setMessage("Group could not be deleted !!");
-                    }
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Group could not be deleted !!");
-                }
-                completeCallback.onComplete(baseResponse);
-            }
-        });
-    }
+        group.setDeleted(true);
 
-    public static void deleteCustomerFromGroups(long customerId, String uuid, CompleteCallback completeCallback){
-        RealmResults<Group> allGroups = GroupDBHelper.getUserGroups(uuid);
+        realm.commitTransaction();
 
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
+        BaseResponse baseResponse = createOrUpdateGroup(group);
 
-                try{
-                    for(Group group : allGroups){
+        if(baseResponse.isSuccess()){
+            BaseResponse baseResponse1 = CustomerGroupDBHelper.deleteCustomerGroupsByGroupId(groupId, userId);
+            return baseResponse1;
+        }
 
-                        int index = 0;
-
-                        for(Long foundCustomerId : group.getCustomerIds()){
-                            if(foundCustomerId == customerId){
-                                group.getCustomerIds().remove(index);
-                                realm.insertOrUpdate(group);
-                                break;
-                            }
-                            index++;
-                        }
-                    }
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Customer could not deleted in groups!");
-                }
-                completeCallback.onComplete(baseResponse);
-            }
-        });
-    }
-
-    public static void deleteCustomerFromAGroup(long customerId, Group group, CompleteCallback completeCallback){
-
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-
-                BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setSuccess(true);
-
-                try{
-                    int index = 0;
-                    for (Long customerIdFound : group.getCustomerIds()) {
-                        if (customerIdFound == customerId) {
-                            group.getCustomerIds().remove(index);
-
-                            realm.insertOrUpdate(group);
-                            baseResponse.setObject(group);
-                            break;
-                        }
-                        index++;
-                    }
-
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Customer could not be deleted from group");
-                }
-                completeCallback.onComplete(baseResponse);
-            }
-        });
+        return baseResponse;
     }
 }

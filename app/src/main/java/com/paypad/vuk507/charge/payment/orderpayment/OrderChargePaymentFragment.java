@@ -1,4 +1,4 @@
-package com.paypad.vuk507.charge.payment;
+package com.paypad.vuk507.charge.payment.orderpayment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,8 +20,10 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.dynamicStruct.adapters.DynamicPaymentSelectAdapter;
 import com.paypad.vuk507.charge.dynamicStruct.interfaces.ReturnPaymentCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
-import com.paypad.vuk507.charge.order.IOrderManager1;
-import com.paypad.vuk507.charge.order.OrderManager1;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
+import com.paypad.vuk507.charge.payment.CashSelectFragment;
+import com.paypad.vuk507.charge.payment.CreditCardSelectFragment;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.payment.utils.CancelTransactionManager;
 import com.paypad.vuk507.db.UserDBHelper;
@@ -52,9 +54,10 @@ import butterknife.ButterKnife;
 
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.vuk507.constants.CustomConstants.TYPE_ORDER_PAYMENT;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class SelectChargePaymentFragment extends BaseFragment implements PaymentStatusCallback {
+public class OrderChargePaymentFragment extends BaseFragment implements PaymentStatusCallback {
 
     private View mView;
 
@@ -78,9 +81,9 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     private PaymentStatusCallback paymentStatusCallback;
     private CreditCardSelectFragment creditCardSelectFragment;
     private SaleCalculateCallback saleCalculateCallback;
-    private IOrderManager1 orderManager;
+    private IOrderManager orderManager;
 
-    public SelectChargePaymentFragment() {
+    public OrderChargePaymentFragment() {
 
     }
 
@@ -145,7 +148,8 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(orderManager.isExistPaymentCompletedTransaction())
+                if(OrderManager.isExistPaymentCompletedTransaction(
+                        SaleModelInstance.getInstance().getSaleModel().getTransactions()))
                     handleCancelTransaction();
                 else{
                     SaleModelInstance.getInstance().getSaleModel().setTransactions(new ArrayList<>());
@@ -158,7 +162,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
             @Override
             public void onClick(View view) {
 
-                mFragmentNavigation.pushFragment(new SplitAmountFragment(mTransaction, new CompleteCallback() {
+                mFragmentNavigation.pushFragment(new OrderSplitAmountFragment(mTransaction, new CompleteCallback() {
                     @Override
                     public void onComplete(BaseResponse baseResponse) {
 
@@ -178,9 +182,9 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     }
 
     private void initVariables() {
-        orderManager = new OrderManager1();
+        orderManager = new OrderManager();
         createInitialTransaction();
-        //splitAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount();
+        //splitAmount = SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount();
         setChargeAmount();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -190,14 +194,11 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     }
 
     private void createInitialTransaction() {
-        mTransaction = orderManager.addTransactionToOrder(orderManager.getRemainAmount());
-
-        /*mTransaction = new Transaction();
-        mTransaction.setSaleUuid(SaleModelInstance.getInstance().getSaleModel().getSale().getSaleUuid());
-        mTransaction.setTransactionUuid(UUID.randomUUID().toString());
-        mTransaction.setSeqNumber(SaleModelInstance.getInstance().getSaleModel().getMaxSplitId() + 1);
-        mTransaction.setTransactionAmount(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount());
-        SaleModelInstance.getInstance().getSaleModel().getTransactions().add(mTransaction);*/
+        mTransaction = OrderManager.addTransactionToOrder(
+                SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount(),
+                SaleModelInstance.getInstance().getSaleModel().getTransactions(),
+                SaleModelInstance.getInstance().getSaleModel().getOrder().getId()
+        );
     }
 
     private void setPaymentAdapter(){
@@ -229,7 +230,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
 
         String infoText = "";
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
-            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE)
+            infoText = CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount(), TYPE_PRICE)
                     .concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" Toplam, Ödeme ")
                     .concat(String.valueOf(mTransaction.getSeqNumber()))
@@ -237,7 +238,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
                     .concat(String.valueOf(SaleModelInstance.getInstance().getSaleModel().getTransactions().size()));
         }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
             infoText = "Out of "
-                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount(), TYPE_PRICE))
+                    .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount(), TYPE_PRICE))
                     .concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" Total, Payment ")
                     .concat(String.valueOf(mTransaction.getSeqNumber()))
@@ -248,12 +249,12 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
     }
 
     private void initCashSelectFragment(){
-        cashSelectFragment = new CashSelectFragment(mTransaction);
+        cashSelectFragment = new CashSelectFragment(mTransaction, TYPE_ORDER_PAYMENT);
         cashSelectFragment.setPaymentStatusCallback(this);
     }
 
     private void initCreditCardSelectFragment(){
-        creditCardSelectFragment = new CreditCardSelectFragment(mTransaction);
+        creditCardSelectFragment = new CreditCardSelectFragment(mTransaction, TYPE_ORDER_PAYMENT);
         creditCardSelectFragment.setPaymentStatusCallback(this);
     }
 
@@ -287,7 +288,7 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
                     public void OnClick() {
                         //TODO - odemesi gerceklesmiss transactionlar iptal edilecek mi????
 
-                        BaseResponse baseResponse = CancelTransactionManager.cancelTransactions();
+                        BaseResponse baseResponse = CancelTransactionManager.cancelTransactionsOfOrder();
 
                         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
@@ -329,17 +330,17 @@ public class SelectChargePaymentFragment extends BaseFragment implements Payment
         if(status == STATUS_CONTINUE){
             CommonUtils.showToastShort(getContext(), "Continue clicked");
         }else if(status == STATUS_NEW_SALE){
-            CommonUtils.showToastShort(getContext(), "New Sale clicked");
+            CommonUtils.showToastShort(getContext(), "New Order clicked");
         }
 
         if(status == STATUS_NEW_SALE){
             paymentStatusCallback.OnPaymentReturn(status);
             Objects.requireNonNull(getActivity()).onBackPressed();
         }else {
-            mTransaction = orderManager.getTransactionWillBePaid();
+            mTransaction = OrderManager.getTransactionWillBePaid(
+                    SaleModelInstance.getInstance().getSaleModel().getTransactions());
             setChargeAmount();
             setSplitInfoTv();
         }
-
     }
 }

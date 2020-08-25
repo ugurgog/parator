@@ -41,6 +41,7 @@ import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.CustomDialogBox;
+import com.paypad.vuk507.utils.DataUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -254,17 +255,13 @@ public class CustomerSelectFragment extends BaseFragment {
     private void approveDeleteCustomers() {
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setSuccess(true);
-        for (Customer customer : selectedCustomerList) {
-            GroupDBHelper.deleteCustomerFromGroups(customer.getId(), user.getUuid(), new CompleteCallback() {
-                @Override
-                public void onComplete(BaseResponse baseResponse) {
 
-                }
-            });
-        }
-
-        for (Customer customer : selectedCustomerList) {
-            CustomerDBHelper.deleteCustomer(customer.getId());
+        for(Customer customer: selectedCustomerList){
+            baseResponse = CustomerDBHelper.deleteCustomer(customer.getId(), user.getId());
+            if(!baseResponse.isSuccess()){
+                DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+                break;
+            }
         }
 
         completeCallback.onComplete(baseResponse);
@@ -324,7 +321,7 @@ public class CustomerSelectFragment extends BaseFragment {
     }
 
     public void updateAdapterWithCurrentList(){
-        customers = CustomerDBHelper.getAllCustomers(user.getUuid());
+        customers = CustomerDBHelper.getAllCustomers(user.getId());
         customerList = new ArrayList(customers);
         customerListAdapter = new CustomerSelectListAdapter(getContext(), customerList, selectedCustomerList,  mFragmentNavigation, new ReturnCustomerCallback() {
             @Override

@@ -1,4 +1,4 @@
-package com.paypad.vuk507.charge.payment;
+package com.paypad.vuk507.charge.payment.cancelpayment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,10 +20,12 @@ import androidx.annotation.Nullable;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.charge.payment.MailResultFragment;
+import com.paypad.vuk507.charge.payment.SendReceiptEmailFragment;
 import com.paypad.vuk507.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.vuk507.charge.payment.utils.PrintOrderManager;
 import com.paypad.vuk507.charge.payment.utils.SendMail;
-import com.paypad.vuk507.db.PrinterSettingsDBHelper;
+import com.paypad.vuk507.db.GlobalSettingsDBHelper;
 import com.paypad.vuk507.db.SaleDBHelper;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
@@ -33,12 +35,13 @@ import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.model.Customer;
-import com.paypad.vuk507.model.PrinterSettings;
-import com.paypad.vuk507.model.Sale;
+import com.paypad.vuk507.model.GlobalSettings;
+import com.paypad.vuk507.model.Order;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
-import com.paypad.vuk507.model.pojo.SaleModelInstance;
+import com.paypad.vuk507.model.pojo.CancelPaymentModelInstance;
+import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
 import com.paypad.vuk507.utils.LogUtil;
@@ -60,7 +63,7 @@ import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.vuk507.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
-public class PaymentCompletedFragment extends BaseFragment implements SendMail.MailSendCallback  {
+public class CancellationPaymentCompletedFragment extends BaseFragment implements SendMail.MailSendCallback  {
 
     private View mView;
 
@@ -84,6 +87,8 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     RelativeLayout receiptInfoll;
     @BindView(R.id.mainll)
     LinearLayout mainll;
+    @BindView(R.id.cancelImgv)
+    ClickableImageView cancelImgv;
 
     private User user;
     private Transaction mTransaction;
@@ -94,16 +99,16 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     private SendReceiptEmailFragment sendReceiptEmailFragment;
     private PrintOrderManager printOrderManager;
     private int receiptType = CUSTOMER_RECEIPT;
-    private PrinterSettings printerSettings;
+    private GlobalSettings globalSettings;
     private Realm realm;
-    private Sale sale;
+    private Order order;
 
     private static final int CUSTOMER_RECEIPT = 1;
     private static final int MERCHANT_RECEIPT = 2;
 
     private String printerResult;
 
-    PaymentCompletedFragment(Transaction transaction, ProcessDirectionEnum processDirectionType) {
+    CancellationPaymentCompletedFragment(Transaction transaction, ProcessDirectionEnum processDirectionType) {
         mTransaction = transaction;
         mProcessDirectionType = processDirectionType;
     }
@@ -149,7 +154,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
 
         if (mView == null) {
-            mView = inflater.inflate(R.layout.fragment_payment_completed, container, false);
+            mView = inflater.inflate(R.layout.fragment_cancel_payment_completed, container, false);
             ButterKnife.bind(this, mView);
             initVariables();
             initListeners();
@@ -168,6 +173,15 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
             public void onClick(View view) {
                 cancelCounter();
                 handleMailResponse(null, "");
+            }
+        });
+
+        cancelImgv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CancelPaymentModelInstance.reset();
+                cancelCounter();
+                mFragmentNavigation.popFragments(5);
             }
         });
 
@@ -195,8 +209,8 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
 
                 cancelCounter();
 
-                if(SaleModelInstance.getInstance().getSaleModel().getSale().getCustomerId() == 0){
-                    mFragmentNavigation.pushFragment(new CustomerFragment(PaymentCompletedFragment.class.getName(), new ReturnCustomerCallback() {
+                if(CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getOrder().getCustomerId() == 0){
+                    mFragmentNavigation.pushFragment(new CustomerFragment(CancellationPaymentCompletedFragment.class.getName(), new ReturnCustomerCallback() {
                         @Override
                         public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
                             addCustomerToSale(customer);
@@ -214,31 +228,38 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
             @Override
             public void onClick(View view) {
                 cancelCounter();
-                printReceiptProcess();
+                //printReceiptProcess();
             }
         });
     }
 
-    private void initPrinter() {
+    /*private void initPrinter() {
         printOrderManager = new PrintOrderManager(getContext(), SaleModelInstance.getInstance().getSaleModel(),true);
         printOrderManager.setCallback(mCallback);
-    }
+    }*/
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
 
-        sale = SaleDBHelper.getSaleById(mTransaction.getSaleUuid());
-        initPrinter();
+        order = SaleDBHelper.getSaleById(mTransaction.getOrderId());
+        //initPrinter();
 
         if(mProcessDirectionType == ProcessDirectionEnum.PAYMENT_FULLY_COMPLETED){
             paymentStatus = STATUS_NEW_SALE;
-            continueBtn.setText(getResources().getString(R.string.new_sale));
+
+            continueBtn.setVisibility(View.GONE);
+            cancelImgv.setVisibility(View.VISIBLE);
+
             receiptInfoll.setVisibility(View.VISIBLE);
             //startCounter();
-            checkAutoPrint();
+            //checkAutoPrint();
         }else{
+
+            continueBtn.setVisibility(View.VISIBLE);
+            cancelImgv.setVisibility(View.GONE);
+
             paymentStatus = STATUS_CONTINUE;
-            continueBtn.setText(getResources().getString(R.string.continue_text));
+
             receiptInfoll.setVisibility(View.GONE);
         }
 
@@ -253,22 +274,22 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     }
 
     private void checkAutoPrint(){
-        printerSettings = PrinterSettingsDBHelper.getPrinterSetting(user.getUuid());
+        globalSettings = GlobalSettingsDBHelper.getPrinterSetting(user.getId());
 
-        if(printerSettings != null){
+        if(globalSettings != null){
 
-            if(printerSettings.isCustomerAutoPrint() && receiptType == CUSTOMER_RECEIPT){
+            if(globalSettings.isCustomerAutoPrint() && receiptType == CUSTOMER_RECEIPT){
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        printReceiptProcess();
+                        //printReceiptProcess();
                     }
                 }, 100);
-            }else if(printerSettings.isMerchantAutoPrint() && receiptType == MERCHANT_RECEIPT){
+            }else if(globalSettings.isMerchantAutoPrint() && receiptType == MERCHANT_RECEIPT){
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        printReceiptProcess();
+                        //printReceiptProcess();
                     }
                 }, 4000);
             }else
@@ -276,13 +297,13 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
         }
     }
 
-    private void printReceiptProcess(){
+    /*private void printReceiptProcess(){
         btnPrintReceipt.setEnabled(false);
         if(receiptType == CUSTOMER_RECEIPT)
             printOrderManager.printCustomerReceipt();
         else
             printOrderManager.printMerchantReceipt();
-    }
+    }*/
 
     private void setChargeAmountTv(){
         if(mTransaction.getChangeAmount() == 0d){
@@ -315,7 +336,7 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     private void setPaymentInfoTv() {
 
         String infoText = "";
-        if(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount() == 0d){
+        if(CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getRemainAmount() == 0d){
 
             if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
                 infoText = CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
@@ -329,12 +350,12 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
             if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
                 infoText = CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                         .concat(" ödendi. Kalan Tutar ")
-                        .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+                        .concat(CommonUtils.getDoubleStrValueForView(CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getRemainAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                         .concat(".");
             }else if (CommonUtils.getLanguage().equals(LANGUAGE_EN)){
                 infoText = "Out of ".concat(CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                         .concat(". ")
-                        .concat(CommonUtils.getDoubleStrValueForView(SaleModelInstance.getInstance().getSaleModel().getSale().getRemainAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
+                        .concat(CommonUtils.getDoubleStrValueForView(CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getRemainAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                         .concat(" payment due.");
             }
             paymentInfoTv.setText(infoText);
@@ -343,9 +364,9 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
 
     private void addCustomerToSale(Customer customer){
         if(customer != null){
-            SaleModelInstance.getInstance().getSaleModel().getSale().setCustomerId(customer.getId());
+            CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getOrder().setCustomerId(customer.getId());
 
-            BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel().getSale());
+            BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getOrder());
 
             DataUtils.showBaseResponseMessage(getContext(),saleBaseResponse);
 
@@ -362,9 +383,9 @@ public class PaymentCompletedFragment extends BaseFragment implements SendMail.M
     }
 
     private void removeCustomerFromSale(){
-        SaleModelInstance.getInstance().getSaleModel().getSale().setCustomerId(0);
+        CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getOrder().setCustomerId(0);
 
-        BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel().getSale());
+        BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getOrder());
 
         DataUtils.showBaseResponseMessage(getContext(),saleBaseResponse);
 

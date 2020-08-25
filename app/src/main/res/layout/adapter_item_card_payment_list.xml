@@ -314,15 +314,11 @@
 
         </LinearLayout>
 
-
-
-
-
-
-
-
-
-
+        <View
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/DodgerBlue" />
 
     </LinearLayout>
 

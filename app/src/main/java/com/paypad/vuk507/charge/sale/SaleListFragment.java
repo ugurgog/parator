@@ -20,8 +20,8 @@ import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.charge.interfaces.SaleCalculateCallback;
-import com.paypad.vuk507.charge.order.IOrderManager1;
-import com.paypad.vuk507.charge.order.OrderManager1;
+import com.paypad.vuk507.charge.order.IOrderManager;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.sale.adapters.SaleListAdapter;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
@@ -30,7 +30,7 @@ import com.paypad.vuk507.menu.customer.CustomerFragment;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.vuk507.model.Customer;
 import com.paypad.vuk507.model.OrderItemDiscount;
-import com.paypad.vuk507.model.SaleItem;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.SaleModelInstance;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -72,7 +72,7 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
     private SaleCalculateCallback saleCalculateCallback;
     private SaleListAdapter saleListAdapter;
     private SaleDiscountListFragment saleDiscountListFragment;
-    private IOrderManager1 orderManager;
+    private IOrderManager orderManager;
 
     public SaleListFragment() {
 
@@ -178,7 +178,7 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
     }
 
     private void initVariables() {
-        orderManager = new OrderManager1();
+        orderManager = new OrderManager();
         realm = Realm.getDefaultInstance();
         setToolbarTitle();
 
@@ -190,14 +190,14 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
     }
 
     private void setPopupMenuItems(PopupMenu popupMenu ){
-        if(SaleModelInstance.getInstance().getSaleModel().getSale().getCustomerId() > 0)
+        if(SaleModelInstance.getInstance().getSaleModel().getOrder().getCustomerId() > 0)
             popupMenu.getMenu().findItem(R.id.addCustomer).setVisible(false);
         else
             popupMenu.getMenu().findItem(R.id.removeCustomer).setVisible(false);
     }
 
     private void setToolbarTitle() {
-        double totalAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount();
+        double totalAmount = SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount();
         String amountStr;
 
         if(totalAmount == 0d)
@@ -211,38 +211,38 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
     public void updateAdapterWithCurrentList(){
 
         orderManager.setDiscountedAmountOfSale();
-        List<SaleItem> saleItems = new ArrayList<>();
-        saleItems.addAll(SaleModelInstance.getInstance().getSaleModel().getSaleItems());
+        List<OrderItem> orderItems = new ArrayList<>();
+        orderItems.addAll(SaleModelInstance.getInstance().getSaleModel().getOrderItems());
 
         //double totalDiscountAmount = orderManager.getTotalDiscountAmountOfSale();
-        double totalDiscountAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalDiscountAmount();
+        double totalDiscountAmount = SaleModelInstance.getInstance().getSaleModel().getOrder().getTotalDiscountAmount();
 
         //Indirim tutar toplamnin toplam tutar dan buyuk olmasi durumu
-        if(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscountedAmount() == 0)
-            totalDiscountAmount = SaleModelInstance.getInstance().getSaleModel().getSale().getTotalAmount();
+        if(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount() == 0)
+            totalDiscountAmount = SaleModelInstance.getInstance().getSaleModel().getOrder().getTotalAmount();
 
-        if(SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts() != null &&
-                SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts().size() > 0){
-            SaleItem saleItem = new SaleItem();
-            saleItem.setName(getResources().getString(R.string.discounts));
-            saleItem.setAmount(totalDiscountAmount);
-            saleItems.add(saleItem);
+        if(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscounts() != null &&
+                SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscounts().size() > 0){
+            OrderItem orderItem = new OrderItem();
+            orderItem.setName(getResources().getString(R.string.discounts));
+            orderItem.setAmount(totalDiscountAmount);
+            orderItems.add(orderItem);
         }
 
-        saleListAdapter = new SaleListAdapter(saleItems, new ReturnSaleItemCallback() {
+        saleListAdapter = new SaleListAdapter(orderItems, new ReturnSaleItemCallback() {
             @Override
-            public void onReturn(SaleItem saleItem, ItemProcessEnum processtype) {
+            public void onReturn(OrderItem orderItem, ItemProcessEnum processtype) {
 
-                if(saleItem.getUuid() != null && !saleItem.getUuid().isEmpty()){
+                if(orderItem.getId() != null && !orderItem.getId().isEmpty()){
 
-                    mFragmentNavigation.pushFragment(new SaleItemEditFragment(saleItem, new ReturnSaleItemCallback() {
+                    mFragmentNavigation.pushFragment(new SaleItemEditFragment(orderItem, new ReturnSaleItemCallback() {
                         @Override
-                        public void onReturn(SaleItem saleItem, ItemProcessEnum processType) {
+                        public void onReturn(OrderItem orderItem, ItemProcessEnum processType) {
 
                             if(processType == ItemProcessEnum.CHANGED){
-                                for(SaleItem saleItem1 :  SaleModelInstance.getInstance().getSaleModel().getSaleItems() ){
-                                    if(saleItem1.getUuid().equals(saleItem.getUuid())){
-                                        saleItem1 = saleItem;
+                                for(OrderItem orderItem1 :  SaleModelInstance.getInstance().getSaleModel().getOrderItems() ){
+                                    if(orderItem1.getId().equals(orderItem.getId())){
+                                        orderItem1 = orderItem;
                                         break;
                                     }
                                 }
@@ -276,12 +276,12 @@ public class SaleListFragment extends BaseFragment implements SaleDiscountListFr
     public void OnRemoved(RealmList<OrderItemDiscount> discounts) {
         for(OrderItemDiscount discount : discounts){
 
-            SaleModelInstance.getInstance().getSaleModel().getSale().getDiscounts().remove(discount);
+            SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscounts().remove(discount);
 
-            for(SaleItem saleItem: SaleModelInstance.getInstance().getSaleModel().getSaleItems()){
+            for(OrderItem orderItem : SaleModelInstance.getInstance().getSaleModel().getOrderItems()){
 
-                if(saleItem.getDiscounts() != null){
-                    for(Iterator<OrderItemDiscount> it = saleItem.getDiscounts().iterator(); it.hasNext();) {
+                if(orderItem.getDiscounts() != null){
+                    for(Iterator<OrderItemDiscount> it = orderItem.getDiscounts().iterator(); it.hasNext();) {
                         OrderItemDiscount discount1 = it.next();
 
                         if(discount.getId() == discount1.getId()){

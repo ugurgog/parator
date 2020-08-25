@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,12 +18,11 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
-import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.interfaces.ReturnAmountCallback;
-import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.User;
+import com.paypad.vuk507.model.pojo.SaleModel;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
 import com.paypad.vuk507.utils.CommonUtils;
 import com.paypad.vuk507.utils.DataUtils;
@@ -34,7 +34,6 @@ import org.greenrobot.eventbus.Subscribe;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.paypad.vuk507.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.vuk507.constants.CustomConstants.TYPE_REFUND;
 
@@ -53,21 +52,21 @@ public class RefundByAmountFragment extends BaseFragment {
     LinearLayout toolbarWithClose;
     @BindView(R.id.refundAmountEt)
     EditText refundAmountEt;
+    @BindView(R.id.availableRefundAmountTv)
+    TextView availableRefundAmountTv;
 
     private User user;
 
     private boolean isToolbarVisible;
-    private double returnAmount;
     private double refundAmount;
-    private Transaction transaction;
+    private SaleModel saleModel;
     private ReturnAmountCallback returnAmountCallback;
-    private String refundReasonText;
+    private double availableRefundAmount;
 
-    public RefundByAmountFragment(Transaction transaction, boolean isToolbarVisible, double returnAmount, String refundReasonText) {
-        this.transaction = transaction;
+    public RefundByAmountFragment(SaleModel saleModel, boolean isToolbarVisible, double availableRefundAmount) {
+        this.saleModel = saleModel;
         this.isToolbarVisible = isToolbarVisible;
-        this.returnAmount = returnAmount;
-        this.refundReasonText = refundReasonText;
+        this.availableRefundAmount = availableRefundAmount;
     }
 
     public void setReturnAmountCallback(ReturnAmountCallback returnAmountCallback) {
@@ -137,7 +136,6 @@ public class RefundByAmountFragment extends BaseFragment {
                 if (s != null && !s.toString().trim().isEmpty()) {
                     refundAmount = DataUtils.getDoubleValueFromFormattedString(refundAmountEt.getText().toString());
                     returnAmountCallback.OnReturnAmount(refundAmount);
-                    setToolbarTitle(refundAmount);
 
                     if(refundAmount > 0d)
                         CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
@@ -157,24 +155,24 @@ public class RefundByAmountFragment extends BaseFragment {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new NFCReadForReturnFragment(transaction, refundAmount,
-                        TYPE_REFUND, true, null, refundReasonText));
+                mFragmentNavigation.pushFragment(new SelectPaymentForRefundFragment(TYPE_REFUND, saleModel, true, refundAmount, null));
             }
         });
     }
 
     private void initVariables() {
         setToolbarVisibility();
-        refundAmountEt.addTextChangedListener(new NumberFormatWatcher(refundAmountEt, TYPE_PRICE, returnAmount));
+        refundAmountEt.addTextChangedListener(new NumberFormatWatcher(refundAmountEt, TYPE_PRICE, availableRefundAmount));
         refundAmountEt.setHint(CommonUtils.getDoubleStrValueForView(0d, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
-        setToolbarTitle(returnAmount);
+        toolbarTitleTv.setText(getResources().getString(R.string.refund));
         CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+        setAvailableRefundAmount();
     }
 
-    private void setToolbarTitle(double amount){
-        toolbarTitleTv.setText(CommonUtils.getAmountTextWithCurrency(amount)
-                .concat(" ")
-                .concat(getResources().getString(R.string.refund)));
+    private void setAvailableRefundAmount() {
+        availableRefundAmountTv.setText(getResources().getString(R.string.available_refund_amount)
+            .concat(" ")
+            .concat(CommonUtils.getAmountTextWithCurrency(availableRefundAmount)));
     }
 
     private void setToolbarVisibility() {

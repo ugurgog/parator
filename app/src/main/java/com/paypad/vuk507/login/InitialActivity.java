@@ -38,7 +38,7 @@ public class InitialActivity extends AppCompatActivity {
         CommonUtils.hideKeyBoard(this);
         initVariables();
 
-        //CustomRealmHelper.deleteRealmDB();
+        CustomRealmHelper.deleteRealmDB();
 
         username = LoginUtils.getUsernameFromCache(InitialActivity.this);
         password = LoginUtils.getPasswordFromCache(InitialActivity.this);

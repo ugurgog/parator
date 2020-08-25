@@ -16,7 +16,7 @@ import com.paypad.vuk507.R;
 
 public class KeyPadWithoutAdd extends TableLayout {
 
-    private Button num1, num2, num3, num4, num5, num6, num7, num8, num9, num0, btnNumpadBack;
+    private Button num1, num2, num3, num4, num5, num6, num7, num8, num9, num0, btnNumpadClear, btnNumpadBack;
     //private ImageButton btnNumpadAdd;
     private KeyPadClick listener;
     private TableLayout tableLayout;
@@ -48,6 +48,7 @@ public class KeyPadWithoutAdd extends TableLayout {
         num8 = view.findViewById(R.id.btnNumpad8);
         num9 = view.findViewById(R.id.btnNumpad9);
         num0 = view.findViewById(R.id.btnNumpad0);
+        btnNumpadClear = view.findViewById(R.id.btnNumpadClear);
         btnNumpadBack = view.findViewById(R.id.btnNumpadBack);
 
         tableLayout = view.findViewById(R.id.numpad_container);
@@ -64,6 +65,7 @@ public class KeyPadWithoutAdd extends TableLayout {
         num8.setOnClickListener(listener);
         num9.setOnClickListener(listener);
         num0.setOnClickListener(listener);
+        btnNumpadClear.setOnClickListener(listener);
         btnNumpadBack.setOnClickListener(listener);
     }
 
@@ -82,6 +84,7 @@ public class KeyPadWithoutAdd extends TableLayout {
         num8.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
         num9.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
         num0.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+        btnNumpadClear.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
         btnNumpadBack.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
     }
 

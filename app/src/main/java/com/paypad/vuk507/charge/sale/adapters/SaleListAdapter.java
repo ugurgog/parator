@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.vuk507.R;
 import com.paypad.vuk507.charge.interfaces.ReturnSaleItemCallback;
 import com.paypad.vuk507.enums.ItemProcessEnum;
+import com.paypad.vuk507.model.OrderItem;
 import com.paypad.vuk507.model.OrderItemDiscount;
-import com.paypad.vuk507.model.SaleItem;
 import com.paypad.vuk507.utils.CommonUtils;
 
 import java.util.ArrayList;
@@ -25,11 +25,11 @@ import static com.paypad.vuk507.constants.CustomConstants.TYPE_PRICE;
 
 public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHolder> {
 
-    private List<SaleItem> saleItems = new ArrayList<>();
+    private List<OrderItem> orderItems = new ArrayList<>();
     private ReturnSaleItemCallback returnSaleItemCallback;
 
-    public SaleListAdapter(List<SaleItem> saleItems, ReturnSaleItemCallback callback) {
-        this.saleItems.addAll(saleItems);
+    public SaleListAdapter(List<OrderItem> orderItems, ReturnSaleItemCallback callback) {
+        this.orderItems.addAll(orderItems);
         this.returnSaleItemCallback = callback;
     }
 
@@ -49,7 +49,7 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
         private ImageView discountImgv;
         private TextView saleAmountTv;
 
-        private SaleItem saleItem;
+        private OrderItem orderItem;
         private int position;
 
         public SaleHolder(View view) {
@@ -64,18 +64,18 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
             saleItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(saleItem.getUuid() != null && !saleItem.getUuid().isEmpty()){
+                    if(orderItem.getId() != null && !orderItem.getId().isEmpty()){
                         //TODO - normal bir sale item
                     }else {
                         //TODO - discounts
                     }
-                    returnSaleItemCallback.onReturn(saleItem, ItemProcessEnum.SELECTED);
+                    returnSaleItemCallback.onReturn(orderItem, ItemProcessEnum.SELECTED);
                 }
             });
         }
 
-        public void setData(SaleItem saleItem, int position) {
-            this.saleItem = saleItem;
+        public void setData(OrderItem orderItem, int position) {
+            this.orderItem = orderItem;
             this.position = position;
             setSaleItemName();
             setSaleItemNoteInfo();
@@ -84,12 +84,12 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
         }
 
         private void setSaleItemAmount() {
-            if(saleItem != null ){
+            if(orderItem != null ){
                 String amountStr = "";
-                if(saleItem.getUuid() == null || saleItem.getUuid().isEmpty()){ //Bu indirimlerdir
-                    amountStr = amountStr.concat("- ").concat(CommonUtils.getDoubleStrValueForView(saleItem.getAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                if(orderItem.getId() == null || orderItem.getId().isEmpty()){ //Bu indirimlerdir
+                    amountStr = amountStr.concat("- ").concat(CommonUtils.getDoubleStrValueForView(orderItem.getAmount(), TYPE_PRICE)).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
                 }else
-                    amountStr = CommonUtils.getDoubleStrValueForView(saleItem.getAmount() * (double) saleItem.getQuantity(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
+                    amountStr = CommonUtils.getDoubleStrValueForView(orderItem.getAmount() * (double) orderItem.getQuantity(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
                 saleAmountTv.setText(amountStr);
             }
         }
@@ -97,9 +97,9 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
         private void setSaleItemDiscountImgv() {
             discountImgv.setVisibility(View.GONE);
 
-            if(saleItem != null && saleItem.getDiscounts() != null){
+            if(orderItem != null && orderItem.getDiscounts() != null){
 
-                for(OrderItemDiscount orderItemDiscount : saleItem.getDiscounts()){
+                for(OrderItemDiscount orderItemDiscount : orderItem.getDiscounts()){
                     if(orderItemDiscount.getRate() > 0d){
                         discountImgv.setVisibility(View.VISIBLE);
                         break;
@@ -109,19 +109,19 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
         }
 
         private void setSaleItemNoteInfo() {
-            if(saleItem != null && saleItem.getNote() != null && !saleItem.getNote().isEmpty()){
+            if(orderItem != null && orderItem.getNote() != null && !orderItem.getNote().isEmpty()){
                 saleNoteTv.setVisibility(View.VISIBLE);
-                saleNoteTv.setText(saleItem.getNote());
+                saleNoteTv.setText(orderItem.getNote());
             }else
                 saleNoteTv.setVisibility(View.GONE);
         }
 
         private void setSaleItemName() {
-            if(saleItem != null && saleItem.getName() != null){
-                if(saleItem.getQuantity() > 1){
-                    saleNameTv.setText(saleItem.getName().concat(" X ").concat(String.valueOf(saleItem.getQuantity())));
+            if(orderItem != null && orderItem.getName() != null){
+                if(orderItem.getQuantity() > 1){
+                    saleNameTv.setText(orderItem.getName().concat(" X ").concat(String.valueOf(orderItem.getQuantity())));
                 }else
-                    saleNameTv.setText(saleItem.getName());
+                    saleNameTv.setText(orderItem.getName());
             }
 
         }
@@ -129,14 +129,14 @@ public class SaleListAdapter extends RecyclerView.Adapter<SaleListAdapter.SaleHo
 
     @Override
     public void onBindViewHolder(final SaleListAdapter.SaleHolder holder, final int position) {
-        SaleItem saleItem = saleItems.get(position);
-        holder.setData(saleItem, position);
+        OrderItem orderItem = orderItems.get(position);
+        holder.setData(orderItem, position);
     }
 
     @Override
     public int getItemCount() {
-        if(saleItems != null)
-            return saleItems.size();
+        if(orderItems != null)
+            return orderItems.size();
         else
             return 0;
     }
