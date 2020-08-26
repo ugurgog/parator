@@ -326,13 +326,6 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
             Log.i("Info", "Error:" + e);
         }
 
-
-        if(status == STATUS_CONTINUE){
-            CommonUtils.showToastShort(getContext(), "Continue clicked");
-        }else if(status == STATUS_NEW_SALE){
-            CommonUtils.showToastShort(getContext(), "New Order clicked");
-        }
-
         if(status == STATUS_NEW_SALE){
             paymentStatusCallback.OnPaymentReturn(status);
             Objects.requireNonNull(getActivity()).onBackPressed();

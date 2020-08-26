@@ -1,6 +1,7 @@
 package com.paypad.vuk507.menu.customer;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -88,6 +89,7 @@ public class CustomerFragment extends BaseFragment {
     private CustomerViewFragment customerViewFragment;
     private String classTag;
     private ReturnCustomerCallback returnCustomerCallback;
+    private Context mContext;
 
     public CustomerFragment(String classTag, ReturnCustomerCallback callback) {
         this.classTag = classTag;
@@ -102,12 +104,14 @@ public class CustomerFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -115,7 +119,7 @@ public class CustomerFragment extends BaseFragment {
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     @Override
@@ -127,8 +131,10 @@ public class CustomerFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE );
+        //Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(
+        //        View.SYSTEM_UI_FLAG_LAYOUT_STABLE );
+
+        CommonUtils.showNavigationBar((Activity) mContext);
 
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_customer, container, false);
@@ -178,14 +184,14 @@ public class CustomerFragment extends BaseFragment {
             public void onClick(View v) {
                 searchEdittext.setText("");
                 searchCancelImgv.setVisibility(View.GONE);
-                CommonUtils.showKeyboard(getContext(),false, searchEdittext);
+                CommonUtils.showKeyboard(mContext,false, searchEdittext);
             }
         });
 
         selectionImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PopupMenu popupMenu = new PopupMenu(getContext(), selectionImgv);
+                PopupMenu popupMenu = new PopupMenu(mContext, selectionImgv);
                 popupMenu.inflate(R.menu.menu_customer);
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -259,7 +265,7 @@ public class CustomerFragment extends BaseFragment {
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.customers));
+        toolbarTitleTv.setText(mContext.getResources().getString(R.string.customers));
         addItemImgv.setVisibility(View.GONE);
 
         if(classTag.equals(SaleListFragment.class.getName()) ||
@@ -267,7 +273,7 @@ public class CustomerFragment extends BaseFragment {
                 classTag.equals(CancellationPaymentCompletedFragment.class.getName()))
             selectionImgv.setVisibility(View.GONE);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         customerRv.setLayoutManager(linearLayoutManager);
@@ -277,7 +283,7 @@ public class CustomerFragment extends BaseFragment {
     public void updateAdapterWithCurrentList(){
         customers = CustomerDBHelper.getAllCustomers(user.getId());
         customerList = new ArrayList(customers);
-        customerListAdapter = new CustomerListAdapter(getContext(), customerList, mFragmentNavigation, new ReturnCustomerCallback() {
+        customerListAdapter = new CustomerListAdapter(mContext, customerList, mFragmentNavigation, new ReturnCustomerCallback() {
             @Override
             public void OnReturn(Customer customer, ItemProcessEnum processEnum) {
                 initCustomerViewFragment(customer);

@@ -108,6 +108,7 @@
     <string name="tax_upper">KDV</string>
 
     <!-- Login screen items -->
+    <string name="store_name">Mağaza Adı</string>
     <string name="username">Kullanıcı Adı</string>
     <string name="password">Şifre</string>
     <string name="login">Giriş</string>
@@ -122,11 +123,12 @@
     <string name="invalid_username_or_password">Hatalı kullanıcı adı veya şifre!</string>
     <string name="register">Kaydol</string>
     <string name="registering_user">Kullanıcı kaydediliyor...</string>
-    <string name="username_is_defined_before">Sistemde böyle bir kullanıcı adı mevcut. Lütfen farklı kullanıcı adı belirleyin</string>
+    <string name="email_is_defined_before">Sistemde böyle bir mail tanımlı. Lütfen farklı bir mail adresi belirleyin</string>
     <string name="product_category_can_not_be_empty">Lütfen bir kategori seçiniz</string>
     <string name="end_editing">Düzenlemeyi Bitir</string>
     <string name="editing_mode">Düzenleme Modu</string>
     <string name="please_type_first_name">Lütfen ad bilgisini giriniz</string>
+    <string name="please_type_last_name">Lütfen soyad bilgisini giriniz</string>
     <string name="choose_a_contact">Kişi Seçin</string>
     <string name="add_to_group">Gruba Ekle</string>
     <string name="select_group">Grup Seçin</string>
@@ -152,6 +154,19 @@
     <string name="receipt">Makbuz</string>
     <string name="purchase_subtotal">Alt Toplam</string>
     <string name="payment_type">Ödeme Yöntemi</string>
+    <string name="please_type_store_name">Lütfen Mağaza Adını Yazınız</string>
+    <string name="please_type_phone_number">Lütfen telefon numarasını giriniz</string>
+    <string name="please_select_country">Lütfen ülke seçimini yapınız</string>
+    <string name="please_select_type_of_biusiness">Lütfen işletme türünü seçin</string>
+    <string name="please_select_estimated_annual_turnover">Lütfen tahmini yıllık ciroyu seçin</string>
+    <string name="please_select_number_of_locations">Lütfen yer sayısı seçin</string>
+    <string name="please_select_trading_currency">Lütfen ticaret para birimini seçin</string>
+    <string name="choose_a_retail_category">Bir perakende kategorisi seçin</string>
+    <string name="choose_how_many_locs_you_have">Kaç lokasyona sahip olduğunuzu seçin</string>
+    <string name="location">yer</string>
+    <string name="choose_annual_turnover_range">Tahmini yıllık ciro aralığını seçin</string>
+    <string name="choose_trading_currency">Ticaret para birimini seçin</string>
+
 
     <string name="change">Para üstü</string>
     <string name="credit_card_payment_info">Bu miktar (bahşiş dahil) yalnızca izleme amaçlı kullanılır. Bu işlem için depozito almayacaksınız.</string>
@@ -435,7 +450,9 @@
     <string name="hardware">DONANIM</string>
     <string name="device">CİHAZ</string>
     <string name="orders">SİPARİŞLER</string>
+    <string name="profile">PROFİL</string>
 
+    <string name="view">Görüntüle</string>
     <string name="passcodes">Parolalar</string>
     <string name="printers">Printers</string>
     <string name="device_name">Cihaz Adı</string>
@@ -472,5 +489,6 @@
     <string name="remaining">Kalan</string>
     <string name="cancel_all_transactions">Tüm Ödemeleri İptal Et</string>
     <string name="select_payment_for_cancel">İPTAL İÇİN İŞLEM SEÇİN</string>
+    <string name="cancel_all_trxes_to_continue">Devam etmek için tüm işlemleri iptal edin lütfen.</string>
 
 </resources>

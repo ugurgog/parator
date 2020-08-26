@@ -25,6 +25,7 @@ import com.paypad.vuk507.R;
 import com.paypad.vuk507.enums.CountryDataEnum;
 import com.paypad.vuk507.httpprocess.CountryProcess;
 import com.paypad.vuk507.httpprocess.interfaces.OnEventListener;
+import com.paypad.vuk507.interfaces.CountrySelectListener;
 import com.paypad.vuk507.interfaces.ReturnSizeCallback;
 import com.paypad.vuk507.utils.CommonUtils;
 
@@ -43,10 +44,6 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
 
     public CountrySelectFragment() {
 
-    }
-
-    public interface CountrySelectListener {
-        void onCountryClick(String country);
     }
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {

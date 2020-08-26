@@ -181,7 +181,7 @@ public class CancellationPaymentCompletedFragment extends BaseFragment implement
             public void onClick(View view) {
                 CancelPaymentModelInstance.reset();
                 cancelCounter();
-                mFragmentNavigation.popFragments(5);
+                mFragmentNavigation.popFragments(4);
             }
         });
 

@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.paypad.vuk507.db.OrderRefundItemDBHelper;
 import com.paypad.vuk507.db.RefundDBHelper;
+import com.paypad.vuk507.db.SaleDBHelper;
+import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.enums.TransactionTypeEnum;
 import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.Order;
@@ -588,4 +590,42 @@ public class OrderManager implements IOrderManager {
 
         return CommonUtils.round(totalSaleAmount - totalRefundAmount, 2);
     }
+
+    public static boolean isTrxesAndOrderAmountsEquals(String orderId){
+        double trxesAmount = 0d;
+        SaleModel saleModel = SaleDBHelper.getSaleModelBySaleId(orderId);
+
+        for(Transaction transaction : saleModel.getTransactions()){
+            if(transaction.getTransactionType() == TransactionTypeEnum.SALE.getId() &&
+                    transaction.isPaymentCompleted())
+                trxesAmount = CommonUtils.round(trxesAmount + transaction.getTotalAmount(), 2);
+        }
+
+        if(trxesAmount == saleModel.getOrder().getDiscountedAmount())
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isExistRefundByAmount(String orderId){
+        RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(orderId, true);
+
+        for(Refund refund : refunds){
+            if(refund.isRefundByAmount())
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean isExistCancelledTransaction(String orderId){
+        RealmResults<Transaction> transactions = TransactionDBHelper.getTransactionsBySaleId(orderId);
+
+        for(Transaction transaction : transactions){
+            if(transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId() &&
+                    transaction.isPaymentCompleted())
+                return true;
+        }
+        return false;
+    }
+
 }

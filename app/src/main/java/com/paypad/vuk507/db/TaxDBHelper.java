@@ -1,8 +1,11 @@
 package com.paypad.vuk507.db;
 
 
+import com.paypad.vuk507.model.Product;
 import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -24,26 +27,29 @@ public class TaxDBHelper {
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setSuccess(true);
 
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
+        try{
+            TaxModel taxModel = getTax(id);
 
-                try{
-                    TaxModel taxModel = realm.where(TaxModel.class).equalTo("id", id).findFirst();
-                    taxModel.deleteFromRealm();
-                    baseResponse.setMessage("Tax deleted successfully");
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Tax cannot be deleted");
-                }
-            }
-        });
+            realm.beginTransaction();
+
+            taxModel.setDeleted(true);
+            taxModel.setDeleteDate(new Date());
+            realm.copyToRealm(taxModel);
+
+            realm.commitTransaction();
+        }catch (Exception e){
+            baseResponse.setSuccess(false);
+            baseResponse.setMessage("Unexpected error:" + e.getMessage());
+        }
         return baseResponse;
     }
 
     public static TaxModel getTax(long id){
         Realm realm = Realm.getDefaultInstance();
-        TaxModel taxModel = realm.where(TaxModel.class).equalTo("id", id).findFirst();
+        TaxModel taxModel = realm.where(TaxModel.class)
+                .equalTo("id", id)
+                .equalTo("isDeleted", false)
+                .findFirst();
         return taxModel;
     }
 
@@ -61,7 +67,7 @@ public class TaxDBHelper {
                     realm.insertOrUpdate(taxModel);
 
                     baseResponse.setObject(taxModel);
-                    baseResponse.setMessage("Tax is saved!");
+                    //baseResponse.setMessage("Tax is saved!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Tax cannot be saved!");

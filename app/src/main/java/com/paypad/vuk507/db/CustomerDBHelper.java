@@ -5,6 +5,8 @@ import com.paypad.vuk507.model.CustomerGroup;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 
+import java.util.Date;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -22,18 +24,26 @@ public class CustomerDBHelper {
     public static BaseResponse deleteCustomer(long customerId, String userId){
 
         Realm realm = Realm.getDefaultInstance();
-        Customer customer = getCustomer(customerId, userId);
-        realm.beginTransaction();
 
-        customer.setDeleted(true);
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
-        realm.commitTransaction();
+        try{
+            Customer customer = getCustomer(customerId, userId);
+            realm.beginTransaction();
 
-        BaseResponse baseResponse = createOrUpdateCustomer(customer);
+            customer.setDeleted(true);
+            customer.setDeleteDate(new Date());
 
-        if(baseResponse.isSuccess()){
-            BaseResponse baseResponse1 = CustomerGroupDBHelper.deleteCustomerGroupsByCustomerId(customerId, userId);
-            return baseResponse1;
+            realm.copyToRealm(customer);
+
+            realm.commitTransaction();
+
+            baseResponse = CustomerGroupDBHelper.deleteCustomerGroupsByCustomerId(customerId, userId);
+
+        }catch (Exception e){
+            baseResponse.setSuccess(false);
+            baseResponse.setMessage("Unexpected error:" + e.getMessage());
         }
 
         return baseResponse;
@@ -63,7 +73,6 @@ public class CustomerDBHelper {
                     realm.insertOrUpdate(customer);
 
                     baseResponse.setObject(customer);
-                    baseResponse.setMessage("Customer is saved!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Customer cannot be saved!");

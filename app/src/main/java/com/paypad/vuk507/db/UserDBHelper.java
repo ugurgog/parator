@@ -12,19 +12,19 @@ import io.realm.Realm;
 
 public class UserDBHelper {
 
-    public static User getUserByUsernameAndPassword(String username, String password){
+    public static User getUserByEmailAndPassword(String email, String password){
         Realm realm = Realm.getDefaultInstance();
         User user =  realm.where(User.class)
-                .equalTo("username", username)
+                .equalTo("email", email)
                 .equalTo("password", password)
                 .findFirst();
         //realm.close();
         return user;
     }
 
-    public static User getUserByUsername(String username){
+    public static User getUserByEmail(String email){
         Realm realm = Realm.getDefaultInstance();
-        User user = realm.where(User.class).equalTo("username", username).findFirst();
+        User user = realm.where(User.class).equalTo("email", email).findFirst();
         return user;
     }
 
@@ -53,7 +53,7 @@ public class UserDBHelper {
                     realm.insertOrUpdate(user);
 
                     baseResponse.setObject(user);
-                    baseResponse.setMessage("User is saved/updated!");
+                    //baseResponse.setMessage("User is saved/updated!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("User cannot be saved!");
@@ -80,7 +80,7 @@ public class UserDBHelper {
                     realm.insertOrUpdate(user);
 
                     baseResponse.setObject(user);
-                    baseResponse.setMessage("User is updated!");
+                    //baseResponse.setMessage("User is updated!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("User cannot be updated!");

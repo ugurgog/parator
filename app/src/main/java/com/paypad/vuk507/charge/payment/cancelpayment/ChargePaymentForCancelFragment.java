@@ -81,6 +81,7 @@ public class ChargePaymentForCancelFragment extends BaseFragment implements Paym
     private CreditCardSelectFragment creditCardSelectFragment;
     private double chargeAmount;
     private SaleModel saleModel;
+    private Context mContext;
 
     public ChargePaymentForCancelFragment(SaleModel saleModel, double chargeAmount) {
         this.saleModel = saleModel;
@@ -95,12 +96,14 @@ public class ChargePaymentForCancelFragment extends BaseFragment implements Paym
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -120,8 +123,7 @@ public class ChargePaymentForCancelFragment extends BaseFragment implements Paym
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE );
-
+        CommonUtils.showNavigationBar((Activity) mContext);
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_select_charge_payment, container, false);
             ButterKnife.bind(this, mView);
@@ -145,7 +147,7 @@ public class ChargePaymentForCancelFragment extends BaseFragment implements Paym
                     handleCancelTransaction();
                 else{
                     CancelPaymentModelInstance.getInstance().getCancelPaymentModel().setTransactions(new ArrayList<>());
-                    mFragmentNavigation.popFragments(2);
+                    mFragmentNavigation.popFragments(1);
                 }
             }
         });
@@ -194,7 +196,7 @@ public class ChargePaymentForCancelFragment extends BaseFragment implements Paym
         PaymentTypeEnum[] paymentTypeEnums = PaymentTypeEnum.values();
         List<PaymentTypeEnum> paymentTypes = new ArrayList<>(Arrays.asList(paymentTypeEnums));
 
-        dynamicPaymentSelectAdapter = new DynamicPaymentSelectAdapter(getContext(), ProcessDirectionEnum.DIRECTION_PAYMENT_SELECT, paymentTypes, new ReturnPaymentCallback() {
+        dynamicPaymentSelectAdapter = new DynamicPaymentSelectAdapter(mContext, ProcessDirectionEnum.DIRECTION_PAYMENT_SELECT, paymentTypes, new ReturnPaymentCallback() {
             @Override
             public void onReturn(PaymentTypeEnum paymentType) {
                 if(paymentType == PaymentTypeEnum.CASH){
@@ -260,15 +262,15 @@ public class ChargePaymentForCancelFragment extends BaseFragment implements Paym
                     .concat(" Transaction");
         }
 
-        new CustomDialogBox.Builder((Activity) getContext())
+        new CustomDialogBox.Builder((Activity) mContext)
                 .setTitle(title)
-                .setMessage(getContext().getResources().getString(R.string.cancel_transaction_description))
+                .setMessage(mContext.getResources().getString(R.string.cancel_transaction_description))
                 .setNegativeBtnVisibility(View.VISIBLE)
-                .setNegativeBtnText(getContext().getResources().getString(R.string.keep))
-                .setNegativeBtnBackground(getContext().getResources().getColor(R.color.Silver, null))
+                .setNegativeBtnText(mContext.getResources().getString(R.string.keep))
+                .setNegativeBtnBackground(mContext.getResources().getColor(R.color.Silver, null))
                 .setPositiveBtnVisibility(View.VISIBLE)
-                .setPositiveBtnText(getContext().getResources().getString(R.string.cancel_transaction))
-                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                .setPositiveBtnText(mContext.getResources().getString(R.string.cancel_transaction))
+                .setPositiveBtnBackground(mContext.getResources().getColor(R.color.bg_screen1, null))
                 .setDurationTime(0)
                 .isCancellable(true)
                 .setEdittextVisibility(View.GONE)
@@ -282,7 +284,7 @@ public class ChargePaymentForCancelFragment extends BaseFragment implements Paym
                             transactions.add(transaction);
 
                         BaseResponse baseResponse = CancelTransactionManager.cancelTransactionsOfCancelProcess(transactions);
-                        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+                        DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
                         if(baseResponse.isSuccess())
                             mFragmentNavigation.popFragments(2);
@@ -315,15 +317,8 @@ public class ChargePaymentForCancelFragment extends BaseFragment implements Paym
             Log.i("Info", "Error:" + e);
         }
 
-
-        if(status == STATUS_CONTINUE){
-            CommonUtils.showToastShort(getContext(), "Continue clicked");
-        }else if(status == STATUS_NEW_SALE){
-            CommonUtils.showToastShort(getContext(), "New Order clicked");
-        }
-
         if(status == STATUS_NEW_SALE){
-            Objects.requireNonNull(getActivity()).onBackPressed();
+            ((Activity)mContext).onBackPressed();
         }else {
             mTransaction = CancellationManager.getTransactionWillBePaid(CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getTransactions());
             setChargeAmount();

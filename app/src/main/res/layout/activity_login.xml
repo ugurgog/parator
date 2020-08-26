@@ -47,19 +47,19 @@
             android:theme="@style/EditTextTheme">
 
             <EditText
-                android:id="@+id/usernameEt"
+                android:id="@+id/emailEt"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_margin="3dp"
                 android:background="@color/transparent"
                 android:ems="15"
-                android:hint="@string/username"
+                android:hint="@string/email"
                 android:importantForAutofill="noExcludeDescendants"
                 android:inputType="textEmailAddress"
                 android:paddingLeft="7dp"
                 android:textColor="@color/Gray"
                 android:textColorHint="@color/Gray"
-                android:drawableLeft="@drawable/ic_person_gray_24dp"
+                android:drawableLeft="@drawable/ic_email_gray_24dp"
                 android:drawablePadding="10dp"/>
 
 

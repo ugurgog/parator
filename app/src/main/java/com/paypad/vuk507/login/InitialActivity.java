@@ -26,7 +26,7 @@ public class InitialActivity extends AppCompatActivity {
     ImageView appIconImgv;
 
     User user;
-    private String username;
+    private String email;
     private String password;
     private String applicationStart = MainActivity.class.getName();
 
@@ -38,13 +38,13 @@ public class InitialActivity extends AppCompatActivity {
         CommonUtils.hideKeyBoard(this);
         initVariables();
 
-        CustomRealmHelper.deleteRealmDB();
+        //CustomRealmHelper.deleteRealmDB();
 
-        username = LoginUtils.getUsernameFromCache(InitialActivity.this);
+        email = LoginUtils.getEmailFromCache(InitialActivity.this);
         password = LoginUtils.getPasswordFromCache(InitialActivity.this);
 
-        if(!username.isEmpty() && !password.isEmpty()){
-            startLoginProcess(username, password);
+        if(!email.isEmpty() && !password.isEmpty()){
+            startLoginProcess(email, password);
         } else
             startLoginActivity();
 
@@ -59,9 +59,9 @@ public class InitialActivity extends AppCompatActivity {
                 .into(appIconImgv);
     }
 
-    public void startLoginProcess(String username, String password) {
+    public void startLoginProcess(String email, String password) {
 
-        User user = UserDBHelper.getUserByUsernameAndPassword(username, password);
+        User user = UserDBHelper.getUserByEmailAndPassword(email, password);
 
         if(user != null){
             if(user.isLoggedIn()){

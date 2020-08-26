@@ -141,7 +141,7 @@
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:text="C"
-            android:textColor="@color/DodgerBlue"
+            android:textColor="@color/keypad_item_color"
             android:textSize="@dimen/keypad_btn_text_size" />
 
         <Button

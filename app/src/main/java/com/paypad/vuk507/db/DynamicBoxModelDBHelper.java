@@ -1,7 +1,10 @@
 package com.paypad.vuk507.db;
 
+import com.paypad.vuk507.model.Discount;
 import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -23,22 +26,22 @@ public class DynamicBoxModelDBHelper {
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setSuccess(true);
 
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                try{
-                    DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
-                            .equalTo("id", id)
-                            .findFirst();
+        try{
+            DynamicBoxModel dynamicBoxModel = getDynamicBoxModelById(id);
 
-                    dynamicBoxModel.deleteFromRealm();
-                    baseResponse.setMessage("Dynamic Box deleted successfully");
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Dynamic Box cannot be deleted");
-                }
-            }
-        });
+            realm.beginTransaction();
+
+            dynamicBoxModel.setDeleted(true);
+            dynamicBoxModel.setDeleteDate(new Date());
+
+            realm.copyToRealm(dynamicBoxModel);
+
+            realm.commitTransaction();
+        }catch (Exception e){
+            baseResponse.setSuccess(false);
+            baseResponse.setMessage("Unexpected error:" + e.getMessage());
+        }
+
         return baseResponse;
     }
 
@@ -47,14 +50,17 @@ public class DynamicBoxModelDBHelper {
         DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
                 .equalTo("structId", structId)
                 .equalTo("itemId", itemId)
-                .equalTo("userId", userId).findFirst();
+                .equalTo("userId", userId)
+                .equalTo("isDeleted", false).findFirst();
         return dynamicBoxModel;
     }
 
     public static DynamicBoxModel getDynamicBoxModelById(String id){
         Realm realm = Realm.getDefaultInstance();
         DynamicBoxModel dynamicBoxModel = realm.where(DynamicBoxModel.class)
-                .equalTo("id", id).findFirst();
+                .equalTo("id", id)
+                .equalTo("isDeleted", false)
+                .findFirst();
         return dynamicBoxModel;
     }
 
@@ -70,7 +76,7 @@ public class DynamicBoxModelDBHelper {
                 try{
                     realm.insertOrUpdate(dynamicBoxModel);
                     baseResponse.setObject(dynamicBoxModel);
-                    baseResponse.setMessage("Dynamic box is saved!");
+                    //baseResponse.setMessage("Dynamic box is saved!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Dynamic box cannot be saved!");

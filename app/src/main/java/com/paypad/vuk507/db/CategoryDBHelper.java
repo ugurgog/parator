@@ -46,32 +46,6 @@ public class CategoryDBHelper {
         }
 
         return baseResponse;
-
-
-
-
-
-        /*realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-
-                try{
-                    Category category = realm.where(Category.class).equalTo("id", id).findFirst();
-
-                    try{
-                        category.deleteFromRealm();
-                        baseResponse.setMessage("Category deleted successfully");
-                    }catch (Exception e){
-                        baseResponse.setSuccess(false);
-                        baseResponse.setMessage("Category cannot be deleted");
-                    }
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Category cannot be deleted");
-                }
-            }
-        });
-        return baseResponse;*/
     }
 
     public static Category getCategory(long id){
@@ -98,7 +72,6 @@ public class CategoryDBHelper {
                     realm.insertOrUpdate(category);
 
                     baseResponse.setObject(category);
-                    baseResponse.setMessage("Category is saved!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Category cannot be saved!");

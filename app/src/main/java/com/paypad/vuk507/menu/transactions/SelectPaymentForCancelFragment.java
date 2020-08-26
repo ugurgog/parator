@@ -1,5 +1,6 @@
 package com.paypad.vuk507.menu.transactions;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.vuk507.FragmentControllers.BaseFragment;
 import com.paypad.vuk507.R;
+import com.paypad.vuk507.charge.order.OrderManager;
 import com.paypad.vuk507.charge.payment.cancelpayment.ChargePaymentForCancelFragment;
 import com.paypad.vuk507.db.TransactionDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
@@ -75,6 +77,9 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
     private Realm realm;
     private ChargePaymentForCancelFragment chargePaymentForCancelFragment;
     private List<Transaction> cancelableTrxlist;
+    private Context mContext;
+    private View completedScreenView;
+    private boolean isTrxesAndOrderAmountsEquals;
 
     public SelectPaymentForCancelFragment(SaleModel saleModel) {
         this.saleModel = saleModel;
@@ -95,12 +100,14 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -108,7 +115,7 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     @Override
@@ -119,6 +126,7 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        CommonUtils.hideNavigationBar((Activity) mContext);
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_select_paym_for_cancel, container, false);
             ButterKnife.bind(this, mView);
@@ -135,7 +143,7 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
+                checkCancellationAmount();
             }
         });
 
@@ -145,6 +153,14 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
                 cancelAllTrxes();
             }
         });
+    }
+
+    private void checkCancellationAmount() {
+        if(isTrxesAndOrderAmountsEquals)
+            mFragmentNavigation.popFragments(1);
+        else
+            CommonUtils.showCustomToast(mContext,
+                    mContext.getResources().getString(R.string.cancel_all_trxes_to_continue));
     }
 
     private void cancelAllTrxes() {
@@ -160,7 +176,7 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
         }
 
         if(!success){
-            CommonUtils.showToastShort(getContext(), "Unexpected error occured!");
+            CommonUtils.showToastShort(mContext, "Unexpected error occured!");
             for(Transaction transaction : cancelableTrxlist)
                 updateTransactionType(transaction, TransactionTypeEnum.SALE.getId());
         }
@@ -170,21 +186,23 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
     }
 
     private void initVariables() {
+        isTrxesAndOrderAmountsEquals = OrderManager.isTrxesAndOrderAmountsEquals(saleModel.getOrder().getId());
         realm = Realm.getDefaultInstance();
         saveBtn.setVisibility(View.GONE);
         setToolbarTitle();
         setItemsRv();
+        removeCompletedView();
     }
 
     private void setItemsRv() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         itemRv.setLayoutManager(linearLayoutManager);
         updatePaymentsAdapter();
     }
 
     private void setToolbarTitle() {
-        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.select_to_cancel));
+        toolbarTitleTv.setText(mContext.getResources().getString(R.string.select_to_cancel));
     }
 
     public static class DateComparator implements Comparator<Transaction> {
@@ -195,6 +213,7 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
     }
 
     public void updatePaymentsAdapter(){
+        removeCompletedView();
         cancelableTrxlist = new ArrayList<>();
 
         for(Transaction transaction : saleModel.getTransactions()){
@@ -202,11 +221,23 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
                 cancelableTrxlist.add(transaction);
         }
 
+        if(cancelableTrxlist == null || cancelableTrxlist.size() == 0)
+            mFragmentNavigation.popFragments(1);
+
         Collections.sort(cancelableTrxlist, new DateComparator());
 
-        paymentListForCancelAdapter = new PaymentListForCancelAdapter(getContext(), cancelableTrxlist);
+        paymentListForCancelAdapter = new PaymentListForCancelAdapter(mContext, cancelableTrxlist);
         paymentListForCancelAdapter.setReturnTransactionCallback(this);
         itemRv.setAdapter(paymentListForCancelAdapter);
+    }
+
+    private void removeCompletedView(){
+        try{
+            if(completedScreenView != null)
+                mainrl.removeView(completedScreenView);
+        }catch (Exception e){
+
+        }
     }
 
     @Override
@@ -232,7 +263,7 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
         realm.commitTransaction();
 
         BaseResponse baseResponse = TransactionDBHelper.createOrUpdateTransaction(tempTransaction);
-        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+        DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
         LogUtil.logTransaction("cancelSingleTransaction", tempTransaction);
 
@@ -243,23 +274,26 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
     }
 
     private void completeCancellationProcess(double amount){
-        View child = getLayoutInflater().inflate(R.layout.layout_payment_fully_completed, null);
+        completedScreenView = getLayoutInflater().inflate(R.layout.layout_payment_fully_completed, null);
 
-        GifImageView gifImageView = child.findViewById(R.id.gifImageView);
+        GifImageView gifImageView = completedScreenView.findViewById(R.id.gifImageView);
 
         gifImageView.setLayoutParams(new LinearLayout.LayoutParams(
-                CommonUtils.getScreenWidth(getContext()),
-                CommonUtils.getScreenHeight(getContext()) + CommonUtils.getNavigationBarHeight(getContext())
+                CommonUtils.getScreenWidth(mContext),
+                CommonUtils.getScreenHeight(mContext) + CommonUtils.getNavigationBarHeight(mContext)
         ));
 
-        mainrl.addView(child);
+        mainrl.addView(completedScreenView);
 
         initChargePaymentForCancelFragment(amount);
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mFragmentNavigation.pushFragment(chargePaymentForCancelFragment);
+                if(!isTrxesAndOrderAmountsEquals)
+                    updatePaymentsAdapter();
+                else
+                    mFragmentNavigation.pushFragment(chargePaymentForCancelFragment);
 
             }
         }, 4000);

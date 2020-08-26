@@ -105,6 +105,7 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
     private TransactionsFragment.TransactionItem transactionItem;
     private PrintOrderManager printOrderManager;
     private SelectPaymentForCancelFragment selectPaymentForCancelFragment;
+    private Context mContext;
 
     private int refundCancellationStatus = TYPE_REFUND;
 
@@ -127,12 +128,14 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -151,6 +154,7 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        CommonUtils.showNavigationBar((Activity) mContext);
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_transaction_detail, container, false);
             ButterKnife.bind(this, mView);
@@ -224,7 +228,8 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
                 mFragmentNavigation.pushFragment(selectPaymentForCancelFragment);
             }else {
 
-                if(isRefundedByAmount() || !isTrxesAndSaleAmountEquals())
+                if(OrderManager.isExistRefundByAmount(transactionItem.getSaleModel().getOrder().getId()) ||
+                        !OrderManager.isTrxesAndOrderAmountsEquals(transactionItem.getSaleModel().getOrder().getId()))
                     startRefundByAmountFragment();
                 else
                     mFragmentNavigation.pushFragment(new RefundFragment(transactionItem.getSaleModel(), refundCancellationStatus));
@@ -237,43 +242,6 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
         RefundByAmountFragment refundByAmountFragment = new RefundByAmountFragment(transactionItem.getSaleModel(), true, availableRefundAmount);
         refundByAmountFragment.setReturnAmountCallback(this);
         mFragmentNavigation.pushFragment(refundByAmountFragment);
-    }
-
-    private boolean isRefundedByAmount(){
-        RealmResults<Refund> refunds = RefundDBHelper.getAllRefundsOfOrder(transactionItem.getSaleModel().getOrder().getId(), true);
-
-        for(Refund refund : refunds){
-            if(refund.isRefundByAmount())
-                return true;
-        }
-        return false;
-    }
-
-    private boolean isTrxesAndSaleAmountEquals(){
-        double trxesAmount = 0d;
-        SaleModel saleModel = SaleDBHelper.getSaleModelBySaleId(transactionItem.getSaleModel().getOrder().getId());
-
-        for(Transaction transaction : saleModel.getTransactions()){
-            if(transaction.getTransactionType() == TransactionTypeEnum.SALE.getId() &&
-                    transaction.isPaymentCompleted())
-                trxesAmount = CommonUtils.round(trxesAmount + transaction.getTotalAmount(), 2);
-        }
-
-        if(trxesAmount == saleModel.getOrder().getDiscountedAmount())
-            return true;
-        else
-            return false;
-    }
-
-    private boolean isExistCancelledTransaction(){
-        RealmResults<Transaction> transactions = TransactionDBHelper.getTransactionsBySaleId(transactionItem.getSaleModel().getOrder().getId());
-
-        for(Transaction transaction : transactions){
-            if(transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId() &&
-                transaction.isPaymentCompleted())
-                return true;
-        }
-        return false;
     }
 
     private void initSelectPaymentForRefundFragment(){
@@ -352,7 +320,7 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
     }
 
     public void setPaymentDetailAdapter(){
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         paymentsRv.setLayoutManager(linearLayoutManager);
 
@@ -361,16 +329,16 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
 
         Collections.sort(trxlist, new TrxSeqNumComparator());
 
-        paymentDetailAdapter = new PaymentDetailAdapter(getContext(), trxlist);
+        paymentDetailAdapter = new PaymentDetailAdapter(mContext, trxlist);
         paymentsRv.setAdapter(paymentDetailAdapter);
     }
 
     private void setItemsServicesAdapter() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         saleItemsRv.setLayoutManager(linearLayoutManager);
 
-        itemsServicesAdapter = new ItemsServicesAdapter(getContext(), transactionItem.getSaleModel().getOrderItems());
+        itemsServicesAdapter = new ItemsServicesAdapter(mContext, transactionItem.getSaleModel().getOrderItems());
         saleItemsRv.setAdapter(itemsServicesAdapter);
     }
 
@@ -394,7 +362,7 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
 
         List<RefundedTrxModel> refundedTrxModels = new ArrayList<>();
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         refundsRv.setLayoutManager(linearLayoutManager);
 
@@ -415,8 +383,6 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
             }else {
                 refundedTrxModel.getRefunds().add(refund);
             }
-
-
             prevRefundGroupId = refund.getRefundGroupId();
         }
 
@@ -425,19 +391,19 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
         }
 
 
-        refundedTransactionAdapter = new RefundedTransactionAdapter(getContext(), refundedTrxModels, transactionItem.getSaleModel().getOrder().getId());
+        refundedTransactionAdapter = new RefundedTransactionAdapter(mContext, refundedTrxModels, transactionItem.getSaleModel().getOrder().getId());
         refundsRv.setAdapter(refundedTransactionAdapter);
     }
 
     private void setPaymentTotalAdapter() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         totalRv.setLayoutManager(linearLayoutManager);
 
-        PaymentTotalManager paymentTotalManager = new PaymentTotalManager(getContext(), transactionItem.getSaleModel());
+        PaymentTotalManager paymentTotalManager = new PaymentTotalManager(mContext, transactionItem.getSaleModel());
         List<PaymentDetailModel> paymentDetailModels = paymentTotalManager.getPaymentDetails();
 
-        paymentTotalAdapter = new PaymentTotalAdapter(getContext(), paymentDetailModels);
+        paymentTotalAdapter = new PaymentTotalAdapter(mContext, paymentDetailModels);
         totalRv.setAdapter(paymentTotalAdapter);
     }
 
@@ -462,13 +428,13 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
         @Override
         public void onPrintResult(int code, String msg) throws RemoteException {
             final int res = code;
-            ((Activity) Objects.requireNonNull(getContext())).runOnUiThread(new Runnable() {
+            ((Activity) Objects.requireNonNull(mContext)).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if(res == 0){
-                        CommonUtils.showToastShort(getContext(), "Print successful");
+                        CommonUtils.showToastShort(mContext, "Print successful");
                     }else{
-                        CommonUtils.showToastShort(getContext(), "Print failed");
+                        CommonUtils.showToastShort(mContext, "Print failed");
                     }
                 }
             });

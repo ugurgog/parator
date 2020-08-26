@@ -19,6 +19,7 @@ import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.eventBusModel.UserBus;
 import com.paypad.vuk507.login.InitialActivity;
 import com.paypad.vuk507.login.utils.LoginUtils;
+import com.paypad.vuk507.menu.settings.profile.EditProfileFragment;
 import com.paypad.vuk507.model.User;
 import com.paypad.vuk507.model.pojo.BaseResponse;
 import com.paypad.vuk507.utils.ClickableImage.ClickableImageView;
@@ -51,6 +52,8 @@ public class SettingsFragment extends BaseFragment{
 
     @BindView(R.id.printOrdersRl)
     RelativeLayout printOrdersRl;
+    @BindView(R.id.viewProfileRl)
+    RelativeLayout viewProfileRl;
 
     private User user;
 
@@ -123,6 +126,13 @@ public class SettingsFragment extends BaseFragment{
             @Override
             public void onClick(View view) {
                 mFragmentNavigation.pushFragment(new PrintOrdersFragment());
+            }
+        });
+
+        viewProfileRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mFragmentNavigation.pushFragment(new EditProfileFragment());
             }
         });
     }

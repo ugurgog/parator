@@ -68,7 +68,7 @@ public class TransactionDBHelper {
                     Transaction transaction = realm.where(Transaction.class)
                             .equalTo("id", id).findFirst();
                     transaction.deleteFromRealm();
-                    baseResponse.setMessage("Transaction deleted successfully");
+                    //baseResponse.setMessage("Transaction deleted successfully");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Transaction cannot be deleted");

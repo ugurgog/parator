@@ -1,7 +1,10 @@
 package com.paypad.vuk507.db;
 
+import com.paypad.vuk507.model.TaxModel;
 import com.paypad.vuk507.model.UnitModel;
 import com.paypad.vuk507.model.pojo.BaseResponse;
+
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -23,31 +26,29 @@ public class UnitDBHelper {
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setSuccess(true);
 
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                try{
-                    UnitModel unitModel = realm.where(UnitModel.class).equalTo("id", id).findFirst();
-                    try{
-                        unitModel.deleteFromRealm();
-                        baseResponse.setMessage("Unit deleted successfully");
-                    }catch (Exception e){
-                        baseResponse.setSuccess(false);
-                        baseResponse.setMessage("Unit cannot be deleted");
-                    }
+        try{
+            UnitModel unitModel = getUnit(id);
 
-                }catch (Exception e){
-                    baseResponse.setSuccess(false);
-                    baseResponse.setMessage("Unit cannot be deleted");
-                }
-            }
-        });
+            realm.beginTransaction();
+
+            unitModel.setDeleted(true);
+            unitModel.setDeleteDate(new Date());
+            realm.copyToRealm(unitModel);
+
+            realm.commitTransaction();
+        }catch (Exception e){
+            baseResponse.setSuccess(false);
+            baseResponse.setMessage("Unexpected error:" + e.getMessage());
+        }
         return baseResponse;
     }
 
     public static UnitModel getUnit(long id){
         Realm realm = Realm.getDefaultInstance();
-        UnitModel unitModel = realm.where(UnitModel.class).equalTo("id", id).findFirst();
+        UnitModel unitModel = realm.where(UnitModel.class)
+                .equalTo("id", id)
+                .equalTo("isDeleted", false)
+                .findFirst();
         return unitModel;
     }
 
@@ -65,7 +66,7 @@ public class UnitDBHelper {
                     realm.insertOrUpdate(unitModel);
 
                     baseResponse.setObject(unitModel);
-                    baseResponse.setMessage("Unit is saved!");
+                    //baseResponse.setMessage("Unit is saved!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Unit cannot be saved!");

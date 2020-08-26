@@ -2,6 +2,7 @@ package com.paypad.vuk507.model;
 
 import com.paypad.vuk507.utils.CommonUtils;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import io.realm.RealmList;

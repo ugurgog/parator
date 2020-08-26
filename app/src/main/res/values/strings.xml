@@ -111,6 +111,7 @@
     <string name="tax_upper">TAX</string>
 
     <!-- Login screen items -->
+    <string name="store_name">Store Name</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
@@ -125,11 +126,12 @@
     <string name="invalid_username_or_password">Invalid username or password!</string>
     <string name="register">Register</string>
     <string name="registering_user">Registering User...</string>
-    <string name="username_is_defined_before">The system has such a username. Please set a different username.</string>
+    <string name="email_is_defined_before">The system has such a email. Please set a different username.</string>
     <string name="product_category_can_not_be_empty">Please select a category</string>
     <string name="end_editing">End Editing</string>
     <string name="editing_mode">Editing Mode</string>
     <string name="please_type_first_name">Please type first name</string>
+    <string name="please_type_last_name">Please type last name</string>
     <string name="choose_a_contact">Choose a Contact</string>
     <string name="add_to_group">Add to Group</string>
     <string name="select_group">Select a Group</string>
@@ -155,6 +157,18 @@
     <string name="receipt">Receipt</string>
     <string name="purchase_subtotal">Purchase Subtotal</string>
     <string name="payment_type">Payment Type</string>
+    <string name="please_type_store_name">Please Type Store Name</string>
+    <string name="please_type_phone_number">Please enter the phone number</string>
+    <string name="please_select_country">Please select your country</string>
+    <string name="please_select_type_of_biusiness">Please select type of business</string>
+    <string name="please_select_estimated_annual_turnover">Please select estimated annual turnover</string>
+    <string name="please_select_number_of_locations">Please select number of locations</string>
+    <string name="please_select_trading_currency">Please select trading currency</string>
+    <string name="choose_a_retail_category">Choose a retail category</string>
+    <string name="choose_how_many_locs_you_have">Locations you have</string>
+    <string name="location">location(s)</string>
+    <string name="choose_annual_turnover_range">Estimated ann. turnover range</string>
+    <string name="choose_trading_currency">Choose trading currency</string>
 
 
     <string name="change">Change</string>
@@ -514,7 +528,9 @@
     <string name="hardware">HARDWARE</string>
     <string name="device">DEVICE</string>
     <string name="orders">ORDERS</string>
+    <string name="profile">PROFILE</string>
 
+    <string name="view">View</string>
     <string name="passcodes">Passcodes</string>
     <string name="printers">Printers</string>
     <string name="device_name">Device Name</string>
@@ -551,5 +567,6 @@
     <string name="remaining">Remaining</string>
     <string name="cancel_all_transactions">Cancel All Payments</string>
     <string name="select_payment_for_cancel">SELECT PAYMENT FOR CANCEL</string>
+    <string name="cancel_all_trxes_to_continue">Please cancel all payments to continue.</string>
 
 </resources>

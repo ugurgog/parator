@@ -3,6 +3,7 @@ package com.paypad.vuk507.db;
 import androidx.annotation.NonNull;
 
 import com.paypad.vuk507.interfaces.CompleteCallback;
+import com.paypad.vuk507.model.DynamicBoxModel;
 import com.paypad.vuk507.model.Group;
 import com.paypad.vuk507.model.Transaction;
 import com.paypad.vuk507.model.pojo.BaseResponse;
@@ -59,7 +60,7 @@ public class GroupDBHelper {
                     realm.insertOrUpdate(group);
 
                     baseResponse.setObject(group);
-                    baseResponse.setMessage("Group is saved!");
+                    //baseResponse.setMessage("Group is saved!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("Group cannot be saved!");
@@ -71,20 +72,26 @@ public class GroupDBHelper {
 
     public static BaseResponse deleteGroup(long groupId, String userId){
         Realm realm = Realm.getDefaultInstance();
-        Group group = getGroup(groupId, userId);
-        realm.beginTransaction();
 
-        group.setDeleted(true);
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setSuccess(true);
 
-        realm.commitTransaction();
+        try{
+            Group group = getGroup(groupId, userId);
 
-        BaseResponse baseResponse = createOrUpdateGroup(group);
+            realm.beginTransaction();
 
-        if(baseResponse.isSuccess()){
-            BaseResponse baseResponse1 = CustomerGroupDBHelper.deleteCustomerGroupsByGroupId(groupId, userId);
-            return baseResponse1;
+            group.setDeleted(true);
+            group.setDeleteDate(new Date());
+            realm.copyToRealm(group);
+
+            realm.commitTransaction();
+
+            baseResponse = CustomerGroupDBHelper.deleteCustomerGroupsByGroupId(groupId, userId);
+        }catch (Exception e){
+            baseResponse.setSuccess(false);
+            baseResponse.setMessage("Unexpected error:" + e.getMessage());
         }
-
         return baseResponse;
     }
 }

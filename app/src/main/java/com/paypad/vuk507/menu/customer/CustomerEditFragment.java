@@ -31,6 +31,7 @@ import com.paypad.vuk507.db.GroupDBHelper;
 import com.paypad.vuk507.db.UserDBHelper;
 import com.paypad.vuk507.enums.ItemProcessEnum;
 import com.paypad.vuk507.eventBusModel.UserBus;
+import com.paypad.vuk507.interfaces.CountrySelectListener;
 import com.paypad.vuk507.interfaces.ReturnObjectCallback;
 import com.paypad.vuk507.login.utils.Validation;
 import com.paypad.vuk507.menu.customer.interfaces.ReturnCustomerCallback;
@@ -68,7 +69,7 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class CustomerEditFragment extends BaseFragment
-        implements CountrySelectFragment.CountrySelectListener{
+        implements CountrySelectListener {
 
     private View mView;
 

@@ -34,14 +34,14 @@ public class LoginActivity extends AppCompatActivity
         implements View.OnClickListener {
 
     RelativeLayout backgroundLayout;
-    EditText usernameEt;
+    EditText emailEt;
     EditText passwordEt;
     AppCompatTextView registerText;
     AppCompatTextView forgetPasText;
     Button btnLogin;
 
     //Local
-    private String username;
+    private String email;
     private String userPassword;
     private ProgressDialog progressDialog;
 
@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity
     }
 
     public void setShapes() {
-        usernameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
+        emailEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                 getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
         passwordEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                 getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity
 
     private void initUIValues() {
         backgroundLayout = findViewById(R.id.loginLayout);
-        usernameEt = findViewById(R.id.usernameEt);
+        emailEt = findViewById(R.id.emailEt);
         passwordEt = findViewById(R.id.passwordEt);
         registerText = findViewById(R.id.btnRegister);
         forgetPasText = findViewById(R.id.btnForgetPassword);
@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity
 
     private void initUIListeners() {
         backgroundLayout.setOnClickListener(this);
-        usernameEt.setOnClickListener(this);
+        emailEt.setOnClickListener(this);
         passwordEt.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
     }
@@ -155,21 +155,21 @@ public class LoginActivity extends AppCompatActivity
         progressDialog.setMessage(this.getString(R.string.logging_user));
         progressDialog.show();
 
-        username = usernameEt.getText().toString();
+        email = emailEt.getText().toString();
         userPassword = passwordEt.getText().toString();
 
         //validation controls
-        if (!checkValidation(username, userPassword)) {
+        if (!checkValidation(email, userPassword)) {
             return;
         }
 
-        startLoginProcess(username, userPassword);
+        startLoginProcess(email, userPassword);
     }
 
-    private boolean checkValidation(String username, String password) {
+    private boolean checkValidation(String email, String password) {
 
         //username validation
-        if (!Validation.getInstance().isValidUserName(this, username)) {
+        if (!Validation.getInstance().isValidEmail(this, email)) {
             progressDialog.dismiss();
             CommonUtils.showToastShort(LoginActivity.this, Validation.getInstance().getErrorMessage());
             return false;
@@ -184,16 +184,16 @@ public class LoginActivity extends AppCompatActivity
         return true;
     }
 
-    private void startLoginProcess(final String username, String userPassword) {
+    private void startLoginProcess(final String email, String userPassword) {
 
-        User user = UserDBHelper.getUserByUsernameAndPassword(username, userPassword);
+        User user = UserDBHelper.getUserByEmailAndPassword(email, userPassword);
         progressDialog.dismiss();
 
         if(user != null){
             BaseResponse baseResponse = UserDBHelper.updateUserLoggedInStatus(user.getId(), true);
 
             if(baseResponse.isSuccess()){
-                LoginUtils.applySharedPreferences(LoginActivity.this, user.getUsername(),
+                LoginUtils.applySharedPreferences(LoginActivity.this, user.getEmail(),
                         user.getPassword(), user.getId());
                 startMainPage();
             }

@@ -26,7 +26,7 @@ public class GlobalSettingsDBHelper {
                     realm.insertOrUpdate(globalSettings);
 
                     baseResponse.setObject(globalSettings);
-                    baseResponse.setMessage("GlobalSettings is saved/updated!");
+                    //baseResponse.setMessage("GlobalSettings is saved/updated!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("GlobalSettings cannot be updated!");

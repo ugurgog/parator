@@ -85,7 +85,6 @@ public class CustomerGroupDBHelper {
                     realm.insertOrUpdate(customerGroup);
 
                     baseResponse.setObject(customerGroup);
-                    baseResponse.setMessage("CustomerGroup is saved!");
                 }catch (Exception e){
                     baseResponse.setSuccess(false);
                     baseResponse.setMessage("CustomerGroup cannot be saved!");
@@ -108,7 +107,6 @@ public class CustomerGroupDBHelper {
                     CustomerGroup customerGroup = realm.where(CustomerGroup.class).equalTo("id", id).findFirst();
                     try{
                         customerGroup.deleteFromRealm();
-                        baseResponse.setMessage("CustomerGroup deleted successfully");
                     }catch (Exception e){
                         baseResponse.setSuccess(false);
                         baseResponse.setMessage("CustomerGroup could not be deleted !!");
@@ -140,7 +138,6 @@ public class CustomerGroupDBHelper {
                                 .findAll();
 
                         customerGroups.deleteAllFromRealm();
-                        baseResponse.setMessage("CustomerGroups deleted successfully");
                     }catch (Exception e){
                         baseResponse.setSuccess(false);
                         baseResponse.setMessage("CustomerGroups could not be deleted !!");
@@ -172,7 +169,6 @@ public class CustomerGroupDBHelper {
                                 .findAll();
 
                         customerGroups.deleteAllFromRealm();
-                        baseResponse.setMessage("CustomerGroups deleted successfully");
                     }catch (Exception e){
                         baseResponse.setSuccess(false);
                         baseResponse.setMessage("CustomerGroups could not be deleted !!");
@@ -201,7 +197,6 @@ public class CustomerGroupDBHelper {
                     try{
                         CustomerGroup customerGroup = getCustomerGroupByCustomerIdAndGroupId(customerId, groupId, userId);
                         customerGroup.deleteFromRealm();
-                        baseResponse.setMessage("CustomerGroup deleted successfully");
                     }catch (Exception e){
                         baseResponse.setSuccess(false);
                         baseResponse.setMessage("CustomerGroup could not be deleted !!");
@@ -228,7 +223,7 @@ public class CustomerGroupDBHelper {
                 try{
                     try{
                         customerGroups.deleteAllFromRealm();
-                        baseResponse.setMessage("CustomerGroups deleted successfully");
+                        //baseResponse.setMessage("CustomerGroups deleted successfully");
                     }catch (Exception e){
                         baseResponse.setSuccess(false);
                         baseResponse.setMessage("CustomerGroups could not be deleted !!");

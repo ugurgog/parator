@@ -147,8 +147,10 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
+        //Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+        //        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
+
+        CommonUtils.hideNavigationBar(getActivity());
 
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_payment_completed, container, false);

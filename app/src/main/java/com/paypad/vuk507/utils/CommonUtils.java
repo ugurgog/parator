@@ -5,12 +5,16 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,11 +42,31 @@ import static com.paypad.vuk507.constants.CustomConstants.TYPE_RATE;
 public class CommonUtils {
 
     public static void showToastShort(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+
+        showCustomToast(context, message);
     }
 
     public static void showToastLong(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
+    public static void showCustomToast(Context context, String message) {
+            if (context == null) return;
+            if (message == null || message.isEmpty()) return;
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.toast_layout, null);
+            View layout =  view.findViewById(R.id.toast_layout_root);
+            layout.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.DodgerBlue, null),
+                    context.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 15, 0));
+            TextView text =  layout.findViewById(R.id.text);
+            text.setText(message);
+            text.setTextColor(context.getResources().getColor(R.color.White, null));
+            Toast toast = new Toast(context);
+            toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.BOTTOM, 0, 200);
+            toast.setDuration(Toast.LENGTH_SHORT);
+            toast.setView(layout);
+            toast.show();
     }
 
     public static int getPaddingInPixels(Context context, float paddingDp) {
@@ -104,6 +128,16 @@ public class CommonUtils {
         if (activity.getCurrentFocus() != null) {
             Objects.requireNonNull(inputMethodManager).hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
+    }
+
+    public static void hideNavigationBar(Activity activity) {
+        activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
+    }
+
+    public static void showNavigationBar(Activity activity) {
+        activity.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE );
     }
 
     public static Date fromISO8601UTC(String dateStr) {

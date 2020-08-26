@@ -224,7 +224,7 @@ public class ChargeFragment extends BaseFragment implements
 
                 if(orderItem != null ){
                     if(mTaxModel == null){
-                        CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
+                        CommonUtils.showCustomToast(getContext(), getResources().getString(R.string.please_select_tax_rate));
                         return ;
                     }else {
                         if(!OrderManager.isSaleItemInSale(
@@ -252,7 +252,7 @@ public class ChargeFragment extends BaseFragment implements
                 if(orderItem != null ){
 
                     if(mTaxModel == null){
-                        CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
+                        CommonUtils.showCustomToast(getContext(), getResources().getString(R.string.please_select_tax_rate));
                         return ;
                     }else {
                         if(!OrderManager.isSaleItemInSale(
@@ -262,7 +262,7 @@ public class ChargeFragment extends BaseFragment implements
                 }
 
                 if(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount() <= 0d){
-                    CommonUtils.showToastShort(getContext(), getContext().getResources().getString(R.string.sale_amount_zero));
+                    CommonUtils.showCustomToast(getContext(), getContext().getResources().getString(R.string.sale_amount_zero));
                     return;
                 }
 
@@ -492,7 +492,7 @@ public class ChargeFragment extends BaseFragment implements
             OnCustomItemAdd(CUSTOM_ITEM_ADD_FROM_KEYPAD);
 
         }else {
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_custom_amount_first));
+            CommonUtils.showCustomToast(getContext(), getResources().getString(R.string.please_select_custom_amount_first));
         }
     }
 
@@ -521,12 +521,12 @@ public class ChargeFragment extends BaseFragment implements
     public void OnCustomItemAdd(int addFromValue) {
 
         if(orderItem == null){
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_type_custom_amount));
+            CommonUtils.showCustomToast(getContext(), getResources().getString(R.string.please_type_custom_amount));
             return;
         }
 
         if(mTaxModel == null){
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
+            CommonUtils.showCustomToast(getContext(), getResources().getString(R.string.please_select_tax_rate));
             return;
         }
 
