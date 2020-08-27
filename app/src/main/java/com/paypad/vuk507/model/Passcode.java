@@ -2,9 +2,16 @@ package com.paypad.vuk507.model;
 
 import java.util.Date;
 
-public class Passcode {
+import io.realm.RealmObject;
+import io.realm.annotations.Index;
+import io.realm.annotations.PrimaryKey;
 
+public class Passcode extends RealmObject {
+
+    @PrimaryKey
+    @Index
     private String id;
+    @Index
     private String userId;
     private boolean isEnabled;
     private String passcodeVal;
