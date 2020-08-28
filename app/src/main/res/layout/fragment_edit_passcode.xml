@@ -20,34 +20,96 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
             android:orientation="vertical">
 
-            <include layout="@layout/item_edit_image_layout"/>
 
-            <EditText
-                android:id="@+id/categoryNameEt"
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/custom_edittext_height_size"
-                android:background="@drawable/custom_edittext_bg"
-                android:drawablePadding="20dp"
-                android:hint="@string/category_name"
-                android:inputType="textCapSentences"
-                android:paddingLeft="8dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/enter_new_passcode"
                 android:textColor="@color/Black"
-                android:textColorHint="@color/DarkGray"
-                android:layout_marginTop="10dp"/>
+                android:textStyle="bold"
+                android:id="@+id/editPasscodeTv"
+                android:paddingTop="10dp">
+            </TextView>
 
-            <Button
-                android:id="@+id/btnDelete"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/custom_button_length_size"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/custom_button_bg"
-                android:text="@string/delete_category"
-                android:textColor="@color/DodgerBlue"
-                android:textAllCaps="false"/>
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:orientation="horizontal"
+                android:layout_marginStart="70dp"
+                android:layout_marginEnd="70dp"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/edt1"
+                    android:layout_weight="1"
+                    android:padding="5dp"
+                    android:maxLength="1"
+                    android:gravity="center"
+                    android:textColor="@color/DodgerBlue"
+                    android:enabled="false">
+
+                </EditText>
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/edt2"
+                    android:layout_weight="1"
+                    android:padding="5dp"
+                    android:maxLength="1"
+                    android:gravity="center"
+                    android:textColor="@color/DodgerBlue"
+                    android:enabled="false">
+
+                </EditText>
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/edt3"
+                    android:layout_weight="1"
+                    android:padding="5dp"
+                    android:maxLength="1"
+                    android:gravity="center"
+                    android:textColor="@color/DodgerBlue"
+                    android:enabled="false">
+
+                </EditText>
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/edt4"
+                    android:layout_weight="1"
+                    android:padding="5dp"
+                    android:maxLength="1"
+                    android:gravity="center"
+                    android:textColor="@color/DodgerBlue"
+                    android:enabled="false">
+
+                </EditText>
+
+
+            </LinearLayout>
+
+            <com.paypad.parator.uiUtils.keypad.KeyPadPasscodeCreate
+                android:id="@+id/keypad"
+                android:layout_width="match_parent"
+                android:layout_weight="12"
+                android:layout_height="0dp">
+
+            </com.paypad.parator.uiUtils.keypad.KeyPadPasscodeCreate>
+
 
         </LinearLayout>
 

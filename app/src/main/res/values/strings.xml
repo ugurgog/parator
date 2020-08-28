@@ -87,6 +87,7 @@
     <string name="no">No</string>
     <string name="done">Done</string>
     <string name="add">Add</string>
+    <string name="clear">Clear</string>
 
     <string name="there_is_no_search_result">There is no search result</string>
 
@@ -568,5 +569,29 @@
     <string name="cancel_all_transactions">Cancel All Payments</string>
     <string name="select_payment_for_cancel">SELECT PAYMENT FOR CANCEL</string>
     <string name="cancel_all_trxes_to_continue">Please cancel all payments to continue.</string>
+    <string name="enable_passcode">Enable Passcode</string>
+    <string name="passcode_description">Use a passcode to secure this point of sale.</string>
+    <string name="require_employee_passcode">Require passcode in the following cases</string>
+    <string name="after_each_sale">After Each Sale</string>
+    <string name="when_backing_to_sale">When Backing Out of a Sale</string>
+    <string name="after_timeout">After Timeout</string>
+    <string name="create_passcode">Create Passcode</string>
+    <string name="edit_passcode">Edit Passcode</string>
+    <string name="enter_passcode">Enter Passcode</string>
+    <string name="enter_old_passcode">Enter Old Passcode</string>
+    <string name="enter_new_passcode">Enter New Passcode</string>
+    <string name="passcode_management">Passcode Management</string>
+    <string name="please_first_create_passcode">Please first create a passcode</string>
+    <string name="passcode_updated_successfully">Passcode Updated Successfully</string>
+    <string name="return_to_settings">Return to Settings</string>
+    <string name="please_enter_four_digit_passcode">Please enter 4-digits passcode</string>
+    <string name="wrong_password_entered">Wrong passcode entered</string>
+    <string name="timeout">Timeout</string>
+
+    <!-- Passcode Timeout Values-->
+    <string name="never">Never</string>
+    <string name="thirty_seconds">30 Seconds</string>
+    <string name="one_minute">1 Minute</string>
+    <string name="five_minute">5 Minutes</string>
 
 </resources>

@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.paypad.vuk507.utils.ClickableImage.ClickableImageView
+                <com.paypad.parator.utils.ClickableImage.ClickableImageView
                     android:id="@+id/backImgv"
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
@@ -50,7 +50,7 @@
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/toolbarTextSize" />
 
-                <com.paypad.vuk507.utils.ClickableImage.ClickableImageView
+                <com.paypad.parator.utils.ClickableImage.ClickableImageView
                     android:id="@+id/sendImgv"
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
@@ -59,7 +59,7 @@
                     android:tint="@android:color/black"/>
 
 
-                <com.paypad.vuk507.utils.ClickableImage.ClickableImageView
+                <com.paypad.parator.utils.ClickableImage.ClickableImageView
                     android:id="@+id/printImgv"
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"

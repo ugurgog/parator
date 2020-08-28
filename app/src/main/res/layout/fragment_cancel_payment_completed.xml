@@ -28,7 +28,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/White">
 
-                <com.paypad.vuk507.utils.ClickableImage.ClickableImageView
+                <com.paypad.parator.utils.ClickableImage.ClickableImageView
                     android:id="@+id/cancelImgv"
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"

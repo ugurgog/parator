@@ -28,13 +28,13 @@
             android:paddingEnd="20dp"
             android:textSize="35sp"/>
 
-        <com.paypad.vuk507.uiUtils.keypad.KeyPadWithoutAdd
+        <com.paypad.parator.uiUtils.keypad.KeyPadWithoutAdd
             android:id="@+id/keypad"
             android:layout_width="match_parent"
             android:layout_weight="4"
             android:layout_height="0dp">
 
-        </com.paypad.vuk507.uiUtils.keypad.KeyPadWithoutAdd>
+        </com.paypad.parator.uiUtils.keypad.KeyPadWithoutAdd>
 
     </LinearLayout>
 

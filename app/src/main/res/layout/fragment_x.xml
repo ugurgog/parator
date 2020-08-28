@@ -196,7 +196,7 @@
                         android:background="@drawable/custom_edittext_bg"
                         android:orientation="vertical">
 
-                        <com.paypad.vuk507.uiUtils.NDSpinner
+                        <com.paypad.parator.uiUtils.NDSpinner
                             android:id="@+id/typeOfBusinessSpinner"
                             style="@style/Spinner"
                             android:layout_width="match_parent"
@@ -213,7 +213,7 @@
                         android:background="@drawable/custom_edittext_bg"
                         android:orientation="vertical">
 
-                        <com.paypad.vuk507.uiUtils.NDSpinner
+                        <com.paypad.parator.uiUtils.NDSpinner
                             android:id="@+id/numberOfLocationsSpinner"
                             style="@style/Spinner"
                             android:layout_width="match_parent"
@@ -229,7 +229,7 @@
                         android:background="@drawable/custom_edittext_bg"
                         android:orientation="vertical">
 
-                        <com.paypad.vuk507.uiUtils.NDSpinner
+                        <com.paypad.parator.uiUtils.NDSpinner
                             android:id="@+id/estimatedAnnTurnoverSpinner"
                             style="@style/Spinner"
                             android:layout_width="match_parent"
@@ -246,7 +246,7 @@
                         android:background="@drawable/custom_edittext_bg"
                         android:orientation="vertical">
 
-                        <com.paypad.vuk507.uiUtils.NDSpinner
+                        <com.paypad.parator.uiUtils.NDSpinner
                             android:id="@+id/tradingCurrencySpinner"
                             style="@style/Spinner"
                             android:layout_width="match_parent"

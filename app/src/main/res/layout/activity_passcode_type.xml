@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_item_update"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:paddingTop="80dp"
+        android:gravity="center"
+        android:layout_marginTop="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:gravity="center"
+            android:id="@+id/cbsll">
+
+            <CheckBox
+                android:id="@+id/cb1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/passcode_checkbox"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                android:padding="5dp"
+                android:enabled="false"/>
+
+            <CheckBox
+                android:id="@+id/cb2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/passcode_checkbox"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                android:padding="5dp"
+                android:enabled="false"/>
+
+            <CheckBox
+                android:id="@+id/cb3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/passcode_checkbox"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                android:padding="5dp"
+                android:enabled="false"/>
+
+            <CheckBox
+                android:id="@+id/cb4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/passcode_checkbox"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                android:padding="5dp"
+                android:enabled="false"/>
+
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+
+    <com.paypad.parator.uiUtils.keypad.KeyPadPasscodeCreate
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/keypad">
+
+    </com.paypad.parator.uiUtils.keypad.KeyPadPasscodeCreate>
+
+
+</LinearLayout>

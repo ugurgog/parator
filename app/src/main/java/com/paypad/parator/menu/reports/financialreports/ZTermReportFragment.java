@@ -1,0 +1,112 @@
+package com.paypad.parator.menu.reports.financialreports;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.paypad.parator.FragmentControllers.BaseFragment;
+import com.paypad.parator.R;
+import com.paypad.parator.enums.FinancialReportsEnum;
+import com.paypad.parator.menu.reports.adapters.FinancialReportAdapter;
+import com.paypad.parator.menu.reports.interfaces.ReturnFinancialReportItemCallback;
+import com.paypad.parator.utils.ClickableImage.ClickableImageView;
+import com.paypad.parator.utils.CommonUtils;
+
+import java.util.Objects;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
+
+
+public class ZTermReportFragment extends BaseFragment implements ReturnFinancialReportItemCallback {
+
+    private View mView;
+
+    @BindView(R.id.reportsRv)
+    RecyclerView reportsRv;
+    @BindView(R.id.toolbarTitleTv)
+    AppCompatTextView toolbarTitleTv;
+    @BindView(R.id.backImgv)
+    ClickableImageView backImgv;
+
+    public ZTermReportFragment() {
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (mView == null) {
+            mView = inflater.inflate(R.layout.fragment_reports, container, false);
+            ButterKnife.bind(this, mView);
+            initVariables();
+            initListeners();
+        }
+        return mView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+    }
+
+    private void initListeners() {
+        backImgv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Objects.requireNonNull(getActivity()).onBackPressed();
+            }
+        });
+    }
+
+    private void initVariables() {
+        toolbarTitleTv.setText(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? FinancialReportsEnum.Z_TERM_REPORT.getLabelTr() : FinancialReportsEnum.Z_TERM_REPORT.getLabelEn());
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+
+        reportsRv.setLayoutManager(linearLayoutManager);
+        setAdapter();
+    }
+
+    private void setAdapter() {
+
+        FinancialReportsEnum[] financialReportsEnums = new FinancialReportsEnum[]{
+                FinancialReportsEnum.ACCUMULATED_TERM_REPORT,
+                FinancialReportsEnum.REPORT_BETWEEN_TWO_Z,
+                FinancialReportsEnum.REPORT_BETWEEN_TWO_DATE,
+                FinancialReportsEnum.REPORT_CURRENT_MONTH,
+                FinancialReportsEnum.REPORT_PREVIOUS_MONTH
+        };
+
+        FinancialReportAdapter reportAdapter = new FinancialReportAdapter(financialReportsEnums);
+        reportAdapter.setCallback(this);
+        reportsRv.setAdapter(reportAdapter);
+    }
+
+    @Override
+    public void OnReturnReportItem(FinancialReportsEnum reportsEnum) {
+
+
+    }
+}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.paypad.vuk507">
+    package="com.paypad.parator">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -25,12 +25,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
+        <activity android:name=".menu.settings.passcode.PasscodeTypeActivity"></activity>
         <activity android:name=".square.SampleTimesSquareActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.paypad.vuk507.provider"
+            android:authorities="com.paypad.parator.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
