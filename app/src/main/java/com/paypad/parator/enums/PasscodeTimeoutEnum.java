@@ -3,9 +3,9 @@ package com.paypad.parator.enums;
 public enum PasscodeTimeoutEnum {
 
     NEVER(0,1),
-    SECOND_30(30,2),
-    MINUTE_1(60,3),
-    MINUTE_5(300,4);
+    SECOND_30(30000,2),
+    MINUTE_1(60000,3),
+    MINUTE_5(300000,4);
 
     private final int timeout;
     private final int id;

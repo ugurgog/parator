@@ -1,7 +1,10 @@
 package com.paypad.parator;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -14,10 +17,22 @@ import com.paypad.parator.FragmentControllers.FragNavController;
 import com.paypad.parator.FragmentControllers.FragNavTransactionOptions;
 import com.paypad.parator.FragmentControllers.FragmentHistory;
 import com.paypad.parator.charge.ChargeFragment;
+import com.paypad.parator.db.PasscodeDBHelper;
+import com.paypad.parator.db.UserDBHelper;
+import com.paypad.parator.enums.PasscodeTimeoutEnum;
+import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.menu.settings.passcode.PasscodeTypeActivity;
+import com.paypad.parator.model.Passcode;
+import com.paypad.parator.model.User;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Objects;
 
 import butterknife.ButterKnife;
+import fun.observe.touchy.MotionEventBroadcaster;
+import fun.observe.touchy.MotionEventReceiver;
 
 import static com.paypad.parator.FragmentControllers.FragNavController.TAB1;
 import static com.paypad.parator.constants.AnimationConstants.ANIMATE_DOWN_TO_UP;
@@ -29,34 +44,41 @@ import static com.paypad.parator.constants.AnimationConstants.ANIMATE_UP_TO_DOWN
 public class MainActivity extends FragmentActivity implements
         BaseFragment.FragmentNavigation,
         FragNavController.TransactionListener,
-        FragNavController.RootFragmentListener {
-
-    private FrameLayout contentFrame;
-
-    private TabLayout bottomTabLayout;
-
-    private LinearLayout tabMainLayout;
-
-    private int selectedTabColor, unSelectedTabColor;
-
-    private String ANIMATION_TAG;
-
-    private FragNavTransactionOptions transactionOptions;
-
-    //public KeypadFragment keypadFragment;
-    //public LibraryFragment libraryFragment;
-
-    private ChargeFragment chargeFragment;
+        FragNavController.RootFragmentListener{
 
     private int[] mTabIconsSelected = {
             R.drawable.ic_keyboard_black_24dp,
             R.drawable.ic_library_books_black_24dp};
 
+    private FrameLayout contentFrame;
+    private TabLayout bottomTabLayout;
+    private LinearLayout tabMainLayout;
+    private int selectedTabColor, unSelectedTabColor;
+    private String ANIMATION_TAG;
+    private FragNavTransactionOptions transactionOptions;
+    private ChargeFragment chargeFragment;
     private String[] TABS;
-
     private FragNavController mNavController;
-
     private FragmentHistory fragmentHistory;
+    private User user;
+    private CountDownTimer myCountDown;
+    private Passcode passcode;
+    private MotionEventReceiver motionEventReceiver;
+
+    @Subscribe(sticky = true)
+    public void accountHolderUserReceived(UserBus userBus){
+        user = userBus.getUser();
+        if(user == null)
+            user = UserDBHelper.getUserFromCache(MainActivity.this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(MainActivity.this);
+        if(motionEventReceiver != null)
+            MotionEventBroadcaster.removeReceiver(motionEventReceiver);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +88,14 @@ public class MainActivity extends FragmentActivity implements
         unSelectedTabColor = this.getResources().getColor(R.color.DarkGray, null);
         selectedTabColor = this.getResources().getColor(R.color.Black, null);
 
+        EventBus.getDefault().register(MainActivity.this);
+
         initValues();
 
         fragmentHistory = new FragmentHistory();
+
+        setMotionEventBroadcaster();
+        setCounterForPasscode();
 
         mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.content_frame)
                 .transactionListener(this)
@@ -96,6 +123,56 @@ public class MainActivity extends FragmentActivity implements
                 tabSelectionControl(tab);
             }
         });
+    }
+
+    private void setMotionEventBroadcaster() {
+        motionEventReceiver = new MotionEventReceiver() {
+            @Override
+            protected void onReceive(MotionEvent motionEvent) {
+                cancelCounter();
+
+                if(passcode != null && passcode.isEnabled() && passcode.getTimeOutId() != PasscodeTimeoutEnum.NEVER.getId())
+                    startCounter();
+            }
+        };
+        MotionEventBroadcaster.registerReceiver(motionEventReceiver);
+    }
+
+    public void setCounterForPasscode(){
+        passcode = PasscodeDBHelper.getPasscodeByUserId(user.getId());
+
+        if(passcode != null && passcode.isEnabled() && passcode.getTimeOutId() != PasscodeTimeoutEnum.NEVER.getId()){
+            setCounter(PasscodeTimeoutEnum.getById(passcode.getTimeOutId()).getTimeout());
+            startCounter();
+        }else
+            cancelCounter();
+    }
+
+    private void setCounter(int timeoutValue){
+        myCountDown = new CountDownTimer(timeoutValue, 1000) {
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                Intent intent = new Intent(MainActivity.this, PasscodeTypeActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("toolbarVisible", false);
+                bundle.putString("passcodeVal", passcode.getPasscodeVal());
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        };
+    }
+
+    private void startCounter(){
+        if(myCountDown != null)
+            myCountDown.start();
+    }
+
+    private void cancelCounter(){
+        if(myCountDown != null)
+            myCountDown.cancel();
     }
 
     private void initValues() {
@@ -293,4 +370,5 @@ public class MainActivity extends FragmentActivity implements
     public void onFragmentTransaction(Fragment fragment, FragNavController.TransactionType transactionType) {
 
     }
+
 }

@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.parator.FragmentControllers.BaseFragment;
+import com.paypad.parator.MainActivity;
 import com.paypad.parator.R;
 import com.paypad.parator.db.PasscodeDBHelper;
 import com.paypad.parator.db.UserDBHelper;
@@ -338,6 +339,8 @@ public class PasscodeManagementFragment extends BaseFragment implements Passcode
         passcode.setTimeOutId(passcodeTimeoutType.getId());
         realm.commitTransaction();
         setTimeoutValue(passcodeTimeoutType);
+
+        ((MainActivity) getActivity()).setCounterForPasscode();
     }
 
     private void setTimeoutValue(PasscodeTimeoutEnum passcodeTimeoutType){

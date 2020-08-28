@@ -83,7 +83,7 @@ public class ChargeFragment extends BaseFragment implements
         ItemListFragment.ProductUpdateCallback,
         ItemListFragment.CategoryUpdateCallback,
         ReturnViewCallback,
-        LocationGrantedCallback {
+        LocationGrantedCallback  {
 
     View mView;
 

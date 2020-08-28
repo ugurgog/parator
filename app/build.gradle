@@ -102,6 +102,8 @@ dependencies {
 
     //implementation 'in.arjsna:passcodeview:1.2.1'
 
+    implementation 'fun.observe:touchy:1.0.0'
+
     //Trial
     //implementation 'com.github.wRorsjakz:Android-NumPad:1.0.1'
 
