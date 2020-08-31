@@ -13,14 +13,9 @@ public class User extends RealmObject {
     private String password;
     private Date createDate;
     private Date updateDate;
-    private String storeName;
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private int typeOfBusinessId;
-    private int numberOfLocationsId;
-    private int estimatedAnnTurnoverId;
-    private int tradingCurrencyId;
     private String country;
     private String deviceToken;
     private boolean isLoggedIn;
@@ -81,14 +76,6 @@ public class User extends RealmObject {
         this.updateDate = updateDate;
     }
 
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public void setStoreName(String storeName) {
-        this.storeName = storeName;
-    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -111,38 +98,6 @@ public class User extends RealmObject {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public int getTypeOfBusinessId() {
-        return typeOfBusinessId;
-    }
-
-    public void setTypeOfBusinessId(int typeOfBusinessId) {
-        this.typeOfBusinessId = typeOfBusinessId;
-    }
-
-    public int getNumberOfLocationsId() {
-        return numberOfLocationsId;
-    }
-
-    public void setNumberOfLocationsId(int numberOfLocationsId) {
-        this.numberOfLocationsId = numberOfLocationsId;
-    }
-
-    public int getEstimatedAnnTurnoverId() {
-        return estimatedAnnTurnoverId;
-    }
-
-    public void setEstimatedAnnTurnoverId(int estimatedAnnTurnoverId) {
-        this.estimatedAnnTurnoverId = estimatedAnnTurnoverId;
-    }
-
-    public int getTradingCurrencyId() {
-        return tradingCurrencyId;
-    }
-
-    public void setTradingCurrencyId(int tradingCurrencyId) {
-        this.tradingCurrencyId = tradingCurrencyId;
     }
 
     public String getCountry() {

@@ -15,11 +15,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.paypad.parator.R;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.login.utils.LoginUtils;
@@ -33,7 +35,7 @@ import com.paypad.parator.utils.ShapeUtil;
 public class LoginActivity extends AppCompatActivity
         implements View.OnClickListener {
 
-    RelativeLayout backgroundLayout;
+    LinearLayout backgroundLayout;
     EditText emailEt;
     EditText passwordEt;
     AppCompatTextView registerText;
@@ -60,11 +62,11 @@ public class LoginActivity extends AppCompatActivity
 
     public void setShapes() {
         emailEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
+                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 0, 2));
         passwordEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
+                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 0, 2));
         btnLogin.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.DodgerBlue, null),
-                getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 20, 2));
+                getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 0, 2));
     }
 
     private void initVariables() {

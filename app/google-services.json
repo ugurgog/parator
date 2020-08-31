@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "671225793009",
+    "firebase_url": "https://parator-c4871.firebaseio.com",
+    "project_id": "parator-c4871",
+    "storage_bucket": "parator-c4871.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671225793009:android:0a71b7902e8607c9b4dc50",
+        "android_client_info": {
+          "package_name": "com.paypad.parator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "671225793009-1t48bauj151m2bjefi3dvbqa36ncii46.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.paypad.parator",
+            "certificate_hash": "835135492279180c8c9d6517641665756f89cf21"
+          }
+        },
+        {
+          "client_id": "671225793009-v51j5kb9thg22g0occtbt89hvkmvhonj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDF4Dgu9za9xlshCiSq3us2sSU6-Cjwh44"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "671225793009-v51j5kb9thg22g0occtbt89hvkmvhonj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

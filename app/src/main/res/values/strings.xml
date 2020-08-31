@@ -88,6 +88,7 @@
     <string name="done">Done</string>
     <string name="add">Add</string>
     <string name="clear">Clear</string>
+    <string name="welcome">WELCOME</string>
 
     <string name="there_is_no_search_result">There is no search result</string>
 
@@ -587,6 +588,7 @@
     <string name="please_enter_four_digit_passcode">Please enter 4-digits passcode</string>
     <string name="wrong_password_entered">Wrong passcode entered</string>
     <string name="timeout">Timeout</string>
+    <string name="please_type_store_information">Please enter store information</string>
 
     <!-- Passcode Timeout Values-->
     <string name="never">Never</string>

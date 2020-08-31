@@ -87,6 +87,7 @@
     <string name="done">Tamam</string>
     <string name="add">Ekle</string>
     <string name="clear">Temizle</string>
+    <string name="welcome">HOŞGELDİNİZ</string>
 
     <string name="there_is_no_search_result">Sonuç yok</string>
 
@@ -509,6 +510,7 @@
     <string name="please_enter_four_digit_passcode">Lütfen 4 basamaklı şifre girin</string>
     <string name="wrong_password_entered">Yanlış şifre girildi</string>
     <string name="timeout">Zaman Aşımı</string>
+    <string name="please_type_store_information">Lütfen mağaza bilgilerini giriniz</string>
 
     <!-- Passcode Timeout Values-->
     <string name="never">Asla</string>

@@ -182,6 +182,7 @@ public class CreditCardSelectFragment extends BaseFragment implements PaymentSta
         tenderAmountEt.addTextChangedListener(new NumberFormatWatcher(tenderAmountEt, TYPE_PRICE, MAX_PRICE_VALUE));
         setToolbarTitleInitValue();
         tenderAmountEt.setHint(CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
+        //throw new RuntimeException("Test Crash"); // Force a crash
     }
 
     private void initPaymentFragment(){

@@ -2,6 +2,10 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'realm-android'
 
+apply plugin: 'com.google.gms.google-services'
+
+apply plugin: 'com.google.firebase.crashlytics'
+
 //apply plugin: 'com.google.gms.google-services'
 
 android {
@@ -103,6 +107,10 @@ dependencies {
     //implementation 'in.arjsna:passcodeview:1.2.1'
 
     implementation 'fun.observe:touchy:1.0.0'
+
+    //Firebase dependencies
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
 
     //Trial
     //implementation 'com.github.wRorsjakz:Android-NumPad:1.0.1'

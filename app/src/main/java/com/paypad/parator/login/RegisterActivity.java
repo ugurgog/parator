@@ -53,28 +53,10 @@ public class RegisterActivity extends AppCompatActivity
     private EditText emailEt;
     private EditText passwordET;
     private Button btnRegister;
-    private EditText storeNameEt;
     private EditText firstNameEt;
     private EditText lastNameEt;
     private EditText phoneNumberEt;
     private EditText countryEt;
-    private ImageView backImgv;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
-
-    private NDSpinner typeOfBusinessSpinner;
-    private NDSpinner numberOfLocationsSpinner;
-    private NDSpinner estimatedAnnTurnoverSpinner;
-    private NDSpinner tradingCurrencySpinner;
-
-    private TypeOfBusinessEnum typeOfBusinessEnum = null;
-    private NumberOfLocationEnum numberOfLocationEnum = null;
-    private AnnualTurnoverRangeEnum annualTurnoverRangeEnum = null;
-    private CurrencyEnum currencyEnum = null;
-
-    private ArrayAdapter<String> typeOfBusinessAdapter;
-    private ArrayAdapter<String> numberOfLocationsAdapter;
-    private ArrayAdapter<String> estimatedAnnTurnoverAdapter;
-    private ArrayAdapter<String> tradingCurrencyAdapter;
 
     private String email;
     private String userPassword;
@@ -84,7 +66,7 @@ public class RegisterActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_x);
+        setContentView(R.layout.activity_register);
         overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
         initViews();
         initVariables();
@@ -96,8 +78,6 @@ public class RegisterActivity extends AppCompatActivity
         emailEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                 getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 0, 2));
         passwordET.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-                getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 0, 2));
-        storeNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                 getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 0, 2));
         firstNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
                 getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 0, 2));
@@ -115,123 +95,19 @@ public class RegisterActivity extends AppCompatActivity
         emailEt = findViewById(R.id.emailEt);
         passwordET = findViewById(R.id.input_password);
         btnRegister = findViewById(R.id.btnRegister);
-        storeNameEt = findViewById(R.id.storeNameEt);
         firstNameEt = findViewById(R.id.firstNameEt);
         lastNameEt = findViewById(R.id.lastNameEt);
         phoneNumberEt = findViewById(R.id.phoneNumberEt);
         countryEt = findViewById(R.id.countryEt);
-        collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
-        backImgv = findViewById(R.id.backImgv);
-
-        typeOfBusinessSpinner = findViewById(R.id.typeOfBusinessSpinner);
-        numberOfLocationsSpinner = findViewById(R.id.numberOfLocationsSpinner);
-        estimatedAnnTurnoverSpinner = findViewById(R.id.estimatedAnnTurnoverSpinner);
-        tradingCurrencySpinner = findViewById(R.id.tradingCurrencySpinner);
 
         progressDialog = new ProgressDialog(this);
     }
 
     private void initVariables(){
-        collapsingToolbarLayout.setTitle(getResources().getString(R.string.register));
         PhoneNumberUtil util = PhoneNumberUtil.createInstance(RegisterActivity.this);
         phoneNumberEt.addTextChangedListener(new PhoneNumberTextWatcher(phoneNumberEt, util));
         initCountrySelectFragment();
-        setSpinnerAdapters();
-    }
 
-    private void setSpinnerAdapters() {
-        setTypeOfBusinessSpinner();
-        setNumberOfLocationsSpinner();
-        setEstimatedAnnualTurnoverSpinner();
-        setTradingCurrencySpinner();
-    }
-
-    private void setTypeOfBusinessSpinner(){
-        List<String> typeOfBusinessSpinnerList = getTypeOfBusinessSpinnerList();
-        typeOfBusinessAdapter = new ArrayAdapter<>(RegisterActivity.this, android.R.layout.simple_spinner_item, typeOfBusinessSpinnerList);
-        typeOfBusinessAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        typeOfBusinessSpinner.setAdapter(typeOfBusinessAdapter);
-    }
-
-    private void setNumberOfLocationsSpinner(){
-        List<String> spinnerList = getNumberOfLocationsSpinnerList();
-        numberOfLocationsAdapter = new ArrayAdapter<>(RegisterActivity.this, android.R.layout.simple_spinner_item, spinnerList);
-        numberOfLocationsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        numberOfLocationsSpinner.setAdapter(numberOfLocationsAdapter);
-    }
-
-    private void setEstimatedAnnualTurnoverSpinner(){
-        List<String> spinnerList = getEstimatedAnnualTurnoverSpinnerList();
-        estimatedAnnTurnoverAdapter = new ArrayAdapter<>(RegisterActivity.this, android.R.layout.simple_spinner_item, spinnerList);
-        estimatedAnnTurnoverAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        estimatedAnnTurnoverSpinner.setAdapter(estimatedAnnTurnoverAdapter);
-    }
-
-    private void setTradingCurrencySpinner(){
-        List<String> spinnerList = getTradingCurrencySpinnerList();
-        tradingCurrencyAdapter = new ArrayAdapter<>(RegisterActivity.this, android.R.layout.simple_spinner_item, spinnerList);
-        tradingCurrencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        tradingCurrencySpinner.setAdapter(tradingCurrencyAdapter);
-    }
-
-    private List<String> getTypeOfBusinessSpinnerList() {
-        List<String> spinnerList = new ArrayList<>();
-
-        TypeOfBusinessEnum[] values = TypeOfBusinessEnum.values();
-
-        spinnerList.add(RegisterActivity.this.getResources().getString(R.string.choose_a_retail_category));
-
-        if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
-            for(TypeOfBusinessEnum item : values)
-                spinnerList.add(item.getLabelTr());
-        }else{
-            for(TypeOfBusinessEnum item : values)
-                spinnerList.add(item.getLabelEn());
-        }
-        return spinnerList;
-    }
-
-    private List<String> getNumberOfLocationsSpinnerList(){
-        List<String> spinnerList = new ArrayList<>();
-
-        NumberOfLocationEnum[] values = NumberOfLocationEnum.values();
-
-        spinnerList.add(RegisterActivity.this.getResources().getString(R.string.choose_how_many_locs_you_have));
-
-        for(NumberOfLocationEnum item : values)
-            spinnerList.add(item.getLabel().concat(" ").concat(getResources().getString(R.string.location)));
-
-        return spinnerList;
-    }
-
-    private List<String> getEstimatedAnnualTurnoverSpinnerList(){
-        List<String> spinnerList = new ArrayList<>();
-
-        AnnualTurnoverRangeEnum[] values = AnnualTurnoverRangeEnum.values();
-
-        spinnerList.add(RegisterActivity.this.getResources().getString(R.string.choose_annual_turnover_range));
-
-        for(AnnualTurnoverRangeEnum item : values)
-            spinnerList.add(item.getLabel().concat(" (").concat(CommonUtils.getCurrency().getSymbol()).concat(")"));
-
-        return spinnerList;
-    }
-
-    private List<String> getTradingCurrencySpinnerList(){
-        List<String> spinnerList = new ArrayList<>();
-
-        CurrencyEnum[] values = CurrencyEnum.values();
-
-        spinnerList.add(RegisterActivity.this.getResources().getString(R.string.choose_trading_currency));
-
-        if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
-            for(CurrencyEnum item : values)
-                spinnerList.add(item.getLabelTr());
-        }else{
-            for(CurrencyEnum item : values)
-                spinnerList.add(item.getLabelEn());
-        }
-        return spinnerList;
     }
 
     private void initListeners() {
@@ -242,77 +118,10 @@ public class RegisterActivity extends AppCompatActivity
             }
         });
 
-        backImgv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                RegisterActivity.this.onBackPressed();
-            }
-        });
-
         countryEt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 countrySelectFragment.show(RegisterActivity.this.getSupportFragmentManager(), countrySelectFragment.getTag());
-            }
-        });
-
-        typeOfBusinessSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                if(position > 0)
-                    typeOfBusinessEnum = TypeOfBusinessEnum.getById(position);
-                else
-                    typeOfBusinessEnum = null;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        estimatedAnnTurnoverSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                if(position > 0)
-                    annualTurnoverRangeEnum = AnnualTurnoverRangeEnum.getById(position);
-                else
-                    annualTurnoverRangeEnum = null;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        numberOfLocationsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                if(position > 0)
-                    numberOfLocationEnum = NumberOfLocationEnum.getById(position);
-                else
-                    numberOfLocationEnum = null;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        tradingCurrencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                if(position > 0)
-                    currencyEnum = CurrencyEnum.getById(position);
-                else
-                    currencyEnum = null;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
     }
@@ -378,11 +187,6 @@ public class RegisterActivity extends AppCompatActivity
             return false;
         }
 
-        if(storeNameEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_type_store_name));
-            return false;
-        }
-
         if(firstNameEt.getText().toString().isEmpty()){
             CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_type_first_name));
             return false;
@@ -403,26 +207,6 @@ public class RegisterActivity extends AppCompatActivity
             return false;
         }
 
-        if(typeOfBusinessEnum == null){
-            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_select_type_of_biusiness));
-            return false;
-        }
-
-        if(annualTurnoverRangeEnum == null){
-            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_select_estimated_annual_turnover));
-            return false;
-        }
-
-        if(numberOfLocationEnum == null){
-            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_select_number_of_locations));
-            return false;
-        }
-
-        if(currencyEnum == null){
-            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_select_trading_currency));
-            return false;
-        }
-
         return true;
     }
 
@@ -435,23 +219,10 @@ public class RegisterActivity extends AppCompatActivity
         user.setEmail(email);
         user.setPassword(userPassword);
         user.setCreateDate(new Date());
-        user.setStoreName(storeNameEt.getText().toString());
         user.setFirstName(firstNameEt.getText().toString());
         user.setLastName(lastNameEt.getText().toString());
         user.setPhoneNumber(phoneNumberEt.getText().toString());
         user.setCountry(countryEt.getText().toString());
-
-        if(typeOfBusinessEnum != null)
-            user.setTypeOfBusinessId(typeOfBusinessEnum.getId());
-
-        if(numberOfLocationEnum != null)
-            user.setNumberOfLocationsId(numberOfLocationEnum.getId());
-
-        if(annualTurnoverRangeEnum != null)
-            user.setEstimatedAnnTurnoverId(annualTurnoverRangeEnum.getId());
-
-        if(currencyEnum != null)
-            user.setTradingCurrencyId(currencyEnum.getId());
 
         user.setLoggedIn(true);
 
@@ -465,8 +236,11 @@ public class RegisterActivity extends AppCompatActivity
             LoginUtils.applySharedPreferences(RegisterActivity.this,
                     user.getEmail(), user.getPassword(), user.getId());
 
-            Intent intent = new Intent(RegisterActivity.this, InitialActivity.class);
+            Intent intent = new Intent(RegisterActivity.this, RegisterStoreActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            Bundle bundle = new Bundle();
+            bundle.putString("userId", user.getId());
+            intent.putExtras(bundle);
             startActivity(intent);
         }else{
             CommonUtils.showToastShort(RegisterActivity.this, baseResponse.getMessage());

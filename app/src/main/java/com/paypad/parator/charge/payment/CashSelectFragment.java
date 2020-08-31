@@ -188,6 +188,7 @@ public class CashSelectFragment extends BaseFragment implements PaymentStatusCal
                 .concat(getResources().getString(R.string.cash));
         toolbarTitleTv.setText(amountStr);
         tenderAmountEt.setHint(CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
+        //throw new RuntimeException("Test Crash"); // Force a crash
     }
 
     private void initPaymentFragment(){

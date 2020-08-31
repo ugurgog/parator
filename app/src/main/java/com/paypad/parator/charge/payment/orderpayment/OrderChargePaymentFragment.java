@@ -317,7 +317,7 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
                 .setNegativeBtnText(getContext().getResources().getString(R.string.keep))
                 .setNegativeBtnBackground(getContext().getResources().getColor(R.color.Silver, null))
                 .setPositiveBtnVisibility(View.VISIBLE)
-                .setPositiveBtnText(getContext().getResources().getString(R.string.cancel_transaction))
+                .setPositiveBtnText(getContext().getResources().getString(R.string.cancel))
                 .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
                 .setDurationTime(0)
                 .isCancellable(true)

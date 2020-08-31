@@ -38,6 +38,7 @@
                 android:textColor="@color/Black"
                 android:textSize="@dimen/default_size_20sp"
                 android:fontFamily="@font/agalega_regular">
+
             </androidx.appcompat.widget.AppCompatTextView>
 
         </LinearLayout>
@@ -45,10 +46,10 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:text="@string/welcome"
+            android:text="@string/please_type_store_information"
             android:layout_weight="2"
             android:gravity="center"
-            android:textSize="30dp"
+            android:textSize="@dimen/default_size_17sp"
             android:textStyle="italic"
             android:textColor="@color/DarkGray"
             android:fontFamily="@font/a_song_for_jennifer">
@@ -65,97 +66,95 @@
             android:padding="10dp"
             android:layout_weight="10">
 
-            <!--  Email Label -->
             <EditText
-                android:id="@+id/emailEt"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@color/transparent"
-                android:hint="@string/email"
-                android:inputType="textEmailAddress"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:textColor="@color/Black"
-                android:textColorHint="@color/Gray" />
-
-
-            <EditText
-                android:id="@+id/input_password"
+                android:id="@+id/storeNameEt"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/transparent"
-                android:hint="@string/password"
-                android:inputType="textPassword"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:textColor="@color/Black"
-                android:textColorHint="@color/Gray" />
-
-
-            <EditText
-                android:id="@+id/firstNameEt"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/transparent"
-                android:hint="@string/first_name"
+                android:hint="@string/store_name"
                 android:inputType="text"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:textColor="@color/Black"
                 android:textColorHint="@color/Gray" />
 
-            <EditText
-                android:id="@+id/lastNameEt"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/transparent"
-                android:hint="@string/last_name"
-                android:inputType="text"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:textColor="@color/Black"
-                android:textColorHint="@color/Gray" />
 
-            <EditText
-                android:id="@+id/phoneNumberEt"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginTop="8dp"
-                android:background="@color/transparent"
-                android:hint="@string/phone_number"
-                android:inputType="phone"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:textColor="@color/Black"
-                android:textColorHint="@color/Gray" />
+                android:background="@drawable/custom_edittext_bg"
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/countryEt"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
+                <com.paypad.parator.uiUtils.NDSpinner
+                    android:id="@+id/typeOfBusinessSpinner"
+                    style="@style/Spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:spinnerMode="dialog" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginTop="8dp"
-                android:background="@color/transparent"
-                android:focusable="true"
-                android:focusableInTouchMode="false"
-                android:hint="@string/country"
-                android:inputType="textCapSentences"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:singleLine="true"
-                android:textColor="@color/Black"
-                android:textColorHint="@color/Gray" />
+                android:background="@drawable/custom_edittext_bg"
+                android:orientation="vertical">
 
+                <com.paypad.parator.uiUtils.NDSpinner
+                    android:id="@+id/numberOfLocationsSpinner"
+                    style="@style/Spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/custom_edittext_bg"
+                android:orientation="vertical">
+
+                <com.paypad.parator.uiUtils.NDSpinner
+                    android:id="@+id/estimatedAnnTurnoverSpinner"
+                    style="@style/Spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:spinnerMode="dialog" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/custom_edittext_bg"
+                android:orientation="vertical">
+
+                <com.paypad.parator.uiUtils.NDSpinner
+                    android:id="@+id/tradingCurrencySpinner"
+                    style="@style/Spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:spinnerMode="dialog" />
+
+            </RelativeLayout>
 
             <Button
                 android:id="@+id/btnRegister"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="8dp"
-                android:text="@string/create_account"
-                android:textColor="@color/White" />
+                android:text="@string/continue_text"
+                android:textColor="@color/White"
+                android:textAllCaps="false"/>
 
         </LinearLayout>
     </LinearLayout>

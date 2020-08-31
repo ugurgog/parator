@@ -1,133 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/loginLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/loginLayout"
     android:background="@color/White">
 
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:gravity="bottom">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:fontFamily="@font/lato_family"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:text="@string/app_name"
-                android:textColor="@color/Gray"
-                android:textSize="35sp" />
-
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.5"
-            android:alpha="10"
-            android:descendantFocusability="beforeDescendants"
-            android:focusableInTouchMode="true"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="10dip"
-            android:theme="@style/EditTextTheme">
-
-            <EditText
-                android:id="@+id/emailEt"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="3dp"
-                android:background="@color/transparent"
-                android:ems="15"
-                android:hint="@string/email"
-                android:importantForAutofill="noExcludeDescendants"
-                android:inputType="textEmailAddress"
-                android:paddingLeft="7dp"
-                android:textColor="@color/Gray"
-                android:textColorHint="@color/Gray"
-                android:drawableLeft="@drawable/ic_email_gray_24dp"
-                android:drawablePadding="10dp"/>
-
-
-            <EditText
-                android:id="@+id/passwordEt"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="3dp"
-                android:background="@color/transparent"
-                android:ems="15"
-                android:hint="@string/password"
-                android:importantForAutofill="noExcludeDescendants"
-                android:inputType="textPassword"
-                android:paddingLeft="7dp"
-                android:textColor="@color/Gray"
-                android:textColorHint="@color/Gray"
-                android:drawableLeft="@drawable/ic_lock_outline_gray_24dp"
-                android:drawablePadding="10dp"/>
-
-
-            <Button
-                android:id="@+id/btnLogin"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
-                android:text="@string/login"
-                android:textColor="@color/White" />
-
-        </LinearLayout>
-
+        android:animateLayoutChanges="true"
+        android:background="@color/White"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:gravity="top|center_horizontal"
-            android:orientation="horizontal">
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_marginTop="150dp">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:fontFamily="@font/lato_family"
-                android:id="@+id/btnForgetPassword"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/Gray"
-                android:textSize="15sp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:text="|"
-                android:textStyle="bold" />
+                <LinearLayout
+                    android:id="@+id/xx"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:fontFamily="@font/lato_family"
-                android:id="@+id/btnRegister"
-                android:layout_width="wrap_content"
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/pos_icon">
+
+                    </ImageView>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/agalega_regular"
+                        android:paddingStart="20dp"
+                        android:text="@string/app_name"
+                        android:textColor="@color/Black"
+                        android:textSize="@dimen/default_size_20sp">
+
+                    </androidx.appcompat.widget.AppCompatTextView>
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_below="@id/xx"
+                    android:fontFamily="@font/a_song_for_jennifer"
+                    android:gravity="center"
+                    android:text="@string/welcome"
+                    android:textColor="@color/DarkGray"
+                    android:textSize="@dimen/default_size_17sp"
+                    android:textStyle="italic"></androidx.appcompat.widget.AppCompatTextView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:textColor="@color/Gray"
-                android:textSize="15sp" />
+                android:alpha="10"
+                android:descendantFocusability="beforeDescendants"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="10dip"
+                android:theme="@style/EditTextTheme">
+
+                <EditText
+                    android:id="@+id/emailEt"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_margin="3dp"
+                    android:background="@color/transparent"
+                    android:drawableLeft="@drawable/ic_email_gray_24dp"
+                    android:drawablePadding="10dp"
+                    android:ems="15"
+                    android:hint="@string/email"
+                    android:importantForAutofill="noExcludeDescendants"
+                    android:inputType="textEmailAddress"
+                    android:paddingLeft="7dp"
+                    android:textColor="@color/Gray"
+                    android:textColorHint="@color/Gray" />
+
+
+                <EditText
+                    android:id="@+id/passwordEt"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_margin="3dp"
+                    android:background="@color/transparent"
+                    android:drawableLeft="@drawable/ic_lock_outline_gray_24dp"
+                    android:drawablePadding="10dp"
+                    android:ems="15"
+                    android:hint="@string/password"
+                    android:importantForAutofill="noExcludeDescendants"
+                    android:inputType="textPassword"
+                    android:paddingLeft="7dp"
+                    android:textColor="@color/Gray"
+                    android:textColorHint="@color/Gray" />
+
+
+                <Button
+                    android:id="@+id/btnLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/login"
+                    android:textColor="@color/White" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:gravity="top|center_horizontal"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/btnForgetPassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lato_family"
+                    android:textColor="@color/Gray"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="|"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/btnRegister"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lato_family"
+                    android:textColor="@color/Gray"
+                    android:textSize="15sp" />
+
+
+            </LinearLayout>
 
 
         </LinearLayout>
 
 
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-</RelativeLayout>
+
+</LinearLayout>
