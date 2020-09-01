@@ -596,4 +596,17 @@
     <string name="one_minute">1 Minute</string>
     <string name="five_minute">5 Minutes</string>
 
+    <string name="skip_upper">SKIP</string>
+    <string name="next">Next</string>
+    <string name="got_it_upper">GOT IT</string>
+
+    <!-- App Introduction strings-->
+    <string name="sale_and_payment">Sale and Payment</string>
+    <string name="sale_and_payment_desc">Thanks to Paratör application, you can add products and discounts to the sale and keep track of sales. It offers a flexible payment method for customers with partial payment and partial refund features.</string>
+    <string name="reporting">Reporting</string>
+    <string name="reporting_desc">You can control net and gross sales with daily, weekly and monthly reports. You can make your product and sales planning clearly with the best selling products and categories presented in the report.</string>
+    <string name="customer_management">Customer and Group Management</string>
+    <string name="customer_management_desc">You can add customers to the system through the application and include these customers in certain groups. By adding a customer to your sales, you can manage your sales planning with statistical data such as which customer consumes which products most.</string>
+    <string name="security_intro">Security</string>
+    <string name="security_intro_desc">You can set a password to ensure security. You can determine after which transactions this password should be asked. You can also ask for a password after the timeout you will set when the application is not used.</string>
 </resources>

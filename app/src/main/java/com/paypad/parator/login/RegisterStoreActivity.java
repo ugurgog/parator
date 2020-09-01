@@ -361,7 +361,7 @@ public class RegisterStoreActivity extends AppCompatActivity {
         progressDialog.dismiss();
 
         if(baseResponse.isSuccess()){
-            Intent intent = new Intent(RegisterStoreActivity.this, InitialActivity.class);
+            Intent intent = new Intent(RegisterStoreActivity.this, AppIntroductionActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }else{

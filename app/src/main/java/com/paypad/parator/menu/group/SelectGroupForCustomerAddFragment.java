@@ -159,7 +159,7 @@ public class SelectGroupForCustomerAddFragment extends BaseFragment {
     }
 
     public void updateGroup(){
-        realm.beginTransaction();
+        //realm.beginTransaction();
 
         List<Customer> addedCustomers = new ArrayList<>();
 

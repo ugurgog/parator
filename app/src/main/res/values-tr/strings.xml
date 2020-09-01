@@ -518,4 +518,18 @@
     <string name="one_minute">1 Dakika</string>
     <string name="five_minute">5 Dakika</string>
 
+    <string name="skip_upper">GEÇ</string>
+    <string name="next">İleri</string>
+    <string name="got_it_upper">ANLADIM</string>
+
+    <!-- App Introduction strings-->
+    <string name="sale_and_payment">Satış ve Ödeme</string>
+    <string name="sale_and_payment_desc">Paratör uygulaması sayesinde satışa ürün ve indirimler ekleyebilir ve satış takibini yapabilirsiniz. Parçalı ödeme ve parçalı iade özellikleri sayesinde müşteriler için esnek bir ödeme yöntemi sunmaktadır.</string>
+    <string name="reporting">Raporlama</string>
+    <string name="reporting_desc">Günlük, haftalık ve aylık raporlar ile net ve brüt satışların kontrolünü sağlayabilirsiniz. Raporda sunulan en çok satılan ürün ve kategoriler ile ürün ve satış planlamalarınızı net bir şekilde yapabilirsiniz.</string>
+    <string name="customer_management">Müşteri ve Grup Yönetimi</string>
+    <string name="customer_management_desc">Uygulama üzerinden sisteme müşteriler ekleyebilir ve bu müşterileri belirli gruplara dahil edebilirsiniz. Yapacağınız satışa müşteri ekleyerek hangi müşterinin hangi ürünleri en çok tükettiği gibi istatistiksel veriler ile satış planlamalarınızı yönetebilirsiniz.</string>
+    <string name="security_intro">Güvenlik</string>
+    <string name="security_intro_desc">Güvenliği sağlamak için şifre belirleyebilirsiniz. Bu şifrenin hangi işlemlerden sonra sorulması gerektiğini belirleyebilirsiniz. Ayrıca uygulama kullanılmadığında belirleyeceğiniz zaman aşımı sonrası da şifre sorulmasını sağlayabilirsiniz.</string>
+
 </resources>
