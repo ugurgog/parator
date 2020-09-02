@@ -461,7 +461,7 @@ public class ProductEditFragment extends BaseFragment implements
         realm.commitTransaction();
 
         BaseResponse baseResponse = ProductDBHelper.createOrUpdateProduct(productXX);
-        DataUtils.showBaseResponseMessage(mContext, baseResponse);
+        DataUtils.showBaseResponseMessage(mContext, baseResponse);  
 
         if(baseResponse.isSuccess()){
             dismissPopups();
