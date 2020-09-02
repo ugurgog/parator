@@ -461,7 +461,7 @@ public class ProductEditFragment extends BaseFragment implements
         realm.commitTransaction();
 
         BaseResponse baseResponse = ProductDBHelper.createOrUpdateProduct(productXX);
-        DataUtils.showBaseResponseMessage(mContext, baseResponse);  
+        DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
         if(baseResponse.isSuccess()){
             dismissPopups();
@@ -472,7 +472,7 @@ public class ProductEditFragment extends BaseFragment implements
 
             ItemProcessEnum processEnum;
             if(inserted)
-                processEnum = ItemProcessEnum.INSERTED;
+                processEnum = ItemProcessEnum.INSERTED; 
             else
                 processEnum = ItemProcessEnum.CHANGED;
 
