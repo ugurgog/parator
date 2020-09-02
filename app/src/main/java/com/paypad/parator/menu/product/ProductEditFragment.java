@@ -472,7 +472,7 @@ public class ProductEditFragment extends BaseFragment implements
 
             ItemProcessEnum processEnum;
             if(inserted)
-                processEnum = ItemProcessEnum.INSERTED; 
+                processEnum = ItemProcessEnum.INSERTED;  
             else
                 processEnum = ItemProcessEnum.CHANGED;
 
