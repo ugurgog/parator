@@ -1,9 +1,11 @@
 package com.paypad.parator.menu.item;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,8 +31,12 @@ import com.paypad.parator.menu.unit.UnitFragment;
 import com.paypad.parator.model.Category;
 import com.paypad.parator.model.Discount;
 import com.paypad.parator.model.Product;
+import com.paypad.parator.uiUtils.tutorial.Tutorial;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Objects;
 
@@ -38,12 +44,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class ItemListFragment extends BaseFragment implements
         ReturnDiscountCallback,
         ReturnItemCallback,
         ReturnCategoryCallback,
-        MenuItemCallback {
+        MenuItemCallback ,
+        WalkthroughCallback {
 
     private View mView;
 
@@ -57,12 +66,17 @@ public class ItemListFragment extends BaseFragment implements
     private DiscountUpdateCallback discountUpdateCallback;
     private ProductUpdateCallback productUpdateCallback;
     private CategoryUpdateCallback categoryUpdateCallback;
+    private WalkthroughCallback walkthroughCallback;
+    private int walkthrough;
+    private Tutorial tutorial;
+    private Context mContext;
 
     @Override
     public void OnItemReturn(ItemsEnum itemType) {
         if(itemType == ItemsEnum.ALL_ITEMS){
-            ProductFragment productFragment = new ProductFragment();
+            ProductFragment productFragment = new ProductFragment(walkthrough);
             productFragment.setReturnItemCallback(this);
+            productFragment.setWalkthroughCallback(this);
             mFragmentNavigation.pushFragment(productFragment);
         }else if(itemType == ItemsEnum.CATEGORIES){
             CategoryFragment categoryFragment = new CategoryFragment();
@@ -81,6 +95,9 @@ public class ItemListFragment extends BaseFragment implements
         }
     }
 
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
+    }
 
     public interface DiscountUpdateCallback{
         void OnDiscountUpdated();
@@ -94,8 +111,8 @@ public class ItemListFragment extends BaseFragment implements
         void OnCategoryUpdated();
     }
 
-    public ItemListFragment() {
-
+    public ItemListFragment(int walkthrough) {
+        this.walkthrough = walkthrough;
     }
 
     @Override
@@ -103,6 +120,17 @@ public class ItemListFragment extends BaseFragment implements
         super.onStart();
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -142,6 +170,13 @@ public class ItemListFragment extends BaseFragment implements
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         itemsRv.setLayoutManager(linearLayoutManager);
         setAdapter();
+
+        tutorial = mView.findViewById(R.id.tutorial);
+        tutorial.setWalkthroughCallback(this);
+        if(walkthrough == WALK_THROUGH_CONTINUE){
+            tutorial.setLayoutVisibility(View.VISIBLE);
+            tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_all_items));
+        }
     }
 
     private void setAdapter() {
@@ -243,5 +278,13 @@ public class ItemListFragment extends BaseFragment implements
             else
                 return 0;
         }
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
+        if(result == WALK_THROUGH_END)
+            tutorial.setLayoutVisibility(View.GONE);
     }
 }

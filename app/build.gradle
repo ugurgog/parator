@@ -112,6 +112,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.5.0'
     implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
 
+    implementation 'com.nhaarman.supertooltips:library:3.0.+'
+
+    implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
+
     //Trial
     //implementation 'com.github.wRorsjakz:Android-NumPad:1.0.1'
 

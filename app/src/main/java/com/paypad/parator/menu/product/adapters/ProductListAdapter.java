@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.enums.ItemProcessEnum;
+import com.paypad.parator.interfaces.ClickCallback;
 import com.paypad.parator.interfaces.ReturnSizeCallback;
 import com.paypad.parator.interfaces.ReturnViewCallback;
 import com.paypad.parator.menu.product.ProductEditFragment;
@@ -30,6 +31,8 @@ import com.paypad.parator.utils.DataUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
+
 public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.ProductHolder> {
 
     private Context context;
@@ -40,6 +43,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     private ReturnItemCallback returnItemCallback;
     private ItemProcessEnum processType;
     private ReturnViewCallback returnViewCallback;
+    private ClickCallback clickCallback;
 
     public ProductListAdapter(Context context, List<Product> products,
                    BaseFragment.FragmentNavigation fragmentNavigation, ItemProcessEnum processType,
@@ -54,6 +58,10 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
 
     public void setReturnViewCallback(ReturnViewCallback returnViewCallback) {
         this.returnViewCallback = returnViewCallback;
+    }
+
+    public void setClickCallback(ClickCallback clickCallback) {
+        this.clickCallback = clickCallback;
     }
 
     @NonNull
@@ -91,6 +99,9 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
                 @Override
                 public void onClick(View view) {
 
+                    if(clickCallback != null)
+                        clickCallback.OnClicked();
+
                     // If process comes from Library step, just product will be selected
                     if(processType != null && (processType == ItemProcessEnum.SELECTED)){
 
@@ -99,7 +110,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
 
                         returnItemCallback.OnReturn(product, processType);
                     }else{
-                        fragmentNavigation.pushFragment(new ProductEditFragment(product, new ReturnItemCallback() {
+                        fragmentNavigation.pushFragment(new ProductEditFragment(product, WALK_THROUGH_END, new ReturnItemCallback() {
                             @Override
                             public void OnReturn(Product product, ItemProcessEnum processEnum) {
                                 returnItemCallback.OnReturn(product, processEnum);

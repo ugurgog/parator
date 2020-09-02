@@ -42,14 +42,19 @@ import com.paypad.parator.db.SaleDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.LocationGrantedCallback;
 import com.paypad.parator.interfaces.ReturnViewCallback;
+import com.paypad.parator.interfaces.TutorialSelectedCallback;
 import com.paypad.parator.menu.customer.CustomerFragment;
 import com.paypad.parator.menu.customer.interfaces.ReturnCustomerCallback;
 import com.paypad.parator.menu.item.ItemListFragment;
 import com.paypad.parator.menu.reports.ReportsFragment;
 import com.paypad.parator.menu.settings.SettingsFragment;
 import com.paypad.parator.menu.settings.passcode.PasscodeTypeActivity;
+import com.paypad.parator.menu.support.CustomShowcaseActivity;
+import com.paypad.parator.menu.support.Main2Activity;
+import com.paypad.parator.menu.support.SupportFragment;
 import com.paypad.parator.menu.transactions.TransactionsFragment;
 import com.paypad.parator.model.Customer;
 import com.paypad.parator.model.Discount;
@@ -59,8 +64,12 @@ import com.paypad.parator.model.Product;
 import com.paypad.parator.model.TaxModel;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.SaleModelInstance;
+import com.paypad.parator.uiUtils.tutorial.Tutorial;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.ConversionHelper;
+import com.paypad.parator.utils.CustomDialogBox;
+import com.paypad.parator.utils.CustomDialogBoxVert;
 import com.paypad.parator.utils.DataUtils;
 import com.paypad.parator.utils.PermissionModule;
 import com.paypad.parator.utils.ShapeUtil;
@@ -74,7 +83,10 @@ import java.util.UUID;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.paypad.parator.constants.CustomConstants.TUTORIAL_SELECTED_CREATE_ITEM;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class ChargeFragment extends BaseFragment implements
         SaleCalculateCallback,
@@ -83,7 +95,9 @@ public class ChargeFragment extends BaseFragment implements
         ItemListFragment.ProductUpdateCallback,
         ItemListFragment.CategoryUpdateCallback,
         ReturnViewCallback,
-        LocationGrantedCallback  {
+        LocationGrantedCallback,
+        TutorialSelectedCallback,
+        WalkthroughCallback{
 
     View mView;
 
@@ -118,6 +132,14 @@ public class ChargeFragment extends BaseFragment implements
     @BindView(R.id.saleCountRL)
     RelativeLayout saleCountRL;
 
+    //Tutorial Views
+    @BindView(R.id.tutorialRl)
+    RelativeLayout tutorialRl;
+    @BindView(R.id.closeTutorialImgv)
+    ImageView closeTutorialImgv;
+    @BindView(R.id.tutorialMsgTv)
+    TextView tutorialMsgTv;
+
     private static final int TAB_KEYPAD = 0;
     private static final int TAB_LIBRARY = 1;
 
@@ -139,6 +161,7 @@ public class ChargeFragment extends BaseFragment implements
     private String customerName = "";
     private OrderChargePaymentFragment orderChargePaymentFragment;
     private LocationRequestFragment locationRequestFragment;
+    private SupportFragment supportFragment;
 
     private OrderItem orderItem = null;
     private TaxModel mTaxModel = null;
@@ -146,6 +169,8 @@ public class ChargeFragment extends BaseFragment implements
     private PermissionModule permissionModule;
     private Passcode passcode;
     private Context mContext;
+    private Tutorial tutorial;
+    private Integer walkthrough = null;
 
     private TextView animationTextView;
 
@@ -210,6 +235,7 @@ public class ChargeFragment extends BaseFragment implements
 
     private void initVariables() {
         permissionModule = new PermissionModule(mContext);
+        initTutorial();
         orderManager = new OrderManager();
         chargeAmountTv.setHint("0,00".concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
         chargell.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.DodgerBlue, null),
@@ -223,6 +249,12 @@ public class ChargeFragment extends BaseFragment implements
         DataUtils.checkAutoIncrement(user.getId());
         setUpPager();
         setDrawerListeners();
+    }
+
+    private void initTutorial() {
+        tutorial = mView.findViewById(R.id.tutorial);
+        tutorial.setWalkthroughCallback(this);
+        walkthrough = WALK_THROUGH_END;
     }
 
     private void initListeners() {
@@ -433,6 +465,13 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void startSupportFragment() {
+        initSupportFragment();
+        mFragmentNavigation.pushFragment(supportFragment);
+    }
+
+    private void initSupportFragment(){
+        supportFragment = new SupportFragment();
+        supportFragment.setTutorialSelectedCallback(this);
     }
 
     private void startSettingsFragment() {
@@ -440,10 +479,11 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void startItemsFragment() {
-        ItemListFragment itemListFragment = new ItemListFragment();
+        ItemListFragment itemListFragment = new ItemListFragment(walkthrough);
         itemListFragment.setDiscountUpdateCallback(this);
         itemListFragment.setProductUpdateCallback(this);
         itemListFragment.setCategoryUpdateCallback(this);
+        itemListFragment.setWalkthroughCallback(this);
         mFragmentNavigation.pushFragment(itemListFragment);
     }
 
@@ -776,5 +816,51 @@ public class ChargeFragment extends BaseFragment implements
         OrderManager.setRemainAmountByDiscountedAmount();
         initSelectChargePaymentFragment();
         mFragmentNavigation.pushFragment(orderChargePaymentFragment);
+    }
+
+    @Override
+    public void OnSelectedTutorial(int selectedTutorial) {
+        if (selectedTutorial == TUTORIAL_SELECTED_CREATE_ITEM) {
+
+            new CustomDialogBoxVert.Builder((Activity) getContext())
+                    .setTitle(mContext.getResources().getString(R.string.welcome_to_parator_pos))
+                    .setMessage(mContext.getResources().getString(R.string.create_item_tutorial_message))
+                    .setNegativeBtnVisibility(View.VISIBLE)
+                    .setPositiveBtnVisibility(View.VISIBLE)
+                    .setPositiveBtnText(getContext().getResources().getString(R.string.create_item))
+                    .setNegativeBtnText(getContext().getResources().getString(R.string.not_now))
+                    .setPositiveBtnBackground(getContext().getResources().getColor(R.color.Green, null))
+                    .setNegativeBtnBackground(getContext().getResources().getColor(R.color.custom_btn_bg_color, null))
+                    .setDurationTime(0)
+                    .isCancellable(false)
+                    .setEdittextVisibility(View.GONE)
+                    .setpBtnTextColor(getContext().getResources().getColor(R.color.White, null))
+                    .setnBtnTextColor(getContext().getResources().getColor(R.color.Green, null))
+                    .OnPositiveClicked(new CustomDialogListener() {
+                        @Override
+                        public void OnClick() {
+                            walkthrough = WALK_THROUGH_CONTINUE;
+                            tutorial.setLayoutVisibility(View.VISIBLE);
+                            tutorial.setTutorialMessage(mContext.getResources().getString(R.string.select_items_tutorial_message));
+                        }
+                    }).OnNegativeClicked(new CustomDialogListener() {
+                        @Override
+                        public void OnClick() {
+
+                            //Intent intent = new Intent(mContext, Main2Activity.class);
+                            //startActivity(intent);
+
+                        }
+                    }).build();
+        }
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+
+        if(walkthrough == WALK_THROUGH_END)
+            tutorial.setLayoutVisibility(View.GONE);
+
     }
 }

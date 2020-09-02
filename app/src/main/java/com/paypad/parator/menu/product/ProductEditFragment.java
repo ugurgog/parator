@@ -1,5 +1,6 @@
 package com.paypad.parator.menu.product;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,7 +15,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +34,7 @@ import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.ProductUnitTypeEnum;
 import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.interfaces.TutorialPopupCallback;
 import com.paypad.parator.menu.category.CategorySelectFragment;
 import com.paypad.parator.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.parator.menu.product.interfaces.ColorImageReturnCallback;
@@ -46,6 +50,7 @@ import com.paypad.parator.model.UnitModel;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
 import com.paypad.parator.model.pojo.PhotoSelectUtil;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.BitmapUtils;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
@@ -65,9 +70,12 @@ import io.realm.Realm;
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.parator.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class ProductEditFragment extends BaseFragment implements
-        ColorImageReturnCallback {
+        ColorImageReturnCallback,
+        WalkthroughCallback{
 
     private View mView;
 
@@ -110,6 +118,8 @@ public class ProductEditFragment extends BaseFragment implements
 
     @BindView(R.id.btnDelete)
     Button btnDelete;
+    @BindView(R.id.scrollView)
+    ScrollView scrollView;
 
     private Realm realm;
     private Product productXX;
@@ -129,10 +139,23 @@ public class ProductEditFragment extends BaseFragment implements
 
     private int mColorId;
     private String itemName = "";
+    private int walkthrough;
+    private WalkthroughCallback walkthroughCallback;
+    private Context mContext;
 
-    public ProductEditFragment(@Nullable Product product, ReturnItemCallback returnItemCallback) {
+    private PopupWindow itemNamePopup;
+    private PopupWindow itemTaxPopup;
+    private PopupWindow itemPricePopup;
+    private boolean taxPopupShowed = false;
+
+    public ProductEditFragment(@Nullable Product product, int walkthrough, ReturnItemCallback returnItemCallback) {
         this.productXX = product;
         this.returnCallback = returnItemCallback;
+        this.walkthrough = walkthrough;
+    }
+
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
     }
 
     @Override
@@ -158,6 +181,17 @@ public class ProductEditFragment extends BaseFragment implements
         return mView;
     }
 
+    private void dismissPopups(){
+        if(itemNamePopup != null)
+            itemNamePopup.dismiss();
+
+        if(itemTaxPopup != null)
+            itemTaxPopup.dismiss();
+
+        if(itemPricePopup != null)
+            itemPricePopup.dismiss();
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
@@ -166,12 +200,14 @@ public class ProductEditFragment extends BaseFragment implements
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -179,7 +215,7 @@ public class ProductEditFragment extends BaseFragment implements
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     private void initListeners() {
@@ -188,7 +224,7 @@ public class ProductEditFragment extends BaseFragment implements
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
+                CommonUtils.hideKeyBoard(mContext);
                 checkValidProduct();
             }
         });
@@ -196,7 +232,8 @@ public class ProductEditFragment extends BaseFragment implements
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
+                dismissPopups();
+                ((Activity)mContext).onBackPressed();
             }
         });
 
@@ -204,6 +241,7 @@ public class ProductEditFragment extends BaseFragment implements
             @Override
             public void onClick(View view) {
                 initCategorySelectFragment();
+                dismissPopups();
                 mFragmentNavigation.pushFragment(categorySelectFragment);
             }
         });
@@ -211,12 +249,19 @@ public class ProductEditFragment extends BaseFragment implements
         taxll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                dismissPopups();
                 mFragmentNavigation.pushFragment(new TaxSelectFragment(new ReturnTaxCallback() {
                     @Override
                     public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
                         if(taxModel != null && taxModel.getName() != null && !taxModel.getName().isEmpty()){
                             taxTypeTv.setText(taxModel.getName());
                             myTaxModel = taxModel;
+
+                            if(itemTaxPopup != null && walkthrough == WALK_THROUGH_CONTINUE){
+                                itemTaxPopup.dismiss();
+                                itemTaxPopup = null;
+                                askForTypePrice();
+                            }
                         }
                     }
                 }));
@@ -226,6 +271,7 @@ public class ProductEditFragment extends BaseFragment implements
         unitll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                dismissPopups();
                 mFragmentNavigation.pushFragment(new UnitSelectFragment(new ReturnUnitCallback() {
                     @Override
                     public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
@@ -239,13 +285,14 @@ public class ProductEditFragment extends BaseFragment implements
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                dismissPopups();
                 if(deleteButtonStatus == 1){
                     deleteButtonStatus ++;
-                    CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
-                            getContext().getResources().getString(R.string.confirm_delete));
+                    CommonUtils.setBtnSecondCondition(mContext, btnDelete,
+                            mContext.getResources().getString(R.string.confirm_delete));
                 }else if(deleteButtonStatus == 2){
                     BaseResponse baseResponse = ProductDBHelper.deleteProduct(productXX.getId());
-                    DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+                    DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
                     if(baseResponse.isSuccess()){
                         returnCallback.OnReturn((Product) baseResponse.getObject(), ItemProcessEnum.DELETED);
@@ -258,7 +305,7 @@ public class ProductEditFragment extends BaseFragment implements
         imageRl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                dismissPopups();
                 initSelectColorFragment();
                 mFragmentNavigation.pushFragment(selectColorFragment);
 
@@ -281,6 +328,13 @@ public class ProductEditFragment extends BaseFragment implements
             @Override
             public void afterTextChanged(Editable editable) {
                 if(editable != null && !editable.toString().isEmpty() && !photoExist){
+                    if(itemNamePopup != null && walkthrough == WALK_THROUGH_CONTINUE){
+                        itemNamePopup.dismiss();
+
+                        if(!taxPopupShowed)
+                            askForSelectTax();
+                    }
+
                     itemName = editable.toString();
                     itemShortNameTv.setText(DataUtils.getProductNameShortenName(itemName));
                 }else{
@@ -289,6 +343,42 @@ public class ProductEditFragment extends BaseFragment implements
                 }
             }
         });
+    }
+
+    private void askForSelectTax(){
+        taxPopupShowed = true;
+        CommonUtils.displayPopupWindow(taxll, mContext, mContext.getResources().getString(R.string.select_tax),
+                new TutorialPopupCallback() {
+                    @Override
+                    public void OnClosed() {
+                        OnWalkthroughResult(WALK_THROUGH_END);
+                        itemTaxPopup = null;
+                    }
+
+                    @Override
+                    public void OnGetPopup(PopupWindow popupWindow) {
+                        itemTaxPopup = popupWindow;
+                    }
+                });
+    }
+
+    private void askForTypePrice(){
+        if(itemTaxPopup != null && itemTaxPopup.isShowing())
+            itemTaxPopup.dismiss();
+
+        CommonUtils.displayPopupWindow(amountRateEt, mContext, mContext.getResources().getString(R.string.type_item_amount_message),
+                new TutorialPopupCallback() {
+                    @Override
+                    public void OnClosed() {
+                        OnWalkthroughResult(WALK_THROUGH_END);
+                        itemPricePopup = null;
+                    }
+
+                    @Override
+                    public void OnGetPopup(PopupWindow popupWindow) {
+                        itemPricePopup = popupWindow;
+                    }
+                });
     }
 
     private void initCategorySelectFragment(){
@@ -314,19 +404,19 @@ public class ProductEditFragment extends BaseFragment implements
     private void checkValidProduct() {
         if(productNameEt.getText() == null || productNameEt.getText().toString().isEmpty()){
             CommonUtils.snackbarDisplay(productMainll,
-                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.product_name_can_not_be_empty));
+                    mContext, mContext.getResources().getString(R.string.product_name_can_not_be_empty));
             return;
         }
 
         if(unitTypeTv.getText() == null || unitTypeTv.getText().toString().isEmpty()){
             CommonUtils.snackbarDisplay(productMainll,
-                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.product_unit_type_can_not_be_empty));
+                    mContext, mContext.getResources().getString(R.string.product_unit_type_can_not_be_empty));
             return;
         }
 
         if(myTaxModel == null || myTaxModel.getName() == null || myTaxModel.getName().isEmpty()){
             CommonUtils.snackbarDisplay(productMainll,
-                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.product_tax_can_not_be_empty));
+                    mContext, mContext.getResources().getString(R.string.product_tax_can_not_be_empty));
             return;
         }
 
@@ -371,12 +461,13 @@ public class ProductEditFragment extends BaseFragment implements
         realm.commitTransaction();
 
         BaseResponse baseResponse = ProductDBHelper.createOrUpdateProduct(productXX);
-        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+        DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
         if(baseResponse.isSuccess()){
+            dismissPopups();
             deleteButtonStatus = 1;
-            CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
-                    getContext().getResources().getString(R.string.delete_item));
+            CommonUtils.setBtnFirstCondition(mContext, btnDelete,
+                    mContext.getResources().getString(R.string.delete_item));
             btnDelete.setEnabled(false);
 
             ItemProcessEnum processEnum;
@@ -388,7 +479,7 @@ public class ProductEditFragment extends BaseFragment implements
             returnCallback.OnReturn((Product) baseResponse.getObject(), processEnum);
 
             clearViews();
-            Objects.requireNonNull(getActivity()).onBackPressed();
+            ((Activity) mContext).onBackPressed();
         }
     }
 
@@ -396,9 +487,9 @@ public class ProductEditFragment extends BaseFragment implements
         productXX = new Product();
         amountRateEt.setText("");
         productNameEt.setText("");
-        categoryTv.setText(getContext().getResources().getString(R.string.select_category));
-        unitTypeTv.setText(getContext().getResources().getString(R.string.select_unit));
-        taxTypeTv.setText(getContext().getResources().getString(R.string.select_tax));
+        categoryTv.setText(mContext.getResources().getString(R.string.select_category));
+        unitTypeTv.setText(mContext.getResources().getString(R.string.select_unit));
+        taxTypeTv.setText(mContext.getResources().getString(R.string.select_tax));
         editItemImgv.setImageDrawable(null);
         itemShortNameTv.setText("");
     }
@@ -427,6 +518,26 @@ public class ProductEditFragment extends BaseFragment implements
             toolbarTitleTv.setText(getResources().getString(R.string.edit_item));
             setFilledProductVariables();
         }
+
+        checkTutorialActivity();
+    }
+
+    private void checkTutorialActivity() {
+        if(walkthrough == WALK_THROUGH_CONTINUE){
+            CommonUtils.displayPopupWindow(productNameEt, mContext, mContext.getResources().getString(R.string.enter_item_name_message),
+                    new TutorialPopupCallback() {
+                        @Override
+                        public void OnClosed() {
+                            OnWalkthroughResult(WALK_THROUGH_END);
+                            itemNamePopup = null;
+                        }
+
+                        @Override
+                        public void OnGetPopup(PopupWindow popupWindow) {
+                            itemNamePopup = popupWindow;
+                        }
+                    });
+        }
     }
 
     private void setFilledProductVariables() {
@@ -446,8 +557,8 @@ public class ProductEditFragment extends BaseFragment implements
 
                     }catch (IllegalArgumentException e){
                         int size = Math.round(TypedValue.applyDimension(
-                                TypedValue.COMPLEX_UNIT_DIP, Objects.requireNonNull(getContext()).getResources().getDimension(R.dimen.product_imageview_default_size),
-                                getContext().getResources().getDisplayMetrics()));
+                                TypedValue.COMPLEX_UNIT_DIP, mContext.getResources().getDimension(R.dimen.product_imageview_default_size),
+                                mContext.getResources().getDisplayMetrics()));
                         editItemImgv.setImageBitmap(Bitmap.createScaledBitmap(bmp, size, size, false));
                     }
                 }
@@ -468,7 +579,7 @@ public class ProductEditFragment extends BaseFragment implements
             if(myCategory != null && myCategory.getName() != null)
                 categoryTv.setText(myCategory.getName());
         }else
-            categoryTv.setText(getContext().getResources().getString(R.string.uncategorized));
+            categoryTv.setText(mContext.getResources().getString(R.string.uncategorized));
 
         if(productXX.getUnitId() != 0){
             mUnitModel = DataUtils.getUnitModelById(productXX.getUnitId());
@@ -520,5 +631,11 @@ public class ProductEditFragment extends BaseFragment implements
         this.itemPictureByteArray = itemPictureByteArray;
         this.photoSelectUtil = photoSelectUtil;
         setProductPhoto();
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
     }
 }

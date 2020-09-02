@@ -532,4 +532,27 @@
     <string name="security_intro">Güvenlik</string>
     <string name="security_intro_desc">Güvenliği sağlamak için şifre belirleyebilirsiniz. Bu şifrenin hangi işlemlerden sonra sorulması gerektiğini belirleyebilirsiniz. Ayrıca uygulama kullanılmadığında belirleyeceğiniz zaman aşımı sonrası da şifre sorulmasını sağlayabilirsiniz.</string>
 
+    <!-- Support descriptions-->
+    <string name="tours_and_tutorials">Turlar ve Eğitimler</string>
+    <string name="take_your_first_payment">İlk Ödemenizi Yapın</string>
+    <string name="take_your_first_payment_desc">İlk ödemenizi nasıl alacağınızı öğrenin.</string>
+    <string name="create_item_tutorial">Ürün Oluşturma Eğitimi</string>
+    <string name="create_item_tutorial_desc">Nasıl ürün oluşturacağınızı öğrenin.</string>
+
+    <!-- Tours and Tutorials descriptions-->
+    <string name="welcome_to_parator_pos">Paratör Satış Noktasına Hoşgeldiniz</string>
+    <string name="create_item_tutorial_message">Bir ürün oluşturmayı öğrenerek kurulumlara başlayalım. Ürünler, ödeme sürecini hızlandırmaya yardımcı olur ve size daha ayrıntılı satış raporları sunar.</string>
+    <string name="not_now">Şimdi değil</string>
+    <string name="select_items_tutorial_message">Ürünlerinizi oluşturmak, görüntülemek ve yönetmek için menüden Ürünler\'i seçin.</string>
+    <string name="dont_need_help">Yardıma ihtiyacın yok mu?</string>
+    <string name="dont_need_help_message">Bu kılavuzu daha sonra Turlar ve Öğreticiler altındaki Destek bölümünde ziyaret edebilirsiniz.</string>
+    <string name="continue_walkthrough">İlerlemeye Devam Et</string>
+    <string name="end_walkthrough">İlerlemeyi Sonlandır</string>
+    <string name="now_select_all_items">Şimdi Tüm Ürünleri Seçin</string>
+    <string name="select_create_item">Ürün Oluştur\'u seçin</string>
+    <string name="enter_item_name_message">Bir ürün adı girin, örn. Kahve. Ürün adı müşteri makbuzlarında ve satış raporlarında kullanılacaktır.</string>
+    <string name="type_item_amount_message">Ürün fiyatını giriniz. Bu alan zorunlu değildir.</string>
+    <string name="created_your_first_item">İlk Ürününüzü Oluşturdunuz</string>
+    <string name="created_your_first_item_desc">Bu eğitimi Destek > Turlar ve Eğitim sekmesinden tekrar ziyaret edebilirsiniz.</string>
+
 </resources>

@@ -72,6 +72,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilityListener,
         ReturnViewCallback {
@@ -198,7 +199,7 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
             @Override
             public void onClick(View view) {
                 if(selectedSpinner.getId() == ItemSpinnerEnum.PRODUCTS.getId()){
-                    mFragmentNavigation.pushFragment(new ProductEditFragment(null, new ReturnItemCallback() {
+                    mFragmentNavigation.pushFragment(new ProductEditFragment(null, WALK_THROUGH_END, new ReturnItemCallback() {
                         @Override
                         public void OnReturn(Product product, ItemProcessEnum processEnum) {
                             setProductAdapter(0);

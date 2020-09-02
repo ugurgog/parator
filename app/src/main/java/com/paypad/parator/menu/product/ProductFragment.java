@@ -1,5 +1,6 @@
 package com.paypad.parator.menu.product;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,13 +26,18 @@ import com.paypad.parator.db.ProductDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.interfaces.ClickCallback;
+import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.ReturnSizeCallback;
+import com.paypad.parator.interfaces.TutorialPopupCallback;
 import com.paypad.parator.menu.product.adapters.ProductListAdapter;
 import com.paypad.parator.menu.product.interfaces.ReturnItemCallback;
 import com.paypad.parator.model.Product;
 import com.paypad.parator.model.User;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
+import com.paypad.parator.utils.CustomDialogBoxVert;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -44,7 +51,10 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class ProductFragment extends BaseFragment {
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
+
+public class ProductFragment extends BaseFragment implements WalkthroughCallback, ClickCallback {
 
     private View mView;
 
@@ -73,13 +83,24 @@ public class ProductFragment extends BaseFragment {
     private RealmResults<Product> products;
     private List<Product> productList;
     private User user;
+    private int walkthrough;
+    private Context mContext;
+    private WalkthroughCallback walkthroughCallback;
 
-    public ProductFragment() {
+    private ProductEditFragment productEditFragment;
+    private PopupWindow btnPopup;
 
+
+    public ProductFragment(int walkthrough) {
+        this.walkthrough = walkthrough;
     }
 
     public void setReturnItemCallback(ReturnItemCallback returnItemCallback) {
         this.returnItemCallback = returnItemCallback;
+    }
+
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
     }
 
     @Override
@@ -90,12 +111,14 @@ public class ProductFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -132,6 +155,8 @@ public class ProductFragment extends BaseFragment {
         backImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(btnPopup != null)
+                    btnPopup.dismiss();
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
@@ -139,12 +164,10 @@ public class ProductFragment extends BaseFragment {
         createProductBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new ProductEditFragment(null, new ReturnItemCallback() {
-                    @Override
-                    public void OnReturn(Product product, ItemProcessEnum processEnum) {
-                        updateAdapterWithCurrentList();
-                    }
-                }));
+                if(btnPopup != null)
+                    btnPopup.dismiss();
+                initProductEditFragment();
+                mFragmentNavigation.pushFragment(productEditFragment);
             }
         });
 
@@ -179,6 +202,45 @@ public class ProductFragment extends BaseFragment {
         });
     }
 
+    private void initProductEditFragment(){
+        productEditFragment = new ProductEditFragment(null, walkthrough, new ReturnItemCallback() {
+            @Override
+            public void OnReturn(Product product, ItemProcessEnum processEnum) {
+                updateAdapterWithCurrentList();
+
+                if(walkthrough == WALK_THROUGH_CONTINUE){
+
+                    new CustomDialogBoxVert.Builder((Activity) mContext)
+                            .setTitle(mContext.getResources().getString(R.string.created_your_first_item))
+                            .setMessage(mContext.getResources().getString(R.string.created_your_first_item_desc))
+                            .setNegativeBtnVisibility(View.VISIBLE)
+                            .setPositiveBtnVisibility(View.VISIBLE)
+                            .setPositiveBtnText(mContext.getResources().getString(R.string.ok))
+                            .setNegativeBtnText(mContext.getResources().getString(R.string.end_walkthrough))
+                            .setPositiveBtnBackground(mContext.getResources().getColor(R.color.Green, null))
+                            .setNegativeBtnBackground(mContext.getResources().getColor(R.color.custom_btn_bg_color, null))
+                            .setNegativeBtnVisibility(View.GONE)
+                            .setDurationTime(0)
+                            .isCancellable(false)
+                            .setEdittextVisibility(View.GONE)
+                            .setpBtnTextColor(mContext.getResources().getColor(R.color.White, null))
+                            .setnBtnTextColor(mContext.getResources().getColor(R.color.Green, null))
+                            .OnPositiveClicked(new CustomDialogListener() {
+                                @Override
+                                public void OnClick() {
+                                }
+                            }).build();
+
+                    walkthrough = WALK_THROUGH_END;
+                    OnWalkthroughResult(walkthrough);
+                    if(btnPopup != null)
+                        btnPopup.dismiss();
+                }
+            }
+        });
+        productEditFragment.setWalkthroughCallback(this);
+    }
+
     private void initVariables() {
         realm = Realm.getDefaultInstance();
         toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.items));
@@ -190,6 +252,23 @@ public class ProductFragment extends BaseFragment {
 
         productRv.setLayoutManager(linearLayoutManager);
         updateAdapterWithCurrentList();
+
+        if(walkthrough == WALK_THROUGH_CONTINUE){
+            CommonUtils.displayPopupWindow(createProductBtn, mContext, mContext.getResources().getString(R.string.select_create_item),
+                    new TutorialPopupCallback() {
+                        @Override
+                        public void OnClosed() {
+                            OnWalkthroughResult(WALK_THROUGH_END);
+                            btnPopup.dismiss();
+                            btnPopup = null;
+                        }
+
+                        @Override
+                        public void OnGetPopup(PopupWindow popupWindow) {
+                            btnPopup = popupWindow;
+                        }
+                    });
+        }
     }
 
     public void updateAdapterWithCurrentList(){
@@ -205,6 +284,7 @@ public class ProductFragment extends BaseFragment {
                     returnItemCallback.OnReturn(product, processEnum);
             }
         });
+        productListAdapter.setClickCallback(this);
         productRv.setAdapter(productListAdapter);
     }
 
@@ -225,5 +305,19 @@ public class ProductFragment extends BaseFragment {
                 }
             });
         }
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
+    }
+
+    @Override
+    public void OnClicked() {
+        if(btnPopup != null)
+            btnPopup.dismiss();
+        //walkthrough = WALK_THROUGH_END;
+        //OnWalkthroughResult(walkthrough);
     }
 }

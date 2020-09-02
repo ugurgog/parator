@@ -7,11 +7,27 @@
 
     <include layout="@layout/toolbar_including_back_view"/>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/itemsRv">
+        android:layout_height="match_parent">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/itemsRv">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <com.paypad.parator.uiUtils.tutorial.Tutorial
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tutorial"
+            android:layout_alignParentBottom="true">
+
+        </com.paypad.parator.uiUtils.tutorial.Tutorial>
+
+    </RelativeLayout>
+
+
 
 </LinearLayout>

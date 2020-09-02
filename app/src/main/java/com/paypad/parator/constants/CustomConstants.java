@@ -44,4 +44,10 @@ public class CustomConstants {
 
     public static final int PASSCODE_CREATE = 0;
     public static final int PASSCODE_EDIT = 1;
+
+    public static final int TUTORIAL_SELECTED_PAYMENT = 0;
+    public static final int TUTORIAL_SELECTED_CREATE_ITEM = 1;
+
+    public static final int WALK_THROUGH_CONTINUE = 0;
+    public static final int WALK_THROUGH_END = 1;
 }

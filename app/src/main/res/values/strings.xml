@@ -609,4 +609,29 @@
     <string name="customer_management_desc">You can add customers to the system through the application and include these customers in certain groups. By adding a customer to your sales, you can manage your sales planning with statistical data such as which customer consumes which products most.</string>
     <string name="security_intro">Security</string>
     <string name="security_intro_desc">You can set a password to ensure security. You can determine after which transactions this password should be asked. You can also ask for a password after the timeout you will set when the application is not used.</string>
+
+
+    <!-- Support descriptions-->
+    <string name="tours_and_tutorials">Tours and Tutorials</string>
+    <string name="take_your_first_payment">Take Your First Payment</string>
+    <string name="take_your_first_payment_desc">Learn how to take your first payment.</string>
+    <string name="create_item_tutorial">Create Item Tutorial</string>
+    <string name="create_item_tutorial_desc">Learn how to create an item.</string>
+
+    <!-- Tours and Tutorials descriptions-->
+    <string name="welcome_to_parator_pos">Welcome to Paratör Point of Sale</string>
+    <string name="create_item_tutorial_message">Let\'s start getting set up by learning to create an item. Items help speed up the checkout process and give you more detailed sales reporting.</string>
+    <string name="not_now">Not Now</string>
+    <string name="select_items_tutorial_message">Select Items from menu to create, view, and manage your items.</string>
+    <string name="dont_need_help">Don\'t need help?</string>
+    <string name="dont_need_help_message">You can visit this walkthrough later in Support under Tours and Tutorials.</string>
+    <string name="continue_walkthrough">Continue Walkthrough</string>
+    <string name="end_walkthrough">End Walkthrough</string>
+    <string name="now_select_all_items">Now Select All Items</string>
+    <string name="select_create_item">Select Create Item</string>
+    <string name="enter_item_name_message">Enter an item name, e.g. Coffe. The name will be used on customer receipts and in sales reports.</string>
+    <string name="type_item_amount_message">Enter the product price. This field is not required.</string>
+    <string name="created_your_first_item">You\'ve Created Your First Item</string>
+    <string name="created_your_first_item_desc">You can revisit this tutorial in Support > Tours and Tutorials</string>
+
 </resources>

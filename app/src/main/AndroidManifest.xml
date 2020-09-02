@@ -25,7 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".login.AppIntroductionActivity"></activity>
+        <activity android:name=".menu.support.Main2Activity"></activity>
+        <activity android:name=".menu.support.CustomShowcaseActivity" />
+        <activity android:name=".login.AppIntroductionActivity" />
         <activity android:name=".menu.settings.passcode.PasscodeTypeActivity" />
         <activity android:name=".square.SampleTimesSquareActivity" />
 

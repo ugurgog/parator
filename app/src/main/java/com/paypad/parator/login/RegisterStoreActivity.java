@@ -358,7 +358,7 @@ public class RegisterStoreActivity extends AppCompatActivity {
 
         BaseResponse baseResponse = StoreDBHelper.createOrUpdateStore(store);
 
-        progressDialog.dismiss();  
+        progressDialog.dismiss();
 
         if(baseResponse.isSuccess()){
             Intent intent = new Intent(RegisterStoreActivity.this, AppIntroductionActivity.class);

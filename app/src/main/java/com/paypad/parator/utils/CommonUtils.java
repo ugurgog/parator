@@ -5,20 +5,27 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.paypad.parator.R;
 import com.paypad.parator.enums.CurrencyEnum;
+import com.paypad.parator.interfaces.CustomDialogListener;
+import com.paypad.parator.interfaces.TutorialPopupCallback;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,6 +43,8 @@ import static com.paypad.parator.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.parator.constants.CustomConstants.TYPE_RATE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class CommonUtils {
 
@@ -47,6 +56,66 @@ public class CommonUtils {
 
     public static void showToastLong(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
+    public static void displayPopupWindow(View anchorView, Context mContext, String message, TutorialPopupCallback tutorialPopupCallback) {
+        PopupWindow popup = new PopupWindow(mContext);
+        View layout = ((Activity)mContext).getLayoutInflater().inflate(R.layout.popup_content, null);
+
+        TextView tutorialMsgTv = layout.findViewById(R.id.tutorialMsgTv);
+        ImageView closeTutorialImgv = layout.findViewById(R.id.closeTutorialImgv);
+        LinearLayout tutorialRl = layout.findViewById(R.id.tutorialRl);
+
+        tutorialMsgTv.setText(message);
+
+        popup.setContentView(layout);
+        // Set content width and height
+        popup.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        popup.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        // Closes the popup window when touch outside of it - when looses focus
+        //popup.setOutsideTouchable(true);
+        //popup.setFocusable(true);
+        // Show anchored to button
+
+        popup.setOutsideTouchable(false);
+        popup.setFocusable(false);
+
+
+        popup.setBackgroundDrawable(new BitmapDrawable());
+        popup.showAsDropDown(anchorView);
+
+        tutorialPopupCallback.OnGetPopup(popup);
+
+        closeTutorialImgv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new CustomDialogBoxVert.Builder((Activity) mContext)
+                        .setTitle(mContext.getResources().getString(R.string.dont_need_help))
+                        .setMessage(mContext.getResources().getString(R.string.dont_need_help_message))
+                        .setNegativeBtnVisibility(View.VISIBLE)
+                        .setPositiveBtnVisibility(View.VISIBLE)
+                        .setPositiveBtnText(mContext.getResources().getString(R.string.continue_walkthrough))
+                        .setNegativeBtnText(mContext.getResources().getString(R.string.end_walkthrough))
+                        .setPositiveBtnBackground(mContext.getResources().getColor(R.color.Green, null))
+                        .setNegativeBtnBackground(mContext.getResources().getColor(R.color.custom_btn_bg_color, null))
+                        .setDurationTime(0)
+                        .isCancellable(false)
+                        .setEdittextVisibility(View.GONE)
+                        .setpBtnTextColor(mContext.getResources().getColor(R.color.White, null))
+                        .setnBtnTextColor(mContext.getResources().getColor(R.color.Green, null))
+                        .OnPositiveClicked(new CustomDialogListener() {
+                            @Override
+                            public void OnClick() {
+                            }
+                        }).OnNegativeClicked(new CustomDialogListener() {
+                            @Override
+                            public void OnClick() {
+                                tutorialPopupCallback.OnClosed();
+                                popup.dismiss();
+                            }
+                        }).build();
+            }
+        });
     }
 
     public static void showCustomToast(Context context, String message) {
