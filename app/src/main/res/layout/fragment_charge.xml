@@ -45,11 +45,12 @@
                 app:tabSelectedTextColor="@color/tab_selected"
                 app:tabTextColor="@color/tab_unselected"
                 app:tabMode="fixed"
-                app:tabGravity="fill">
+                app:tabGravity="fill"
+                app:tabIndicatorHeight="0dp">
 
             </com.google.android.material.tabs.TabLayout>
 
-            <include layout="@layout/layout_tutorial_message" />
+            <!--include layout="@layout/layout_tutorial_message" /-->
 
             <com.paypad.parator.uiUtils.tutorial.Tutorial
                 android:layout_width="match_parent"

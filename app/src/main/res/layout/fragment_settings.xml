@@ -230,7 +230,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:text="@string/profile"
+                android:text="@string/my_account_upper"
                 android:gravity="center|start"
                 android:textStyle="bold"
                 android:textColor="@color/Black">
@@ -250,7 +250,34 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="@string/view"
+                    android:text="@string/profile_information"
+                    android:gravity="center|start"
+                    android:textColor="@color/Gray"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_keyboard_arrow_right_gray_24dp"
+                    android:layout_alignParentEnd="true">
+
+                </ImageView>
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/viewStoreRl"
+                android:paddingStart="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/store_information"
                     android:gravity="center|start"
                     android:textColor="@color/Gray"
                     android:textStyle="bold">

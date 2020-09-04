@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.enums.SupportListEnum;
+import com.paypad.parator.enums.TutorialTypeEnum;
 import com.paypad.parator.interfaces.SupportListItemCallback;
 import com.paypad.parator.interfaces.TutorialSelectedCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
@@ -28,10 +29,6 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
-import static com.paypad.parator.constants.CustomConstants.TUTORIAL_SELECTED_CREATE_ITEM;
-import static com.paypad.parator.constants.CustomConstants.TUTORIAL_SELECTED_PAYMENT;
 
 public class ToursAndTutorialsFragment extends BaseFragment {
 
@@ -45,6 +42,14 @@ public class ToursAndTutorialsFragment extends BaseFragment {
     LinearLayout firstSalell;
     @BindView(R.id.firstItemll)
     LinearLayout firstItemll;
+    @BindView(R.id.firstTaxll)
+    LinearLayout firstTaxll;
+    @BindView(R.id.firstUnitll)
+    LinearLayout firstUnitll;
+    @BindView(R.id.firstDiscountll)
+    LinearLayout firstDiscountll;
+    @BindView(R.id.firstCategoryll)
+    LinearLayout firstCategoryll;
 
     private Context mContext;
     private TutorialSelectedCallback tutorialSelectedCallback;
@@ -108,14 +113,47 @@ public class ToursAndTutorialsFragment extends BaseFragment {
         firstSalell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tutorialSelectedCallback.OnSelectedTutorial(TUTORIAL_SELECTED_PAYMENT);
+                tutorialSelectedCallback.OnSelectedTutorial(TutorialTypeEnum.TUTORIAL_PAYMENT);
+                mFragmentNavigation.popFragments(2);
             }
         });
 
         firstItemll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tutorialSelectedCallback.OnSelectedTutorial(TUTORIAL_SELECTED_CREATE_ITEM);
+                tutorialSelectedCallback.OnSelectedTutorial(TutorialTypeEnum.TUTORIAL_CREATE_ITEM);
+                mFragmentNavigation.popFragments(2);
+            }
+        });
+
+        firstTaxll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tutorialSelectedCallback.OnSelectedTutorial(TutorialTypeEnum.TUTORIAL_CREATE_TAX);
+                mFragmentNavigation.popFragments(2);
+            }
+        });
+
+        firstUnitll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tutorialSelectedCallback.OnSelectedTutorial(TutorialTypeEnum.TUTORIAL_CREATE_UNIT);
+                mFragmentNavigation.popFragments(2);
+            }
+        });
+
+        firstCategoryll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tutorialSelectedCallback.OnSelectedTutorial(TutorialTypeEnum.TUTORIAL_CREATE_CATEGORY);
+                mFragmentNavigation.popFragments(2);
+            }
+        });
+
+        firstDiscountll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tutorialSelectedCallback.OnSelectedTutorial(TutorialTypeEnum.TUTORIAL_CREATE_DISCOUNT);
                 mFragmentNavigation.popFragments(2);
             }
         });
@@ -123,7 +161,6 @@ public class ToursAndTutorialsFragment extends BaseFragment {
 
     private void initVariables() {
         toolbarTitleTv.setText(mContext.getResources().getString(R.string.tours_and_tutorials));
-
     }
 
 }

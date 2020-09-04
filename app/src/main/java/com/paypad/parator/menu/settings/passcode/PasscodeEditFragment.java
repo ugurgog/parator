@@ -1,15 +1,13 @@
 package com.paypad.parator.menu.settings.passcode;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,12 +17,10 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.db.PasscodeDBHelper;
-import com.paypad.parator.db.TransactionDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.PasscodeTimeoutEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.model.Passcode;
-import com.paypad.parator.model.Transaction;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
 import com.paypad.parator.uiUtils.keypad.KeyPadClick;
@@ -43,7 +39,6 @@ import java.util.UUID;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import io.realm.annotations.Index;
 
 import static com.paypad.parator.constants.CustomConstants.PASSCODE_CREATE;
 
@@ -123,6 +118,7 @@ public class PasscodeEditFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        CommonUtils.showNavigationBar((Activity) mContext);
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_edit_passcode, container, false);
             ButterKnife.bind(this, mView);
@@ -240,7 +236,9 @@ public class PasscodeEditFragment extends BaseFragment {
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
         if(baseResponse.isSuccess()){
-            mFragmentNavigation.pushFragment(new PasscodeUpdatedFragment());
+            mFragmentNavigation.pushFragment(new ReturnSettingsFragment(
+                    mContext.getResources().getString(R.string.passcode_updated_successfully), 3
+            ));
         }
     }
 }

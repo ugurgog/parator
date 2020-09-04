@@ -42,6 +42,7 @@ import static com.paypad.parator.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.parator.constants.CustomConstants.TYPE_CANCEL_PAYMENT;
 import static com.paypad.parator.constants.CustomConstants.TYPE_ORDER_PAYMENT;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class CreditCardSelectFragment extends BaseFragment implements PaymentStatusCallback {
 
@@ -186,7 +187,7 @@ public class CreditCardSelectFragment extends BaseFragment implements PaymentSta
     }
 
     private void initPaymentFragment(){
-        orderPaymentFragment = new OrderPaymentFragment(mTransaction);
+        orderPaymentFragment = new OrderPaymentFragment(mTransaction, WALK_THROUGH_END);
         orderPaymentFragment.setPaymentStatusCallback(this);
     }
 

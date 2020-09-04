@@ -206,14 +206,14 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
                         }
                     }));
                 }else if(selectedSpinner.getId() == ItemSpinnerEnum.DISCOUNTS.getId()){
-                    mFragmentNavigation.pushFragment(new DiscountEditFragment(null, new ReturnDiscountCallback() {
+                    mFragmentNavigation.pushFragment(new DiscountEditFragment(null, WALK_THROUGH_END, new ReturnDiscountCallback() {
                         @Override
                         public void OnReturn(Discount discount, ItemProcessEnum processType) {
                             setDiscountAdapter();
                         }
                     }));
                 }else if(selectedSpinner.getId() == ItemSpinnerEnum.CATEGORIES.getId()){
-                    mFragmentNavigation.pushFragment(new CategoryEditFragment(null, new ReturnCategoryCallback() {
+                    mFragmentNavigation.pushFragment(new CategoryEditFragment(null, WALK_THROUGH_END, new ReturnCategoryCallback() {
                         @Override
                         public void OnReturn(Category category) {
                             setCategoryAdapter();

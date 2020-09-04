@@ -1,94 +1,230 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
+<RelativeLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/productMainll">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <include layout="@layout/toolbar_item_update"/>
-
-    <ScrollView
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/scrollView">
+        android:id="@+id/productMainll">
 
-        <LinearLayout
+
+
+        <include layout="@layout/toolbar_item_update"/>
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <include layout="@layout/item_edit_image_layout"/>
+            android:layout_height="match_parent"
+            android:id="@+id/scrollView">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:orientation="vertical">
 
-
-                <EditText
-                    android:id="@+id/productNameEt"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_edittext_height_size"
-                    android:background="@drawable/custom_edittext_bg"
-                    android:drawablePadding="20dp"
-                    android:hint="Write Product Name"
-                    android:paddingLeft="8dp"
-                    android:textColor="@color/Black"
-                    android:textColorHint="@color/DarkGray"
-                    android:layout_marginTop="10dp"
-                    android:inputType="textCapSentences"
-                    />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.7dp"
-                    android:background="@color/fab_color_shadow"
-                    android:layout_marginTop="10dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:id="@+id/categoryll">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="4"
-                        android:text="@string/category"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/select_list_tv_size">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/categoryTv"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text="@string/select_category"
-                        android:textSize="@dimen/select_list_tv_size"
-                        android:gravity="right">
-                    </TextView>
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_alignParentEnd="true"
-                        android:src="@drawable/ic_keyboard_arrow_right_gray_24dp">
-                    </ImageView>
-
-                </LinearLayout>
-
+                <include layout="@layout/item_edit_image_layout"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                    android:layout_margin="10dp"
+                    android:orientation="vertical">
+
+
+                    <EditText
+                        android:id="@+id/productNameEt"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/custom_edittext_height_size"
+                        android:background="@drawable/custom_edittext_bg"
+                        android:drawablePadding="20dp"
+                        android:hint="Write Product Name"
+                        android:paddingLeft="8dp"
+                        android:textColor="@color/Black"
+                        android:textColorHint="@color/DarkGray"
+                        android:layout_marginTop="10dp"
+                        android:inputType="textCapSentences"
+                        />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.7dp"
+                        android:background="@color/fab_color_shadow"
+                        android:layout_marginTop="10dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:id="@+id/categoryll">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="4"
+                            android:text="@string/category"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/select_list_tv_size">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/categoryTv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text="@string/select_category"
+                            android:textSize="@dimen/select_list_tv_size"
+                            android:gravity="right">
+                        </TextView>
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/ic_keyboard_arrow_right_gray_24dp">
+                        </ImageView>
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.7dp"
+                            android:background="@color/fab_color_shadow"
+                            android:layout_marginTop="10dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/options"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/custom_tv_size"
+                            android:layout_marginTop="10dp">
+                        </TextView>
+
+                        <Button
+                            android:id="@+id/btnAddOption"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/custom_button_length_size"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/add_options"
+                            android:textColor="@color/DodgerBlue"
+                            android:textAllCaps="false"
+                            android:background="@drawable/custom_button_bg"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/add_options_desc"
+                            android:textSize="@dimen/custom_description_tv_size"
+                            android:layout_marginTop="20dp"
+                            android:gravity="center"
+                            android:paddingLeft="30dp"
+                            android:paddingRight="30dp">
+                        </TextView>
+
+                    </LinearLayout>
+
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/price_and_inventory"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/custom_tv_size"
+                        android:layout_marginTop="20dp">
+                    </TextView>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.7dp"
+                        android:background="@color/fab_color_shadow"
+                        android:layout_marginTop="10dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:id="@+id/unitll">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="4"
+                            android:text="@string/unit_type"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/select_list_tv_size">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/unitTypeTv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text="@string/select_unit"
+                            android:textSize="@dimen/select_list_tv_size"
+                            android:gravity="right">
+                        </TextView>
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/ic_keyboard_arrow_right_gray_24dp">
+                        </ImageView>
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:id="@+id/taxll">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="4"
+                            android:text="@string/tax_name"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/select_list_tv_size">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/taxTypeTv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text="@string/select_tax"
+                            android:textSize="@dimen/select_list_tv_size"
+                            android:gravity="right">
+                        </TextView>
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/ic_keyboard_arrow_right_gray_24dp">
+                        </ImageView>
+
+                    </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
@@ -97,28 +233,9 @@
                         android:layout_marginTop="10dp"/>
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/options"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/custom_tv_size"
-                        android:layout_marginTop="10dp">
-                    </TextView>
-
-                    <Button
-                        android:id="@+id/btnAddOption"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/custom_button_length_size"
-                        android:layout_marginTop="20dp"
-                        android:text="@string/add_options"
-                        android:textColor="@color/DodgerBlue"
-                        android:textAllCaps="false"
-                        android:background="@drawable/custom_button_bg"/>
-
-                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/add_options_desc"
+                        android:text="@string/inventory_desc"
                         android:textSize="@dimen/custom_description_tv_size"
                         android:layout_marginTop="20dp"
                         android:gravity="center"
@@ -126,164 +243,63 @@
                         android:paddingRight="30dp">
                     </TextView>
 
-                </LinearLayout>
+                    <include layout="@layout/layout_amount"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                    <Button
+                        android:id="@+id/btnVariation"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/custom_button_length_size"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/add_variation"
+                        android:textColor="@color/DodgerBlue"
+                        android:textAllCaps="false"
+                        android:background="@drawable/custom_button_bg"
+                        android:visibility="gone"/>
 
 
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/price_and_inventory"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/custom_tv_size"
-                    android:layout_marginTop="20dp">
-                </TextView>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.7dp"
-                    android:background="@color/fab_color_shadow"
-                    android:layout_marginTop="10dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:id="@+id/unitll">
-
-                    <TextView
-                        android:layout_width="0dp"
+                    <EditText
+                        android:id="@+id/productDescriptionEt"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="4"
-                        android:text="@string/unit_type"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/select_list_tv_size">
-                    </TextView>
+                        android:padding="12dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_toEndOf="@+id/set"
+                        android:layout_toRightOf="@+id/set"
+                        android:background="@drawable/custom_edittext_bg"
+                        android:inputType="textCapSentences"
+                        android:textColor="#434343"
+                        android:hint="@string/description"
+                        android:textIsSelectable="true" />
 
-                    <TextView
-                        android:id="@+id/unitTypeTv"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text="@string/select_unit"
-                        android:textSize="@dimen/select_list_tv_size"
-                        android:gravity="right">
-                    </TextView>
 
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_alignParentEnd="true"
-                        android:src="@drawable/ic_keyboard_arrow_right_gray_24dp">
-                    </ImageView>
+                    <Button
+                        android:id="@+id/btnDelete"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/custom_button_length_size"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/delete_item"
+                        android:textColor="@color/DodgerBlue"
+                        android:textAllCaps="false"
+                        android:background="@drawable/custom_button_bg"/>
+
 
                 </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:id="@+id/taxll">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="4"
-                        android:text="@string/tax_name"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/select_list_tv_size">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/taxTypeTv"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text="@string/select_tax"
-                        android:textSize="@dimen/select_list_tv_size"
-                        android:gravity="right">
-                    </TextView>
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_alignParentEnd="true"
-                        android:src="@drawable/ic_keyboard_arrow_right_gray_24dp">
-                    </ImageView>
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.7dp"
-                    android:background="@color/fab_color_shadow"
-                    android:layout_marginTop="10dp"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/inventory_desc"
-                    android:textSize="@dimen/custom_description_tv_size"
-                    android:layout_marginTop="20dp"
-                    android:gravity="center"
-                    android:paddingLeft="30dp"
-                    android:paddingRight="30dp">
-                </TextView>
-
-                <include layout="@layout/layout_amount"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <Button
-                    android:id="@+id/btnVariation"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_button_length_size"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/add_variation"
-                    android:textColor="@color/DodgerBlue"
-                    android:textAllCaps="false"
-                    android:background="@drawable/custom_button_bg"
-                    android:visibility="gone"/>
-
-
-                <EditText
-                    android:id="@+id/productDescriptionEt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_toEndOf="@+id/set"
-                    android:layout_toRightOf="@+id/set"
-                    android:background="@drawable/custom_edittext_bg"
-                    android:inputType="textCapSentences"
-                    android:textColor="#434343"
-                    android:hint="@string/description"
-                    android:textIsSelectable="true" />
-
-
-                <Button
-                    android:id="@+id/btnDelete"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_button_length_size"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/delete_item"
-                    android:textColor="@color/DodgerBlue"
-                    android:textAllCaps="false"
-                    android:background="@drawable/custom_button_bg"/>
-
 
             </LinearLayout>
 
-        </LinearLayout>
+        </ScrollView>
 
-    </ScrollView>
+    </LinearLayout>
 
-</LinearLayout>
+    <com.paypad.parator.uiUtils.tutorial.Tutorial
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tutorial"
+        android:layout_alignParentBottom="true">
+    </com.paypad.parator.uiUtils.tutorial.Tutorial>
+
+</RelativeLayout>
+

@@ -46,6 +46,8 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
+
 public class TaxSelectFragment extends BaseFragment {
 
     private View mView;
@@ -137,7 +139,7 @@ public class TaxSelectFragment extends BaseFragment {
         createTaxBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new TaxEditFragment(null, new ReturnTaxCallback() {
+                mFragmentNavigation.pushFragment(new TaxEditFragment(null, WALK_THROUGH_END, new ReturnTaxCallback() {
                     @Override
                     public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
                         updateAdapterWithCurrentList();

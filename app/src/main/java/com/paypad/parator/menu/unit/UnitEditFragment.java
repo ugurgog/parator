@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,11 +24,14 @@ import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CustomDialogListener;
+import com.paypad.parator.interfaces.TutorialPopupCallback;
 import com.paypad.parator.menu.unit.interfaces.ReturnUnitCallback;
 import com.paypad.parator.model.Product;
 import com.paypad.parator.model.UnitModel;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
+import com.paypad.parator.uiUtils.tutorial.Tutorial;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.CustomDialogBox;
@@ -44,7 +48,10 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class UnitEditFragment extends BaseFragment {
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
+
+public class UnitEditFragment extends BaseFragment implements WalkthroughCallback {
 
     private View mView;
 
@@ -64,10 +71,21 @@ public class UnitEditFragment extends BaseFragment {
     private ReturnUnitCallback returnUnitCallback;
     private User user;
     private int deleteButtonStatus = 1;
+    private Context mContext;
 
-    public UnitEditFragment(@Nullable UnitModel unitModel, ReturnUnitCallback returnUnitCallback) {
+    private int walkthrough;
+    private WalkthroughCallback walkthroughCallback;
+    private PopupWindow btnPopup;
+    private Tutorial tutorial;
+
+    public UnitEditFragment(@Nullable UnitModel unitModel, int walkthrough, ReturnUnitCallback returnUnitCallback) {
         this.unitModel = unitModel;
         this.returnUnitCallback = returnUnitCallback;
+        this.walkthrough = walkthrough;
+    }
+
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
     }
 
     @Override
@@ -76,14 +94,24 @@ public class UnitEditFragment extends BaseFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        initVariables();
+        initListeners();
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        dismissPopup();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -105,8 +133,6 @@ public class UnitEditFragment extends BaseFragment {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_unit_edit, container, false);
             ButterKnife.bind(this, mView);
-            initVariables();
-            initListeners();
         }
         return mView;
     }
@@ -120,7 +146,8 @@ public class UnitEditFragment extends BaseFragment {
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
+                dismissPopup();
+                ((Activity) mContext).onBackPressed();
             }
         });
 
@@ -138,9 +165,19 @@ public class UnitEditFragment extends BaseFragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable != null && !editable.toString().isEmpty()) {
-                    CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
+                    CommonUtils.setSaveBtnEnability(true, saveBtn, mContext);
+
+                    if(btnPopup != null && walkthrough == WALK_THROUGH_CONTINUE){
+                        btnPopup.dismiss();
+                        tutorial.setLayoutVisibility(View.VISIBLE);
+                    }
                 } else {
-                    CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+                    CommonUtils.setSaveBtnEnability(false, saveBtn, mContext);
+
+                    if(btnPopup != null && walkthrough == WALK_THROUGH_CONTINUE){
+                        btnPopup.showAsDropDown(unitNameEt);
+                        tutorial.setLayoutVisibility(View.GONE);
+                    }
                 }
             }
         });
@@ -157,8 +194,8 @@ public class UnitEditFragment extends BaseFragment {
             public void onClick(View view) {
                 if(deleteButtonStatus == 1){
                     deleteButtonStatus ++;
-                    CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
-                            getContext().getResources().getString(R.string.confirm_delete));
+                    CommonUtils.setBtnSecondCondition(mContext, btnDelete,
+                            mContext.getResources().getString(R.string.confirm_delete));
                 }else if(deleteButtonStatus == 2){
 
                     RealmResults<Product> products = ProductDBHelper.getProductsByUnitId(unitModel.getId());
@@ -179,13 +216,13 @@ public class UnitEditFragment extends BaseFragment {
                 .concat(" ")
                 .concat(getResources().getString(R.string.unit_delete_question_description2));
 
-        new CustomDialogBox.Builder((Activity) getContext())
-                .setTitle(getContext().getResources().getString(R.string.delete_unit))
+        new CustomDialogBox.Builder((Activity) mContext)
+                .setTitle(mContext.getResources().getString(R.string.delete_unit))
                 .setMessage(deleteMessage)
                 .setPositiveBtnVisibility(View.VISIBLE)
                 .setNegativeBtnVisibility(View.GONE)
-                .setPositiveBtnText(getContext().getResources().getString(R.string.ok))
-                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                .setPositiveBtnText(mContext.getResources().getString(R.string.ok))
+                .setPositiveBtnBackground(mContext.getResources().getColor(R.color.bg_screen1, null))
                 .setDurationTime(0)
                 .isCancellable(true)
                 .setEdittextVisibility(View.GONE)
@@ -193,8 +230,8 @@ public class UnitEditFragment extends BaseFragment {
                     @Override
                     public void OnClick() {
                         deleteButtonStatus = 1;
-                        CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
-                                getContext().getResources().getString(R.string.delete_unit));
+                        CommonUtils.setBtnFirstCondition(mContext, btnDelete,
+                                mContext.getResources().getString(R.string.delete_unit));
                     }
                 }).build();
     }
@@ -202,34 +239,57 @@ public class UnitEditFragment extends BaseFragment {
     private void deleteUnit(){
 
         BaseResponse baseResponse = UnitDBHelper.deleteUnit(unitModel.getId());
-        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+        DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
         if(!baseResponse.isSuccess())
             return;
 
         returnUnitCallback.OnReturn((UnitModel) baseResponse.getObject(), ItemProcessEnum.DELETED);
-        Objects.requireNonNull(getActivity()).onBackPressed();
+        ((Activity) mContext).onBackPressed();
     }
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
         setShapes();
-        CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+        CommonUtils.setSaveBtnEnability(false, saveBtn, mContext);
 
         if(unitModel == null){
             unitModel = new UnitModel();
             btnDelete.setEnabled(false);
-            toolbarTitleTv.setText(getContext().getResources().getString(R.string.create_unit));
+            toolbarTitleTv.setText(mContext.getResources().getString(R.string.create_unit));
         }else{
             unitNameEt.setText(unitModel.getName());
-            toolbarTitleTv.setText(getContext().getResources().getString(R.string.edit_unit));
+            toolbarTitleTv.setText(mContext.getResources().getString(R.string.edit_unit));
+        }
+        checkTutorialIsActive();
+    }
+
+
+    private void checkTutorialIsActive() {
+        tutorial = mView.findViewById(R.id.tutorial);
+        tutorial.setWalkthroughCallback(this);
+        tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_tap_save_button));
+
+        if(walkthrough == WALK_THROUGH_CONTINUE){
+            CommonUtils.displayPopupWindow(unitNameEt, mContext, mContext.getResources().getString(R.string.enter_unit_name_message),
+                    new TutorialPopupCallback() {
+                        @Override
+                        public void OnClosed() {
+                            OnWalkthroughResult(WALK_THROUGH_END);
+                            btnPopup.dismiss();
+                            btnPopup = null;
+                        }
+
+                        @Override
+                        public void OnGetPopup(PopupWindow popupWindow) {
+                            btnPopup = popupWindow;
+                        }
+                    });
         }
     }
 
     private void setShapes() {
-        //unitNameEt.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-        //        getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-        CommonUtils.setBtnFirstCondition(getContext(), btnDelete, getContext().getResources().getString(R.string.delete_unit));
+        CommonUtils.setBtnFirstCondition(mContext, btnDelete, getContext().getResources().getString(R.string.delete_unit));
     }
 
     private void checkValidCategory() {
@@ -261,12 +321,12 @@ public class UnitEditFragment extends BaseFragment {
         boolean finalInserted = inserted;
 
         BaseResponse baseResponse = UnitDBHelper.createOrUpdateUnit(tempUnit);
-        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+        DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
         if(baseResponse.isSuccess()){
             deleteButtonStatus = 1;
-            CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
-                    getContext().getResources().getString(R.string.delete_unit));
+            CommonUtils.setBtnFirstCondition(mContext, btnDelete,
+                    mContext.getResources().getString(R.string.delete_unit));
             btnDelete.setEnabled(false);
 
             if(finalInserted)
@@ -281,8 +341,21 @@ public class UnitEditFragment extends BaseFragment {
 
     private void clearViews() {
         unitNameEt.setText("");
-        CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+        CommonUtils.setSaveBtnEnability(false, saveBtn, mContext);
         unitModel = new UnitModel();
-        CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
+        CommonUtils.hideKeyBoard(mContext);
+    }
+
+    private void dismissPopup(){
+        if(btnPopup != null){
+            btnPopup.dismiss();
+            btnPopup = null;
+        }
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
     }
 }

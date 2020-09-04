@@ -1,12 +1,12 @@
 package com.paypad.parator.menu.settings.passcode;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,11 +17,7 @@ import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.eventBusModel.UserBus;
-import com.paypad.parator.model.Passcode;
 import com.paypad.parator.model.User;
-import com.paypad.parator.uiUtils.keypad.KeyPadClick;
-import com.paypad.parator.uiUtils.keypad.KeyPadPasscodeCreate;
-import com.paypad.parator.uiUtils.keypad.KeyPadSingleNumberListener;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
 
@@ -30,11 +26,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 
-import static com.paypad.parator.constants.CustomConstants.PASSCODE_CREATE;
-
-public class PasscodeUpdatedFragment extends BaseFragment {
+public class ReturnSettingsFragment extends BaseFragment {
 
     private View mView;
 
@@ -46,12 +39,17 @@ public class PasscodeUpdatedFragment extends BaseFragment {
     Button saveBtn;
     @BindView(R.id.returnSettingsBtn)
     Button returnSettingsBtn;
+    @BindView(R.id.resultTv)
+    TextView resultTv;
 
     private User user;
     private Context mContext;
+    private String message;
+    private int popCount;
 
-    public PasscodeUpdatedFragment() {
-
+    public ReturnSettingsFragment(String message, int popCount) {
+        this.message = message;
+        this.popCount = popCount;
     }
 
     @Override
@@ -95,8 +93,10 @@ public class PasscodeUpdatedFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        CommonUtils.hideNavigationBar((Activity) mContext);
+
         if (mView == null) {
-            mView = inflater.inflate(R.layout.fragment_passcode_updated, container, false);
+            mView = inflater.inflate(R.layout.fragment_return_settings, container, false);
             ButterKnife.bind(this, mView);
         }
         return mView;
@@ -111,20 +111,21 @@ public class PasscodeUpdatedFragment extends BaseFragment {
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.popFragments(3);
+                mFragmentNavigation.popFragments(popCount);
             }
         });
 
         returnSettingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.popFragments(3);
+                mFragmentNavigation.popFragments(popCount);
             }
         });
     }
 
     private void initVariables() {
         saveBtn.setVisibility(View.GONE);
-        toolbarTitleTv.setText(mContext.getResources().getString(R.string.edit_passcode));
+        toolbarTitleTv.setText(mContext.getResources().getString(R.string.successful));
+        resultTv.setText(message);
     }
 }

@@ -1,66 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/discountMainll"
-    android:layout_width="match_parent"
+<RelativeLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <include layout="@layout/toolbar_item_update" />
-
-
-    <ScrollView
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/discountMainll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+
+
+        <include layout="@layout/toolbar_item_update" />
+
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <include layout="@layout/item_edit_image_layout" />
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/discountNameEt"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_edittext_height_size"
-                    android:background="@drawable/custom_edittext_bg"
-                    android:drawablePadding="20dp"
-                    android:hint="@string/discount_name"
-                    android:inputType="textCapSentences"
-                    android:paddingLeft="8dp"
-                    android:textColor="@color/Black"
-                    android:textColorHint="@color/DarkGray"
-                    android:layout_marginTop="10dp" />
+                <include layout="@layout/item_edit_image_layout" />
 
-                <include layout="@layout/layout_rate_and_amount"
-                    android:layout_marginTop="10dp"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/btnDelete"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_button_length_size"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/custom_button_bg"
-                    android:text="@string/delete_discount"
-                    android:textColor="@color/DodgerBlue"
-                    android:textAllCaps="false"/>
+                    <EditText
+                        android:id="@+id/discountNameEt"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/custom_edittext_height_size"
+                        android:background="@drawable/custom_edittext_bg"
+                        android:drawablePadding="20dp"
+                        android:hint="@string/discount_name"
+                        android:inputType="textCapSentences"
+                        android:paddingLeft="8dp"
+                        android:textColor="@color/Black"
+                        android:textColorHint="@color/DarkGray"
+                        android:layout_marginTop="10dp" />
+
+                    <include layout="@layout/layout_rate_and_amount"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                    <Button
+                        android:id="@+id/btnDelete"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/custom_button_length_size"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/custom_button_bg"
+                        android:text="@string/delete_discount"
+                        android:textColor="@color/DodgerBlue"
+                        android:textAllCaps="false"/>
+
+                </LinearLayout>
+
 
             </LinearLayout>
 
-
-        </LinearLayout>
-
-    </ScrollView>
+        </ScrollView>
 
 
 
 
-</LinearLayout>
+    </LinearLayout>
+
+    <com.paypad.parator.uiUtils.tutorial.Tutorial
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tutorial"
+        android:layout_alignParentBottom="true">
+
+    </com.paypad.parator.uiUtils.tutorial.Tutorial>
+
+</RelativeLayout>
+

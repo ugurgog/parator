@@ -33,6 +33,7 @@ import com.paypad.parator.model.Transaction;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
 import com.paypad.parator.model.pojo.SaleModelInstance;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.DataUtils;
 import com.paypad.parator.utils.LogUtil;
@@ -48,7 +49,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import pl.droidsonroids.gif.GifImageView;
 
-public class OrderPaymentFragment extends BaseFragment implements PaymentStatusCallback {
+public class OrderPaymentFragment extends BaseFragment implements PaymentStatusCallback, WalkthroughCallback {
 
     private View mView;
 
@@ -64,11 +65,17 @@ public class OrderPaymentFragment extends BaseFragment implements PaymentStatusC
     private AutoIncrement autoIncrement;
     private Realm realm;
     private LocationTrackerAdapter locationTrackObj;
+    private int walkthrough;
+    private WalkthroughCallback walkthroughCallback;
 
-    public OrderPaymentFragment(Transaction transaction) {
+    public OrderPaymentFragment(Transaction transaction, int walkthrough) {
         mTransaction = transaction;
+        this.walkthrough = walkthrough;
     }
 
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
+    }
 
     public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
         this.paymentStatusCallback = paymentStatusCallback;
@@ -220,8 +227,9 @@ public class OrderPaymentFragment extends BaseFragment implements PaymentStatusC
     }
 
     private void initPaymentCompletedFragment(ProcessDirectionEnum processType){
-        orderPaymentCompletedFragment = new OrderPaymentCompletedFragment(mTransaction, processType);
+        orderPaymentCompletedFragment = new OrderPaymentCompletedFragment(mTransaction, processType, walkthrough);
         orderPaymentCompletedFragment.setPaymentStatusCallback(this);
+        orderPaymentCompletedFragment.setWalkthroughCallback(this);
     }
 
     private void showCompletedScreen(){
@@ -269,5 +277,10 @@ public class OrderPaymentFragment extends BaseFragment implements PaymentStatusC
     public void onPause() {
         super.onPause();
         locationTrackObj.removeUpdates();
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthroughCallback.OnWalkthroughResult(result);
     }
 }

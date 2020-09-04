@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:background="@color/White"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_item_update"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lato_family"
+                android:paddingStart="20dp"
+                android:text="Ugur"
+                android:textColor="@color/Black"
+                android:textSize="@dimen/default_size_20sp"
+                android:id="@+id/firstNameTv">
+
+            </androidx.appcompat.widget.AppCompatTextView>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lato_family"
+                android:text="Gogebakan"
+                android:textColor="@color/Black"
+                android:textSize="@dimen/default_size_20sp"
+                android:id="@+id/lastNameTv"
+                android:paddingStart="10dp">
+
+            </androidx.appcompat.widget.AppCompatTextView>
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lato_family"
+            android:paddingStart="20dp"
+            android:text="@string/app_name"
+            android:textColor="@color/Gray"
+            android:textSize="@dimen/default_size_15sp"
+            android:id="@+id/emailTv">
+
+        </androidx.appcompat.widget.AppCompatTextView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_weight="10"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <EditText
+            android:id="@+id/firstNameEt"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/transparent"
+            android:hint="@string/first_name"
+            android:inputType="text"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/Black"
+            android:textColorHint="@color/Gray" />
+
+        <EditText
+            android:id="@+id/lastNameEt"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/transparent"
+            android:hint="@string/last_name"
+            android:inputType="text"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/Black"
+            android:textColorHint="@color/Gray" />
+
+        <EditText
+            android:id="@+id/phoneNumberEt"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/transparent"
+            android:hint="@string/phone_number"
+            android:inputType="phone"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/Black"
+            android:textColorHint="@color/Gray" />
+
+        <EditText
+            android:id="@+id/countryEt"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/transparent"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:hint="@string/country"
+            android:inputType="textCapSentences"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:singleLine="true"
+            android:textColor="@color/Black"
+            android:textColorHint="@color/Gray" />
+
+
+    </LinearLayout>
+</LinearLayout>
+

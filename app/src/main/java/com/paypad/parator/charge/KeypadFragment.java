@@ -78,6 +78,7 @@ import static com.paypad.parator.constants.CustomConstants.DYNAMIC_BOX_COUNT;
 import static com.paypad.parator.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.parator.constants.CustomConstants.TYPE_ORDER_PAYMENT;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class KeypadFragment extends BaseFragment implements
         StructSelectFragment.StructSelectListener,
@@ -443,7 +444,7 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     private void initCashSelectFragment(){
-        cashSelectFragment = new CashSelectFragment(mTransaction, TYPE_ORDER_PAYMENT);
+        cashSelectFragment = new CashSelectFragment(mTransaction, TYPE_ORDER_PAYMENT, WALK_THROUGH_END);
         cashSelectFragment.setPaymentStatusCallback(this);
     }
 

@@ -26,6 +26,8 @@ import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.charge.payment.cancelpayment.CancellationPaymentFragment;
 import com.paypad.parator.model.Transaction;
 import com.paypad.parator.model.User;
+import com.paypad.parator.uiUtils.tutorial.Tutorial;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.DataUtils;
@@ -43,8 +45,10 @@ import static com.paypad.parator.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.parator.constants.CustomConstants.TYPE_CANCEL_PAYMENT;
 import static com.paypad.parator.constants.CustomConstants.TYPE_ORDER_PAYMENT;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
-public class CashSelectFragment extends BaseFragment implements PaymentStatusCallback {
+public class CashSelectFragment extends BaseFragment implements PaymentStatusCallback, WalkthroughCallback {
 
     private View mView;
 
@@ -65,12 +69,18 @@ public class CashSelectFragment extends BaseFragment implements PaymentStatusCal
     private CancellationPaymentFragment cancellationPaymentFragment;
     private PaymentStatusCallback paymentStatusCallback;
     private int type;
+    private int walkthrough;
+    private WalkthroughCallback walkthroughCallback;
+    private Tutorial tutorial;
 
-
-
-    public CashSelectFragment(Transaction transaction, int type) {
+    public CashSelectFragment(Transaction transaction, int type, int walkthrough) {
         mTransaction = transaction;
         this.type = type;
+        this.walkthrough = walkthrough;
+    }
+
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
     }
 
     public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
@@ -188,12 +198,24 @@ public class CashSelectFragment extends BaseFragment implements PaymentStatusCal
                 .concat(getResources().getString(R.string.cash));
         toolbarTitleTv.setText(amountStr);
         tenderAmountEt.setHint(CommonUtils.getDoubleStrValueForView(mTransaction.getTransactionAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
-        //throw new RuntimeException("Test Crash"); // Force a crash
+        initTutorial();
     }
 
+    private void initTutorial() {
+        tutorial = mView.findViewById(R.id.tutorial);
+        tutorial.setWalkthroughCallback(this);
+
+        if(walkthrough == WALK_THROUGH_CONTINUE) {
+            tutorial.setLayoutVisibility(View.VISIBLE);
+            tutorial.setTutorialMessage(getContext().getResources().getString(R.string.tap_the_button_says_pay));
+        }
+    }
+
+
     private void initPaymentFragment(){
-        orderPaymentFragment = new OrderPaymentFragment(mTransaction);
+        orderPaymentFragment = new OrderPaymentFragment(mTransaction, walkthrough);
         orderPaymentFragment.setPaymentStatusCallback(this);
+        orderPaymentFragment.setWalkthroughCallback(this);
     }
 
     private void initCancellationPaymentFragment(){
@@ -225,8 +247,13 @@ public class CashSelectFragment extends BaseFragment implements PaymentStatusCal
         //Objects.requireNonNull(getActivity()).onBackPressed();
 
         Log.i("Info", "::OnPaymentReturn CashSelectFragment paymentStatusCallback triggered");
+    }
 
-
-
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
+        if(result == WALK_THROUGH_END)
+            tutorial.setLayoutVisibility(View.GONE);
     }
 }

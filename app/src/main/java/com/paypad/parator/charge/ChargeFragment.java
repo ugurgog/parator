@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,10 +38,14 @@ import com.paypad.parator.charge.payment.orderpayment.OrderChargePaymentFragment
 import com.paypad.parator.charge.payment.interfaces.PaymentStatusCallback;
 import com.paypad.parator.charge.sale.SaleListFragment;
 import com.paypad.parator.charge.utils.AnimationUtil;
+import com.paypad.parator.db.DynamicBoxModelDBHelper;
 import com.paypad.parator.db.PasscodeDBHelper;
 import com.paypad.parator.db.SaleDBHelper;
 import com.paypad.parator.db.UserDBHelper;
+import com.paypad.parator.enums.DynamicStructEnum;
 import com.paypad.parator.enums.ItemProcessEnum;
+import com.paypad.parator.enums.ItemsEnum;
+import com.paypad.parator.enums.TutorialTypeEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.LocationGrantedCallback;
@@ -52,12 +57,11 @@ import com.paypad.parator.menu.item.ItemListFragment;
 import com.paypad.parator.menu.reports.ReportsFragment;
 import com.paypad.parator.menu.settings.SettingsFragment;
 import com.paypad.parator.menu.settings.passcode.PasscodeTypeActivity;
-import com.paypad.parator.menu.support.CustomShowcaseActivity;
-import com.paypad.parator.menu.support.Main2Activity;
 import com.paypad.parator.menu.support.SupportFragment;
 import com.paypad.parator.menu.transactions.TransactionsFragment;
 import com.paypad.parator.model.Customer;
 import com.paypad.parator.model.Discount;
+import com.paypad.parator.model.DynamicBoxModel;
 import com.paypad.parator.model.OrderItem;
 import com.paypad.parator.model.Passcode;
 import com.paypad.parator.model.Product;
@@ -68,7 +72,6 @@ import com.paypad.parator.uiUtils.tutorial.Tutorial;
 import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.ConversionHelper;
-import com.paypad.parator.utils.CustomDialogBox;
 import com.paypad.parator.utils.CustomDialogBoxVert;
 import com.paypad.parator.utils.DataUtils;
 import com.paypad.parator.utils.PermissionModule;
@@ -82,8 +85,8 @@ import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.RealmResults;
 
-import static com.paypad.parator.constants.CustomConstants.TUTORIAL_SELECTED_CREATE_ITEM;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
 import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
@@ -133,12 +136,12 @@ public class ChargeFragment extends BaseFragment implements
     RelativeLayout saleCountRL;
 
     //Tutorial Views
-    @BindView(R.id.tutorialRl)
+    /*@BindView(R.id.tutorialRl)
     RelativeLayout tutorialRl;
     @BindView(R.id.closeTutorialImgv)
     ImageView closeTutorialImgv;
     @BindView(R.id.tutorialMsgTv)
-    TextView tutorialMsgTv;
+    TextView tutorialMsgTv;*/
 
     private static final int TAB_KEYPAD = 0;
     private static final int TAB_LIBRARY = 1;
@@ -171,6 +174,7 @@ public class ChargeFragment extends BaseFragment implements
     private Context mContext;
     private Tutorial tutorial;
     private Integer walkthrough = null;
+    private TutorialTypeEnum tutorialType = null;
 
     private TextView animationTextView;
 
@@ -323,9 +327,10 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void initSelectChargePaymentFragment(){
-        orderChargePaymentFragment = new OrderChargePaymentFragment();
+        orderChargePaymentFragment = new OrderChargePaymentFragment(walkthrough);
         orderChargePaymentFragment.setPaymentStatusCallback(this);
         orderChargePaymentFragment.setSaleCalculateCallback(this);
+        orderChargePaymentFragment.setWalkthroughCallback(this);
     }
 
     private void startSaleListFragment() {
@@ -479,7 +484,7 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void startItemsFragment() {
-        ItemListFragment itemListFragment = new ItemListFragment(walkthrough);
+        ItemListFragment itemListFragment = new ItemListFragment(walkthrough, tutorialType);
         itemListFragment.setDiscountUpdateCallback(this);
         itemListFragment.setProductUpdateCallback(this);
         itemListFragment.setCategoryUpdateCallback(this);
@@ -599,6 +604,9 @@ public class ChargeFragment extends BaseFragment implements
 
         if(addFromValue == CUSTOM_ITEM_ADD_FROM_KEYPAD)
             startAnimation(keypadFragment.getSaleAmountTv());
+
+        if(walkthrough == WALK_THROUGH_CONTINUE)
+            tutorial.setTutorialMessage(mContext.getResources().getString(R.string.tap_to_charge_button));
     }
 
     @Override
@@ -624,6 +632,25 @@ public class ChargeFragment extends BaseFragment implements
             chargeAmountTv.setText("");
         else
             chargeAmountTv.setText(amountStr);
+
+        if(walkthrough == WALK_THROUGH_CONTINUE){
+            RealmResults<DynamicBoxModel> dynamicBoxModels = DynamicBoxModelDBHelper.getAllDynamicBoxes(user.getId());
+
+            boolean isExistTax = false;
+            if(dynamicBoxModels != null && dynamicBoxModels.size() > 0){
+                for(DynamicBoxModel dynamicBoxModel : dynamicBoxModels){
+                    if(dynamicBoxModel.getStructId() == DynamicStructEnum.TAX_SET.getId()){
+                        isExistTax = true;
+                        break;
+                    }
+                }
+            }
+
+            if(!isExistTax)
+                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.add_tax_to_dynamic_box));
+            else
+                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.select_tax_from_dynamic_box));
+        }
     }
 
     @Override
@@ -734,7 +761,43 @@ public class ChargeFragment extends BaseFragment implements
     @Override
     public void OnPaymentReturn(int status) {
         onItemsCleared();
+        Log.i("Info", "walkthrough:" + walkthrough);
         checkPasscodeAfterSale();
+        finalizeTutorialAfterSale();
+    }
+
+    private void finalizeTutorialAfterSale() {
+        if(walkthrough == WALK_THROUGH_CONTINUE){
+
+            new CustomDialogBoxVert.Builder((Activity) mContext)
+                    .setTitle(mContext.getResources().getString(R.string.congratulations))
+                    .setMessage(mContext.getResources().getString(R.string.sale_tutorial_finalize_message))
+                    .setNegativeBtnVisibility(View.VISIBLE)
+                    .setPositiveBtnVisibility(View.VISIBLE)
+                    .setPositiveBtnText(mContext.getResources().getString(R.string.see_transactions))
+                    .setNegativeBtnText(mContext.getResources().getString(R.string.done))
+                    .setPositiveBtnBackground(mContext.getResources().getColor(R.color.DodgerBlue, null))
+                    .setNegativeBtnBackground(mContext.getResources().getColor(R.color.custom_btn_bg_color, null))
+                    .setDurationTime(0)
+                    .isCancellable(false)
+                    .setEdittextVisibility(View.GONE)
+                    .setpBtnTextColor(mContext.getResources().getColor(R.color.White, null))
+                    .setnBtnTextColor(mContext.getResources().getColor(R.color.DodgerBlue, null))
+                    .OnPositiveClicked(new CustomDialogListener() {
+                        @Override
+                        public void OnClick() {
+                            mFragmentNavigation.pushFragment(new TransactionsFragment());
+                        }
+                    }).OnNegativeClicked(new CustomDialogListener() {
+                        @Override
+                        public void OnClick() {
+
+                        }
+                    }).build();
+
+            walkthrough = WALK_THROUGH_END;
+            OnWalkthroughResult(walkthrough);
+        }
     }
 
     private void checkPasscodeAfterSale(){
@@ -819,10 +882,18 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     @Override
-    public void OnSelectedTutorial(int selectedTutorial) {
-        if (selectedTutorial == TUTORIAL_SELECTED_CREATE_ITEM) {
+    public void OnSelectedTutorial(TutorialTypeEnum tutorialType) {
+        this.tutorialType = tutorialType;
 
-            new CustomDialogBoxVert.Builder((Activity) getContext())
+        if (tutorialType == TutorialTypeEnum.TUTORIAL_CREATE_ITEM || tutorialType == TutorialTypeEnum.TUTORIAL_CREATE_UNIT ||
+                tutorialType == TutorialTypeEnum.TUTORIAL_CREATE_TAX || tutorialType == TutorialTypeEnum.TUTORIAL_CREATE_CATEGORY ||
+                tutorialType == TutorialTypeEnum.TUTORIAL_CREATE_DISCOUNT) {
+
+            walkthrough = WALK_THROUGH_CONTINUE;
+            tutorial.setLayoutVisibility(View.VISIBLE);
+            tutorial.setTutorialMessage(mContext.getResources().getString(R.string.select_items_tutorial_message));
+
+            /*new CustomDialogBoxVert.Builder((Activity) getContext())
                     .setTitle(mContext.getResources().getString(R.string.welcome_to_parator_pos))
                     .setMessage(mContext.getResources().getString(R.string.create_item_tutorial_message))
                     .setNegativeBtnVisibility(View.VISIBLE)
@@ -847,11 +918,12 @@ public class ChargeFragment extends BaseFragment implements
                         @Override
                         public void OnClick() {
 
-                            //Intent intent = new Intent(mContext, Main2Activity.class);
-                            //startActivity(intent);
-
                         }
-                    }).build();
+                    }).build();*/
+        }else if(tutorialType == TutorialTypeEnum.TUTORIAL_PAYMENT){
+            walkthrough = WALK_THROUGH_CONTINUE;
+            tutorial.setLayoutVisibility(View.VISIBLE);
+            tutorial.setTutorialMessage(mContext.getResources().getString(R.string.enter_price_to_get_started));
         }
     }
 

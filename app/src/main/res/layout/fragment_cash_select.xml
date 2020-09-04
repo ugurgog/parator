@@ -5,36 +5,53 @@
 
     <include layout="@layout/toolbar_including_back_view"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/tenderAmountEt"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/custom_edittext_height_size"
-            android:background="@drawable/custom_edittext_bg"
-            android:drawablePadding="20dp"
-            android:inputType="number"
-            android:paddingLeft="8dp"
-            android:textColor="@color/Black"
-            android:textColorHint="@color/DarkGray"
-            android:layout_marginTop="20dp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp">
 
-        <Button
-            android:id="@+id/btnTender"
+            <EditText
+                android:id="@+id/tenderAmountEt"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_edittext_height_size"
+                android:background="@drawable/custom_edittext_bg"
+                android:drawablePadding="20dp"
+                android:inputType="number"
+                android:paddingLeft="8dp"
+                android:textColor="@color/Black"
+                android:textColorHint="@color/DarkGray"
+                android:layout_marginTop="20dp" />
+
+            <Button
+                android:id="@+id/btnTender"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_button_length_size"
+                android:layout_marginTop="20dp"
+                android:text="@string/tender"
+                android:textColor="@color/White"
+                android:background="@color/DodgerBlue"
+                android:textAllCaps="false"/>
+
+        </LinearLayout>
+
+        <com.paypad.parator.uiUtils.tutorial.Tutorial
             android:layout_width="match_parent"
-            android:layout_height="@dimen/custom_button_length_size"
-            android:layout_marginTop="20dp"
-            android:text="@string/tender"
-            android:textColor="@color/White"
-            android:background="@color/DodgerBlue"
-            android:textAllCaps="false"/>
+            android:layout_height="wrap_content"
+            android:id="@+id/tutorial"
+            android:layout_alignParentBottom="true">
 
-    </LinearLayout>
+        </com.paypad.parator.uiUtils.tutorial.Tutorial>
+
+
+    </RelativeLayout>
+
+
 
 
 

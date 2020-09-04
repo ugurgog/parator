@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
 
+import com.paypad.parator.R;
+import com.paypad.parator.utils.CommonUtils;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -34,11 +37,17 @@ public class LoginUtils {
     }
 
     public static void applySharedPreferences(Context context, String email, String password, String id){
-        getEncryptedSharedPreferences(context).edit()
-                .putString("email", email)
-                .putString("password", password)
-                .putString("id", id)
-                .apply();
+        try{
+            getEncryptedSharedPreferences(context).edit()
+                    .putString("email", email)
+                    .putString("password", password)
+                    .putString("id", id)
+                    .apply();
+        }catch (Exception e){
+            CommonUtils.showCustomToast(context, context.getResources().getString(R.string.error_upper)
+                    .concat(" : ")
+                    .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)));
+        }
     }
 
     public static boolean deleteSharedPreferences(Context context){
@@ -50,17 +59,38 @@ public class LoginUtils {
     }
 
     public static String getEmailFromCache(Context context){
-        return LoginUtils.getEncryptedSharedPreferences(context)
-                .getString("email", "No Email");
+        try{
+            return LoginUtils.getEncryptedSharedPreferences(context)
+                    .getString("email", "No Email");
+        }catch (Exception e){
+            CommonUtils.showCustomToast(context, context.getResources().getString(R.string.error_upper)
+                    .concat(" : ")
+                    .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)));
+        }
+        return "";
     }
 
     public static String getPasswordFromCache(Context context){
-        return LoginUtils.getEncryptedSharedPreferences(context)
-                .getString("password", "No password");
+        try{
+            return LoginUtils.getEncryptedSharedPreferences(context)
+                    .getString("password", "No password");
+        }catch (Exception e){
+            CommonUtils.showCustomToast(context, context.getResources().getString(R.string.error_upper)
+                .concat(" : ")
+                .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)));
+        }
+        return "";
     }
 
     public static String getUserIdFromCache(Context context){
-        return LoginUtils.getEncryptedSharedPreferences(context)
-                .getString("id", "No ID");
+        try{
+            return LoginUtils.getEncryptedSharedPreferences(context)
+                    .getString("id", "No ID");
+        }catch (Exception e){
+            CommonUtils.showCustomToast(context, context.getResources().getString(R.string.error_upper)
+                    .concat(" : ")
+                    .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)));
+        }
+        return "";
     }
 }

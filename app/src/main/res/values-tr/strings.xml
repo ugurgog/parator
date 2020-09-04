@@ -445,6 +445,7 @@
     <string name="no_upper">HAYIR</string>
 
     <string name="device_has_no_camera">Cihazda kamera yok</string>
+    <string name="unexpected_error">Beklenmedik hata oluştu!</string>
 
     <!-- Settings -->
     <string name="checkout_options">KONTROL SEÇENEKLERİ</string>
@@ -453,6 +454,12 @@
     <string name="device">CİHAZ</string>
     <string name="orders">SİPARİŞLER</string>
     <string name="profile">PROFİL</string>
+    <string name="my_account_upper">HESABIM</string>
+    <string name="profile_information">Profil</string>
+    <string name="store_information">Mağaza</string>
+    <string name="successful">Başarılı</string>
+    <string name="edit_profile">Profil Güncelle</string>
+    <string name="update_profile_success">Profil Başarıyla Güncelledi</string>
 
     <string name="view">Görüntüle</string>
     <string name="passcodes">Parolalar</string>
@@ -538,6 +545,14 @@
     <string name="take_your_first_payment_desc">İlk ödemenizi nasıl alacağınızı öğrenin.</string>
     <string name="create_item_tutorial">Ürün Oluşturma Eğitimi</string>
     <string name="create_item_tutorial_desc">Nasıl ürün oluşturacağınızı öğrenin.</string>
+    <string name="create_tax_tutorial">KDV Oluşturma Eğitimi</string>
+    <string name="create_tax_tutorial_desc">Nasıl KDV oluşturacağınızı öğrenin.</string>
+    <string name="create_category_tutorial">Kategori Oluşturma Eğitimi</string>
+    <string name="create_category_tutorial_desc">Nasıl kategori oluşturacağınızı öğrenin.</string>
+    <string name="create_unit_tutorial">Birim Oluşturma Eğitimi</string>
+    <string name="create_unit_tutorial_desc">Nasıl birim oluşturacağınızı öğrenin.</string>
+    <string name="create_discount_tutorial">İndirim Oluşturma Eğitimi</string>
+    <string name="create_discount_tutorial_desc">Nasıl indirim oluşturacağınızı öğrenin.</string>
 
     <!-- Tours and Tutorials descriptions-->
     <string name="welcome_to_parator_pos">Paratör Satış Noktasına Hoşgeldiniz</string>
@@ -548,11 +563,46 @@
     <string name="dont_need_help_message">Bu kılavuzu daha sonra Turlar ve Öğreticiler altındaki Destek bölümünde ziyaret edebilirsiniz.</string>
     <string name="continue_walkthrough">İlerlemeye Devam Et</string>
     <string name="end_walkthrough">İlerlemeyi Sonlandır</string>
+
     <string name="now_select_all_items">Şimdi Tüm Ürünleri Seçin</string>
+    <string name="now_select_taxes">Şimdi Vergileri Seçin</string>
+    <string name="now_select_units">Şimdi Birimleri Seçin</string>
+    <string name="now_select_categories">Şimdi Kategorileri Seçin</string>
+    <string name="now_select_discounts">Şimdi İndirimleri Seçin</string>
+    <string name="now_tap_save_button">Şimdi Kaydet\'e Tıklayın</string>
+
     <string name="select_create_item">Ürün Oluştur\'u seçin</string>
+    <string name="select_create_category">Kategori Oluştur\'u seçin</string>
+    <string name="select_create_unit">Birim Oluştur\'u seçin</string>
+    <string name="select_create_tax">Vergi Oluştur\'u seçin</string>
+    <string name="select_create_discount">İndirim Oluştur\'u seçin</string>
+
     <string name="enter_item_name_message">Bir ürün adı girin, örn. Kahve. Ürün adı müşteri makbuzlarında ve satış raporlarında kullanılacaktır.</string>
+    <string name="enter_category_name_message">Bir categori adı girin</string>
+    <string name="enter_unit_name_message">Bir birim adı girin</string>
+    <string name="enter_tax_name_message">Bir vergi adı girin</string>
+    <string name="enter_tax_rate_message">Vergi oranını girin</string>
+    <string name="enter_discount_name_message">Bir indirim adı girin</string>
+    <string name="enter_discount_rate_message">İndirim tutarı yada oranını giriniz</string>
+
     <string name="type_item_amount_message">Ürün fiyatını giriniz. Bu alan zorunlu değildir.</string>
+
     <string name="created_your_first_item">İlk Ürününüzü Oluşturdunuz</string>
+    <string name="created_your_first_category">İlk Kategorinizi Oluşturdunuz</string>
+    <string name="created_your_first_unit">İlk Birimizini Oluşturdunuz</string>
+    <string name="created_your_first_tax">İlk Verginizi Oluşturdunuz</string>
+    <string name="created_your_first_discount">İlk İndiriminizi Oluşturdunuz</string>
     <string name="created_your_first_item_desc">Bu eğitimi Destek > Turlar ve Eğitim sekmesinden tekrar ziyaret edebilirsiniz.</string>
+
+    <string name="enter_price_to_get_started">Başlamak için bir fiyat girin (ör. 1.00 ₺)</string>
+    <string name="select_tax_from_dynamic_box">Şimdi, hızlı menü kutusundan vergi seçin</string>
+    <string name="add_tax_to_dynamic_box">Şimdi, hızlı menü kutusuna vergi ekleyin. Sistemden veya tanımlı vergi eklemek için (+) kutusuna dokunun.</string>
+    <string name="tap_to_charge_button">Şimdi Ücret butonuna tıklayın</string>
+    <string name="tap_the_button_cash">Nakit yazan düğmeye dokunun</string>
+    <string name="tap_the_button_says_pay">Öde yazan düğmeye dokunun</string>
+    <string name="payment_completed_tutorial_message">Müşteriniz daha sonra makbuzunu nasıl alacağını seçebilir. Tuş takımına dönmek için Yeni Satış\'a dokunun.</string>
+    <string name="congratulations">Tebrikler!</string>
+    <string name="sale_tutorial_finalize_message">İlk ödemenizi yaptınız. Bu işlemi İşlemleriniz bölümünde görüntüleyebilirsiniz.</string>
+    <string name="see_transactions">İşlemleri Gör</string>
 
 </resources>

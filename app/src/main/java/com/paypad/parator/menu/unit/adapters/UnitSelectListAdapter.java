@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.enums.ItemProcessEnum;
+import com.paypad.parator.interfaces.ClickCallback;
 import com.paypad.parator.interfaces.ReturnSizeCallback;
 import com.paypad.parator.menu.unit.UnitEditFragment;
 import com.paypad.parator.menu.unit.interfaces.ReturnUnitCallback;
@@ -20,6 +21,8 @@ import com.paypad.parator.model.UnitModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class UnitSelectListAdapter extends RecyclerView.Adapter {
 
@@ -29,6 +32,7 @@ public class UnitSelectListAdapter extends RecyclerView.Adapter {
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnUnitCallback returnUnitCallback;
     private ItemProcessEnum processType;
+    private ClickCallback clickCallback;
 
     private static final int VIEW_ITEM = 0;
     private static final int VIEW_NONE = 1;
@@ -42,6 +46,10 @@ public class UnitSelectListAdapter extends RecyclerView.Adapter {
         this.returnUnitCallback = returnUnitCallback;
         this.processType = processType;
         this.fragmentNavigation = fragmentNavigation;
+    }
+
+    public void setClickCallback(ClickCallback clickCallback) {
+        this.clickCallback = clickCallback;
     }
 
     @Override
@@ -111,7 +119,11 @@ public class UnitSelectListAdapter extends RecyclerView.Adapter {
                         returnUnitCallback.OnReturn(unitModel, ItemProcessEnum.SELECTED);
                     else{
                         if(unitModel.getId() > 0){
-                            fragmentNavigation.pushFragment(new UnitEditFragment(unitModel, new ReturnUnitCallback() {
+
+                            if(clickCallback != null)
+                                clickCallback.OnClicked();
+
+                            fragmentNavigation.pushFragment(new UnitEditFragment(unitModel, WALK_THROUGH_END,new ReturnUnitCallback() {
                                 @Override
                                 public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
                                     returnUnitCallback.OnReturn(unitModel, processEnum);

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.enums.ItemProcessEnum;
+import com.paypad.parator.interfaces.ClickCallback;
 import com.paypad.parator.interfaces.ReturnSizeCallback;
 import com.paypad.parator.menu.tax.TaxEditFragment;
 import com.paypad.parator.menu.tax.interfaces.ReturnTaxCallback;
@@ -20,6 +21,8 @@ import com.paypad.parator.model.TaxModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class TaxSelectListAdapter extends RecyclerView.Adapter {
 
@@ -29,6 +32,7 @@ public class TaxSelectListAdapter extends RecyclerView.Adapter {
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnTaxCallback returnTaxCallback;
     private ItemProcessEnum mProcessType;
+    private ClickCallback clickCallback;
 
     private static final int VIEW_ITEM = 0;
     private static final int VIEW_NONE = 1;
@@ -42,6 +46,10 @@ public class TaxSelectListAdapter extends RecyclerView.Adapter {
         this.fragmentNavigation = fragmentNavigation;
         this.returnTaxCallback = returnTaxCallback;
         mProcessType = processType;
+    }
+
+    public void setClickCallback(ClickCallback clickCallback) {
+        this.clickCallback = clickCallback;
     }
 
     @Override
@@ -92,7 +100,10 @@ public class TaxSelectListAdapter extends RecyclerView.Adapter {
                         returnTaxCallback.OnReturn(taxModel, ItemProcessEnum.SELECTED);
                     else
                         if(taxModel.getId() > 0){
-                            fragmentNavigation.pushFragment(new TaxEditFragment(taxModel, new ReturnTaxCallback() {
+                            if(clickCallback != null)
+                                clickCallback.OnClicked();
+
+                            fragmentNavigation.pushFragment(new TaxEditFragment(taxModel, WALK_THROUGH_END, new ReturnTaxCallback() {
                                 @Override
                                 public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
                                     returnTaxCallback.OnReturn(taxModel, processEnum);

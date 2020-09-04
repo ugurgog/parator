@@ -47,6 +47,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class UnitSelectFragment extends BaseFragment {
 
@@ -140,7 +141,7 @@ public class UnitSelectFragment extends BaseFragment {
         createUnitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFragmentNavigation.pushFragment(new UnitEditFragment(null, new ReturnUnitCallback() {
+                mFragmentNavigation.pushFragment(new UnitEditFragment(null, WALK_THROUGH_END, new ReturnUnitCallback() {
                     @Override
                     public void OnReturn(UnitModel unitModel, ItemProcessEnum processEnum) {
                         updateAdapterWithCurrentList();

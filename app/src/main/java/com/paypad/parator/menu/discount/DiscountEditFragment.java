@@ -1,9 +1,12 @@
 package com.paypad.parator.menu.discount;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,10 +29,13 @@ import com.paypad.parator.db.DiscountDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.interfaces.TutorialPopupCallback;
 import com.paypad.parator.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.parator.model.Discount;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
+import com.paypad.parator.uiUtils.tutorial.Tutorial;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.DataUtils;
@@ -49,8 +56,10 @@ import static com.paypad.parator.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.parator.constants.CustomConstants.MAX_RATE_VALUE;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
 import static com.paypad.parator.constants.CustomConstants.TYPE_RATE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
-public class DiscountEditFragment extends BaseFragment {
+public class DiscountEditFragment extends BaseFragment implements WalkthroughCallback {
 
     private View mView;
 
@@ -84,10 +93,29 @@ public class DiscountEditFragment extends BaseFragment {
     private int selectionType = TYPE_RATE;
     private NumberFormatWatcher numberFormatWatcher;
     private int deleteButtonStatus = 1;
+    private Context mContext;
 
-    public DiscountEditFragment(@Nullable Discount discount, ReturnDiscountCallback returnDiscountCallback) {
+    private int walkthrough;
+    private WalkthroughCallback walkthroughCallback;
+    private PopupWindow namePopup;
+    private PopupWindow ratePopup;
+    private Tutorial tutorial;
+
+    public DiscountEditFragment(@Nullable Discount discount, int walkthrough, ReturnDiscountCallback returnDiscountCallback) {
         this.discount = discount;
         this.returnDiscountCallback = returnDiscountCallback;
+        this.walkthrough = walkthrough;
+    }
+
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initVariables();
+        initListeners();
     }
 
     @Override
@@ -108,8 +136,6 @@ public class DiscountEditFragment extends BaseFragment {
             Objects.requireNonNull(getActivity()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
             mView = inflater.inflate(R.layout.fragment_edit_discount, container, false);
             ButterKnife.bind(this, mView);
-            initVariables();
-            initListeners();
         }
         return mView;
     }
@@ -122,12 +148,15 @@ public class DiscountEditFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        dismissPopup();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -135,7 +164,7 @@ public class DiscountEditFragment extends BaseFragment {
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     private void initListeners() {
@@ -167,7 +196,8 @@ public class DiscountEditFragment extends BaseFragment {
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
+                dismissPopup();
+                ((Activity) mContext).onBackPressed();
             }
         });
 
@@ -176,15 +206,39 @@ public class DiscountEditFragment extends BaseFragment {
             public void onClick(View view) {
                 if(deleteButtonStatus == 1){
                     deleteButtonStatus ++;
-                    CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
-                            getContext().getResources().getString(R.string.confirm_delete));
+                    CommonUtils.setBtnSecondCondition(mContext, btnDelete,
+                            mContext.getResources().getString(R.string.confirm_delete));
                 }else if(deleteButtonStatus == 2){
                     BaseResponse baseResponse = DiscountDBHelper.deleteDiscount(discount.getId());
-                    DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+                    DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
                     if(baseResponse.isSuccess()){
                         returnDiscountCallback.OnReturn((Discount) baseResponse.getObject(), ItemProcessEnum.DELETED);
                         Objects.requireNonNull(getActivity()).onBackPressed();
+                    }
+                }
+            }
+        });
+
+        discountNameEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable != null && !editable.toString().isEmpty()) {
+                    if(namePopup != null && walkthrough == WALK_THROUGH_CONTINUE){
+                        namePopup.dismiss();
+                        namePopup = null;
+
+                        displayRatePopup();
                     }
                 }
             }
@@ -215,19 +269,34 @@ public class DiscountEditFragment extends BaseFragment {
 
         double maxValue = selectionType == TYPE_RATE ? MAX_RATE_VALUE : MAX_PRICE_VALUE;
         numberFormatWatcher = new NumberFormatWatcher(amountRateEt, selectionType, maxValue);
+        numberFormatWatcher.setReturnEtTextCallback(new NumberFormatWatcher.ReturnEtTextCallback() {
+            @Override
+            public void OnReturnEtValue(String text) {
+                if(text != null && !text.isEmpty()){
+                    if(walkthrough == WALK_THROUGH_CONTINUE){
+                        tutorial.setLayoutVisibility(View.VISIBLE);
+
+                        if(ratePopup != null){
+                            ratePopup.dismiss();
+                            ratePopup = null;
+                        }
+                    }
+                }
+            }
+        });
         amountRateEt.addTextChangedListener(numberFormatWatcher);
     }
 
     private void checkValidProduct() {
         if(discountNameEt.getText() == null || discountNameEt.getText().toString().isEmpty()){
             CommonUtils.snackbarDisplay(discountMainll,
-                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.discount_name_can_not_be_empty));
+                    mContext, mContext.getResources().getString(R.string.discount_name_can_not_be_empty));
             return;
         }
 
         if(amountRateEt.getText() == null || amountRateEt.getText().toString().isEmpty()){
             CommonUtils.snackbarDisplay(discountMainll,
-                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.discount_rate_amount_can_not_be_empty));
+                    mContext, mContext.getResources().getString(R.string.discount_rate_amount_can_not_be_empty));
             return;
         }
 
@@ -267,7 +336,7 @@ public class DiscountEditFragment extends BaseFragment {
         boolean finalInserted = inserted;
 
         BaseResponse baseResponse = DiscountDBHelper.createOrUpdateDiscount(discount);
-        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+        DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
         if(baseResponse.isSuccess()){
             deleteButtonStatus = 1;
@@ -285,7 +354,7 @@ public class DiscountEditFragment extends BaseFragment {
     private void clearItems() {
         clearViewsText();
         discount = new Discount();
-        CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
+        CommonUtils.hideKeyBoard(mContext);
     }
 
     private void clearViewsText() {
@@ -298,7 +367,7 @@ public class DiscountEditFragment extends BaseFragment {
         amountSymbolTv.setText(CommonUtils.getCurrency().getSymbol());
         numberFormatWatcher = new NumberFormatWatcher(amountRateEt, TYPE_RATE, MAX_RATE_VALUE);
 
-        int padding = CommonUtils.getPaddingInPixels(getContext(), 25);
+        int padding = CommonUtils.getPaddingInPixels(mContext, 25);
         editItemImgv.setPadding(padding,padding,padding,padding);
 
         realm = Realm.getDefaultInstance();
@@ -309,6 +378,49 @@ public class DiscountEditFragment extends BaseFragment {
             toolbarTitleTv.setText(getActivity().getResources().getString(R.string.edit_discount));
         }
         fillDiscountFields();
+        checkTutorialIsActive();
+    }
+
+    private void checkTutorialIsActive() {
+        tutorial = mView.findViewById(R.id.tutorial);
+        tutorial.setWalkthroughCallback(this);
+        tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_tap_save_button));
+
+        if(walkthrough == WALK_THROUGH_CONTINUE){
+            CommonUtils.displayPopupWindow(discountNameEt, mContext, mContext.getResources().getString(R.string.enter_discount_name_message),
+                    new TutorialPopupCallback() {
+                        @Override
+                        public void OnClosed() {
+                            OnWalkthroughResult(WALK_THROUGH_END);
+                            namePopup.dismiss();
+                            namePopup = null;
+                        }
+
+                        @Override
+                        public void OnGetPopup(PopupWindow popupWindow) {
+                            namePopup = popupWindow;
+                        }
+                    });
+        }
+    }
+
+    private void displayRatePopup(){
+        if(walkthrough == WALK_THROUGH_CONTINUE && ratePopup == null){
+            CommonUtils.displayPopupWindow(amountRateEt, mContext, mContext.getResources().getString(R.string.enter_discount_rate_message),
+                    new TutorialPopupCallback() {
+                        @Override
+                        public void OnClosed() {
+                            OnWalkthroughResult(WALK_THROUGH_END);
+                            ratePopup.dismiss();
+                            ratePopup = null;
+                        }
+
+                        @Override
+                        public void OnGetPopup(PopupWindow popupWindow) {
+                            ratePopup = popupWindow;
+                        }
+                    });
+        }
     }
 
     private void fillDiscountFields() {
@@ -323,5 +435,23 @@ public class DiscountEditFragment extends BaseFragment {
         }
 
         shapeAmountRateSymbols();
+    }
+
+    private void dismissPopup(){
+        if(namePopup != null){
+            namePopup.dismiss();
+            namePopup = null;
+        }
+
+        if(ratePopup != null){
+            ratePopup.dismiss();
+            ratePopup = null;
+        }
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
     }
 }

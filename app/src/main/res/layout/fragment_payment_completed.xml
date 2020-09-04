@@ -1,177 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mainll"
-    android:layout_width="match_parent"
+
+<RelativeLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:gravity="center"
-            app:contentInsetLeft="0dp"
-            app:contentInsetStart="0dp"
-            app:elevation="@dimen/default_elevation"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/White">
-
-                <Button
-                    android:id="@+id/continueBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="end"
-                    android:background="@null"
-                    android:text="@string/new_sale"
-                    android:textAllCaps="false"
-                    android:textColor="@color/DodgerBlue"
-                    android:textSize="@dimen/default_size_20sp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp">
-
-                </Button>
-
-                <Button
-                    android:id="@+id/addCustomerBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="end"
-                    android:background="@null"
-                    android:text="@string/add_customer"
-                    android:textAllCaps="false"
-                    android:textColor="@color/DodgerBlue"
-                    android:layout_alignParentEnd="true"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:textSize="@dimen/default_size_20sp">
-                </Button>
-
-            </RelativeLayout>
-
-        </androidx.appcompat.widget.Toolbar>
-
-    </LinearLayout>
-
-
-    <androidx.core.widget.NestedScrollView
+        android:id="@+id/mainll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
-        android:fillViewport="true"
-        android:background="@color/White">
+        android:orientation="vertical">
 
-        <LinearLayout
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginBottom="20dp"
-            android:orientation="vertical"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:gravity="center"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp"
+                app:elevation="@dimen/default_elevation"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/White">
+
+                    <Button
+                        android:id="@+id/continueBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="end"
+                        android:background="@null"
+                        android:text="@string/new_sale"
+                        android:textAllCaps="false"
+                        android:textColor="@color/DodgerBlue"
+                        android:textSize="@dimen/default_size_20sp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
+
+                    </Button>
+
+                    <Button
+                        android:id="@+id/addCustomerBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="end"
+                        android:background="@null"
+                        android:text="@string/add_customer"
+                        android:textAllCaps="false"
+                        android:textColor="@color/DodgerBlue"
+                        android:layout_alignParentEnd="true"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textSize="@dimen/default_size_20sp">
+                    </Button>
+
+                </RelativeLayout>
+
+            </androidx.appcompat.widget.Toolbar>
+
+        </LinearLayout>
+
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:fillViewport="true"
             android:background="@color/White">
 
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/no_change"
-                android:textColor="@color/Black"
-                android:textSize="@dimen/default_size_20sp"
-                android:textStyle="bold"
-                android:id="@+id/changeAmountTv"
-                android:gravity="center"
-                android:layout_gravity="center">
-
-            </TextView>
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textColor="@color/Black"
-                android:textSize="@dimen/default_size_17sp"
-                android:id="@+id/paymentInfoTv"
-                android:gravity="center"
-                android:layout_gravity="center">
-
-            </TextView>
-
-
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="30dp"
-                android:id="@+id/receiptInfoll"
-                android:layout_marginTop="60dp">
+                android:layout_marginBottom="20dp"
+                android:orientation="vertical"
+                android:background="@color/White">
+
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/how_like_your_receipt"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/no_change"
                     android:textColor="@color/Black"
-                    android:textSize="@dimen/default_size_17sp"
+                    android:textSize="@dimen/default_size_20sp"
+                    android:textStyle="bold"
+                    android:id="@+id/changeAmountTv"
                     android:gravity="center"
-                    android:layout_gravity="center"
-                    android:id="@+id/howToDescTv">
+                    android:layout_gravity="center">
 
                 </TextView>
 
 
-                <Button
-                    android:id="@+id/btnEmail"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/Black"
+                    android:textSize="@dimen/default_size_17sp"
+                    android:id="@+id/paymentInfoTv"
+                    android:gravity="center"
+                    android:layout_gravity="center">
+
+                </TextView>
+
+
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_button_length_size"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/email"
-                    android:textColor="@color/White"
-                    android:background="@color/DodgerBlue"
-                    android:textAllCaps="false"
-                    android:layout_below="@id/howToDescTv"/>
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:id="@+id/receiptInfoll"
+                    android:layout_marginTop="60dp">
 
-                <Button
-                    android:id="@+id/btnPrintReceipt"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_button_length_size"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/print_receipt"
-                    android:textColor="@color/White"
-                    android:background="@color/DodgerBlue"
-                    android:textAllCaps="false"
-                    android:layout_below="@id/btnEmail"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/how_like_your_receipt"
+                        android:textColor="@color/Black"
+                        android:textSize="@dimen/default_size_17sp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:id="@+id/howToDescTv">
 
-                <Button
-                    android:id="@+id/btnReceipt"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_button_length_size"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/no_receipt"
-                    android:textColor="@color/White"
-                    android:background="@color/DodgerBlue"
-                    android:textAllCaps="false"
-                    android:layout_below="@id/btnPrintReceipt"/>
-
-            </RelativeLayout>
+                    </TextView>
 
 
+                    <Button
+                        android:id="@+id/btnEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/custom_button_length_size"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/email"
+                        android:textColor="@color/White"
+                        android:background="@color/DodgerBlue"
+                        android:textAllCaps="false"
+                        android:layout_below="@id/howToDescTv"/>
+
+                    <Button
+                        android:id="@+id/btnPrintReceipt"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/custom_button_length_size"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/print_receipt"
+                        android:textColor="@color/White"
+                        android:background="@color/DodgerBlue"
+                        android:textAllCaps="false"
+                        android:layout_below="@id/btnEmail"/>
+
+                    <Button
+                        android:id="@+id/btnReceipt"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/custom_button_length_size"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/no_receipt"
+                        android:textColor="@color/White"
+                        android:background="@color/DodgerBlue"
+                        android:textAllCaps="false"
+                        android:layout_below="@id/btnPrintReceipt"/>
+
+                </RelativeLayout>
 
 
-        </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </LinearLayout>
+
+    <com.paypad.parator.uiUtils.tutorial.Tutorial
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tutorial"
+        android:layout_alignParentBottom="true">
+    </com.paypad.parator.uiUtils.tutorial.Tutorial>
+
+</RelativeLayout>
+
+

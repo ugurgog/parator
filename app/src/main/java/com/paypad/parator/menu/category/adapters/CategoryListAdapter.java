@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
+import com.paypad.parator.interfaces.ClickCallback;
 import com.paypad.parator.interfaces.ReturnSizeCallback;
 import com.paypad.parator.menu.category.CategoryEditFragment;
 import com.paypad.parator.menu.category.interfaces.ReturnCategoryCallback;
@@ -20,6 +21,8 @@ import com.paypad.parator.model.Category;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapter.CategoryHolder> {
 
@@ -29,6 +32,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnCategoryCallback returnCategoryCallback;
+    private ClickCallback clickCallback;
 
     public CategoryListAdapter(Context context, List<Category> categories,
                                BaseFragment.FragmentNavigation fragmentNavigation,
@@ -38,6 +42,10 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         this.orgCategories.addAll(categories);
         this.fragmentNavigation = fragmentNavigation;
         this.returnCategoryCallback = returnCategoryCallback;
+    }
+
+    public void setClickCallback(ClickCallback clickCallback) {
+        this.clickCallback = clickCallback;
     }
 
     @NonNull
@@ -66,7 +74,10 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
             categoryItemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fragmentNavigation.pushFragment(new CategoryEditFragment(category, new ReturnCategoryCallback() {
+                    if(clickCallback != null)
+                        clickCallback.OnClicked();
+
+                    fragmentNavigation.pushFragment(new CategoryEditFragment(category, WALK_THROUGH_END,new ReturnCategoryCallback() {
                         @Override
                         public void OnReturn(Category category) {
                             returnCategoryCallback.OnReturn(category);

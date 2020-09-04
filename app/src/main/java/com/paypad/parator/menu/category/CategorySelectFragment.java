@@ -45,6 +45,8 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
+
 public class CategorySelectFragment extends BaseFragment {
 
     private View mView;
@@ -134,7 +136,7 @@ public class CategorySelectFragment extends BaseFragment {
     private void initListeners() {
         backImgv.setOnClickListener(view -> Objects.requireNonNull(getActivity()).onBackPressed());
 
-        createCategoryBtn.setOnClickListener(view -> mFragmentNavigation.pushFragment(new CategoryEditFragment(null, new ReturnCategoryCallback() {
+        createCategoryBtn.setOnClickListener(view -> mFragmentNavigation.pushFragment(new CategoryEditFragment(null, WALK_THROUGH_END, new ReturnCategoryCallback() {
             @Override
             public void OnReturn(Category category) {
                 updateAdapterWithCurrentList();

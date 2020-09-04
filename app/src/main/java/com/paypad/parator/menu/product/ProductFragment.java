@@ -109,6 +109,13 @@ public class ProductFragment extends BaseFragment implements WalkthroughCallback
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        initVariables();
+        initListeners();
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
@@ -118,6 +125,7 @@ public class ProductFragment extends BaseFragment implements WalkthroughCallback
     @Override
     public void onDetach() {
         super.onDetach();
+        dismissPopup();
         mContext = null;
         EventBus.getDefault().unregister(this);
     }
@@ -140,8 +148,6 @@ public class ProductFragment extends BaseFragment implements WalkthroughCallback
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_product, container, false);
             ButterKnife.bind(this, mView);
-            initVariables();
-            initListeners();
         }
         return mView;
     }
@@ -155,8 +161,7 @@ public class ProductFragment extends BaseFragment implements WalkthroughCallback
         backImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(btnPopup != null)
-                    btnPopup.dismiss();
+                dismissPopup();
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
@@ -213,7 +218,6 @@ public class ProductFragment extends BaseFragment implements WalkthroughCallback
                     new CustomDialogBoxVert.Builder((Activity) mContext)
                             .setTitle(mContext.getResources().getString(R.string.created_your_first_item))
                             .setMessage(mContext.getResources().getString(R.string.created_your_first_item_desc))
-                            .setNegativeBtnVisibility(View.VISIBLE)
                             .setPositiveBtnVisibility(View.VISIBLE)
                             .setPositiveBtnText(mContext.getResources().getString(R.string.ok))
                             .setNegativeBtnText(mContext.getResources().getString(R.string.end_walkthrough))
@@ -233,34 +237,41 @@ public class ProductFragment extends BaseFragment implements WalkthroughCallback
 
                     walkthrough = WALK_THROUGH_END;
                     OnWalkthroughResult(walkthrough);
-                    if(btnPopup != null)
-                        btnPopup.dismiss();
+                    dismissPopup();
                 }
             }
         });
         productEditFragment.setWalkthroughCallback(this);
     }
 
+    private void dismissPopup(){
+        if(btnPopup != null){
+            btnPopup.dismiss();
+            btnPopup = null;
+        }
+    }
+
     private void initVariables() {
         realm = Realm.getDefaultInstance();
         toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.items));
         addItemImgv.setVisibility(View.GONE);
-        setShapes();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         productRv.setLayoutManager(linearLayoutManager);
         updateAdapterWithCurrentList();
+        checkTutorialIsActive();
+    }
 
+    private void checkTutorialIsActive() {
         if(walkthrough == WALK_THROUGH_CONTINUE){
             CommonUtils.displayPopupWindow(createProductBtn, mContext, mContext.getResources().getString(R.string.select_create_item),
                     new TutorialPopupCallback() {
                         @Override
                         public void OnClosed() {
                             OnWalkthroughResult(WALK_THROUGH_END);
-                            btnPopup.dismiss();
-                            btnPopup = null;
+                            dismissPopup();
                         }
 
                         @Override
@@ -288,11 +299,6 @@ public class ProductFragment extends BaseFragment implements WalkthroughCallback
         productRv.setAdapter(productListAdapter);
     }
 
-    private void setShapes() {
-        //createTaxBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.White, null),
-        //        getResources().getColor(R.color.DodgerBlue, null), GradientDrawable.RECTANGLE, 20, 2));
-    }
-
     public void updateAdapter(String searchText) {
         if (searchText != null && productListAdapter != null) {
             productListAdapter.updateAdapter(searchText, new ReturnSizeCallback() {
@@ -317,7 +323,5 @@ public class ProductFragment extends BaseFragment implements WalkthroughCallback
     public void OnClicked() {
         if(btnPopup != null)
             btnPopup.dismiss();
-        //walkthrough = WALK_THROUGH_END;
-        //OnWalkthroughResult(walkthrough);
     }
 }

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,11 +27,14 @@ import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CustomDialogListener;
+import com.paypad.parator.interfaces.TutorialPopupCallback;
 import com.paypad.parator.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.parator.model.Product;
 import com.paypad.parator.model.TaxModel;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
+import com.paypad.parator.uiUtils.tutorial.Tutorial;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.CustomDialogBox;
@@ -50,8 +54,10 @@ import io.realm.RealmResults;
 
 import static com.paypad.parator.constants.CustomConstants.MAX_RATE_VALUE;
 import static com.paypad.parator.constants.CustomConstants.TYPE_RATE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
-public class TaxEditFragment extends BaseFragment {
+public class TaxEditFragment extends BaseFragment implements WalkthroughCallback {
 
     private View mView;
 
@@ -77,10 +83,23 @@ public class TaxEditFragment extends BaseFragment {
     private ReturnTaxCallback returnTaxCallback;
     private User user;
     private int deleteButtonStatus = 1;
+    private Context mContext;
+    private NumberFormatWatcher numberFormatWatcher;
 
-    public TaxEditFragment(@Nullable TaxModel taxModel, ReturnTaxCallback returnTaxCallback) {
+    private int walkthrough;
+    private WalkthroughCallback walkthroughCallback;
+    private PopupWindow namePopup;
+    private PopupWindow ratePopup;
+    private Tutorial tutorial;
+
+    public TaxEditFragment(@Nullable TaxModel taxModel, int walkthrough, ReturnTaxCallback returnTaxCallback) {
         this.taxModel = taxModel;
         this.returnTaxCallback = returnTaxCallback;
+        this.walkthrough = walkthrough;
+    }
+
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
     }
 
     @Override
@@ -89,14 +108,24 @@ public class TaxEditFragment extends BaseFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        initVariables();
+        initListeners();
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        dismissPopup();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -104,7 +133,7 @@ public class TaxEditFragment extends BaseFragment {
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     @Override
@@ -118,8 +147,6 @@ public class TaxEditFragment extends BaseFragment {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_tax_edit, container, false);
             ButterKnife.bind(this, mView);
-            initVariables();
-            initListeners();
         }
         return mView;
     }
@@ -133,7 +160,8 @@ public class TaxEditFragment extends BaseFragment {
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
+                dismissPopup();
+                ((Activity) mContext).onBackPressed();
             }
         });
 
@@ -150,11 +178,19 @@ public class TaxEditFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                //checkSaveBtnEnable();
+                if (editable != null && !editable.toString().isEmpty()) {
+                    if(namePopup != null && walkthrough == WALK_THROUGH_CONTINUE){
+                        namePopup.dismiss();
+                        namePopup = null;
+
+                        displayRatePopup();
+                    }
+                }
             }
         });
 
-        amountRateEt.addTextChangedListener(new NumberFormatWatcher(amountRateEt, TYPE_RATE, MAX_RATE_VALUE));
+        initNumberFormatWatcher();
+        amountRateEt.addTextChangedListener(numberFormatWatcher);
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,8 +204,8 @@ public class TaxEditFragment extends BaseFragment {
             public void onClick(View view) {
                 if(deleteButtonStatus == 1){
                     deleteButtonStatus ++;
-                    CommonUtils.setBtnSecondCondition(Objects.requireNonNull(getContext()), btnDelete,
-                            getContext().getResources().getString(R.string.confirm_delete));
+                    CommonUtils.setBtnSecondCondition(mContext, btnDelete,
+                            mContext.getResources().getString(R.string.confirm_delete));
                 }else if(deleteButtonStatus == 2){
 
                     RealmResults<Product> products = ProductDBHelper.getProductsByTaxId(taxModel.getId());
@@ -183,6 +219,25 @@ public class TaxEditFragment extends BaseFragment {
         });
     }
 
+    private void initNumberFormatWatcher(){
+        numberFormatWatcher = new NumberFormatWatcher(amountRateEt, TYPE_RATE, MAX_RATE_VALUE);
+        numberFormatWatcher.setReturnEtTextCallback(new NumberFormatWatcher.ReturnEtTextCallback() {
+            @Override
+            public void OnReturnEtValue(String text) {
+                if(text != null && !text.isEmpty()){
+                    if(walkthrough == WALK_THROUGH_CONTINUE){
+                        tutorial.setLayoutVisibility(View.VISIBLE);
+
+                        if(ratePopup != null){
+                            ratePopup.dismiss();
+                            ratePopup = null;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     private void showDeleteDialog(RealmResults<Product> products){
         String deleteMessage = getResources().getString(R.string.tax_delete_question_description1)
                 .concat(" ")
@@ -190,13 +245,13 @@ public class TaxEditFragment extends BaseFragment {
                 .concat(" ")
                 .concat(getResources().getString(R.string.tax_delete_question_description2));
 
-        new CustomDialogBox.Builder((Activity) getContext())
-                .setTitle(getContext().getResources().getString(R.string.delete_tax))
+        new CustomDialogBox.Builder((Activity) mContext)
+                .setTitle(mContext.getResources().getString(R.string.delete_tax))
                 .setMessage(deleteMessage)
                 .setPositiveBtnVisibility(View.VISIBLE)
                 .setNegativeBtnVisibility(View.GONE)
-                .setPositiveBtnText(getContext().getResources().getString(R.string.ok))
-                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                .setPositiveBtnText(mContext.getResources().getString(R.string.ok))
+                .setPositiveBtnBackground(mContext.getResources().getColor(R.color.bg_screen1, null))
                 .setDurationTime(0)
                 .isCancellable(true)
                 .setEdittextVisibility(View.GONE)
@@ -204,8 +259,8 @@ public class TaxEditFragment extends BaseFragment {
                     @Override
                     public void OnClick() {
                         deleteButtonStatus = 1;
-                        CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
-                                getContext().getResources().getString(R.string.delete_tax));
+                        CommonUtils.setBtnFirstCondition(mContext, btnDelete,
+                                mContext.getResources().getString(R.string.delete_tax));
                     }
                 }).build();
     }
@@ -213,7 +268,7 @@ public class TaxEditFragment extends BaseFragment {
     private void deleteTax(){
 
         BaseResponse baseResponse =  TaxDBHelper.deleteTax(taxModel.getId());
-        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+        DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
         if(!baseResponse.isSuccess())
             return;
@@ -222,45 +277,79 @@ public class TaxEditFragment extends BaseFragment {
         Objects.requireNonNull(getActivity()).onBackPressed();
     }
 
-    /*private void checkSaveBtnEnable(){
-        if(taxNameEt.getText() != null && !taxNameEt.getText().toString().isEmpty() &&
-                amountRateEt.getText() != null && !amountRateEt.getText().toString().isEmpty()){
-            CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
-        }else
-            CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
-    }*/
-
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        amountRateNameTv.setText(getContext().getResources().getString(R.string.tax_rate));
+        amountRateNameTv.setText(mContext.getResources().getString(R.string.tax_rate));
         amountRateEt.setHint("0 %");
-        CommonUtils.setBtnFirstCondition(getContext(), btnDelete, getContext().getResources().getString(R.string.delete_tax));
-        //CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
+        CommonUtils.setBtnFirstCondition(mContext, btnDelete, mContext.getResources().getString(R.string.delete_tax));
 
         if(taxModel == null){
             taxModel = new TaxModel();
             btnDelete.setEnabled(false);
-            toolbarTitleTv.setText(getContext().getResources().getString(R.string.create_tax));
+            toolbarTitleTv.setText(mContext.getResources().getString(R.string.create_tax));
         }else{
-            toolbarTitleTv.setText(getContext().getResources().getString(R.string.edit_tax));
+            toolbarTitleTv.setText(mContext.getResources().getString(R.string.edit_tax));
             taxNameEt.setText(taxModel.getName());
             if(taxModel.getTaxRate() != 0){
                 CommonUtils.setAmountToView(taxModel.getTaxRate(), amountRateEt, TYPE_RATE);
             }
         }
+        checkTutorialIsActive();
+    }
+
+    private void checkTutorialIsActive() {
+        tutorial = mView.findViewById(R.id.tutorial);
+        tutorial.setWalkthroughCallback(this);
+        tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_tap_save_button));
+
+        if(walkthrough == WALK_THROUGH_CONTINUE){
+            CommonUtils.displayPopupWindow(taxNameEt, mContext, mContext.getResources().getString(R.string.enter_tax_name_message),
+                    new TutorialPopupCallback() {
+                        @Override
+                        public void OnClosed() {
+                            OnWalkthroughResult(WALK_THROUGH_END);
+                            namePopup.dismiss();
+                            namePopup = null;
+                        }
+
+                        @Override
+                        public void OnGetPopup(PopupWindow popupWindow) {
+                            namePopup = popupWindow;
+                        }
+                    });
+        }
+    }
+
+    private void displayRatePopup(){
+        if(walkthrough == WALK_THROUGH_CONTINUE && ratePopup == null){
+            CommonUtils.displayPopupWindow(amountRateEt, mContext, mContext.getResources().getString(R.string.enter_tax_rate_message),
+                    new TutorialPopupCallback() {
+                        @Override
+                        public void OnClosed() {
+                            OnWalkthroughResult(WALK_THROUGH_END);
+                            ratePopup.dismiss();
+                            ratePopup = null;
+                        }
+
+                        @Override
+                        public void OnGetPopup(PopupWindow popupWindow) {
+                            ratePopup = popupWindow;
+                        }
+                    });
+        }
     }
 
     private void checkValidTax() {
-        CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
+        CommonUtils.hideKeyBoard(mContext);
         if(taxNameEt.getText() == null || taxNameEt.getText().toString().isEmpty()){
             CommonUtils.snackbarDisplay(taxMainll,
-                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.tax_name_can_not_be_empty));
+                    mContext, mContext.getResources().getString(R.string.tax_name_can_not_be_empty));
             return;
         }
 
         if(amountRateEt.getText() == null || amountRateEt.getText().toString().isEmpty()){
             CommonUtils.snackbarDisplay(taxMainll,
-                    Objects.requireNonNull(getContext()), getContext().getResources().getString(R.string.tax_rate_can_not_be_empty));
+                    mContext, mContext.getResources().getString(R.string.tax_rate_can_not_be_empty));
             return;
         }
 
@@ -295,12 +384,12 @@ public class TaxEditFragment extends BaseFragment {
         boolean finalInserted = inserted;
 
         BaseResponse baseResponse = TaxDBHelper.createOrUpdateTax(taxModel);
-        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
+        DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
         if(baseResponse.isSuccess()){
             deleteButtonStatus = 1;
-            CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
-                    getContext().getResources().getString(R.string.delete_tax));
+            CommonUtils.setBtnFirstCondition(mContext, btnDelete,
+                    mContext.getResources().getString(R.string.delete_tax));
             btnDelete.setEnabled(false);
 
             if(finalInserted)
@@ -316,8 +405,25 @@ public class TaxEditFragment extends BaseFragment {
     private void clearViews() {
         taxNameEt.setText("");
         amountRateEt.setText("");
-        //CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
         taxModel = new TaxModel();
-        CommonUtils.hideKeyBoard(Objects.requireNonNull(getContext()));
+        CommonUtils.hideKeyBoard(mContext);
+    }
+
+    private void dismissPopup(){
+        if(namePopup != null){
+            namePopup.dismiss();
+            namePopup = null;
+        }
+
+        if(ratePopup != null){
+            ratePopup.dismiss();
+            ratePopup = null;
+        }
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
     }
 }

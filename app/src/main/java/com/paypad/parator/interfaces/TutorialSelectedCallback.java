@@ -1,5 +1,7 @@
 package com.paypad.parator.interfaces;
 
+import com.paypad.parator.enums.TutorialTypeEnum;
+
 public interface TutorialSelectedCallback {
-    void OnSelectedTutorial(int selectedTutorial);
+    void OnSelectedTutorial(TutorialTypeEnum tutorialType);
 }

@@ -19,6 +19,7 @@ import com.paypad.parator.R;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.ItemsEnum;
 import com.paypad.parator.enums.SupportListEnum;
+import com.paypad.parator.enums.TutorialTypeEnum;
 import com.paypad.parator.interfaces.MenuItemCallback;
 import com.paypad.parator.interfaces.SupportListItemCallback;
 import com.paypad.parator.interfaces.TutorialSelectedCallback;
@@ -147,8 +148,8 @@ public class SupportFragment extends BaseFragment implements SupportListItemCall
     }
 
     @Override
-    public void OnSelectedTutorial(int selectedTutorial) {
-        tutorialSelectedCallback.OnSelectedTutorial(selectedTutorial);
+    public void OnSelectedTutorial(TutorialTypeEnum tutorialType) {
+        tutorialSelectedCallback.OnSelectedTutorial(tutorialType);
     }
 
     public class SupportListAdapter extends RecyclerView.Adapter<SupportListAdapter.ItemHolder> {

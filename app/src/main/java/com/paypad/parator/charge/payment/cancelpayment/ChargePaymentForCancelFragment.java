@@ -56,6 +56,7 @@ import static com.paypad.parator.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.parator.constants.CustomConstants.TYPE_CANCEL_PAYMENT;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class ChargePaymentForCancelFragment extends BaseFragment implements PaymentStatusCallback {
 
@@ -240,7 +241,7 @@ public class ChargePaymentForCancelFragment extends BaseFragment implements Paym
     }
 
     private void initCashSelectFragment(){
-        cashSelectFragment = new CashSelectFragment(mTransaction, TYPE_CANCEL_PAYMENT);
+        cashSelectFragment = new CashSelectFragment(mTransaction, TYPE_CANCEL_PAYMENT, WALK_THROUGH_END);
         cashSelectFragment.setPaymentStatusCallback(this);
     }
 

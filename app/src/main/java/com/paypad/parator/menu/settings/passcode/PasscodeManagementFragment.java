@@ -314,6 +314,7 @@ public class PasscodeManagementFragment extends BaseFragment implements Passcode
         if(passcode == null){
             passcodeActionValue = PASSCODE_CREATE;
             editPasscodeTv.setText(mContext.getResources().getString(R.string.create_passcode));
+            passcodeEnabledll.setVisibility(View.GONE);
         }else {
             passcodeActionValue = PASSCODE_EDIT;
             editPasscodeTv.setText(mContext.getResources().getString(R.string.edit_passcode));

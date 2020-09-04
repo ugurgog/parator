@@ -107,7 +107,6 @@ public class RegisterActivity extends AppCompatActivity
         PhoneNumberUtil util = PhoneNumberUtil.createInstance(RegisterActivity.this);
         phoneNumberEt.addTextChangedListener(new PhoneNumberTextWatcher(phoneNumberEt, util));
         initCountrySelectFragment();
-
     }
 
     private void initListeners() {
@@ -175,7 +174,7 @@ public class RegisterActivity extends AppCompatActivity
             return false;
         }
 
-        //username validation
+        //email validation
         if (!Validation.getInstance().isValidEmail(this, email)) {
             CommonUtils.showCustomToast(RegisterActivity.this, Validation.getInstance().getErrorMessage());
             return false;

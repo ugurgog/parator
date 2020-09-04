@@ -523,6 +523,7 @@
     <string name="no_upper">NO</string>
 
     <string name="device_has_no_camera">Device has no camera</string>
+    <string name="unexpected_error">Unexpected error occured!</string>
 
     <!-- Settings -->
     <string name="checkout_options">CHECKOUT OPTIONS</string>
@@ -531,6 +532,12 @@
     <string name="device">DEVICE</string>
     <string name="orders">ORDERS</string>
     <string name="profile">PROFILE</string>
+    <string name="my_account_upper">MY ACCOUNT</string>
+    <string name="profile_information">Profile</string>
+    <string name="store_information">Store</string>
+    <string name="successful">Successful</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="update_profile_success">Profile Successfully Updated</string>
 
     <string name="view">View</string>
     <string name="passcodes">Passcodes</string>
@@ -617,6 +624,15 @@
     <string name="take_your_first_payment_desc">Learn how to take your first payment.</string>
     <string name="create_item_tutorial">Create Item Tutorial</string>
     <string name="create_item_tutorial_desc">Learn how to create an item.</string>
+    <string name="create_tax_tutorial">Create Tax Tutorial</string>
+    <string name="create_tax_tutorial_desc">Learn how to create a tax.</string>
+    <string name="create_category_tutorial">Create Category Tutorial</string>
+    <string name="create_category_tutorial_desc">Learn how to create a category.</string>
+    <string name="create_unit_tutorial">Create Unit Tutorial</string>
+    <string name="create_unit_tutorial_desc">Learn how to create a unit.</string>
+    <string name="create_discount_tutorial">Create Discount Tutorial</string>
+    <string name="create_discount_tutorial_desc">Learn how to create a discount.</string>
+
 
     <!-- Tours and Tutorials descriptions-->
     <string name="welcome_to_parator_pos">Welcome to Paratör Point of Sale</string>
@@ -627,11 +643,46 @@
     <string name="dont_need_help_message">You can visit this walkthrough later in Support under Tours and Tutorials.</string>
     <string name="continue_walkthrough">Continue Walkthrough</string>
     <string name="end_walkthrough">End Walkthrough</string>
+
     <string name="now_select_all_items">Now Select All Items</string>
+    <string name="now_select_taxes">Now Select Taxes</string>
+    <string name="now_select_units">Now Select Units</string>
+    <string name="now_select_categories">Now Select Categories</string>
+    <string name="now_select_discounts">Now Select Discounts</string>
+    <string name="now_tap_save_button">Now Tap Save Button</string>
+
     <string name="select_create_item">Select Create Item</string>
+    <string name="select_create_category">Select Create Category</string>
+    <string name="select_create_unit">Select Create Unit</string>
+    <string name="select_create_tax">Select Create Tax</string>
+    <string name="select_create_discount">Select Create Discount</string>
+
     <string name="enter_item_name_message">Enter an item name, e.g. Coffe. The name will be used on customer receipts and in sales reports.</string>
+    <string name="enter_category_name_message">Enter a category name</string>
+    <string name="enter_unit_name_message">Enter an unit name</string>
+    <string name="enter_tax_name_message">Enter a tax name</string>
+    <string name="enter_tax_rate_message">Enter tax rate</string>
+    <string name="enter_discount_name_message">Enter a discount name</string>
+    <string name="enter_discount_rate_message">Enter discount amount or rate</string>
+
     <string name="type_item_amount_message">Enter the product price. This field is not required.</string>
+
     <string name="created_your_first_item">You\'ve Created Your First Item</string>
     <string name="created_your_first_item_desc">You can revisit this tutorial in Support > Tours and Tutorials</string>
+    <string name="created_your_first_category">You\'ve Created Your First Category</string>
+    <string name="created_your_first_unit">You\'ve Created Your First Unit</string>
+    <string name="created_your_first_tax">You\'ve Created Your First Tax</string>
+    <string name="created_your_first_discount">You\'ve Created Your First Discount</string>
+
+    <string name="enter_price_to_get_started">Enter a price to get started (e.g. 1.00 ₺)</string>
+    <string name="select_tax_from_dynamic_box">Now, Select tax from fast menu box</string>
+    <string name="add_tax_to_dynamic_box">Now, Add tax to fast menu box. Tap (+) box to add system or defined tax.</string>
+    <string name="tap_to_charge_button">Now, Tap to Charge button</string>
+    <string name="tap_the_button_cash">Tap the button that says Cash</string>
+    <string name="tap_the_button_says_pay">Tap the button that says Pay</string>
+    <string name="payment_completed_tutorial_message">Your customer can then choose how to receive their receipt. Tap New Sale to return to the keypad.</string>
+    <string name="congratulations">Congratulations!</string>
+    <string name="sale_tutorial_finalize_message">You\'ve taken your first payment. You can view this transaction in your Transactions.</string>
+    <string name="see_transactions">See Transactions</string>
 
 </resources>

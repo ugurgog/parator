@@ -1,73 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
+<RelativeLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/taxMainll">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <include layout="@layout/toolbar_item_update"/>
-
-
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:id="@+id/taxMainll">
 
-        <EditText
-            android:id="@+id/taxNameEt"
+
+
+        <include layout="@layout/toolbar_item_update"/>
+
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/custom_edittext_height_size"
-            android:background="@drawable/custom_edittext_bg"
-            android:drawablePadding="20dp"
-            android:hint="@string/tax_name"
-            android:inputType="textCapSentences"
-            android:paddingLeft="8dp"
-            android:textColor="@color/Black"
-            android:textColorHint="@color/DarkGray"
-            />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/taxNameEt"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_edittext_height_size"
+                android:background="@drawable/custom_edittext_bg"
+                android:drawablePadding="20dp"
+                android:hint="@string/tax_name"
+                android:inputType="textCapSentences"
+                android:paddingLeft="8dp"
+                android:textColor="@color/Black"
+                android:textColorHint="@color/DarkGray"
+                />
 
 
-        <!--EditText
-            android:id="@+id/taxRateEt"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/custom_edittext_height_size"
-            android:background="@color/transparent"
-            android:drawablePadding="20dp"
-            android:hint="% 0"
-            android:inputType="number"
-            android:paddingLeft="8dp"
-            android:textColor="@color/Black"
-            android:textColorHint="@color/DarkGray"
-            android:layout_marginTop="10dp"/-->
+            <!--EditText
+                android:id="@+id/taxRateEt"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_edittext_height_size"
+                android:background="@color/transparent"
+                android:drawablePadding="20dp"
+                android:hint="% 0"
+                android:inputType="number"
+                android:paddingLeft="8dp"
+                android:textColor="@color/Black"
+                android:textColorHint="@color/DarkGray"
+                android:layout_marginTop="10dp"/-->
 
-        <include layout="@layout/layout_amount"
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <include layout="@layout/layout_amount"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
 
-        <Button
-            android:id="@+id/btnDelete"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/custom_button_length_size"
-            android:layout_marginTop="20dp"
-            android:text="@string/delete_tax"
-            android:textColor="@color/DodgerBlue"
-            android:textAllCaps="false"
-            android:background="@drawable/custom_button_bg"/>
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/custom_button_length_size"
+                android:layout_marginTop="20dp"
+                android:text="@string/delete_tax"
+                android:textColor="@color/DodgerBlue"
+                android:textAllCaps="false"
+                android:background="@drawable/custom_button_bg"/>
 
-        <!--Button
-            android:id="@+id/btnDelete"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="30dp"
-            android:text="@string/delete_tax"
-            android:textColor="@color/White"
-            android:textAllCaps="false"/-->
+            <!--Button
+                android:id="@+id/btnDelete"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="30dp"
+                android:text="@string/delete_tax"
+                android:textColor="@color/White"
+                android:textAllCaps="false"/-->
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+    <com.paypad.parator.uiUtils.tutorial.Tutorial
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tutorial"
+        android:layout_alignParentBottom="true">
+    </com.paypad.parator.uiUtils.tutorial.Tutorial>
+
+</RelativeLayout>
+

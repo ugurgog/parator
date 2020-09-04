@@ -41,6 +41,8 @@ import com.paypad.parator.model.Transaction;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
 import com.paypad.parator.model.pojo.SaleModelInstance;
+import com.paypad.parator.uiUtils.tutorial.Tutorial;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.CustomDialogBox;
@@ -61,8 +63,10 @@ import static com.paypad.parator.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.parator.constants.CustomConstants.TYPE_ORDER_PAYMENT;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
-public class OrderChargePaymentFragment extends BaseFragment implements PaymentStatusCallback {
+public class OrderChargePaymentFragment extends BaseFragment implements PaymentStatusCallback, WalkthroughCallback {
 
     private View mView;
 
@@ -88,9 +92,12 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
     private SaleCalculateCallback saleCalculateCallback;
     private IOrderManager orderManager;
     private Context mContext;
+    private int walkthrough;
+    private WalkthroughCallback walkthroughCallback;
+    private Tutorial tutorial;
 
-    public OrderChargePaymentFragment() {
-
+    public OrderChargePaymentFragment(int walkthrough) {
+        this.walkthrough = walkthrough;
     }
 
     public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
@@ -99,6 +106,10 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
 
     public void setSaleCalculateCallback(SaleCalculateCallback saleCalculateCallback) {
         this.saleCalculateCallback = saleCalculateCallback;
+    }
+
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
     }
 
     @Override
@@ -230,6 +241,17 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         paymentsRv.setLayoutManager(linearLayoutManager);
         setPaymentAdapter();
+        initTutorial();
+    }
+
+    private void initTutorial() {
+        tutorial = mView.findViewById(R.id.tutorial);
+        tutorial.setWalkthroughCallback(this);
+
+        if(walkthrough == WALK_THROUGH_CONTINUE) {
+            tutorial.setLayoutVisibility(View.VISIBLE);
+            tutorial.setTutorialMessage(mContext.getResources().getString(R.string.tap_the_button_cash));
+        }
     }
 
     private void createInitialTransaction() {
@@ -288,8 +310,9 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
     }
 
     private void initCashSelectFragment(){
-        cashSelectFragment = new CashSelectFragment(mTransaction, TYPE_ORDER_PAYMENT);
+        cashSelectFragment = new CashSelectFragment(mTransaction, TYPE_ORDER_PAYMENT, walkthrough);
         cashSelectFragment.setPaymentStatusCallback(this);
+        cashSelectFragment.setWalkthroughCallback(this);
     }
 
     private void initCreditCardSelectFragment(){
@@ -390,5 +413,13 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
             setChargeAmount();
             setSplitInfoTv();
         }
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
+        if(walkthrough == WALK_THROUGH_END)
+            tutorial.setLayoutVisibility(View.GONE);
     }
 }

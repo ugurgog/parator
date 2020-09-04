@@ -1,5 +1,6 @@
 package com.paypad.parator.menu.settings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -59,6 +60,7 @@ public class SettingsFragment extends BaseFragment{
     RelativeLayout passcodeRl;
 
     private User user;
+    private Context mContext;
 
     public SettingsFragment() {
     }
@@ -71,12 +73,14 @@ public class SettingsFragment extends BaseFragment{
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -95,6 +99,8 @@ public class SettingsFragment extends BaseFragment{
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        CommonUtils.showNavigationBar((Activity) mContext);
 
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_settings, container, false);

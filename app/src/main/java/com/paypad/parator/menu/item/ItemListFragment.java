@@ -19,6 +19,7 @@ import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.ItemsEnum;
+import com.paypad.parator.enums.TutorialTypeEnum;
 import com.paypad.parator.interfaces.MenuItemCallback;
 import com.paypad.parator.menu.category.CategoryFragment;
 import com.paypad.parator.menu.category.interfaces.ReturnCategoryCallback;
@@ -69,29 +70,38 @@ public class ItemListFragment extends BaseFragment implements
     private WalkthroughCallback walkthroughCallback;
     private int walkthrough;
     private Tutorial tutorial;
+    private TutorialTypeEnum mTutorialType;
     private Context mContext;
 
     @Override
     public void OnItemReturn(ItemsEnum itemType) {
         if(itemType == ItemsEnum.ALL_ITEMS){
-            ProductFragment productFragment = new ProductFragment(walkthrough);
+            ProductFragment productFragment =
+                    new ProductFragment(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_ITEM ? walkthrough : WALK_THROUGH_END);
             productFragment.setReturnItemCallback(this);
             productFragment.setWalkthroughCallback(this);
             mFragmentNavigation.pushFragment(productFragment);
         }else if(itemType == ItemsEnum.CATEGORIES){
-            CategoryFragment categoryFragment = new CategoryFragment();
+            CategoryFragment categoryFragment =
+                    new CategoryFragment(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_CATEGORY ? walkthrough : WALK_THROUGH_END);
             categoryFragment.setReturnCategoryCallback(this);
+            categoryFragment.setWalkthroughCallback(this);
             mFragmentNavigation.pushFragment(categoryFragment);
         }else if(itemType == ItemsEnum.MODIFIERS){
 
         }else if(itemType == ItemsEnum.DISCOUNTS){
-            DiscountFragment discountFragment = new DiscountFragment();
+            DiscountFragment discountFragment = new DiscountFragment(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_DISCOUNT ? walkthrough : WALK_THROUGH_END);
             discountFragment.setDiscountCallback(this);
+            discountFragment.setWalkthroughCallback(this);
             mFragmentNavigation.pushFragment(discountFragment);
         }else if(itemType == ItemsEnum.UNITS){
-            mFragmentNavigation.pushFragment(new UnitFragment());
+            UnitFragment unitFragment = new UnitFragment(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_UNIT ? walkthrough : WALK_THROUGH_END);
+            unitFragment.setWalkthroughCallback(this);
+            mFragmentNavigation.pushFragment(unitFragment);
         }else if(itemType == ItemsEnum.TAXES){
-            mFragmentNavigation.pushFragment(new TaxFragment());
+            TaxFragment taxFragment = new TaxFragment(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_TAX ? walkthrough : WALK_THROUGH_END);
+            taxFragment.setWalkthroughCallback(this);
+            mFragmentNavigation.pushFragment(taxFragment);
         }
     }
 
@@ -111,8 +121,9 @@ public class ItemListFragment extends BaseFragment implements
         void OnCategoryUpdated();
     }
 
-    public ItemListFragment(int walkthrough) {
+    public ItemListFragment(int walkthrough, TutorialTypeEnum tutorialType) {
         this.walkthrough = walkthrough;
+        mTutorialType = tutorialType;
     }
 
     @Override
@@ -164,18 +175,31 @@ public class ItemListFragment extends BaseFragment implements
     }
 
     private void initVariables() {
-        toolbarTitleTv.setText(getContext().getResources().getString(R.string.items));
+        toolbarTitleTv.setText(mContext.getResources().getString(R.string.items));
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         itemsRv.setLayoutManager(linearLayoutManager);
         setAdapter();
+        initTutorial();
+    }
 
+    private void initTutorial() {
         tutorial = mView.findViewById(R.id.tutorial);
         tutorial.setWalkthroughCallback(this);
         if(walkthrough == WALK_THROUGH_CONTINUE){
             tutorial.setLayoutVisibility(View.VISIBLE);
-            tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_all_items));
+
+            if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_ITEM)
+                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_all_items));
+            else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_TAX)
+                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_taxes));
+            else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_CATEGORY)
+                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_categories));
+            else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_UNIT)
+                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_units));
+            else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_DISCOUNT)
+                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_discounts));
         }
     }
 

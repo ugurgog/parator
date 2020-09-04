@@ -41,6 +41,8 @@ import com.paypad.parator.model.Transaction;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
 import com.paypad.parator.model.pojo.SaleModelInstance;
+import com.paypad.parator.uiUtils.tutorial.Tutorial;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.DataUtils;
 import com.paypad.parator.utils.LogUtil;
@@ -61,8 +63,11 @@ import static com.paypad.parator.charge.payment.interfaces.PaymentStatusCallback
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.parator.constants.CustomConstants.TYPE_PRICE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
-public class OrderPaymentCompletedFragment extends BaseFragment implements SendMail.MailSendCallback  {
+public class OrderPaymentCompletedFragment extends BaseFragment
+        implements SendMail.MailSendCallback, WalkthroughCallback  {
 
     private View mView;
 
@@ -99,19 +104,28 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
     private GlobalSettings globalSettings;
     private Realm realm;
     private Order order;
+    private int walkthrough;
+    private Context mContext;
+    private WalkthroughCallback walkthroughCallback;
+    private Tutorial tutorial;
 
     private static final int CUSTOMER_RECEIPT = 1;
     private static final int MERCHANT_RECEIPT = 2;
 
     private String printerResult;
 
-    OrderPaymentCompletedFragment(Transaction transaction, ProcessDirectionEnum processDirectionType) {
+    OrderPaymentCompletedFragment(Transaction transaction, ProcessDirectionEnum processDirectionType, int walkthrough) {
         mTransaction = transaction;
         mProcessDirectionType = processDirectionType;
+        this.walkthrough = walkthrough;
     }
 
     public void setPaymentStatusCallback(PaymentStatusCallback paymentStatusCallback) {
         this.paymentStatusCallback = paymentStatusCallback;
+    }
+
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
     }
 
     @Override
@@ -122,12 +136,14 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -135,7 +151,7 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     @Override
@@ -147,10 +163,7 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        //Objects.requireNonNull(getActivity()).getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-        //        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
-
-        CommonUtils.hideNavigationBar(getActivity());
+        CommonUtils.hideNavigationBar((Activity) mContext);
 
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_payment_completed, container, false);
@@ -189,7 +202,6 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
             public void onClick(View view) {
                 cancelCounter();
                 paymentStatusCallback.OnPaymentReturn(paymentStatus);
-                //Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
 
@@ -224,7 +236,7 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
     }
 
     private void initPrinter() {
-        printOrderManager = new PrintOrderManager(getContext(), SaleModelInstance.getInstance().getSaleModel(),true);
+        printOrderManager = new PrintOrderManager(mContext, SaleModelInstance.getInstance().getSaleModel(),true);
         printOrderManager.setCallback(mCallback);
     }
 
@@ -246,9 +258,20 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
             receiptInfoll.setVisibility(View.GONE);
         }
 
-        btnPrintReceipt.setText(getContext().getResources().getString(R.string.print_receipt));
+        btnPrintReceipt.setText(mContext.getResources().getString(R.string.print_receipt));
         setChargeAmountTv();
         setPaymentInfoTv();
+        initTutorial();
+    }
+
+    private void initTutorial() {
+        tutorial = mView.findViewById(R.id.tutorial);
+        tutorial.setWalkthroughCallback(this);
+
+        if(walkthrough == WALK_THROUGH_CONTINUE) {
+            tutorial.setLayoutVisibility(View.VISIBLE);
+            tutorial.setTutorialMessage(mContext.getResources().getString(R.string.payment_completed_tutorial_message));
+        }
     }
 
     private void initSendReceiptEmailFragment(){
@@ -294,7 +317,7 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
         }else {
             changeAmountTv.setText(CommonUtils.getDoubleStrValueForView(mTransaction.getChangeAmount(), TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol())
                     .concat(" ")
-                    .concat(getResources().getString(R.string.change)));
+                    .concat(mContext.getResources().getString(R.string.change)));
         }
     }
 
@@ -351,7 +374,7 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
 
             BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel().getOrder());
 
-            DataUtils.showBaseResponseMessage(getContext(),saleBaseResponse);
+            DataUtils.showBaseResponseMessage(mContext,saleBaseResponse);
 
             if(saleBaseResponse.isSuccess()){
                 mCustomer = customer;
@@ -370,7 +393,7 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
 
         BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(SaleModelInstance.getInstance().getSaleModel().getOrder());
 
-        DataUtils.showBaseResponseMessage(getContext(),saleBaseResponse);
+        DataUtils.showBaseResponseMessage(mContext,saleBaseResponse);
 
         if(saleBaseResponse.isSuccess()){
             mCustomer = null;
@@ -408,7 +431,7 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
             mTransaction.setMailSend(false);
 
         BaseResponse mailSendresponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
-        DataUtils.showBaseResponseMessage(getContext(),mailSendresponse);
+        DataUtils.showBaseResponseMessage(mContext,mailSendresponse);
 
         LogUtil.logTransaction("handleMailResponse", mTransaction);
 
@@ -438,24 +461,32 @@ public class OrderPaymentCompletedFragment extends BaseFragment implements SendM
         @Override
         public void onPrintResult(int code, String msg) throws RemoteException {
             final int res = code;
-            ((Activity)getContext()).runOnUiThread(new Runnable() {
+            ((Activity)mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if(res == 0){
-                        CommonUtils.showToastShort(getContext(), "Print successful");
+                        CommonUtils.showToastShort(mContext, "Print successful");
 
                         if(receiptType == CUSTOMER_RECEIPT){
                             receiptType = MERCHANT_RECEIPT;
-                            btnPrintReceipt.setText(getContext().getResources().getString(R.string.print_merchant_receipt));
+                            btnPrintReceipt.setText(mContext.getResources().getString(R.string.print_merchant_receipt));
                             checkAutoPrint();
                         }else
                             startCounter();
                     }else{
-                        CommonUtils.showToastShort(getContext(), "Print failed");
+                        CommonUtils.showToastShort(mContext, "Print failed");
                         //TODO Follow-up after failed, such as reprint
                     }
                 }
             });
         }
     };
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
+        if(result == WALK_THROUGH_END)
+            tutorial.setLayoutVisibility(View.GONE);
+    }
 }

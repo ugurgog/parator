@@ -1,15 +1,18 @@
 package com.paypad.parator.menu.category;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,13 +27,18 @@ import com.paypad.parator.R;
 import com.paypad.parator.db.CategoryDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.interfaces.ClickCallback;
+import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.ReturnSizeCallback;
+import com.paypad.parator.interfaces.TutorialPopupCallback;
 import com.paypad.parator.menu.category.adapters.CategoryListAdapter;
 import com.paypad.parator.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.parator.model.Category;
 import com.paypad.parator.model.User;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
+import com.paypad.parator.utils.CustomDialogBoxVert;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -44,7 +52,10 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class CategoryFragment extends BaseFragment {
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
+
+public class CategoryFragment extends BaseFragment implements WalkthroughCallback, ClickCallback {
 
     private View mView;
 
@@ -67,6 +78,7 @@ public class CategoryFragment extends BaseFragment {
     RecyclerView categoryRv;
 
     private CategoryListAdapter categoryListAdapter;
+    private CategoryEditFragment categoryEditFragment;
 
     private Realm realm;
 
@@ -74,13 +86,29 @@ public class CategoryFragment extends BaseFragment {
     private RealmResults<Category> categories;
     private List<Category> categoryList;
     private User user;
+    private Context mContext;
 
-    public CategoryFragment() {
+    private int walkthrough;
+    private WalkthroughCallback walkthroughCallback;
+    private PopupWindow btnPopup;
 
+    public CategoryFragment(int walkthrough) {
+        this.walkthrough = walkthrough;
     }
 
     public void setReturnCategoryCallback(ReturnCategoryCallback returnCategoryCallback) {
         this.returnCategoryCallback = returnCategoryCallback;
+    }
+
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initVariables();
+        initListeners();
     }
 
     @Override
@@ -91,12 +119,15 @@ public class CategoryFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        dismissPopup();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -104,7 +135,7 @@ public class CategoryFragment extends BaseFragment {
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     @Override
@@ -118,8 +149,6 @@ public class CategoryFragment extends BaseFragment {
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_category, container, false);
             ButterKnife.bind(this, mView);
-            initVariables();
-            initListeners();
         }
         return mView;
     }
@@ -130,14 +159,23 @@ public class CategoryFragment extends BaseFragment {
     }
 
     private void initListeners() {
-        backImgv.setOnClickListener(view -> Objects.requireNonNull(getActivity()).onBackPressed());
-
-        createCategoryBtn.setOnClickListener(view -> mFragmentNavigation.pushFragment(new CategoryEditFragment(null, new ReturnCategoryCallback() {
+        backImgv.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void OnReturn(Category category) {
-                updateAdapterWithCurrentList();
+            public void onClick(View view) {
+                dismissPopup();
+                ((Activity) mContext).onBackPressed();
             }
-        })));
+        });
+
+        createCategoryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(btnPopup != null)
+                    btnPopup.dismiss();
+                initCategoryEditFragment();
+                mFragmentNavigation.pushFragment(categoryEditFragment);
+            }
+        });
 
         searchEdittext.addTextChangedListener(new TextWatcher() {
             @Override
@@ -163,33 +201,91 @@ public class CategoryFragment extends BaseFragment {
         searchCancelImgv.setOnClickListener(v -> {
             searchEdittext.setText("");
             searchCancelImgv.setVisibility(View.GONE);
-            CommonUtils.showKeyboard(getContext(),false, searchEdittext);
+            CommonUtils.showKeyboard(mContext,false, searchEdittext);
         });
+    }
+
+    private void initCategoryEditFragment(){
+        categoryEditFragment = new CategoryEditFragment(null, walkthrough, new ReturnCategoryCallback() {
+            @Override
+            public void OnReturn(Category category) {
+                updateAdapterWithCurrentList();
+
+                if(walkthrough == WALK_THROUGH_CONTINUE){
+
+                    new CustomDialogBoxVert.Builder((Activity) mContext)
+                            .setTitle(mContext.getResources().getString(R.string.created_your_first_category))
+                            .setMessage(mContext.getResources().getString(R.string.created_your_first_item_desc))
+                            .setPositiveBtnVisibility(View.VISIBLE)
+                            .setPositiveBtnText(mContext.getResources().getString(R.string.ok))
+                            .setNegativeBtnText(mContext.getResources().getString(R.string.end_walkthrough))
+                            .setPositiveBtnBackground(mContext.getResources().getColor(R.color.Green, null))
+                            .setNegativeBtnBackground(mContext.getResources().getColor(R.color.custom_btn_bg_color, null))
+                            .setNegativeBtnVisibility(View.GONE)
+                            .setDurationTime(0)
+                            .isCancellable(false)
+                            .setEdittextVisibility(View.GONE)
+                            .setpBtnTextColor(mContext.getResources().getColor(R.color.White, null))
+                            .setnBtnTextColor(mContext.getResources().getColor(R.color.Green, null))
+                            .OnPositiveClicked(new CustomDialogListener() {
+                                @Override
+                                public void OnClick() {
+                                }
+                            }).build();
+
+                    walkthrough = WALK_THROUGH_END;
+                    OnWalkthroughResult(walkthrough);
+                    if(btnPopup != null)
+                        btnPopup.dismiss();
+                }
+            }
+        });
+        categoryEditFragment.setWalkthroughCallback(this);
     }
 
     private void initVariables() {
         realm = Realm.getDefaultInstance();
-        toolbarTitleTv.setText(Objects.requireNonNull(getContext()).getResources().getString(R.string.categories));
+        toolbarTitleTv.setText(mContext.getResources().getString(R.string.categories));
         addItemImgv.setVisibility(View.GONE);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         categoryRv.setLayoutManager(linearLayoutManager);
-        categoryRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
+        categoryRv.addItemDecoration(new DividerItemDecoration(mContext, LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
+        checkTutorialIsActive();
+    }
+
+    private void checkTutorialIsActive() {
+        if(walkthrough == WALK_THROUGH_CONTINUE){
+            CommonUtils.displayPopupWindow(createCategoryBtn, mContext, mContext.getResources().getString(R.string.select_create_category),
+                    new TutorialPopupCallback() {
+                        @Override
+                        public void OnClosed() {
+                            OnWalkthroughResult(WALK_THROUGH_END);
+                            dismissPopup();
+                        }
+
+                        @Override
+                        public void OnGetPopup(PopupWindow popupWindow) {
+                            btnPopup = popupWindow;
+                        }
+                    });
+        }
     }
 
     public void updateAdapterWithCurrentList(){
         categories = CategoryDBHelper.getAllCategories(user.getId());
         categoryList = new ArrayList(categories);
-        categoryListAdapter = new CategoryListAdapter(getContext(), categoryList, mFragmentNavigation, new ReturnCategoryCallback() {
+        categoryListAdapter = new CategoryListAdapter(mContext, categoryList, mFragmentNavigation, new ReturnCategoryCallback() {
             @Override
             public void OnReturn(Category category) {
                 updateAdapterWithCurrentList();
                 returnCategoryCallback.OnReturn(category);
             }
         });
+        categoryListAdapter.setClickCallback(this);
         categoryRv.setAdapter(categoryListAdapter);
     }
 
@@ -205,5 +301,24 @@ public class CategoryFragment extends BaseFragment {
                 }
             });
         }
+    }
+
+    private void dismissPopup(){
+        if(btnPopup != null){
+            btnPopup.dismiss();
+            btnPopup = null;
+        }
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
+    }
+
+    @Override
+    public void OnClicked() {
+        if(btnPopup != null)
+            btnPopup.dismiss();
     }
 }

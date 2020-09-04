@@ -1,59 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
+<RelativeLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/productMainll">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <include layout="@layout/toolbar_item_update"/>
-
-
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
-        android:fillViewport="true"
-        android:background="@color/White">
+        android:id="@+id/productMainll">
 
 
-        <LinearLayout
+
+        <include layout="@layout/toolbar_item_update"/>
+
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:fillViewport="true"
+            android:background="@color/White">
 
-            <include layout="@layout/item_edit_image_layout"/>
 
-            <EditText
-                android:id="@+id/categoryNameEt"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/custom_edittext_height_size"
-                android:background="@drawable/custom_edittext_bg"
-                android:drawablePadding="20dp"
-                android:hint="@string/category_name"
-                android:inputType="textCapSentences"
-                android:paddingLeft="8dp"
-                android:textColor="@color/Black"
-                android:textColorHint="@color/DarkGray"
-                android:layout_marginTop="10dp"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnDelete"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/custom_button_length_size"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/custom_button_bg"
-                android:text="@string/delete_category"
-                android:textColor="@color/DodgerBlue"
-                android:textAllCaps="false"/>
+                <include layout="@layout/item_edit_image_layout"/>
 
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/categoryNameEt"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/custom_edittext_height_size"
+                    android:background="@drawable/custom_edittext_bg"
+                    android:drawablePadding="20dp"
+                    android:hint="@string/category_name"
+                    android:inputType="textCapSentences"
+                    android:paddingLeft="8dp"
+                    android:textColor="@color/Black"
+                    android:textColorHint="@color/DarkGray"
+                    android:layout_marginTop="10dp"/>
 
-    </androidx.core.widget.NestedScrollView>
+                <Button
+                    android:id="@+id/btnDelete"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/custom_button_length_size"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/custom_button_bg"
+                    android:text="@string/delete_category"
+                    android:textColor="@color/DodgerBlue"
+                    android:textAllCaps="false"/>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
 
 
 
-</LinearLayout>
+    </LinearLayout>
+
+    <com.paypad.parator.uiUtils.tutorial.Tutorial
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tutorial"
+        android:layout_alignParentBottom="true">
+
+    </com.paypad.parator.uiUtils.tutorial.Tutorial>
+
+</RelativeLayout>
+

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -24,6 +25,7 @@ import com.paypad.parator.db.ProductDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CustomDialogListener;
+import com.paypad.parator.interfaces.TutorialPopupCallback;
 import com.paypad.parator.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.parator.menu.product.SelectColorFragment;
 import com.paypad.parator.menu.product.interfaces.ColorImageReturnCallback;
@@ -32,6 +34,8 @@ import com.paypad.parator.model.Product;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
 import com.paypad.parator.model.pojo.PhotoSelectUtil;
+import com.paypad.parator.uiUtils.tutorial.Tutorial;
+import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.CustomDialogBox;
@@ -48,8 +52,12 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_CONTINUE;
+import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
+
 public class CategoryEditFragment extends BaseFragment
-    implements ColorImageReturnCallback {
+    implements ColorImageReturnCallback,
+        WalkthroughCallback {
 
     private View mView;
 
@@ -76,10 +84,21 @@ public class CategoryEditFragment extends BaseFragment
     private SelectColorFragment selectColorFragment;
     private int mColorId;
     private String itemName = "";
+    private Context mContext;
 
-    public CategoryEditFragment(@Nullable Category category, ReturnCategoryCallback returnCategoryCallback) {
+    private int walkthrough;
+    private WalkthroughCallback walkthroughCallback;
+    private PopupWindow btnPopup;
+    private Tutorial tutorial;
+
+    public CategoryEditFragment(@Nullable Category category, int walkthrough, ReturnCategoryCallback returnCategoryCallback) {
         this.category = category;
         this.returnCategoryCallback = returnCategoryCallback;
+        this.walkthrough = walkthrough;
+    }
+
+    public void setWalkthroughCallback(WalkthroughCallback walkthroughCallback) {
+        this.walkthroughCallback = walkthroughCallback;
     }
 
     @Override
@@ -88,14 +107,24 @@ public class CategoryEditFragment extends BaseFragment
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        initVariables();
+        initListeners();
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        dismissPopup();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -117,8 +146,6 @@ public class CategoryEditFragment extends BaseFragment
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_category_edit, container, false);
             ButterKnife.bind(this, mView);
-            initVariables();
-            initListeners();
         }
         return mView;
     }
@@ -132,6 +159,7 @@ public class CategoryEditFragment extends BaseFragment
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                dismissPopup();
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
@@ -153,10 +181,21 @@ public class CategoryEditFragment extends BaseFragment
                     CommonUtils.setSaveBtnEnability(true, saveBtn, getContext());
                     itemName = editable.toString();
                     itemShortNameTv.setText(DataUtils.getProductNameShortenName(itemName));
+
+                    if(btnPopup != null && walkthrough == WALK_THROUGH_CONTINUE){
+                        btnPopup.dismiss();
+                        tutorial.setLayoutVisibility(View.VISIBLE);
+                    }
+
                 } else {
                     CommonUtils.setSaveBtnEnability(false, saveBtn, getContext());
                     itemName = "";
                     itemShortNameTv.setText(itemName);
+
+                    if(btnPopup != null && walkthrough == WALK_THROUGH_CONTINUE){
+                        btnPopup.showAsDropDown(categoryNameEt);
+                        tutorial.setLayoutVisibility(View.GONE);
+                    }
                 }
             }
         });
@@ -229,7 +268,6 @@ public class CategoryEditFragment extends BaseFragment
     }
 
     private void deleteCategory(){
-
         BaseResponse baseResponse = CategoryDBHelper.deleteCategory(category.getId());
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
@@ -259,6 +297,30 @@ public class CategoryEditFragment extends BaseFragment
             itemShortNameTv.setText(DataUtils.getProductNameShortenName(itemName));
         }
         imageRl.setBackgroundColor(getResources().getColor(mColorId, null));
+        checkTutorialIsActive();
+    }
+
+    private void checkTutorialIsActive() {
+        tutorial = mView.findViewById(R.id.tutorial);
+        tutorial.setWalkthroughCallback(this);
+        tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_tap_save_button));
+
+        if(walkthrough == WALK_THROUGH_CONTINUE){
+            CommonUtils.displayPopupWindow(categoryNameEt, mContext, mContext.getResources().getString(R.string.enter_category_name_message),
+                    new TutorialPopupCallback() {
+                        @Override
+                        public void OnClosed() {
+                            OnWalkthroughResult(WALK_THROUGH_END);
+                            btnPopup.dismiss();
+                            btnPopup = null;
+                        }
+
+                        @Override
+                        public void OnGetPopup(PopupWindow popupWindow) {
+                            btnPopup = popupWindow;
+                        }
+                    });
+        }
     }
 
     private void checkValidCategory() {
@@ -287,6 +349,11 @@ public class CategoryEditFragment extends BaseFragment
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
         if(baseResponse.isSuccess()){
+            if(btnPopup != null) {
+                btnPopup.dismiss();
+                btnPopup = null;
+            }
+
             deleteButtonStatus = 1;
             CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
                     getContext().getResources().getString(R.string.delete_category));
@@ -315,5 +382,18 @@ public class CategoryEditFragment extends BaseFragment
     @Override
     public void OnImageReturn(byte[] itemPictureByteArray, PhotoSelectUtil photoSelectUtil) {
 
+    }
+
+    private void dismissPopup(){
+        if(btnPopup != null){
+            btnPopup.dismiss();
+            btnPopup = null;
+        }
+    }
+
+    @Override
+    public void OnWalkthroughResult(int result) {
+        walkthrough = result;
+        walkthroughCallback.OnWalkthroughResult(result);
     }
 }
