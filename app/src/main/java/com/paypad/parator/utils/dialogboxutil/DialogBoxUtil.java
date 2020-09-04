@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 
 import com.paypad.parator.R;
 import com.paypad.parator.interfaces.PhotoChosenCallback;
+import com.paypad.parator.interfaces.PhotoChosenForReportCallback;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.dialogboxutil.interfaces.InfoDialogBoxCallback;
 import com.paypad.parator.utils.dialogboxutil.interfaces.YesNoDialogBoxCallback;
@@ -15,6 +16,7 @@ import com.paypad.parator.utils.dialogboxutil.interfaces.YesNoDialogBoxCallback;
 import static com.paypad.parator.constants.CustomConstants.CODE_CAMERA_POSITION;
 import static com.paypad.parator.constants.CustomConstants.CODE_GALLERY_POSITION;
 import static com.paypad.parator.constants.CustomConstants.CODE_PHOTO_REMOVE;
+import static com.paypad.parator.constants.CustomConstants.CODE_SCREENSHOT_POSITION;
 
 public class DialogBoxUtil {
 
@@ -158,6 +160,27 @@ public class DialogBoxUtil {
         }, timeInMs);
     }
 
+    public static void photoChosenForProblemReportDialogBox(Context context, String title, final PhotoChosenForReportCallback photoChosenForReportCallback) {
+        CommonUtils.hideKeyBoard(context);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1);
+        adapter.add("  " + context.getResources().getString(R.string.open_gallery));
+        adapter.add("  " + context.getResources().getString(R.string.take_screenshot));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        if (title != null && !title.isEmpty())
+            builder.setTitle(title);
+
+        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                if (item == CODE_GALLERY_POSITION)
+                    photoChosenForReportCallback.onGallerySelected();
+                else if (item == CODE_SCREENSHOT_POSITION)
+                    photoChosenForReportCallback.onScreenShot();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 
     public static void showDialogWithJustPositiveButton(Context context, String title,
                                                         String message, String buttonDesc, final InfoDialogBoxCallback infoDialogBoxCallback) {

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.parator.FragmentControllers.BaseFragment;
+import com.paypad.parator.MainActivity;
 import com.paypad.parator.R;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.ItemsEnum;
@@ -29,6 +30,8 @@ import com.paypad.parator.menu.discount.DiscountFragment;
 import com.paypad.parator.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.parator.menu.product.ProductFragment;
 import com.paypad.parator.menu.product.interfaces.ReturnItemCallback;
+import com.paypad.parator.menu.support.about.SupportAboutFragment;
+import com.paypad.parator.menu.support.reportproblem.fragments.NotifyProblemFragment;
 import com.paypad.parator.menu.support.toursandtutorials.ToursAndTutorialsFragment;
 import com.paypad.parator.menu.tax.TaxFragment;
 import com.paypad.parator.menu.unit.UnitFragment;
@@ -139,6 +142,16 @@ public class SupportFragment extends BaseFragment implements SupportListItemCall
         if(itemType == SupportListEnum.TOURS_AND_TUTORIALS){
             initToursAndTutorialsFragment();
             mFragmentNavigation.pushFragment(toursAndTutorialsFragment);
+        }else if(itemType == SupportListEnum.REPORT_PROBLEM){
+
+            if(((MainActivity) mContext).isScreenShotLayoutVisible()){
+                CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.please_first_cancel_screenshot));
+            }else {
+                MainActivity.notifyProblemFragment = null;
+                mFragmentNavigation.pushFragment(new NotifyProblemFragment());
+            }
+        }else if(itemType == SupportListEnum.ABOUT){
+            mFragmentNavigation.pushFragment(new SupportAboutFragment());
         }
     }
 

@@ -2,11 +2,13 @@ package com.paypad.parator.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -181,6 +183,17 @@ public class CommonUtils {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
             return "0";
+        }
+    }
+
+    public static void openAppInGooglePlay(Context context) {
+        try {
+            String mAddress = "market://details?id=" + context.getPackageName();
+            Intent marketIntent = new Intent("android.intent.action.VIEW");
+            marketIntent.setData(Uri.parse(mAddress));
+            context.startActivity(marketIntent);
+        } catch (Exception e) {
+            CommonUtils.showCustomToast(context, context.getString(R.string.error_upper).concat(" : ").concat(context.getString(R.string.unexpected_error)));
         }
     }
 

@@ -3,10 +3,11 @@ package com.paypad.parator.enums;
 public enum  SupportListEnum {
 
     HELP("Help", "Yardım", 0),
-    TOURS_AND_TUTORIALS("Tours and Tutorials", "Turlar ve Eğitimler", 1),
-    ANNOUNCEMENT("Announcement", "Duyurular", 2),
-    ABOUT("About", "Hakkında", 3),
-    LEGAL("Legal", "Yasal", 4);
+    REPORT_PROBLEM("Report a Problem", "Sorun Bildir", 1),
+    TOURS_AND_TUTORIALS("Tours and Tutorials", "Turlar ve Eğitimler", 2),
+    ANNOUNCEMENT("Announcement", "Duyurular", 3),
+    ABOUT("About", "Hakkında", 4),
+    LEGAL("Legal", "Yasal", 5);
 
     private final String labelTr;
     private final String labelEn;

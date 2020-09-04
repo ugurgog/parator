@@ -1,12 +1,17 @@
 package com.paypad.parator;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -22,8 +27,10 @@ import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.PasscodeTimeoutEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.menu.settings.passcode.PasscodeTypeActivity;
+import com.paypad.parator.menu.support.reportproblem.fragments.NotifyProblemFragment;
 import com.paypad.parator.model.Passcode;
 import com.paypad.parator.model.User;
+import com.paypad.parator.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -53,6 +60,9 @@ public class MainActivity extends FragmentActivity implements
     private FrameLayout contentFrame;
     private TabLayout bottomTabLayout;
     private LinearLayout tabMainLayout;
+    private RelativeLayout screenShotMainLayout;
+    private Button screenShotCancelBtn;
+    private Button screenShotApproveBtn;
     private int selectedTabColor, unSelectedTabColor;
     private String ANIMATION_TAG;
     private FragNavTransactionOptions transactionOptions;
@@ -64,6 +74,8 @@ public class MainActivity extends FragmentActivity implements
     private CountDownTimer myCountDown;
     private Passcode passcode;
     private MotionEventReceiver motionEventReceiver;
+    public static NotifyProblemFragment notifyProblemFragment;
+    public static Activity mainActivity;
 
     @Subscribe(sticky = true)
     public void accountHolderUserReceived(UserBus userBus){
@@ -84,6 +96,7 @@ public class MainActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mainActivity = this;
 
         unSelectedTabColor = this.getResources().getColor(R.color.DarkGray, null);
         selectedTabColor = this.getResources().getColor(R.color.Black, null);
@@ -123,6 +136,12 @@ public class MainActivity extends FragmentActivity implements
                 tabSelectionControl(tab);
             }
         });
+    }
+
+    public boolean isScreenShotLayoutVisible(){
+        if(screenShotMainLayout.getVisibility() == View.VISIBLE)
+            return true;
+        return false;
     }
 
     private void setMotionEventBroadcaster() {
@@ -180,8 +199,19 @@ public class MainActivity extends FragmentActivity implements
         bottomTabLayout = findViewById(R.id.bottom_tab_layout);
         contentFrame = findViewById(R.id.content_frame);
         tabMainLayout = findViewById(R.id.tabMainLayout);
+        screenShotMainLayout = findViewById(R.id.screenShotMainLayout);
+        screenShotCancelBtn = findViewById(R.id.screenShotCancelBtn);
+        screenShotApproveBtn = findViewById(R.id.screenShotApproveBtn);
         TABS = getResources().getStringArray(R.array.tab_name);
         initTab();
+        setShapes();
+    }
+
+    public void setShapes() {
+        screenShotCancelBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.red_color_picker, null),
+                getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 15, 0));
+        screenShotApproveBtn.setBackground(ShapeUtil.getShape(getResources().getColor(R.color.green_color_picker, null),
+                getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 15, 0));
     }
 
     public void tabSelectionControl(TabLayout.Tab tab) {

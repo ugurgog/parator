@@ -327,7 +327,7 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void initSelectChargePaymentFragment(){
-        orderChargePaymentFragment = new OrderChargePaymentFragment(walkthrough);
+        orderChargePaymentFragment = new OrderChargePaymentFragment(tutorialType == TutorialTypeEnum.TUTORIAL_PAYMENT ? walkthrough : WALK_THROUGH_END);
         orderChargePaymentFragment.setPaymentStatusCallback(this);
         orderChargePaymentFragment.setSaleCalculateCallback(this);
         orderChargePaymentFragment.setWalkthroughCallback(this);
@@ -605,7 +605,7 @@ public class ChargeFragment extends BaseFragment implements
         if(addFromValue == CUSTOM_ITEM_ADD_FROM_KEYPAD)
             startAnimation(keypadFragment.getSaleAmountTv());
 
-        if(walkthrough == WALK_THROUGH_CONTINUE)
+        if(walkthrough == WALK_THROUGH_CONTINUE && tutorialType == TutorialTypeEnum.TUTORIAL_PAYMENT)
             tutorial.setTutorialMessage(mContext.getResources().getString(R.string.tap_to_charge_button));
     }
 
@@ -633,7 +633,7 @@ public class ChargeFragment extends BaseFragment implements
         else
             chargeAmountTv.setText(amountStr);
 
-        if(walkthrough == WALK_THROUGH_CONTINUE){
+        if(walkthrough == WALK_THROUGH_CONTINUE  && tutorialType == TutorialTypeEnum.TUTORIAL_PAYMENT){
             RealmResults<DynamicBoxModel> dynamicBoxModels = DynamicBoxModelDBHelper.getAllDynamicBoxes(user.getId());
 
             boolean isExistTax = false;
@@ -767,7 +767,7 @@ public class ChargeFragment extends BaseFragment implements
     }
 
     private void finalizeTutorialAfterSale() {
-        if(walkthrough == WALK_THROUGH_CONTINUE){
+        if(walkthrough == WALK_THROUGH_CONTINUE && tutorialType == TutorialTypeEnum.TUTORIAL_PAYMENT){
 
             new CustomDialogBoxVert.Builder((Activity) mContext)
                     .setTitle(mContext.getResources().getString(R.string.congratulations))
@@ -892,34 +892,6 @@ public class ChargeFragment extends BaseFragment implements
             walkthrough = WALK_THROUGH_CONTINUE;
             tutorial.setLayoutVisibility(View.VISIBLE);
             tutorial.setTutorialMessage(mContext.getResources().getString(R.string.select_items_tutorial_message));
-
-            /*new CustomDialogBoxVert.Builder((Activity) getContext())
-                    .setTitle(mContext.getResources().getString(R.string.welcome_to_parator_pos))
-                    .setMessage(mContext.getResources().getString(R.string.create_item_tutorial_message))
-                    .setNegativeBtnVisibility(View.VISIBLE)
-                    .setPositiveBtnVisibility(View.VISIBLE)
-                    .setPositiveBtnText(getContext().getResources().getString(R.string.create_item))
-                    .setNegativeBtnText(getContext().getResources().getString(R.string.not_now))
-                    .setPositiveBtnBackground(getContext().getResources().getColor(R.color.Green, null))
-                    .setNegativeBtnBackground(getContext().getResources().getColor(R.color.custom_btn_bg_color, null))
-                    .setDurationTime(0)
-                    .isCancellable(false)
-                    .setEdittextVisibility(View.GONE)
-                    .setpBtnTextColor(getContext().getResources().getColor(R.color.White, null))
-                    .setnBtnTextColor(getContext().getResources().getColor(R.color.Green, null))
-                    .OnPositiveClicked(new CustomDialogListener() {
-                        @Override
-                        public void OnClick() {
-                            walkthrough = WALK_THROUGH_CONTINUE;
-                            tutorial.setLayoutVisibility(View.VISIBLE);
-                            tutorial.setTutorialMessage(mContext.getResources().getString(R.string.select_items_tutorial_message));
-                        }
-                    }).OnNegativeClicked(new CustomDialogListener() {
-                        @Override
-                        public void OnClick() {
-
-                        }
-                    }).build();*/
         }else if(tutorialType == TutorialTypeEnum.TUTORIAL_PAYMENT){
             walkthrough = WALK_THROUGH_CONTINUE;
             tutorial.setLayoutVisibility(View.VISIBLE);

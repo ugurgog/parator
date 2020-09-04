@@ -89,6 +89,7 @@
     <string name="add">Add</string>
     <string name="clear">Clear</string>
     <string name="welcome">WELCOME</string>
+    <string name="screenshot">Screenshot</string>
 
     <string name="there_is_no_search_result">There is no search result</string>
 
@@ -538,6 +539,8 @@
     <string name="successful">Successful</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="update_profile_success">Profile Successfully Updated</string>
+    <string name="edit_store">Edit Store Information</string>
+    <string name="update_store_success">Store Successfully Updated</string>
 
     <string name="view">View</string>
     <string name="passcodes">Passcodes</string>
@@ -684,5 +687,19 @@
     <string name="congratulations">Congratulations!</string>
     <string name="sale_tutorial_finalize_message">You\'ve taken your first payment. You can view this transaction in your Transactions.</string>
     <string name="see_transactions">See Transactions</string>
+
+    <!-- Report Problem messages-->
+    <string name="specify_the_problem_briefly">Can you specify the problem briefly?</string>
+    <string name="problem_notify_description">You can help us by notifying us about the problem you have encountered or whether you want us to improve.</string>
+    <string name="report_or_comment">Report or comment</string>
+    <string name="take_screenshot">Take Screenshot</string>
+    <string name="thanks_for_feedback">Thank you for your feedback. We will try to take action as soon as possible.</string>
+    <string name="circle_the_problem">Take the problem round</string>
+    <string name="please_first_cancel_screenshot">Please first cancel taking screenshot</string>
+
+    <!-- Suuport About messages-->
+    <string name="version">Version</string>
+    <string name="libraries">Libraries</string>
+    <string name="about">About</string>
 
 </resources>

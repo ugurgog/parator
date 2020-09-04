@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:background="@color/White"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_item_update"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/please_type_store_information"
+        android:layout_weight="3"
+        android:gravity="center"
+        android:textSize="@dimen/default_size_17sp"
+        android:textStyle="italic"
+        android:textColor="@color/DarkGray"
+        android:fontFamily="@font/a_song_for_jennifer">
+
+    </androidx.appcompat.widget.AppCompatTextView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_weight="10">
+
+        <EditText
+            android:id="@+id/storeNameEt"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:hint="@string/store_name"
+            android:inputType="text"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/Black"
+            android:textColorHint="@color/Gray"
+            android:background="@drawable/custom_edittext_bg"/>
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/custom_edittext_bg"
+            android:orientation="vertical">
+
+            <com.paypad.parator.uiUtils.NDSpinner
+                android:id="@+id/typeOfBusinessSpinner"
+                style="@style/Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:spinnerMode="dialog" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/custom_edittext_bg"
+            android:orientation="vertical">
+
+            <com.paypad.parator.uiUtils.NDSpinner
+                android:id="@+id/numberOfLocationsSpinner"
+                style="@style/Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/custom_edittext_bg"
+            android:orientation="vertical">
+
+            <com.paypad.parator.uiUtils.NDSpinner
+                android:id="@+id/estimatedAnnTurnoverSpinner"
+                style="@style/Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:spinnerMode="dialog" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/custom_edittext_bg"
+            android:orientation="vertical">
+
+            <com.paypad.parator.uiUtils.NDSpinner
+                android:id="@+id/tradingCurrencySpinner"
+                style="@style/Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:spinnerMode="dialog" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</LinearLayout>
+

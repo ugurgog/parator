@@ -50,40 +50,12 @@
 
             </com.google.android.material.tabs.TabLayout>
 
-            <!--include layout="@layout/layout_tutorial_message" /-->
-
             <com.paypad.parator.uiUtils.tutorial.Tutorial
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tutorial">
 
             </com.paypad.parator.uiUtils.tutorial.Tutorial>
-
-            <!--LinearLayout
-                android:id="@+id/tabMainLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-
-
-
-
-
-                <devlight.io.library.ntb.NavigationTabBar
-                    android:id="@+id/ntb_horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/tabloyout_height_size"
-                    app:ntb_badge_gravity="top"
-                    app:ntb_badge_position="right"
-                    app:ntb_badged="false"
-                    app:ntb_scaled="true"
-                    app:ntb_swiped="true"
-                    app:ntb_tinted="true"
-                    app:ntb_title_mode="all"
-                    app:ntb_titled="true" />
-
-            </LinearLayout-->
 
         </LinearLayout>
 

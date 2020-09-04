@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/White">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/toolbar_item_update" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="40dp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/noteTextEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/specify_the_problem_briefly"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLength="2000"
+                android:maxLines="4"
+                android:textSize="15dp" />
+
+            <GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:columnCount="4"
+                android:rowCount="3"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:layout_width="70dp"
+                    android:layout_height="100dp">
+
+                    <ImageView
+                        android:id="@+id/addPhotoImgv1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/White"
+                        android:src="@drawable/ic_add_white"
+                        android:visibility="visible"
+                        android:contentDescription="TODO" />
+
+                    <ImageView
+                        android:id="@+id/imgDelete1"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/icon_cancel_gray2"
+                        android:visibility="gone"
+                        android:contentDescription="TODO" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="70dp"
+                    android:layout_height="100dp"
+                    android:layout_marginLeft="5dp">
+
+                    <ImageView
+                        android:id="@+id/addPhotoImgv2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/White"
+                        android:src="@drawable/ic_add_white"
+                        android:visibility="visible"
+                        android:contentDescription="TODO" />
+
+                    <ImageView
+                        android:id="@+id/imgDelete2"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/icon_cancel_gray2"
+                        android:visibility="gone"
+                        android:contentDescription="TODO" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="70dp"
+                    android:layout_height="100dp"
+                    android:layout_marginLeft="5dp">
+
+                    <ImageView
+                        android:id="@+id/addPhotoImgv3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/White"
+                        android:src="@drawable/ic_add_white"
+                        android:visibility="visible"
+                        android:contentDescription="TODO" />
+                    <ImageView
+                        android:id="@+id/imgDelete3"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/icon_cancel_gray2"
+                        android:visibility="gone"
+                        android:contentDescription="TODO" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="70dp"
+                    android:layout_height="100dp"
+                    android:layout_marginLeft="5dp">
+
+                    <ImageView
+                        android:id="@+id/addPhotoImgv4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/White"
+                        android:src="@drawable/ic_add_white"
+                        android:visibility="visible"
+                        android:contentDescription="TODO" />
+                    <ImageView
+                        android:id="@+id/imgDelete4"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/icon_cancel_gray2"
+                        android:visibility="gone"
+                        android:contentDescription="TODO" />
+                </RelativeLayout>
+
+            </GridLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/problem_notify_description"
+                android:fontFamily="@font/lato_family"
+                android:textSize="@dimen/default_size_15sp"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

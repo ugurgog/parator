@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.paypad.parator.R;
@@ -113,10 +115,42 @@ public class BitmapUtils {
         context.sendBroadcast(mediaScanIntent);
     }
 
+    public static Bitmap getScreenShot(View view) {
+        Bitmap bitmap;
+        view.setDrawingCacheEnabled(true);
+        bitmap = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
+        return bitmap;
+    }
+
     public static byte[] getByteArrayFromBitmap(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         return byteArray;
     }
+
+    public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        Bitmap resizedBitmap;
+
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+
+        if (!bm.isRecycled())
+            bm.recycle();
+
+        return resizedBitmap;
+    }
+
 }

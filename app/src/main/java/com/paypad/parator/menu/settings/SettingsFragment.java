@@ -22,6 +22,7 @@ import com.paypad.parator.login.InitialActivity;
 import com.paypad.parator.login.utils.LoginUtils;
 import com.paypad.parator.menu.settings.passcode.PasscodeManagementFragment;
 import com.paypad.parator.menu.settings.profile.EditProfileFragment;
+import com.paypad.parator.menu.settings.profile.EditStoreFragment;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
@@ -56,6 +57,8 @@ public class SettingsFragment extends BaseFragment{
     RelativeLayout printOrdersRl;
     @BindView(R.id.viewProfileRl)
     RelativeLayout viewProfileRl;
+    @BindView(R.id.viewStoreRl)
+    RelativeLayout viewStoreRl;
     @BindView(R.id.passcodeRl)
     RelativeLayout passcodeRl;
 
@@ -142,6 +145,13 @@ public class SettingsFragment extends BaseFragment{
             @Override
             public void onClick(View view) {
                 mFragmentNavigation.pushFragment(new EditProfileFragment());
+            }
+        });
+
+        viewStoreRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mFragmentNavigation.pushFragment(new EditStoreFragment());
             }
         });
 

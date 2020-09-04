@@ -88,6 +88,7 @@
     <string name="add">Ekle</string>
     <string name="clear">Temizle</string>
     <string name="welcome">HOŞGELDİNİZ</string>
+    <string name="screenshot">Çek</string>
 
     <string name="there_is_no_search_result">Sonuç yok</string>
 
@@ -460,6 +461,8 @@
     <string name="successful">Başarılı</string>
     <string name="edit_profile">Profil Güncelle</string>
     <string name="update_profile_success">Profil Başarıyla Güncelledi</string>
+    <string name="edit_store">Mağaza Bilgilerini Güncelle</string>
+    <string name="update_store_success">Mağaza Başarıyla Güncelledi</string>
 
     <string name="view">Görüntüle</string>
     <string name="passcodes">Parolalar</string>
@@ -604,5 +607,19 @@
     <string name="congratulations">Tebrikler!</string>
     <string name="sale_tutorial_finalize_message">İlk ödemenizi yaptınız. Bu işlemi İşlemleriniz bölümünde görüntüleyebilirsiniz.</string>
     <string name="see_transactions">İşlemleri Gör</string>
+
+    <!-- Report Problem messages-->
+    <string name="specify_the_problem_briefly">Sorunu kısaca belirtebilir misiniz?</string>
+    <string name="problem_notify_description">Karşılaştığınız sorunu veya iyileştirmemizi isteyip istemediğinizi bize bildirerek bize yardımcı olabilirsiniz.</string>
+    <string name="report_or_comment">Sorun Bildir</string>
+    <string name="take_screenshot">Ekran Görüntüsü Al</string>
+    <string name="thanks_for_feedback">Geri bildiriminiz için teşekkür ederiz. En kısa sürede aksiyon almaya çalışacağız.</string>
+    <string name="circle_the_problem">Sorunu daire içine al</string>
+    <string name="please_first_cancel_screenshot">Lütfen önce ekran görüntüsü almayı iptal edin</string>
+
+    <!-- Suuport About messages-->
+    <string name="version">Versiyon</string>
+    <string name="libraries">Kütüphaneler</string>
+    <string name="about">Hakkında</string>
 
 </resources>
