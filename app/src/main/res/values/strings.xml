@@ -701,5 +701,6 @@
     <string name="version">Version</string>
     <string name="libraries">Libraries</string>
     <string name="about">About</string>
+    <string name="libraries_glad_desc">The above list are libraries that may be contained in portions of the Paratör application. Thank you to the entire open source community for all of your contributions.</string>
 
 </resources>

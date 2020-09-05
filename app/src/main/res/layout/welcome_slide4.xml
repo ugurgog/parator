@@ -14,7 +14,7 @@
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@drawable/lock"
+            android:src="@drawable/ic_lock_outline_gray_24dp"
             android:contentDescription="TODO"
             android:tint="@color/White"/>
 

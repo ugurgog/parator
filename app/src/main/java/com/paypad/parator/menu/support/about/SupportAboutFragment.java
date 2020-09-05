@@ -101,7 +101,7 @@ public class SupportAboutFragment extends BaseFragment {
         librariesll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                mFragmentNavigation.pushFragment(new LibrariesFragment());
             }
         });
     }

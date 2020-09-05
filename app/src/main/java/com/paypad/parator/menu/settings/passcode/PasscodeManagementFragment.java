@@ -160,14 +160,6 @@ public class PasscodeManagementFragment extends BaseFragment implements Passcode
                         intent.putExtras(bundle);
                         startActivityForResult(intent, 1);
                     }
-
-                    /*mFragmentNavigation.pushFragment(new PasscodeTypeFragment(passcode.getPasscodeVal(), new PasscodeTypeCallback() {
-                        @Override
-                        public void OnResult(boolean result) {
-                            if(result)
-                                mFragmentNavigation.pushFragment(new PasscodeEditFragment(passcode, passcodeActionValue));
-                        }
-                    }));*/
                 }
             }
         });

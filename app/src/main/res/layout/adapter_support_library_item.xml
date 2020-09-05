@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    card_view:cardElevation="0dp"
+    app:cardElevation="0dp"
+    android:id="@+id/itemCv">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textColor="@color/Black"
+                android:id="@+id/nameTv"
+                android:textSize="14sp"
+                android:layout_marginStart="15dp"
+                android:text="Ugur kutuphane"
+                android:textStyle="bold">
+
+            </TextView>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textColor="@color/Black"
+                android:id="@+id/ownerTv"
+                android:textSize="@dimen/default_size_13sp"
+                android:layout_alignParentEnd="true"
+                android:text="Ugur Gogebakan"
+                android:layout_marginEnd="5dp">
+
+            </TextView>
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/fab_color_shadow" />
+
+    </LinearLayout>
+
+
+
+
+
+</androidx.cardview.widget.CardView>

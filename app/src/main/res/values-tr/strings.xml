@@ -621,5 +621,6 @@
     <string name="version">Versiyon</string>
     <string name="libraries">Kütüphaneler</string>
     <string name="about">Hakkında</string>
+    <string name="libraries_glad_desc">Yukarıdaki liste, Paratör uygulamasında kulanılan kütüphanelerdir. Tüm açık kaynak kod topluluğuna katkılarından dolayı teşekkür ederiz.</string>
 
 </resources>

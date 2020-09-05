@@ -18,7 +18,6 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.hanks.passcodeview.PasscodeView;
 import com.paypad.parator.R;
 import com.paypad.parator.enums.ProcessDirectionEnum;
 import com.paypad.parator.uiUtils.keypad.KeyPadClick;
