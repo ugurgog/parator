@@ -10,6 +10,7 @@ import com.paypad.parator.model.OrderRefundItem;
 import com.paypad.parator.model.Passcode;
 import com.paypad.parator.model.Refund;
 import com.paypad.parator.model.Order;
+import com.paypad.parator.model.Store;
 import com.paypad.parator.model.Transaction;
 import com.paypad.parator.model.pojo.ReportDiscountModel;
 import com.paypad.parator.model.pojo.ReportModel;
@@ -70,11 +71,11 @@ public class LogUtil {
         }
     }
 
-    public static void logTransaction(String methodName, Transaction transaction){
+    public static void logTransaction(Transaction transaction){
         try{
 
-            Log.i("Info", methodName + "+++++++++++++++++++++++++");
-            Log.i("Info", methodName + " OrderId:" + transaction.getOrderId() +
+            Log.i("Info", "logTransaction +++++++++++++++++++++++++");
+            Log.i("Info", "logTransaction OrderId:" + transaction.getOrderId() +
                     ", Id:" + transaction.getId() +
                     ", SeqNumber:" + transaction.getSeqNumber() +
                     ", TransactionAmount:" + transaction.getTransactionAmount() +
@@ -142,11 +143,11 @@ public class LogUtil {
         }
     }
 
-    public static void logCategory(String methodName, Category category){
+    public static void logCategory(Category category){
         try{
 
-            Log.i("Info", methodName + " logCategory +++++++++++++++++++++++++");
-            Log.i("Info", methodName + " logCategory Id:" + category.getId() +
+            Log.i("Info", "logCategory +++++++++++++++++++++++++");
+            Log.i("Info", "logCategory Id:" + category.getId() +
                     ", Name:" + category.getName() +
                     ", ColorId:" + category.getColorId() +
                     ", CreateDate:" + category.getCreateDate() +
@@ -255,6 +256,25 @@ public class LogUtil {
                     ", isAfterEachSaleEnabled:" + passcode.isAfterEachSaleEnabled() +
                     ", isBackOutOfSaleEnabled:" + passcode.isBackOutOfSaleEnabled() +
                     ", timeOutId:" + passcode.getTimeOutId());
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    public static void logStore(Store store) {
+        if(store == null)
+            return;
+
+        try {
+            Log.i("Info", "::logStore +++++++++++++++++++++++++");
+            Log.i("Info", "::logStore Id:" + store.getId() +
+                    ", userId:" + store.getUserId() +
+                    ", StoreName:" + store.getStoreName() +
+                    ", TypeOfBusiness():" + store.getTypeOfBusiness() +
+                    ", NumberOfLocations:" + store.getNumberOfLocations() +
+                    ", EstimatedAnnTurnover:" + store.getEstimatedAnnTurnover() +
+                    ", TradingCurrency:" + store.getTradingCurrency());
 
         } catch (Exception e) {
 

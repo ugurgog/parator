@@ -36,7 +36,8 @@
                 android:layout_marginLeft="10dp"
                 android:columnCount="4"
                 android:rowCount="3"
-                android:layout_marginTop="20dp">
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center">
 
                 <RelativeLayout
                     android:layout_width="70dp"
@@ -144,7 +145,10 @@
                 android:layout_marginTop="20dp"
                 android:text="@string/problem_notify_description"
                 android:fontFamily="@font/lato_family"
-                android:textSize="@dimen/default_size_15sp"/>
+                android:textSize="@dimen/default_size_15sp"
+                android:paddingStart="@dimen/default_size_20sp"
+                android:paddingEnd="@dimen/default_size_20sp"
+                android:gravity="center"/>
 
         </LinearLayout>
 

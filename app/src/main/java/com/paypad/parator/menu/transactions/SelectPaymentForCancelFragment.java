@@ -264,7 +264,7 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
         BaseResponse baseResponse = TransactionDBHelper.createOrUpdateTransaction(tempTransaction);
         DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
-        LogUtil.logTransaction("cancelSingleTransaction", tempTransaction);
+        LogUtil.logTransaction(tempTransaction);
 
         if(baseResponse.isSuccess())
             return true;

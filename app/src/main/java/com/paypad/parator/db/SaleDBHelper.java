@@ -6,6 +6,7 @@ import android.util.Log;
 import com.paypad.parator.model.Order;
 import com.paypad.parator.model.OrderItem;
 import com.paypad.parator.model.Refund;
+import com.paypad.parator.model.Store;
 import com.paypad.parator.model.Transaction;
 import com.paypad.parator.model.pojo.BaseResponse;
 import com.paypad.parator.model.pojo.SaleModel;
@@ -239,6 +240,18 @@ public class SaleDBHelper {
                 try{
                     RealmResults<Refund> refunds = realm.where(Refund.class).findAll();
                     refunds.deleteAllFromRealm();
+                }catch (Exception e){
+
+                }
+            }
+        });
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                try{
+                    RealmResults<Store> stores = realm.where(Store.class).findAll();
+                    stores.deleteAllFromRealm();
                 }catch (Exception e){
 
                 }

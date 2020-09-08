@@ -84,8 +84,8 @@ public class RegisterStoreActivity extends AppCompatActivity {
 
         overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
         initViews();
-        initVariables();
         initListeners();
+        initVariables();
         setShapes();
     }
 
@@ -195,6 +195,8 @@ public class RegisterStoreActivity extends AppCompatActivity {
 
         CurrencyEnum[] values = CurrencyEnum.values();
 
+        spinnerList.add(RegisterStoreActivity.this.getResources().getString(R.string.choose_trading_currency));
+
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
             for(CurrencyEnum item : values)
                 spinnerList.add(item.getLabelTr());
@@ -261,7 +263,10 @@ public class RegisterStoreActivity extends AppCompatActivity {
         tradingCurrencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                currencyEnum = CurrencyEnum.getById(position);
+                if(position > 0)
+                    currencyEnum = CurrencyEnum.getById(position);
+                else
+                    currencyEnum = null;
             }
 
             @Override

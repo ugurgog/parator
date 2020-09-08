@@ -10,41 +10,54 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="2dp"
-        android:layout_marginTop="17dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginBottom="17dp"
-        android:background="@color/transparent"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-
-        <TextView
-            android:id="@+id/categoryTv"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="12"
-            android:gravity="start"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:text="@string/category"
-            android:textColor="@color/Black"
-            android:textSize="@dimen/default_size_17sp" />
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="17dp"
+            android:background="@color/transparent"
+            android:orientation="horizontal">
 
 
-        <ImageView
-            android:id="@+id/arrowImgv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="2"
-            android:src="@drawable/ic_keyboard_arrow_right_gray_24dp"
-            android:visibility="visible">
+            <TextView
+                android:id="@+id/categoryTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="12"
+                android:gravity="start"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@string/category"
+                android:textColor="@color/Black"
+                android:textSize="@dimen/default_size_17sp" />
 
-        </ImageView>
+
+            <ImageView
+                android:id="@+id/arrowImgv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="2"
+                android:src="@drawable/ic_keyboard_arrow_right_gray_24dp"
+                android:visibility="visible">
+
+            </ImageView>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/fab_color_shadow" />
 
     </LinearLayout>
+
 
 
 </androidx.cardview.widget.CardView>

@@ -271,7 +271,7 @@ public class TransactionsFragment extends BaseFragment implements TransactionIte
 
             for(Transaction transaction : saleModel.getTransactions()){
 
-                LogUtil.logTransaction("updateAdapterWithCurrentList", transaction);
+                LogUtil.logTransaction(transaction);
 
                 //Cancel edilen islemler varsa eklenir
                 if(transaction.getTransactionType() == TransactionTypeEnum.CANCEL.getId()){

@@ -1,6 +1,7 @@
 package com.paypad.parator.db;
 
 import com.paypad.parator.model.DynamicBoxModel;
+import com.paypad.parator.model.TaxModel;
 import com.paypad.parator.model.pojo.BaseResponse;
 
 import java.util.Date;
@@ -83,5 +84,17 @@ public class DynamicBoxModelDBHelper {
             }
         });
         return baseResponse;
+    }
+
+    public static int getCurrentSequenceNumber(){
+        Realm realm = Realm.getDefaultInstance();
+        Number currentIdNum = realm.where(DynamicBoxModel.class).max("sequenceNumber");
+        int nextId;
+        if(currentIdNum == null) {
+            nextId = 1;
+        } else {
+            nextId = currentIdNum.intValue() + 1;
+        }
+        return nextId;
     }
 }

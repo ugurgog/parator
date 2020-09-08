@@ -427,7 +427,7 @@ public class CancellationPaymentCompletedFragment extends BaseFragment implement
         BaseResponse mailSendresponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
         DataUtils.showBaseResponseMessage(getContext(),mailSendresponse);
 
-        LogUtil.logTransaction("handleMailResponse", mTransaction);
+        LogUtil.logTransaction(mTransaction);
 
         btnEmail.setVisibility(View.GONE);
         btnReceipt.setVisibility(View.GONE);

@@ -216,7 +216,7 @@ public class DiscountFragment extends BaseFragment implements WalkthroughCallbac
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         discountRv.setLayoutManager(linearLayoutManager);
-        discountRv.addItemDecoration(new DividerItemDecoration(mContext, LinearLayoutManager.VERTICAL));
+        //discountRv.addItemDecoration(new DividerItemDecoration(mContext, LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
         checkTutorialIsActive();
     }

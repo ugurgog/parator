@@ -252,7 +252,7 @@ public class CategoryFragment extends BaseFragment implements WalkthroughCallbac
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         categoryRv.setLayoutManager(linearLayoutManager);
-        categoryRv.addItemDecoration(new DividerItemDecoration(mContext, LinearLayoutManager.VERTICAL));
+        //categoryRv.addItemDecoration(new DividerItemDecoration(mContext, LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
         checkTutorialIsActive();
     }

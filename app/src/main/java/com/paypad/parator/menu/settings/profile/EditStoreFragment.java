@@ -27,6 +27,7 @@ import com.paypad.parator.enums.CurrencyEnum;
 import com.paypad.parator.enums.NumberOfLocationEnum;
 import com.paypad.parator.enums.TypeOfBusinessEnum;
 import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.interfaces.CompleteCallback;
 import com.paypad.parator.interfaces.CountrySelectListener;
 import com.paypad.parator.login.RegisterStoreActivity;
 import com.paypad.parator.menu.customer.CountrySelectFragment;
@@ -38,6 +39,7 @@ import com.paypad.parator.uiUtils.NDSpinner;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.DataUtils;
+import com.paypad.parator.utils.LogUtil;
 import com.paypad.parator.utils.PhoneNumberTextWatcher;
 import com.paypad.parator.utils.ShapeUtil;
 
@@ -48,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -93,8 +96,14 @@ public class EditStoreFragment extends BaseFragment {
     private Realm realm;
     private Context mContext;
     private Store store;
+    private CompleteCallback completeCallback;
 
     public EditStoreFragment() {
+
+    }
+
+    public void setCompleteCallback(CompleteCallback completeCallback) {
+        this.completeCallback = completeCallback;
     }
 
     @Override
@@ -210,7 +219,10 @@ public class EditStoreFragment extends BaseFragment {
         tradingCurrencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                currencyEnum = CurrencyEnum.getById(position);
+                if(position > 0)
+                    currencyEnum = CurrencyEnum.getById(position);
+                else
+                    currencyEnum = null;
             }
 
             @Override
@@ -339,6 +351,8 @@ public class EditStoreFragment extends BaseFragment {
 
         CurrencyEnum[] values = CurrencyEnum.values();
 
+        spinnerList.add(mContext.getResources().getString(R.string.choose_trading_currency));
+
         if(CommonUtils.getLanguage().equals(LANGUAGE_TR)){
             for(CurrencyEnum item : values)
                 spinnerList.add(item.getLabelTr());
@@ -350,17 +364,28 @@ public class EditStoreFragment extends BaseFragment {
     }
 
     private void fillStoreFields() {
-        if(store.getStoreName() != null)
-            storeNameEt.setText(store.getStoreName());
+        LogUtil.logStore(store);
 
-        typeOfBusinessSpinner.setSelection(store.getTypeOfBusiness());
-        numberOfLocationsSpinner.setSelection(store.getNumberOfLocations());
-        estimatedAnnTurnoverSpinner.setSelection(store.getEstimatedAnnTurnover());
-        tradingCurrencySpinner.setSelection(store.getTradingCurrency());
+        if(store != null){
+            if(store.getStoreName() != null)
+                storeNameEt.setText(store.getStoreName());
+
+            typeOfBusinessSpinner.setSelection(store.getTypeOfBusiness());
+            numberOfLocationsSpinner.setSelection(store.getNumberOfLocations());
+            estimatedAnnTurnoverSpinner.setSelection(store.getEstimatedAnnTurnover());
+            tradingCurrencySpinner.setSelection(store.getTradingCurrency());
+        }
     }
 
     private void updateStore(){
         realm.beginTransaction();
+
+        if(store == null){
+            store = new Store();
+            store.setId(UUID.randomUUID().toString());
+            store.setUserId(user.getId());
+            store.setCreateDate(new Date());
+        }
 
         store.setStoreName(storeNameEt.getText().toString());
         store.setUpdateDate(new Date());
@@ -384,8 +409,11 @@ public class EditStoreFragment extends BaseFragment {
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
         if(baseResponse.isSuccess()){
+            if(completeCallback != null)
+                completeCallback.onComplete(baseResponse);
             mFragmentNavigation.pushFragment(
                     new ReturnSettingsFragment(mContext.getResources().getString(R.string.update_store_success), 2));
         }
     }
+
 }

@@ -41,12 +41,14 @@ import com.paypad.parator.charge.utils.AnimationUtil;
 import com.paypad.parator.db.DynamicBoxModelDBHelper;
 import com.paypad.parator.db.PasscodeDBHelper;
 import com.paypad.parator.db.SaleDBHelper;
+import com.paypad.parator.db.StoreDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.DynamicStructEnum;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.ItemsEnum;
 import com.paypad.parator.enums.TutorialTypeEnum;
 import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.interfaces.CompleteCallback;
 import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.LocationGrantedCallback;
 import com.paypad.parator.interfaces.ReturnViewCallback;
@@ -57,6 +59,7 @@ import com.paypad.parator.menu.item.ItemListFragment;
 import com.paypad.parator.menu.reports.ReportsFragment;
 import com.paypad.parator.menu.settings.SettingsFragment;
 import com.paypad.parator.menu.settings.passcode.PasscodeTypeActivity;
+import com.paypad.parator.menu.settings.profile.EditStoreFragment;
 import com.paypad.parator.menu.support.SupportFragment;
 import com.paypad.parator.menu.transactions.TransactionsFragment;
 import com.paypad.parator.model.Customer;
@@ -65,8 +68,10 @@ import com.paypad.parator.model.DynamicBoxModel;
 import com.paypad.parator.model.OrderItem;
 import com.paypad.parator.model.Passcode;
 import com.paypad.parator.model.Product;
+import com.paypad.parator.model.Store;
 import com.paypad.parator.model.TaxModel;
 import com.paypad.parator.model.User;
+import com.paypad.parator.model.pojo.BaseResponse;
 import com.paypad.parator.model.pojo.SaleModelInstance;
 import com.paypad.parator.uiUtils.tutorial.Tutorial;
 import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
@@ -165,6 +170,7 @@ public class ChargeFragment extends BaseFragment implements
     private OrderChargePaymentFragment orderChargePaymentFragment;
     private LocationRequestFragment locationRequestFragment;
     private SupportFragment supportFragment;
+    private EditStoreFragment editStoreFragment;
 
     private OrderItem orderItem = null;
     private TaxModel mTaxModel = null;
@@ -305,20 +311,69 @@ public class ChargeFragment extends BaseFragment implements
                     }
                 }
 
+                //Check transaction amount
                 if(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount() <= 0d){
                     CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.sale_amount_zero));
                     return;
                 }
 
-                if(!ActivityCompat.shouldShowRequestPermissionRationale((Activity) mContext, Manifest.permission.ACCESS_FINE_LOCATION))
-                    startSelectChargePaymentFragment();
-                else if (!permissionModule.checkAccessFineLocationPermission()){
-                    initLocationRequestFragment();
-                    mFragmentNavigation.pushFragment(locationRequestFragment);
-                }else
-                    startSelectChargePaymentFragment();
+                //Check store Information
+                checkStoreInformation();
             }
         });
+    }
+
+    private void checkStoreInformation(){
+        Store store = StoreDBHelper.getStoreByUserId(user.getId());
+        if(store == null){
+            new CustomDialogBoxVert.Builder((Activity) mContext)
+                    .setTitle(mContext.getResources().getString(R.string.store_information_missing))
+                    .setMessage(mContext.getResources().getString(R.string.store_information_missing_message))
+                    .setNegativeBtnVisibility(View.VISIBLE)
+                    .setPositiveBtnVisibility(View.VISIBLE)
+                    .setPositiveBtnText(mContext.getResources().getString(R.string.edit_store))
+                    .setNegativeBtnText(mContext.getResources().getString(R.string.cancel))
+                    .setPositiveBtnBackground(mContext.getResources().getColor(R.color.DodgerBlue, null))
+                    .setNegativeBtnBackground(mContext.getResources().getColor(R.color.custom_btn_bg_color, null))
+                    .setDurationTime(0)
+                    .isCancellable(false)
+                    .setEdittextVisibility(View.GONE)
+                    .setpBtnTextColor(mContext.getResources().getColor(R.color.White, null))
+                    .setnBtnTextColor(mContext.getResources().getColor(R.color.DodgerBlue, null))
+                    .OnPositiveClicked(new CustomDialogListener() {
+                        @Override
+                        public void OnClick() {
+                            initEditStoreFragment();
+                            mFragmentNavigation.pushFragment(editStoreFragment);
+                        }
+                    }).OnNegativeClicked(new CustomDialogListener() {
+                @Override
+                public void OnClick() {
+
+                }
+            }).build();
+        }else
+            goPayment();
+    }
+
+    private void initEditStoreFragment(){
+        editStoreFragment = new EditStoreFragment();
+        editStoreFragment.setCompleteCallback(new CompleteCallback() {
+            @Override
+            public void onComplete(BaseResponse baseResponse) {
+                //goPayment();
+            }
+        });
+    }
+
+    private void goPayment(){
+        if(!ActivityCompat.shouldShowRequestPermissionRationale((Activity) mContext, Manifest.permission.ACCESS_FINE_LOCATION))
+            startSelectChargePaymentFragment();
+        else if (!permissionModule.checkAccessFineLocationPermission()){
+            initLocationRequestFragment();
+            mFragmentNavigation.pushFragment(locationRequestFragment);
+        }else
+            startSelectChargePaymentFragment();
     }
 
     private void initLocationRequestFragment(){

@@ -14,12 +14,21 @@ public class DynamicBoxModel extends RealmObject {
     private int structId;
     @Index
     private long itemId;
+    private int sequenceNumber;
     private Date createDate;
     private String userId;
     private Date updateDate;
     private String updateUserId;
     private boolean isDeleted;
     private Date deleteDate;
+
+    public int getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public void setSequenceNumber(int sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
+    }
 
     public String getId() {
         return id;

@@ -80,6 +80,7 @@ public class OrderSplitAmountFragment extends BaseFragment implements NumberForm
     private CustomSplitFragment customSplitFragment;
     private NumberFormatWatcher numberFormatWatcher;
     private IOrderManager orderManager;
+    private Context mContext;
 
     public OrderSplitAmountFragment(Transaction transaction, CompleteCallback completeCallback) {
         this.mTransaction = transaction;
@@ -94,12 +95,14 @@ public class OrderSplitAmountFragment extends BaseFragment implements NumberForm
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -107,7 +110,7 @@ public class OrderSplitAmountFragment extends BaseFragment implements NumberForm
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     @Override
@@ -266,13 +269,22 @@ public class OrderSplitAmountFragment extends BaseFragment implements NumberForm
     }
 
     private void decideSplitCount(int splitCount){
-        double splitAmount = SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount() / (double) splitCount;
+        double totalSplitAmount = 0d;
+        double splitAmount = CommonUtils.round(SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount() / (double) splitCount, 2);
 
-        for(int count = 0; count < splitCount; count ++){
+        for(int count = 0; count < splitCount - 1; count ++){
+            totalSplitAmount = CommonUtils.round(totalSplitAmount + splitAmount, 2);
             OrderManager.addTransactionToOrder(splitAmount,
                     SaleModelInstance.getInstance().getSaleModel().getTransactions(),
                     SaleModelInstance.getInstance().getSaleModel().getOrder().getId());
         }
+
+        double lastAmount = CommonUtils.round(SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount() - totalSplitAmount, 2);
+
+        OrderManager.addTransactionToOrder(lastAmount,
+                SaleModelInstance.getInstance().getSaleModel().getTransactions(),
+                SaleModelInstance.getInstance().getSaleModel().getOrder().getId());
+
 
         LogUtil.logTransactions(SaleModelInstance.getInstance().getSaleModel().getTransactions());
 
@@ -283,10 +295,10 @@ public class OrderSplitAmountFragment extends BaseFragment implements NumberForm
     @Override
     public void OnReturnEtValue(String text) {
         if(text == null || text.isEmpty()){
-            CommonUtils.setSaveBtnEnability(false, continueBtn, getContext());
+            CommonUtils.setSaveBtnEnability(false, continueBtn, mContext);
             setSplitInfoTv(0d);
         } else{
-            CommonUtils.setSaveBtnEnability(true, continueBtn, getContext());
+            CommonUtils.setSaveBtnEnability(true, continueBtn, mContext);
             double amount = DataUtils.getDoubleValueFromFormattedString(text);
             setSplitInfoTv(amount);
         }

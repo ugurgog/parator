@@ -87,8 +87,6 @@ public class ItemListFragment extends BaseFragment implements
             categoryFragment.setReturnCategoryCallback(this);
             categoryFragment.setWalkthroughCallback(this);
             mFragmentNavigation.pushFragment(categoryFragment);
-        }else if(itemType == ItemsEnum.MODIFIERS){
-
         }else if(itemType == ItemsEnum.DISCOUNTS){
             DiscountFragment discountFragment = new DiscountFragment(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_DISCOUNT ? walkthrough : WALK_THROUGH_END);
             discountFragment.setDiscountCallback(this);

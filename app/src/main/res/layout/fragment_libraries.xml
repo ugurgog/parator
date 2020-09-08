@@ -7,7 +7,41 @@
 
     <include layout="@layout/toolbar_including_back_view" />
 
-    <TextView
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/itemsRv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:gravity="center"
+                android:text="@string/libraries_glad_desc"
+                android:textAllCaps="false"
+                android:textSize="@dimen/default_size_13sp"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"/>
+
+        </LinearLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!--TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
@@ -32,7 +66,7 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
-    </RelativeLayout>
+    </RelativeLayout-->
 
 
 

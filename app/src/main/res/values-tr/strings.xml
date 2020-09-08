@@ -622,5 +622,9 @@
     <string name="libraries">Kütüphaneler</string>
     <string name="about">Hakkında</string>
     <string name="libraries_glad_desc">Yukarıdaki liste, Paratör uygulamasında kulanılan kütüphanelerdir. Tüm açık kaynak kod topluluğuna katkılarından dolayı teşekkür ederiz.</string>
+    <string name="store_information_missing">Mağaza bilgileri eksik</string>
+    <string name="store_information_missing_message">Satış işlemine devam edebilmek için mağaza bilgilerinizi doldurmanız gerekmektedir.</string>
+    <string name="return_text">Geri Dön</string>
+    <string name="search_by_name_or_code">Ad veya koda göre ara</string>
 
 </resources>

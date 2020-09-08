@@ -245,7 +245,7 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
         BaseResponse mailSendResponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
         DataUtils.showBaseResponseMessage(getContext(), mailSendResponse);
 
-        LogUtil.logTransaction("handleMailResponse", mTransaction);
+        LogUtil.logTransaction(mTransaction);
     }
 
     @Override

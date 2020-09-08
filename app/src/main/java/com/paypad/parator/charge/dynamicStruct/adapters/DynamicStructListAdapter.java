@@ -215,7 +215,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
                     itemNameTv.setText(category.getName());
                     itemValueTv.setVisibility(View.GONE);
 
-                    LogUtil.logCategory("setItemName", category);
+                    LogUtil.logCategory(category);
 
                 }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.TAX_SET.getId()){
                     setTaxNameText(dynamicBoxModel);

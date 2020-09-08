@@ -2,12 +2,12 @@ package com.paypad.parator.enums;
 
 public enum CurrencyEnum {
 
-    TL("Türk Lirası", "Turkish lira", "₺", 0),
-    USD("Dolar", "Dollar", "$", 1),
-    EUR("Euro", "Euro", "€", 2),
-    JPY("Japon Yeni", "Japanese Yen", "¥", 3),
-    AED("Birleşik Arap Emirlikleri Dirhemi", "United Arab Emirates Dirham", "د.إ", 4),
-    SAR("Suudi Arabistan Riyali", "Saudi Arabian Riyal","﷼",5);
+    TL("Türk Lirası", "Turkish lira", "₺", 1),
+    USD("Dolar", "Dollar", "$", 2),
+    EUR("Euro", "Euro", "€", 3),
+    JPY("Japon Yeni", "Japanese Yen", "¥", 4),
+    AED("Birleşik Arap Emirlikleri Dirhemi", "United Arab Emirates Dirham", "د.إ", 5),
+    SAR("Suudi Arabistan Riyali", "Saudi Arabian Riyal","﷼",6);
 
     private final String labelTr;
     private final String labelEn;

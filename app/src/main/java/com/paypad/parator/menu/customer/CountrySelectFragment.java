@@ -2,9 +2,12 @@ package com.paypad.parator.menu.customer;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +30,22 @@ import com.paypad.parator.httpprocess.CountryProcess;
 import com.paypad.parator.httpprocess.interfaces.OnEventListener;
 import com.paypad.parator.interfaces.CountrySelectListener;
 import com.paypad.parator.interfaces.ReturnSizeCallback;
+import com.paypad.parator.model.pojo.Country;
 import com.paypad.parator.utils.CommonUtils;
+import com.paypad.parator.utils.DataUtils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class CountrySelectFragment extends BottomSheetDialogFragment {
 
@@ -41,9 +55,23 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
 
     private CountrySelectAdapter countrySelectAdapter;
     private CountrySelectListener selectListener;
+    private Context mContext;
+    TextToSpeech textToSpeech = null;
 
     public CountrySelectFragment() {
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
     }
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -64,7 +92,7 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        View contentView = View.inflate(getContext(), R.layout.fragment_select_country, null);
+        View contentView = View.inflate(mContext, R.layout.fragment_select_country, null);
 
         dialog.setContentView(contentView);
 
@@ -84,13 +112,32 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
         searchEdittext = contentView.findViewById(R.id.searchEdittext);
         ImageView searchCancelImgv = contentView.findViewById(R.id.searchCancelImgv);
         searchResultTv = contentView.findViewById(R.id.searchResultTv);
+        searchEdittext.setHint(mContext.getResources().getString(R.string.search_by_name_or_code));
 
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         countryRv.setLayoutManager(linearLayoutManager);
 
-        getCountryNameList();
+        List<Country> countries = DataUtils.getCountries(mContext);
+
+        countrySelectAdapter = new CountrySelectAdapter(countries);
+        countryRv.setAdapter(countrySelectAdapter);
+
+
+
+        textToSpeech = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    textToSpeech.setLanguage(Locale.UK);
+                }
+            }
+        });
+        textToSpeech.speak("Selam Ugur nasilsin", TextToSpeech.QUEUE_FLUSH, null);
+
+
+        //getCountryNameList();
 
         closeImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +177,7 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
         });
     }
 
-    private void getCountryNameList() {
+    /*private void getCountryNameList() {
         CountryProcess countryProcess = new CountryProcess(getContext(), CountryDataEnum.NAMES, new OnEventListener() {
             @Override
             public void onSuccess(Object object) {
@@ -154,7 +201,7 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
             }
         });
         countryProcess.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
+    }*/
 
     public void updateAdapter(String searchText) {
         if (searchText != null) {
@@ -176,10 +223,10 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
 
     public class CountrySelectAdapter extends RecyclerView.Adapter<CountrySelectAdapter.CountryHolder> {
 
-        private List<String> countries = new ArrayList<>();
-        private List<String> orgCountries = new ArrayList<>();
+        private List<Country> countries = new ArrayList<>();
+        private List<Country> orgCountries = new ArrayList<>();
 
-        CountrySelectAdapter(List<String> countries) {
+        CountrySelectAdapter(List<Country> countries) {
             this.countries.addAll(countries);
             this.orgCountries.addAll(countries);
         }
@@ -194,7 +241,7 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
         @Override
         public void onBindViewHolder(CountryHolder holder, int position) {
             holder.country = countries.get(position);
-            holder.countryNameTv.setText(countries.get(position));
+            holder.countryNameTv.setText("(".concat(holder.country.getCode()).concat(") ").concat(holder.country.getName()));
         }
 
         @Override
@@ -206,7 +253,7 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
             TextView countryNameTv;
             LinearLayout countryll;
 
-            String country;
+            Country country;
 
             CountryHolder(View itemView) {
                 super(itemView);
@@ -227,11 +274,11 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
                 countries = orgCountries;
             } else {
 
-                List<String> tempCountryList = new ArrayList<>();
+                List<Country> tempCountryList = new ArrayList<>();
 
-                for (String coun : orgCountries) {
-                    if (coun != null && coun.toLowerCase().contains(searchText.toLowerCase()))
-                        tempCountryList.add(coun);
+                for (Country country : orgCountries) {
+                    if (country != null && ((country.getName().toLowerCase().contains(searchText.toLowerCase())) || (country.getCode().toLowerCase().contains(searchText.toLowerCase()))))
+                        tempCountryList.add(country);
                 }
                 countries = tempCountryList;
             }

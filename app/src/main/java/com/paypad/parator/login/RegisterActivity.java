@@ -30,6 +30,7 @@ import com.paypad.parator.login.utils.Validation;
 import com.paypad.parator.menu.customer.CountrySelectFragment;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
+import com.paypad.parator.model.pojo.Country;
 import com.paypad.parator.uiUtils.NDSpinner;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.PhoneNumberTextWatcher;
@@ -247,8 +248,8 @@ public class RegisterActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCountryClick(String country) {
-        if(country != null && !country.isEmpty())
-            countryEt.setText(country);
+    public void onCountryClick(Country country) {
+        if(country != null && country.getName() != null)
+            countryEt.setText(country.getName());
     }
 }

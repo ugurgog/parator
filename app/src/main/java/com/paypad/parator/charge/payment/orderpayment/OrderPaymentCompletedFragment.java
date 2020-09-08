@@ -433,7 +433,7 @@ public class OrderPaymentCompletedFragment extends BaseFragment
         BaseResponse mailSendresponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
         DataUtils.showBaseResponseMessage(mContext,mailSendresponse);
 
-        LogUtil.logTransaction("handleMailResponse", mTransaction);
+        LogUtil.logTransaction(mTransaction);
 
         btnEmail.setVisibility(View.GONE);
         btnReceipt.setVisibility(View.GONE);

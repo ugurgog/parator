@@ -109,8 +109,6 @@ public class CategoryEditFragment extends BaseFragment
     @Override
     public void onResume() {
         super.onResume();
-        initVariables();
-        initListeners();
     }
 
     @Override
@@ -146,6 +144,8 @@ public class CategoryEditFragment extends BaseFragment
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_category_edit, container, false);
             ButterKnife.bind(this, mView);
+            initVariables();
+            initListeners();
         }
         return mView;
     }
@@ -229,6 +229,8 @@ public class CategoryEditFragment extends BaseFragment
         imageRl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(btnPopup != null)
+                    btnPopup.dismiss();
                 initSelectColorFragment();
                 mFragmentNavigation.pushFragment(selectColorFragment);
             }

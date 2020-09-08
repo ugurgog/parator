@@ -294,7 +294,7 @@ public class NFCReadForReturnFragment extends BaseFragment {
         BaseResponse baseResponse = TransactionDBHelper.createOrUpdateTransaction(tempTransaction);
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
-        LogUtil.logTransaction("processRefund", tempTransaction);
+        LogUtil.logTransaction(tempTransaction);
 
         if(baseResponse.isSuccess()){
             refundCompletedProcess();

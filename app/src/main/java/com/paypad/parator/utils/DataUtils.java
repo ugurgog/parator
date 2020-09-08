@@ -22,10 +22,16 @@ import com.paypad.parator.model.Product;
 import com.paypad.parator.model.TaxModel;
 import com.paypad.parator.model.UnitModel;
 import com.paypad.parator.model.pojo.BaseResponse;
+import com.paypad.parator.model.pojo.Country;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -299,8 +305,6 @@ public class DataUtils {
                 .append(" ")
                 .append(getYearFromDate(date));
 
-
-
         return returnValue.toString();
     }
 
@@ -362,5 +366,41 @@ public class DataUtils {
         String retrefNum = julianDate.concat(yearShort).concat(counter);
         Log.i("Info", ":: getOrderRetrefNum retrefNum:" + retrefNum);
         return retrefNum;
+    }
+
+    public static List<Country> getCountries(Context context){
+        List<Country> countries = new ArrayList<>();
+        try {
+            JSONArray countryArray = new JSONArray(loadJSONFromAsset(context));
+
+            for(int i =0; i<countryArray.length(); i++){
+                JSONObject jsonObject = countryArray.getJSONObject(i);
+                String countryName = jsonObject.getString("name");
+                String countryCode = jsonObject.getString("code");
+                Country country = new Country(countryName, countryCode);
+                countries.add(country);
+            }
+
+            return countries;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String loadJSONFromAsset(Context context) {
+        String json = null;
+        try {
+            InputStream is = context.getResources().openRawResource(R.raw.country_names);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
     }
 }

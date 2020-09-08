@@ -43,6 +43,7 @@ import com.paypad.parator.enums.TaxRateEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.ReturnViewCallback;
+import com.paypad.parator.menu.reports.saleReport.SalesTopItemsFragment;
 import com.paypad.parator.model.Category;
 import com.paypad.parator.model.Discount;
 import com.paypad.parator.model.DynamicBoxModel;
@@ -51,6 +52,7 @@ import com.paypad.parator.model.TaxModel;
 import com.paypad.parator.model.Transaction;
 import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
+import com.paypad.parator.model.pojo.ReportOrderItem;
 import com.paypad.parator.model.pojo.SaleModelInstance;
 import com.paypad.parator.uiUtils.keypad.KeyPadClick;
 import com.paypad.parator.uiUtils.keypad.KeyPadSingleNumberListener;
@@ -64,6 +66,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -255,7 +259,9 @@ public class KeypadFragment extends BaseFragment implements
                 }else {
                     if(amount == 0){
                         amount = (amount  + number) / 100;
-                        saleCalculateCallback.onNewSaleCreated();
+
+                        if(amount > 0d)
+                            saleCalculateCallback.onNewSaleCreated();
                     }else {
                         amount = (amount * 10) + (number / 100.00d);
                     }
@@ -263,6 +269,8 @@ public class KeypadFragment extends BaseFragment implements
                     if(amount > MAX_PRICE_VALUE){
                         amount = MAX_PRICE_VALUE;
                     }
+
+                    if(amount <= 0d) return;
 
                     String amountStr = CommonUtils.getDoubleStrValueForView(amount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
                     saleAmountTv.setText(amountStr);
@@ -340,12 +348,21 @@ public class KeypadFragment extends BaseFragment implements
         setDynamicBoxAdapter();
     }
 
+    public static class DynamicBoxSeqNumComparator implements Comparator<DynamicBoxModel> {
+        @Override
+        public int compare(DynamicBoxModel o1, DynamicBoxModel o2) {
+            return (int) (o1.getSequenceNumber() - o2.getSequenceNumber());
+        }
+    }
+
     public void setDynamicBoxAdapter(){
         if(user == null || user.getId() == null)
             return;
 
         RealmResults<DynamicBoxModel> dynamicBoxModels = DynamicBoxModelDBHelper.getAllDynamicBoxes(user.getId());
         List<DynamicBoxModel> dynamicBoxModelList = new ArrayList(dynamicBoxModels);
+
+        Collections.sort(dynamicBoxModelList, new DynamicBoxSeqNumComparator());
 
         if(dynamicBoxModelList.size() < DYNAMIC_BOX_COUNT){
             for(int i=dynamicBoxModelList.size(); i < DYNAMIC_BOX_COUNT; i++){
@@ -531,6 +548,7 @@ public class KeypadFragment extends BaseFragment implements
         dynamicBoxModel.setUpdateDate(new Date());
         dynamicBoxModel.setUpdateUserId(user.getId());
         dynamicBoxModel.setDeleted(false);
+        dynamicBoxModel.setSequenceNumber(DynamicBoxModelDBHelper.getCurrentSequenceNumber());
 
         createDynamicBox(dynamicBoxModel);
     }
@@ -546,6 +564,7 @@ public class KeypadFragment extends BaseFragment implements
         dynamicBoxModel.setUpdateDate(new Date());
         dynamicBoxModel.setUpdateUserId(user.getId());
         dynamicBoxModel.setDeleted(false);
+        dynamicBoxModel.setSequenceNumber(DynamicBoxModelDBHelper.getCurrentSequenceNumber());
 
         createDynamicBox(dynamicBoxModel);
     }
@@ -561,6 +580,7 @@ public class KeypadFragment extends BaseFragment implements
         dynamicBoxModel.setUpdateDate(new Date());
         dynamicBoxModel.setUpdateUserId(user.getId());
         dynamicBoxModel.setDeleted(false);
+        dynamicBoxModel.setSequenceNumber(DynamicBoxModelDBHelper.getCurrentSequenceNumber());
 
         createDynamicBox(dynamicBoxModel);
     }
@@ -576,6 +596,7 @@ public class KeypadFragment extends BaseFragment implements
         dynamicBoxModel.setUpdateDate(new Date());
         dynamicBoxModel.setUpdateUserId(user.getId());
         dynamicBoxModel.setDeleted(false);
+        dynamicBoxModel.setSequenceNumber(DynamicBoxModelDBHelper.getCurrentSequenceNumber());
 
         createDynamicBox(dynamicBoxModel);
     }
@@ -591,6 +612,7 @@ public class KeypadFragment extends BaseFragment implements
         dynamicBoxModel.setUpdateDate(new Date());
         dynamicBoxModel.setUpdateUserId(user.getId());
         dynamicBoxModel.setDeleted(false);
+        dynamicBoxModel.setSequenceNumber(DynamicBoxModelDBHelper.getCurrentSequenceNumber());
 
         createDynamicBox(dynamicBoxModel);
     }

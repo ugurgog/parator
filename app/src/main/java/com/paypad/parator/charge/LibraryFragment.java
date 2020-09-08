@@ -316,7 +316,7 @@ public class LibraryFragment extends BaseFragment implements OnKeyboardVisibilit
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         itemListRv.setLayoutManager(linearLayoutManager);
-        itemListRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
+        //itemListRv.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL));
     }
 
     void setDiscountAdapter(){

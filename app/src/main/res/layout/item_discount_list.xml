@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="0dp"
     app:cardBackgroundColor="@color/transparent"
@@ -11,49 +11,63 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/transparent"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:layout_marginStart="2dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp">
+        android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:padding="8dp"
-            android:src="@drawable/icon_discount_white_64dp"
-            android:tint="@color/Black">
+            android:background="@color/transparent"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp">
 
-        </ImageView>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="2"
+                android:padding="8dp"
+                android:src="@drawable/icon_discount_white_64dp"
+                android:tint="@color/Black">
 
-        <TextView
-            android:id="@+id/discountNameTv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:text="%10"
-            android:textStyle="bold"
-            android:textColor="@color/Black"
-            android:gravity="left"
-            android:layout_weight="9"
-            android:layout_gravity="center"/>
+            </ImageView>
+
+            <TextView
+                android:id="@+id/discountNameTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:text="%10"
+                android:textStyle="bold"
+                android:textColor="@color/Black"
+                android:gravity="left"
+                android:layout_weight="9"
+                android:layout_gravity="center"/>
 
 
-        <TextView
-            android:id="@+id/rateOrAmountTv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:text="%10"
-            android:textColor="@color/Black"
-            android:gravity="right"
-            android:paddingRight="15dp"
-            android:layout_weight="5"
-            android:layout_gravity="center" />
+            <TextView
+                android:id="@+id/rateOrAmountTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:text="%10"
+                android:textColor="@color/Black"
+                android:gravity="right"
+                android:paddingRight="15dp"
+                android:layout_weight="5"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/fab_color_shadow" />
 
     </LinearLayout>
+
+
 
 </androidx.cardview.widget.CardView>

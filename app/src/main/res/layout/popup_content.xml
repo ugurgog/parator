@@ -8,12 +8,12 @@
     android:gravity="center">
 
     <ImageView
-        android:layout_width="70dp"
+        android:layout_width="40dp"
         android:layout_height="30dp"
-        android:src="@drawable/ic_arrow_drop_up_white_24dp"
+        android:src="@drawable/triangle"
         android:tint="@color/LimeGreen"
         android:layout_gravity="bottom|center"
-       android:scaleType="centerCrop">
+        android:scaleType="fitXY">
 
     </ImageView>
 
@@ -22,7 +22,8 @@
         android:layout_height="wrap_content"
         android:background="@color/LimeGreen"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp">
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="-5dp">
 
         <ImageView
             android:layout_width="wrap_content"

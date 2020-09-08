@@ -151,7 +151,7 @@ public class CancellationPaymentFragment extends BaseFragment implements Payment
         mTransaction.setEODProcessed(false);
         mTransaction.setTransferred(false);
 
-        LogUtil.logTransaction("saveTransaction", mTransaction);
+        LogUtil.logTransaction(mTransaction);
 
         BaseResponse transactionSaveResponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
 

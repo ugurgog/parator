@@ -163,7 +163,7 @@ public class OrderPaymentFragment extends BaseFragment implements PaymentStatusC
         mTransaction.setEODProcessed(false);
         mTransaction.setTransferred(false);
 
-        LogUtil.logTransaction("saveTransaction", mTransaction);
+        LogUtil.logTransaction( mTransaction);
 
         BaseResponse transactionSaveResponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
 
