@@ -56,7 +56,6 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
     private CountrySelectAdapter countrySelectAdapter;
     private CountrySelectListener selectListener;
     private Context mContext;
-    TextToSpeech textToSpeech = null;
 
     public CountrySelectFragment() {
 
@@ -123,19 +122,6 @@ public class CountrySelectFragment extends BottomSheetDialogFragment {
 
         countrySelectAdapter = new CountrySelectAdapter(countries);
         countryRv.setAdapter(countrySelectAdapter);
-
-
-
-        textToSpeech = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.UK);
-                }
-            }
-        });
-        textToSpeech.speak("Selam Ugur nasilsin", TextToSpeech.QUEUE_FLUSH, null);
-
 
         //getCountryNameList();
 

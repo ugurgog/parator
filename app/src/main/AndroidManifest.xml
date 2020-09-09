@@ -16,6 +16,8 @@
         android:name="android.hardware.camera"
         android:required="true" />
 
+    <uses-feature android:name="android.hardware.nfc" android:required="true"/>
+
     <application
         android:name=".Vuk507Application"
         android:allowBackup="true"

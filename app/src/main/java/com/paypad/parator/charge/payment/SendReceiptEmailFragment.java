@@ -1,7 +1,13 @@
 package com.paypad.parator.charge.payment;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +25,7 @@ import com.paypad.parator.charge.payment.utils.SendMail;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ProcessDirectionEnum;
 import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.httpprocess.interfaces.OnEventListener;
 import com.paypad.parator.login.utils.Validation;
 import com.paypad.parator.model.Customer;
 import com.paypad.parator.model.Transaction;
@@ -26,6 +33,10 @@ import com.paypad.parator.model.User;
 import com.paypad.parator.model.pojo.BaseResponse;
 import com.paypad.parator.model.pojo.SaleModelInstance;
 import com.paypad.parator.utils.CommonUtils;
+import com.paypad.parator.utils.ReceiptHtmlContentHelper;
+import com.paypad.parator.utils.ReceiptHtmlContentHelper2;
+
+import net.nightwhistler.htmlspanner.HtmlSpanner;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -55,6 +66,8 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
     EditText emailEt;
     @BindView(R.id.btnSend)
     Button btnSend;
+    @BindView(R.id.textView)
+    TextView textView;
 
     private User user;
     private Transaction mTransaction;
@@ -63,6 +76,7 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
     private int paymentStatus = 0;
     private String email;
     private SendMail.MailSendCallback mailSendCallback;
+    private SpannableStringBuilder spannableStringBuilder;
 
     public SendReceiptEmailFragment(Transaction transaction, Customer customer) {
         mTransaction = transaction;
@@ -144,10 +158,39 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
     }
 
     private void sendMail(){
+        String htmlText = ReceiptHtmlContentHelper.getReceiptHtmlContent();
+
+       // Html.fromHtml(new StringBuilder().append(htmlText).toString();
+
+
+        MailContentSpannableProcess mailContentSpannableProcess = new MailContentSpannableProcess(new OnEventListener() {
+            @Override
+            public void onSuccess(Object object) {
+                SpannableStringBuilder spannableStringBuilder = (SpannableStringBuilder) object;
+                textView.setText(spannableStringBuilder);
+                textView.setMovementMethod(LinkMovementMethod.getInstance());
+                sendEmailProcess();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onTaskContinue() {
+
+            }
+        }, htmlText);
+
+        mailContentSpannableProcess.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void sendEmailProcess(){
         SendMail sm = new SendMail(getContext(),
                 email,
                 getResources().getString(R.string.receipt_from_my_business),
-                "transaction detaylari yer alack bu mesajda...");
+                textView.getText().toString());
         sm.setMailSendCallback(this);
         sm.execute();
     }
@@ -156,6 +199,49 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
         setChargeAmountTv();
         setPaymentInfoTv();
         fillEmailFromCustomer();
+    }
+
+    public class MailContentSpannableProcess extends AsyncTask<Void, Void, SpannableStringBuilder> {
+
+        private OnEventListener<SpannableStringBuilder> mCallBack;
+        private String htmlText;
+        public Exception mException;
+
+        public MailContentSpannableProcess(OnEventListener callback, String htmlText) {
+            this.htmlText = htmlText;
+            mCallBack = callback;
+        }
+
+        @Override
+        protected SpannableStringBuilder doInBackground(Void... voids) {
+            Spannable spannable = (new HtmlSpanner()).fromHtml(htmlText);
+
+            //Spanned spannable = Html.fromHtml(new StringBuilder().append(htmlText).toString());
+
+            SpannableStringBuilder spannableStringBuilder = CommonUtils.setTextViewHTML(spannable, getContext());
+            return spannableStringBuilder;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            if (mCallBack != null) {
+                mCallBack.onTaskContinue();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(SpannableStringBuilder spannableStringBuilder) {
+            super.onPostExecute(spannableStringBuilder);
+            if (mCallBack != null) {
+                if (mException == null) {
+                    mCallBack.onSuccess(spannableStringBuilder);
+                } else {
+                    mCallBack.onFailure(mException);
+                }
+            }
+        }
     }
 
     private boolean checkValidEmail() {

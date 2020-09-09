@@ -6,9 +6,16 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,6 +29,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.paypad.parator.R;
@@ -440,4 +449,37 @@ public class CommonUtils {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
+
+    public static SpannableStringBuilder setTextViewHTML(Spannable sequence, Context context){
+        Typeface face = Typeface.create("sans-serif", Typeface.NORMAL);
+        CustomTypefaceSpan customTypefaceSpan = new CustomTypefaceSpan("",face);
+        sequence.setSpan(customTypefaceSpan, 0, sequence.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(sequence);
+        URLSpan[] spans = spannableStringBuilder.getSpans(0, sequence.length(), URLSpan.class);
+        for(URLSpan span : spans){
+
+        }
+
+        return spannableStringBuilder;
+
+
+        //textView.setText(spannableStringBuilder);
+        //textView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /*public void makeLinkClickable(SpannableStringBuilder spannableStringBuilder, URLSpan urlSpan, Context context){
+        int start = spannableStringBuilder.getSpanStart(urlSpan);
+        int end = spannableStringBuilder.getSpanEnd(urlSpan);
+        int flags = spannableStringBuilder.getSpanFlags(urlSpan);
+
+        if(urlSpan.getURL().trim().equals("office")){
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(@NonNull View view) {
+
+                }
+            };
+        }
+    }*/
 }

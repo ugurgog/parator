@@ -48,6 +48,12 @@ public class PermissionModule {
         return ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
+    //NFC permission =================================================
+    public boolean checkNfcPermission(){
+
+        return ActivityCompat.checkSelfPermission(mContext, Manifest.permission.NFC) == PackageManager.PERMISSION_GRANTED;
+    }
+
     //READ_PHONE_STATE permission =================================================
     public boolean checkReadPhoneStatePermission(){
 

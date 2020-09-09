@@ -30,6 +30,18 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/jersey-module-version'
+    }
 }
 
 dependencies {
@@ -113,6 +125,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.5.0'
     implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
 
+    implementation 'com.mashape.unirest:unirest-java:1.4.9'
+
     //implementation 'com.nhaarman.supertooltips:library:3.0.+'
 
     //implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
@@ -120,5 +134,17 @@ dependencies {
     //Trial
     //implementation 'com.github.wRorsjakz:Android-NumPad:1.0.1'
 
+    // https://mvnrepository.com/artifact/com.sun.jersey/jersey-core
+    implementation 'com.sun.jersey:jersey-core:1.19.4'
+
+    // https://mvnrepository.com/artifact/com.sun.jersey/jersey-client
+    implementation 'com.sun.jersey:jersey-client:1.19.4'
+
+    //adding Retrofit dependencies
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation "com.squareup.retrofit2:retrofit:2.4.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
+
+    implementation 'com.github.NightWhistler:HtmlSpanner:0.4'
 
 }

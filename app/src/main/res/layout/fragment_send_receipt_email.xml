@@ -139,6 +139,18 @@
                 </TextView>
 
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:textSize="@dimen/default_size_15sp"
+                    android:gravity="start"
+                    android:layout_gravity="start"
+                    android:id="@+id/textView">
+
+                </TextView>
+
+
             </LinearLayout>
 
         </LinearLayout>
