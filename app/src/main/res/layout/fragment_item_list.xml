@@ -19,14 +19,6 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
-        <com.paypad.parator.uiUtils.tutorial.Tutorial
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tutorial"
-            android:layout_alignParentBottom="true">
-
-        </com.paypad.parator.uiUtils.tutorial.Tutorial>
-
     </RelativeLayout>
 
 

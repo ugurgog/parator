@@ -2,6 +2,7 @@ package com.paypad.parator.charge;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.parator.FragmentControllers.BaseFragment;
@@ -35,6 +37,7 @@ import com.paypad.parator.db.DiscountDBHelper;
 import com.paypad.parator.db.DynamicBoxModelDBHelper;
 import com.paypad.parator.db.ProductDBHelper;
 import com.paypad.parator.db.TaxDBHelper;
+import com.paypad.parator.db.TransactionDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.DynamicStructEnum;
 import com.paypad.parator.enums.ItemProcessEnum;
@@ -44,9 +47,11 @@ import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.ReturnViewCallback;
 import com.paypad.parator.menu.reports.saleReport.SalesTopItemsFragment;
+import com.paypad.parator.menu.transactions.adapters.SaleModelListAdapter;
 import com.paypad.parator.model.Category;
 import com.paypad.parator.model.Discount;
 import com.paypad.parator.model.DynamicBoxModel;
+import com.paypad.parator.model.OrderRefundItem;
 import com.paypad.parator.model.Product;
 import com.paypad.parator.model.TaxModel;
 import com.paypad.parator.model.Transaction;
@@ -59,6 +64,7 @@ import com.paypad.parator.uiUtils.keypad.KeyPadSingleNumberListener;
 import com.paypad.parator.uiUtils.keypad.KeyPadWithoutAdd;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.CustomDialogBox;
+import com.paypad.parator.utils.CustomDialogBoxVert;
 import com.paypad.parator.utils.DataUtils;
 import com.paypad.parator.utils.LogUtil;
 
@@ -69,6 +75,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -78,6 +85,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.paypad.parator.constants.CustomConstants.DYNAMIC_BOX_COUNT;
 import static com.paypad.parator.constants.CustomConstants.MAX_PRICE_VALUE;
 import static com.paypad.parator.constants.CustomConstants.TYPE_ORDER_PAYMENT;
@@ -123,6 +131,7 @@ public class KeypadFragment extends BaseFragment implements
     private CreditCardSelectFragment creditCardSelectFragment;
 
     private ReturnViewCallback returnViewCallback;
+    private SharedPreferences loginPreferences;
 
 
     static final int PRODUCT_SELECT_FROM_DYNAMIC_BOX = 0;
@@ -134,6 +143,7 @@ public class KeypadFragment extends BaseFragment implements
 
     private Transaction mTransaction;
     private IOrderManager orderManager;
+    private Context mContext;
 
     public KeypadFragment() {
 
@@ -164,8 +174,10 @@ public class KeypadFragment extends BaseFragment implements
 
     @Override
     public void onResume() {
-
         super.onResume();
+        Log.i("Info", "KeypadFragment onResume");
+        initVariables();
+        initListeners();
     }
 
     @Nullable
@@ -173,8 +185,6 @@ public class KeypadFragment extends BaseFragment implements
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_keypad, container, false);
         ButterKnife.bind(this, mView);
-        initVariables();
-        initListeners();
         return mView;
     }
 
@@ -187,12 +197,15 @@ public class KeypadFragment extends BaseFragment implements
     public void onAttach(Context context) {
         super.onAttach(context);
         EventBus.getDefault().register(this);
+        mContext = context;
+        Log.i("Info", "KeypadFragment onAttach");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         EventBus.getDefault().unregister(this);
+        mContext = null;
     }
 
     @Subscribe(sticky = true)
@@ -204,6 +217,7 @@ public class KeypadFragment extends BaseFragment implements
 
     private void initVariables() {
         orderManager = new OrderManager();
+        loginPreferences = mContext.getSharedPreferences("disabledPaymentTypes", MODE_PRIVATE);
         realm = Realm.getDefaultInstance();
         keypad = mView.findViewById(R.id.keypad);
         saleAmountTv.setHint("0,00".concat(" ").concat(CommonUtils.getCurrency().getSymbol()));
@@ -311,19 +325,19 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     public void clearItems(){
-        String clearSaleDesc = getContext().getResources().getString(R.string.question_are_you_sure)
+        String clearSaleDesc = mContext.getResources().getString(R.string.question_are_you_sure)
                 .concat(" ")
-                .concat( getContext().getResources().getString(R.string.items_and_discounts_deleted_from_sale));
+                .concat( mContext.getResources().getString(R.string.items_and_discounts_deleted_from_sale));
 
-        new CustomDialogBox.Builder((Activity) getContext())
-                .setTitle(getContext().getResources().getString(R.string.clear_sale))
+        new CustomDialogBox.Builder((Activity) mContext)
+                .setTitle(mContext.getResources().getString(R.string.clear_sale))
                 .setMessage(clearSaleDesc)
                 .setNegativeBtnVisibility(View.VISIBLE)
-                .setNegativeBtnText(getContext().getResources().getString(R.string.cancel))
-                .setNegativeBtnBackground(getContext().getResources().getColor(R.color.Silver, null))
+                .setNegativeBtnText(mContext.getResources().getString(R.string.cancel))
+                .setNegativeBtnBackground(mContext.getResources().getColor(R.color.Silver, null))
                 .setPositiveBtnVisibility(View.VISIBLE)
-                .setPositiveBtnText(getContext().getResources().getString(R.string.yes))
-                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                .setPositiveBtnText(mContext.getResources().getString(R.string.yes))
+                .setPositiveBtnBackground(mContext.getResources().getColor(R.color.bg_screen1, null))
                 .setDurationTime(0)
                 .isCancellable(true)
                 .setEdittextVisibility(View.GONE)
@@ -343,7 +357,7 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     private void initRecyclerView(){
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.HORIZONTAL, false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, 2, GridLayoutManager.HORIZONTAL, false);
         taxTypeRv.setLayoutManager(gridLayoutManager);
         setDynamicBoxAdapter();
     }
@@ -361,6 +375,19 @@ public class KeypadFragment extends BaseFragment implements
 
         RealmResults<DynamicBoxModel> dynamicBoxModels = DynamicBoxModelDBHelper.getAllDynamicBoxes(user.getId());
         List<DynamicBoxModel> dynamicBoxModelList = new ArrayList(dynamicBoxModels);
+
+        //Payment type enable olmayanlar icin
+        for(Iterator<DynamicBoxModel> its = dynamicBoxModelList.iterator(); its.hasNext();) {
+            DynamicBoxModel dynamicBoxModel = its.next();
+
+            if(dynamicBoxModel.getStructId() == DynamicStructEnum.PAYMENT_SET.getId()){
+
+                PaymentTypeEnum paymentTypeEnum = PaymentTypeEnum.getById(dynamicBoxModel.getItemId());
+
+                if(!loginPreferences.getBoolean(String.valueOf(paymentTypeEnum.getId()), false))
+                    its.remove();
+            }
+        }
 
         Collections.sort(dynamicBoxModelList, new DynamicBoxSeqNumComparator());
 
@@ -395,6 +422,60 @@ public class KeypadFragment extends BaseFragment implements
         });
         dynamicStructListAdapter.setReturnViewCallback(this);
         taxTypeRv.setAdapter(dynamicStructListAdapter);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
+                        ItemTouchHelper.DOWN | ItemTouchHelper.UP | ItemTouchHelper.START | ItemTouchHelper.END);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder dragged, @NonNull RecyclerView.ViewHolder target) {
+                int position_dragged = dragged.getAdapterPosition();
+                int position_target = target.getAdapterPosition();
+
+                DynamicBoxModel draggedBox = ((DynamicStructListAdapter.StructListHolder) dragged).getDynamicBoxModel();
+                DynamicBoxModel targetBox = ((DynamicStructListAdapter.StructListHolder) target).getDynamicBoxModel();
+
+                if(draggedBox.getId() == null  || targetBox.getId() == null)
+                    return false;
+
+                try{
+                    Collections.swap(dynamicBoxModelList, position_dragged, position_target);
+                    dynamicStructListAdapter.notifyItemMoved(position_dragged, position_target);
+
+                    int draggedSeqNum = draggedBox.getSequenceNumber();
+                    int targetSeqNum = targetBox.getSequenceNumber();
+
+                    updateDynamicBox(draggedBox, targetSeqNum);
+                    updateDynamicBox(targetBox, draggedSeqNum);
+                }catch (Exception e){
+
+                }
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(taxTypeRv);
+    }
+
+    private void updateDynamicBox(DynamicBoxModel dynamicBoxModel, int sequenceNumber){
+        realm.beginTransaction();
+
+        DynamicBoxModel dynamicBoxModel1 = realm.copyFromRealm(dynamicBoxModel);
+        dynamicBoxModel1.setSequenceNumber(sequenceNumber);
+        dynamicBoxModel1.setUpdateDate(new Date());
+        dynamicBoxModel1.setUpdateUserId(user.getId());
+
+        realm.commitTransaction();
+
+        BaseResponse baseResponse = DynamicBoxModelDBHelper.createOrUpdateDynamicBox(dynamicBoxModel1);
+        DataUtils.showBaseResponseMessage(getContext(), baseResponse);
     }
 
     private void handleDynamicBoxSelection(DynamicBoxModel dynamicBoxModel) {
@@ -413,35 +494,7 @@ public class KeypadFragment extends BaseFragment implements
                 saleCalculateCallback.onDiscountSelected(discount);
             }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.PAYMENT_SET.getId()){
 
-                if(dynamicBoxModel.getItemId() == PaymentTypeEnum.CASH.getId()){
-
-                    if(amount > 0d){
-                        CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
-                    }else {
-                        OrderManager.setRemainAmountByDiscountedAmount();
-
-                        Log.i("Info", KeypadFragment.class.getName() + " getRemainAmount:" +
-                                SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount());
-
-                        createInitialTransaction();
-                        initCashSelectFragment();
-                        mFragmentNavigation.pushFragment(cashSelectFragment);
-                    }
-
-                }else if(dynamicBoxModel.getItemId() == PaymentTypeEnum.CREDIT_CARD.getId()){
-
-                    if(amount > 0d){
-                        CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
-                    }else {
-                        OrderManager.setRemainAmountByDiscountedAmount();
-                        createInitialTransaction();
-                        initCreditCardSelectFragment();
-                        mFragmentNavigation.pushFragment(creditCardSelectFragment);
-                    }
-                }else {
-
-                    //TODO - Diger odeme tipleri icin burada aksiyon alacagiz
-                }
+                handlePaymentBoxSelection(dynamicBoxModel);
 
 
             }else if(dynamicBoxModel.getStructId() == DynamicStructEnum.TAX_SET.getId()){
@@ -457,6 +510,36 @@ public class KeypadFragment extends BaseFragment implements
 
                 saleCalculateCallback.OnTaxSelected(taxModel);
             }
+        }
+    }
+
+    private void handlePaymentBoxSelection(DynamicBoxModel dynamicBoxModel){
+        if(amount > 0d) {
+            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
+            return;
+        }
+
+        //Check transaction amount
+        if(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount() <= 0d){
+            CommonUtils.showCustomToast(getContext(), getContext().getResources().getString(R.string.sale_amount_zero));
+            return;
+        }
+
+        OrderManager.setRemainAmountByDiscountedAmount();
+        createInitialTransaction();
+
+        if(dynamicBoxModel.getItemId() == PaymentTypeEnum.CASH.getId()){
+
+            initCashSelectFragment();
+            mFragmentNavigation.pushFragment(cashSelectFragment);
+
+        }else if(dynamicBoxModel.getItemId() == PaymentTypeEnum.CREDIT_CARD.getId()){
+
+            initCreditCardSelectFragment();
+            mFragmentNavigation.pushFragment(creditCardSelectFragment);
+        }else {
+
+            //TODO - Diger odeme tipleri icin burada aksiyon alacagiz
         }
     }
 
@@ -479,14 +562,16 @@ public class KeypadFragment extends BaseFragment implements
     }
 
     private void deleteDynamicBox(DynamicBoxModel dynamicBoxModel){
-        new CustomDialogBox.Builder((Activity) getContext())
+        new CustomDialogBoxVert.Builder((Activity) getContext())
                 .setMessage(getContext().getResources().getString(R.string.sure_to_delete_dynamic_box))
                 .setNegativeBtnVisibility(View.VISIBLE)
                 .setNegativeBtnText(getContext().getResources().getString(R.string.cancel))
-                .setNegativeBtnBackground(getContext().getResources().getColor(R.color.Silver, null))
+                .setNegativeBtnBackground(getContext().getResources().getColor(R.color.custom_btn_bg_color, null))
                 .setPositiveBtnVisibility(View.VISIBLE)
-                .setPositiveBtnText(getContext().getResources().getString(R.string.yes))
-                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                .setPositiveBtnText(getContext().getResources().getString(R.string.confirm_delete))
+                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.DodgerBlue, null))
+                .setpBtnTextColor(getContext().getResources().getColor(R.color.White, null))
+                .setnBtnTextColor(getContext().getResources().getColor(R.color.DodgerBlue, null))
                 .setDurationTime(0)
                 .isCancellable(true)
                 .setEdittextVisibility(View.GONE)
@@ -511,7 +596,7 @@ public class KeypadFragment extends BaseFragment implements
 
     @Override
     public void onStructClick(DynamicStructEnum dynamicStructEnum, boolean fromCategory) {
-        dynamicItemSelectFragmant = new DynamicItemSelectFragmant(dynamicStructEnum);
+        dynamicItemSelectFragmant = new DynamicItemSelectFragmant(dynamicStructEnum, mFragmentNavigation);
         dynamicItemSelectFragmant.setDynamicItemSelectListener(this);
 
         if(fromCategory)

@@ -171,10 +171,28 @@ public class LogUtil {
                         ", createDate:" + dynamicBoxModel.getCreateDate() +
                         ", UpdateUserId:" +  dynamicBoxModel.getUpdateUserId()+
                         ", UpdateDate:" +  dynamicBoxModel.getUpdateDate()+
-                        ", isDeleted:" +  dynamicBoxModel.isDeleted());
+                        ", isDeleted:" +  dynamicBoxModel.isDeleted() +
+                        ", SequenceNumber:" + dynamicBoxModel.getSequenceNumber());
             }
 
         }catch (Exception e){
+
+        }
+    }
+
+    public static void logDynamicBox(DynamicBoxModel dynamicBoxModel) {
+        try {
+            Log.i("Info", "::logDynamicBox +++++++++++++++++++++++++");
+            Log.i("Info", "::logDynamicBox Id:" + dynamicBoxModel.getId() +
+                    ", itemId:" + dynamicBoxModel.getItemId() +
+                    ", StructId:" + dynamicBoxModel.getStructId() +
+                    ", UserId:" + dynamicBoxModel.getUserId() +
+                    ", createDate:" + dynamicBoxModel.getCreateDate() +
+                    ", UpdateUserId:" + dynamicBoxModel.getUpdateUserId() +
+                    ", UpdateDate:" + dynamicBoxModel.getUpdateDate() +
+                    ", isDeleted:" + dynamicBoxModel.isDeleted() +
+                    ", SequenceNumber:" + dynamicBoxModel.getSequenceNumber());
+        } catch (Exception e) {
 
         }
     }

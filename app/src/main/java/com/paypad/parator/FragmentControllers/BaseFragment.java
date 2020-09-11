@@ -36,6 +36,8 @@ public class BaseFragment extends Fragment {
         void pushFragment(Fragment fragment);
         void pushFragment(Fragment fragment, String animationTag);
         void popFragments(int depth);
+        void clearStackWithGivenIndex(int tab);
+        void newSaleTriggered();
     }
 
 }

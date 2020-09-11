@@ -39,6 +39,78 @@
                 android:layout_height="0.7dp"
                 android:background="@color/Silver" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/paymentTypesRl">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/payment_types"
+                    android:gravity="center|start"
+                    android:textColor="@color/Gray"
+                    android:fontFamily="@font/lato_family">
+
+                </androidx.appcompat.widget.AppCompatTextView>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_alignParentEnd="true">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="1 active"
+                        android:gravity="center|start"
+                        android:textColor="@color/Gray"
+                        android:fontFamily="@font/lato_family"
+                        android:layout_gravity="center"
+                        android:id="@+id/activeCountPaymTypesTv">
+
+                    </androidx.appcompat.widget.AppCompatTextView>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_keyboard_arrow_right_gray_24dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="center">
+
+                    </ImageView>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/fastMenuRl">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/fast_menu"
+                    android:gravity="center|start"
+                    android:textColor="@color/Gray"
+                    android:fontFamily="@font/lato_family">
+
+                </androidx.appcompat.widget.AppCompatTextView>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_keyboard_arrow_right_gray_24dp"
+                    android:layout_alignParentEnd="true">
+
+                </ImageView>
+
+
+            </RelativeLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -56,18 +128,17 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:id="@+id/passcodeRl"
-                android:paddingStart="20dp">
+                android:id="@+id/passcodeRl">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/passcodes"
                     android:gravity="center|start"
                     android:textColor="@color/Gray"
-                    android:textStyle="bold">
+                    android:fontFamily="@font/lato_family">
 
-                </TextView>
+                </androidx.appcompat.widget.AppCompatTextView>
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -96,18 +167,17 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:paddingStart="20dp">
+                android:layout_height="50dp">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/printers"
                     android:gravity="center|start"
                     android:textColor="@color/Gray"
-                    android:textStyle="bold">
+                    android:fontFamily="@font/lato_family">
 
-                </TextView>
+                </androidx.appcompat.widget.AppCompatTextView>
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -136,18 +206,17 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:paddingStart="20dp">
+                android:layout_height="50dp">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/device_name"
                     android:gravity="center|start"
                     android:textColor="@color/Gray"
-                    android:textStyle="bold">
+                    android:fontFamily="@font/lato_family">
 
-                </TextView>
+                </androidx.appcompat.widget.AppCompatTextView>
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -176,18 +245,17 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:paddingStart="20dp">
+                android:layout_height="50dp">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/alerts"
                     android:gravity="center|start"
                     android:textColor="@color/Gray"
-                    android:textStyle="bold">
+                    android:fontFamily="@font/lato_family">
 
-                </TextView>
+                </androidx.appcompat.widget.AppCompatTextView>
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -203,18 +271,17 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:id="@+id/printOrdersRl"
-                android:paddingStart="20dp">
+                android:id="@+id/printOrdersRl">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/print_orders"
                     android:gravity="center|start"
                     android:textColor="@color/Gray"
-                    android:textStyle="bold">
+                    android:fontFamily="@font/lato_family">
 
-                </TextView>
+                </androidx.appcompat.widget.AppCompatTextView>
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -244,18 +311,17 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:id="@+id/viewProfileRl"
-                android:paddingStart="20dp">
+                android:id="@+id/viewProfileRl">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/profile_information"
                     android:gravity="center|start"
                     android:textColor="@color/Gray"
-                    android:textStyle="bold">
+                    android:fontFamily="@font/lato_family">
 
-                </TextView>
+                </androidx.appcompat.widget.AppCompatTextView>
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -271,18 +337,17 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:id="@+id/viewStoreRl"
-                android:paddingStart="20dp">
+                android:id="@+id/viewStoreRl">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/store_information"
                     android:gravity="center|start"
                     android:textColor="@color/Gray"
-                    android:textStyle="bold">
+                    android:fontFamily="@font/lato_family">
 
-                </TextView>
+                </androidx.appcompat.widget.AppCompatTextView>
 
                 <ImageView
                     android:layout_width="wrap_content"

@@ -1,8 +1,10 @@
 package com.paypad.parator.charge.dynamicStruct;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.charge.dynamicStruct.adapters.DynamicCategorySelectAdapter;
 import com.paypad.parator.charge.dynamicStruct.adapters.DynamicDiscountSelectAdapter;
@@ -37,10 +40,12 @@ import com.paypad.parator.enums.PaymentTypeEnum;
 import com.paypad.parator.enums.ProcessDirectionEnum;
 import com.paypad.parator.enums.TaxRateEnum;
 import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.ReturnSizeCallback;
 import com.paypad.parator.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.parator.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.parator.menu.product.interfaces.ReturnItemCallback;
+import com.paypad.parator.menu.settings.checkoutoptions.PaymentTypesEditFragment;
 import com.paypad.parator.menu.tax.interfaces.ReturnTaxCallback;
 import com.paypad.parator.model.Category;
 import com.paypad.parator.model.Discount;
@@ -49,6 +54,7 @@ import com.paypad.parator.model.Product;
 import com.paypad.parator.model.TaxModel;
 import com.paypad.parator.model.User;
 import com.paypad.parator.utils.CommonUtils;
+import com.paypad.parator.utils.CustomDialogBoxVert;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -59,6 +65,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.realm.RealmResults;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
@@ -85,8 +93,13 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
     private List<TaxModel> taxModelList;
     private List<PaymentTypeEnum> paymentTypes;
 
-    public DynamicItemSelectFragmant(DynamicStructEnum dynamicStructEnum) {
+    private SharedPreferences loginPreferences;
+    private Context mContext;
+    private BaseFragment.FragmentNavigation fragmentNavigation;
+
+    public DynamicItemSelectFragmant(DynamicStructEnum dynamicStructEnum, BaseFragment.FragmentNavigation fragmentNavigation) {
         this.dynamicStructEnum = dynamicStructEnum;
+        this.fragmentNavigation = fragmentNavigation;
     }
 
     public interface DynamicItemSelectListener {
@@ -102,19 +115,21 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         EventBus.getDefault().register(this);
+        mContext = context;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         EventBus.getDefault().unregister(this);
+        mContext = null;
     }
 
     @Subscribe(sticky = true)
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -136,7 +151,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        View contentView = View.inflate(getContext(), R.layout.fragment_dynamic_item_select, null);
+        View contentView = View.inflate(mContext, R.layout.fragment_dynamic_item_select, null);
 
         dialog.setContentView(contentView);
 
@@ -163,6 +178,8 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         structRv.setLayoutManager(linearLayoutManager);
+
+        loginPreferences = mContext.getSharedPreferences("disabledPaymentTypes", MODE_PRIVATE);
 
 
         closeImgBtn.setOnClickListener(new View.OnClickListener() {
@@ -213,7 +230,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
             public void onClick(View v) {
                 searchEdittext.setText("");
                 searchCancelImgv.setVisibility(View.GONE);
-                CommonUtils.showKeyboard(getContext(),false, searchEdittext);
+                CommonUtils.showKeyboard(mContext,false, searchEdittext);
             }
         });
     }
@@ -296,17 +313,17 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
         if(dataExist){
             if(productList.size() == 0){
-                CommonUtils.showToastShort(getContext(), getResources().getString(R.string.all_products_added_to_dynamic_boxes));
+                CommonUtils.showToastShort(mContext, getResources().getString(R.string.all_products_added_to_dynamic_boxes));
                 dismiss();
                 return;
             }
         }else {
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_item_defined));
+            CommonUtils.showToastShort(mContext, getResources().getString(R.string.there_is_no_item_defined));
             dismiss();
             return;
         }
 
-        dynamicProductSelectAdapter = new DynamicProductSelectAdapter(getContext(), productList, new ReturnItemCallback() {
+        dynamicProductSelectAdapter = new DynamicProductSelectAdapter(mContext, productList, new ReturnItemCallback() {
             @Override
             public void OnReturn(Product product, ItemProcessEnum processEnum) {
                 dynamicItemSelectListener.onProductClick(product);
@@ -322,12 +339,12 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         productList = new ArrayList(products);
 
         if(productList.size() == 0){
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_item_belongs_this_category));
+            CommonUtils.showToastShort(mContext, getResources().getString(R.string.there_is_no_item_belongs_this_category));
             dismiss();
             return;
         }
 
-        dynamicProductSelectAdapter = new DynamicProductSelectAdapter(getContext(), productList, new ReturnItemCallback() {
+        dynamicProductSelectAdapter = new DynamicProductSelectAdapter(mContext, productList, new ReturnItemCallback() {
             @Override
             public void OnReturn(Product product, ItemProcessEnum processEnum) {
                 dynamicItemSelectListener.onCategoryProductSelected(product);
@@ -356,17 +373,17 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
         if(dataExist){
             if(discountList.size() == 0){
-                CommonUtils.showToastShort(getContext(), getResources().getString(R.string.all_discounts_added_to_dynamic_boxes));
+                CommonUtils.showToastShort(mContext, getResources().getString(R.string.all_discounts_added_to_dynamic_boxes));
                 dismiss();
                 return;
             }
         }else {
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_discount_defined));
+            CommonUtils.showToastShort(mContext, getResources().getString(R.string.there_is_no_discount_defined));
             dismiss();
             return;
         }
 
-        dynamicDiscountSelectAdapter = new DynamicDiscountSelectAdapter(getContext(), discountList, new ReturnDiscountCallback() {
+        dynamicDiscountSelectAdapter = new DynamicDiscountSelectAdapter(mContext, discountList, new ReturnDiscountCallback() {
             @Override
             public void OnReturn(Discount discount, ItemProcessEnum processType) {
                 dynamicItemSelectListener.onDiscountClick(discount);
@@ -392,17 +409,17 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
         if(dataExist){
             if(categoryList.size() == 0){
-                CommonUtils.showToastShort(getContext(), getResources().getString(R.string.all_categories_added_to_dynamic_boxes));
+                CommonUtils.showToastShort(mContext, getResources().getString(R.string.all_categories_added_to_dynamic_boxes));
                 dismiss();
                 return;
             }
         }else {
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_category_defined));
+            CommonUtils.showToastShort(mContext, getResources().getString(R.string.there_is_no_category_defined));
             dismiss();
             return;
         }
 
-        dynamicCategorySelectAdapter = new DynamicCategorySelectAdapter(getContext(), categoryList, new ReturnCategoryCallback() {
+        dynamicCategorySelectAdapter = new DynamicCategorySelectAdapter(mContext, categoryList, new ReturnCategoryCallback() {
             @Override
             public void OnReturn(Category category) {
                 dynamicItemSelectListener.onCategoryClick(category);
@@ -435,17 +452,17 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
         if(dataExist){
             if(taxModelList.size() == 0){
-                CommonUtils.showToastShort(getContext(), getResources().getString(R.string.all_taxes_added_to_dynamic_boxes));
+                CommonUtils.showToastShort(mContext, getResources().getString(R.string.all_taxes_added_to_dynamic_boxes));
                 dismiss();
                 return;
             }
         }else {
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.there_is_no_tax_defined));
+            CommonUtils.showToastShort(mContext, getResources().getString(R.string.there_is_no_tax_defined));
             dismiss();
             return;
         }
 
-        dynamicTaxSelectAdapter = new DynamicTaxSelectAdapter(getContext(), taxModelList, new ReturnTaxCallback() {
+        dynamicTaxSelectAdapter = new DynamicTaxSelectAdapter(mContext, taxModelList, new ReturnTaxCallback() {
             @Override
             public void OnReturn(TaxModel taxModel, ItemProcessEnum processEnum) {
                 dynamicItemSelectListener.onTaxClick(taxModel);
@@ -468,14 +485,45 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         }
 
         if(paymentTypes.size() == 0){
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.all_payments_added_to_dynamic_boxes));
+            CommonUtils.showToastShort(mContext, getResources().getString(R.string.all_payments_added_to_dynamic_boxes));
             dismiss();
             return;
         }
 
-        dynamicPaymentSelectAdapter = new DynamicPaymentSelectAdapter(getContext(), ProcessDirectionEnum.DIRECTION_FAST_MENU, paymentTypes, new ReturnPaymentCallback() {
+        dynamicPaymentSelectAdapter = new DynamicPaymentSelectAdapter(mContext, ProcessDirectionEnum.DIRECTION_FAST_MENU, paymentTypes, new ReturnPaymentCallback() {
             @Override
             public void onReturn(PaymentTypeEnum paymentType) {
+                if(!loginPreferences.getBoolean(String.valueOf(paymentType.getId()), false)){
+
+
+                    new CustomDialogBoxVert.Builder((Activity) mContext)
+                            .setMessage(mContext.getResources().getString(R.string.preview_payment_types_desc))
+                            .setNegativeBtnVisibility(View.VISIBLE)
+                            .setPositiveBtnVisibility(View.VISIBLE)
+                            .setPositiveBtnText(mContext.getResources().getString(R.string.preview_payment_types))
+                            .setNegativeBtnText(mContext.getResources().getString(R.string.cancel))
+                            .setPositiveBtnBackground(mContext.getResources().getColor(R.color.DodgerBlue, null))
+                            .setNegativeBtnBackground(mContext.getResources().getColor(R.color.custom_btn_bg_color, null))
+                            .setDurationTime(0)
+                            .isCancellable(false)
+                            .setEdittextVisibility(View.GONE)
+                            .setpBtnTextColor(mContext.getResources().getColor(R.color.White, null))
+                            .setnBtnTextColor(mContext.getResources().getColor(R.color.DodgerBlue, null))
+                            .OnPositiveClicked(new CustomDialogListener() {
+                                @Override
+                                public void OnClick() {
+                                    fragmentNavigation.pushFragment(new PaymentTypesEditFragment());
+                                    dismiss();
+                                }
+                            }).OnNegativeClicked(new CustomDialogListener() {
+                                @Override
+                                public void OnClick() {
+                                    dismiss();
+                                }
+                            }).build();
+                    return;
+                }
+
                 dynamicItemSelectListener.onPaymentClick(paymentType);
             }
         });

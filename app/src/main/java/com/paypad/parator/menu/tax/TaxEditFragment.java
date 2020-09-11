@@ -287,6 +287,7 @@ public class TaxEditFragment extends BaseFragment implements WalkthroughCallback
             taxModel = new TaxModel();
             btnDelete.setEnabled(false);
             toolbarTitleTv.setText(mContext.getResources().getString(R.string.create_tax));
+            btnDelete.setVisibility(View.GONE);
         }else{
             toolbarTitleTv.setText(mContext.getResources().getString(R.string.edit_tax));
             taxNameEt.setText(taxModel.getName());

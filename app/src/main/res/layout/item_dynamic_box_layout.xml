@@ -9,73 +9,94 @@
     app:cardElevation="2dp"
     android:id="@+id/itemCv">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/custom_box_icon_bg"
-        android:id="@+id/mainll">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <FrameLayout
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:id="@+id/content_frame">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/custom_box_icon_bg"
+            android:id="@+id/mainll">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:id="@+id/content_frame">
 
-                <TextView
-                    android:id="@+id/itemNameTv"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/White"
-                    android:textSize="@dimen/default_size_13sp"
-                    android:gravity="center"
-                    android:paddingTop="4dp"
-                    android:paddingStart="2dp"
-                    android:paddingEnd="2dp"
-                    android:maxLines="1">
+                    android:orientation="vertical">
 
-                </TextView>
+                    <TextView
+                        android:id="@+id/itemNameTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/White"
+                        android:textSize="@dimen/default_size_13sp"
+                        android:gravity="center"
+                        android:paddingTop="4dp"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:maxLines="1">
 
-                <TextView
-                    android:id="@+id/itemValueTv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/White"
-                    android:textSize="@dimen/default_size_11sp"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:paddingBottom="2dp"
-                    android:visibility="visible">
+                    </TextView>
 
-                </TextView>
+                    <TextView
+                        android:id="@+id/itemValueTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/White"
+                        android:textSize="@dimen/default_size_11sp"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:paddingBottom="2dp"
+                        android:visibility="visible">
 
-            </LinearLayout>
+                    </TextView>
+
+                </LinearLayout>
 
 
 
-        </FrameLayout>
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/iconImgv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:tint="@color/White"
+                android:padding="3dp"
+                android:layout_gravity="center"
+                android:visibility="visible"
+                card_view:ignore="ContentDescription">
+
+            </ImageView>
+
+
+
+
+        </LinearLayout>
 
         <ImageView
-            android:id="@+id/iconImgv"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:src="@drawable/ic_close_gray_24dp"
             android:tint="@color/White"
-            android:padding="3dp"
-            android:layout_gravity="center"
-            android:visibility="visible"
-            card_view:ignore="ContentDescription">
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/deleteImgv">
 
         </ImageView>
 
 
+    </RelativeLayout>
 
 
-    </LinearLayout>
 
 
 </androidx.cardview.widget.CardView>

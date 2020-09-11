@@ -627,4 +627,32 @@
     <string name="return_text">Geri Dön</string>
     <string name="search_by_name_or_code">Ad veya koda göre ara</string>
 
+    <!-- Support Help messages -->
+    <string name="learn_more_upper">DAHA FAZLA BİLGİ EDİN</string>
+    <string name="visit_our_support_center">Destek Merkezimizi ziyaret edin</string>
+    <string name="visit_our_support_center_desc">Destek makalelerini arayın ve göz atın</string>
+    <string name="system_status">Sistem Durumu</string>
+    <string name="system_status_desc">Paratör servislerinin durumunu kontrol edin</string>
+    <string name="frequently_asked_questions_upper">SIKÇA SORULAN SORULAR</string>
+    <string name="create_sales_report">Satış Raporu Oluşturun</string>
+    <string name="troubleshot_your_pos">Satış Noktanızın Sorunlarını Giderin</string>
+    <string name="help">Yardım</string>
+    <string name="no_announcement">Duyuru Yok</string>
+    <string name="no_announcement_desc">Hesabınız ve Paratör\'den en iyi şekilde nasıl yararlanabileceğiniz hakkında size güncellemeler göndereceğiz.</string>
+    <string name="announcements">Duyurular</string>
+    <string name="seller_aggrement">Satıcı Anlaşması</string>
+    <string name="privacy_policy">Gizlilik Politikası</string>
+    <string name="legal">Yasal</string>
+
+    <!-- Checkout options -->
+    <string name="edit_paym_types_desc">İşletmenizin kabul ettiği ödeme türlerini etkinleştirin ve bunları işletmenize en uygun sıraya göre düzenleyin.</string>
+    <string name="preview">Ön İzleme</string>
+    <string name="main_payment_types">ANA ÖDEME TİPLERİ</string>
+    <string name="payment_types">Ödeme Tipleri</string>
+    <string name="preview_payment_types">Ödeme Türlerini Görüntüle</string>
+    <string name="preview_payment_types_desc">Eklemek istediğiniz ödeme tipi aktif değildir. İlgili ödeme tipini aktife çekmek ister misiniz?</string>
+    <string name="active">Aktif</string>
+    <string name="fast_menu">Hızlı Menü</string>
+    <string name="create_fast_box">Hızlı Kutu Oluştur</string>
+
 </resources>

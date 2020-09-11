@@ -257,6 +257,7 @@ public class UnitEditFragment extends BaseFragment implements WalkthroughCallbac
             unitModel = new UnitModel();
             btnDelete.setEnabled(false);
             toolbarTitleTv.setText(mContext.getResources().getString(R.string.create_unit));
+            btnDelete.setVisibility(View.GONE);
         }else{
             unitNameEt.setText(unitModel.getName());
             toolbarTitleTv.setText(mContext.getResources().getString(R.string.edit_unit));

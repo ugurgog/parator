@@ -3,6 +3,7 @@ package com.paypad.parator.menu.settings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +18,12 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.db.UserDBHelper;
+import com.paypad.parator.enums.PaymentTypeEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.login.InitialActivity;
 import com.paypad.parator.login.utils.LoginUtils;
+import com.paypad.parator.menu.settings.checkoutoptions.FastMenuArrangeFragment;
+import com.paypad.parator.menu.settings.checkoutoptions.PaymentTypesEditFragment;
 import com.paypad.parator.menu.settings.passcode.PasscodeManagementFragment;
 import com.paypad.parator.menu.settings.profile.EditProfileFragment;
 import com.paypad.parator.menu.settings.profile.EditStoreFragment;
@@ -36,6 +40,8 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class SettingsFragment extends BaseFragment{
@@ -61,8 +67,15 @@ public class SettingsFragment extends BaseFragment{
     RelativeLayout viewStoreRl;
     @BindView(R.id.passcodeRl)
     RelativeLayout passcodeRl;
+    @BindView(R.id.paymentTypesRl)
+    RelativeLayout paymentTypesRl;
+    @BindView(R.id.activeCountPaymTypesTv)
+    AppCompatTextView activeCountPaymTypesTv;
+    @BindView(R.id.fastMenuRl)
+    RelativeLayout fastMenuRl;
 
     private User user;
+    private SharedPreferences loginPreferences;
     private Context mContext;
 
     public SettingsFragment() {
@@ -71,6 +84,13 @@ public class SettingsFragment extends BaseFragment{
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initVariables();
+        initListeners();
     }
 
     @Override
@@ -108,8 +128,8 @@ public class SettingsFragment extends BaseFragment{
         if (mView == null) {
             mView = inflater.inflate(R.layout.fragment_settings, container, false);
             ButterKnife.bind(this, mView);
-            initVariables();
-            initListeners();
+            //initVariables();
+            //initListeners();
         }
         return mView;
     }
@@ -161,11 +181,39 @@ public class SettingsFragment extends BaseFragment{
                 mFragmentNavigation.pushFragment(new PasscodeManagementFragment());
             }
         });
+
+        paymentTypesRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mFragmentNavigation.pushFragment(new PaymentTypesEditFragment());
+            }
+        });
+
+        fastMenuRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mFragmentNavigation.pushFragment(new FastMenuArrangeFragment());
+            }
+        });
     }
 
     private void initVariables() {
+        loginPreferences = mContext.getSharedPreferences("disabledPaymentTypes", MODE_PRIVATE);
         saveBtn.setVisibility(View.GONE);
         toolbarTitleTv.setText(getContext().getResources().getString(R.string.settings));
+        setActiveCountOfPaymentTypes();
+    }
+
+    private void setActiveCountOfPaymentTypes() {
+        int enableCount = 0;
+        PaymentTypeEnum[] paymentTypeEnums = PaymentTypeEnum.values();
+
+        for(PaymentTypeEnum paymentType : paymentTypeEnums){
+            if(loginPreferences.getBoolean(String.valueOf(paymentType.getId()), false))
+                enableCount++;
+        }
+
+        activeCountPaymTypesTv.setText(String.valueOf(enableCount).concat(" ").concat(mContext.getResources().getString(R.string.active)));
     }
 
     private void signOutProcess(){

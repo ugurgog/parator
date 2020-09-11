@@ -144,6 +144,10 @@ public class MainActivity extends FragmentActivity implements
         return false;
     }
 
+    public void clearStackGivenIndex(int index){
+        mNavController.clearStackWithGivenIndex(index);
+    }
+
     private void setMotionEventBroadcaster() {
         motionEventReceiver = new MotionEventReceiver() {
             @Override
@@ -376,6 +380,20 @@ public class MainActivity extends FragmentActivity implements
     public void popFragments(int depth) {
         if (mNavController != null) {
             mNavController.popFragments(depth);
+        }
+    }
+
+    @Override
+    public void clearStackWithGivenIndex(int tab) {
+        if (mNavController != null) {
+            mNavController.clearStackWithGivenIndex(tab);
+        }
+    }
+
+    @Override
+    public void newSaleTriggered() {
+        if(chargeFragment != null){
+            chargeFragment.onItemsCleared();
         }
     }
 

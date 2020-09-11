@@ -3,6 +3,7 @@ package com.paypad.parator.charge.payment.orderpayment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import com.paypad.parator.enums.ProcessDirectionEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CompleteCallback;
 import com.paypad.parator.interfaces.CustomDialogListener;
+import com.paypad.parator.menu.settings.checkoutoptions.PaymentTypesEditFragment;
 import com.paypad.parator.menu.settings.passcode.PasscodeEditFragment;
 import com.paypad.parator.menu.settings.passcode.PasscodeTypeActivity;
 import com.paypad.parator.model.Passcode;
@@ -59,6 +61,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_EN;
 import static com.paypad.parator.constants.CustomConstants.LANGUAGE_TR;
 import static com.paypad.parator.constants.CustomConstants.TYPE_ORDER_PAYMENT;
@@ -81,6 +84,8 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
     Button splitBtn;
     @BindView(R.id.splitInfoTv)
     TextView splitInfoTv;
+    @BindView(R.id.prevPaymTypesTv)
+    TextView prevPaymTypesTv;
 
     private User user;
     private DynamicPaymentSelectAdapter dynamicPaymentSelectAdapter;
@@ -95,6 +100,7 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
     private int walkthrough;
     private WalkthroughCallback walkthroughCallback;
     private Tutorial tutorial;
+    private SharedPreferences loginPreferences;
 
     public OrderChargePaymentFragment(int walkthrough) {
         this.walkthrough = walkthrough;
@@ -141,6 +147,12 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setPaymentAdapter();
     }
 
     @Nullable
@@ -208,6 +220,13 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
                 }));
             }
         });
+
+        prevPaymTypesTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mFragmentNavigation.pushFragment(new PaymentTypesEditFragment());
+            }
+        });
     }
 
     private void returnWithoutCancellation(){
@@ -234,13 +253,12 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
     private void initVariables() {
         orderManager = new OrderManager();
         createInitialTransaction();
-        //splitAmount = SaleModelInstance.getInstance().getSaleModel().getOrder().getRemainAmount();
         setChargeAmount();
+        loginPreferences = mContext.getSharedPreferences("disabledPaymentTypes", MODE_PRIVATE);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         paymentsRv.setLayoutManager(linearLayoutManager);
-        setPaymentAdapter();
         initTutorial();
     }
 
@@ -264,7 +282,12 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
 
     private void setPaymentAdapter(){
         PaymentTypeEnum[] paymentTypeEnums = PaymentTypeEnum.values();
-        List<PaymentTypeEnum> paymentTypes = new ArrayList<>(Arrays.asList(paymentTypeEnums));
+        List<PaymentTypeEnum> paymentTypes = new ArrayList<>();
+
+        for(PaymentTypeEnum paymentType : paymentTypeEnums){
+            if(loginPreferences.getBoolean(String.valueOf(paymentType.getId()), false))
+                paymentTypes.add(paymentType);
+        }
 
         dynamicPaymentSelectAdapter = new DynamicPaymentSelectAdapter(getContext(), ProcessDirectionEnum.DIRECTION_PAYMENT_SELECT, paymentTypes, new ReturnPaymentCallback() {
             @Override

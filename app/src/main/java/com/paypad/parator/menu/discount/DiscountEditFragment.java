@@ -374,6 +374,7 @@ public class DiscountEditFragment extends BaseFragment implements WalkthroughCal
         if(discount == null) {
             toolbarTitleTv.setText(getActivity().getResources().getString(R.string.create_discount));
             discount = new Discount();
+            btnDelete.setVisibility(View.GONE);
         }else {
             toolbarTitleTv.setText(getActivity().getResources().getString(R.string.edit_discount));
         }

@@ -291,6 +291,7 @@ public class CategoryEditFragment extends BaseFragment
             category = new Category();
             btnDelete.setEnabled(false);
             toolbarTitleTv.setText(getContext().getResources().getString(R.string.create_category));
+            btnDelete.setVisibility(View.GONE);
         } else{
             itemName = category.getName();
             categoryNameEt.setText(itemName);

@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.PopupWindow;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -17,10 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
+import com.paypad.parator.charge.dynamicStruct.adapters.DynamicStructListAdapter;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.ItemsEnum;
 import com.paypad.parator.enums.TutorialTypeEnum;
 import com.paypad.parator.interfaces.MenuItemCallback;
+import com.paypad.parator.interfaces.TutorialPopupCallback;
 import com.paypad.parator.menu.category.CategoryFragment;
 import com.paypad.parator.menu.category.interfaces.ReturnCategoryCallback;
 import com.paypad.parator.menu.discount.DiscountFragment;
@@ -69,12 +73,16 @@ public class ItemListFragment extends BaseFragment implements
     private CategoryUpdateCallback categoryUpdateCallback;
     private WalkthroughCallback walkthroughCallback;
     private int walkthrough;
-    private Tutorial tutorial;
     private TutorialTypeEnum mTutorialType;
     private Context mContext;
+    private PopupWindow btnPopup;
+    private TextView textView;
 
     @Override
     public void OnItemReturn(ItemsEnum itemType) {
+        if(btnPopup != null)
+            btnPopup.dismiss();
+
         if(itemType == ItemsEnum.ALL_ITEMS){
             ProductFragment productFragment =
                     new ProductFragment(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_ITEM ? walkthrough : WALK_THROUGH_END);
@@ -138,8 +146,28 @@ public class ItemListFragment extends BaseFragment implements
     @Override
     public void onDetach() {
         super.onDetach();
+        dismissPopup();
         mContext = null;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        showPopup();
+    }
+
+    private void dismissPopup(){
+        if(btnPopup != null){
+            btnPopup.dismiss();
+            btnPopup = null;
+        }
+    }
+
+    private void showPopup() {
+        if(btnPopup != null && walkthrough == WALK_THROUGH_CONTINUE && !btnPopup.isShowing())
+            btnPopup.showAsDropDown(textView);
+    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -183,27 +211,56 @@ public class ItemListFragment extends BaseFragment implements
     }
 
     private void initTutorial() {
-        tutorial = mView.findViewById(R.id.tutorial);
-        tutorial.setWalkthroughCallback(this);
         if(walkthrough == WALK_THROUGH_CONTINUE){
-            tutorial.setLayoutVisibility(View.VISIBLE);
+            itemsRv.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    View itemView = null;
 
-            if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_ITEM)
-                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_all_items));
-            else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_TAX)
-                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_taxes));
-            else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_CATEGORY)
-                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_categories));
-            else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_UNIT)
-                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_units));
-            else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_DISCOUNT)
-                tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_select_discounts));
+                    String tutorialMessage = null;
+
+                    if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_ITEM){
+                        tutorialMessage = mContext.getResources().getString(R.string.now_select_all_items);
+                        itemView = itemsRv.getChildAt(ItemsEnum.ALL_ITEMS.getId());
+                    } else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_TAX){
+                        tutorialMessage = mContext.getResources().getString(R.string.now_select_taxes);
+                        itemView = itemsRv.getChildAt(ItemsEnum.TAXES.getId());
+                    } else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_CATEGORY){
+                        tutorialMessage = mContext.getResources().getString(R.string.now_select_categories);
+                        itemView = itemsRv.getChildAt(ItemsEnum.CATEGORIES.getId());
+                    } else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_UNIT){
+                        tutorialMessage = mContext.getResources().getString(R.string.now_select_units);
+                        itemView = itemsRv.getChildAt(ItemsEnum.UNITS.getId());
+                    } else if(mTutorialType == TutorialTypeEnum.TUTORIAL_CREATE_DISCOUNT){
+                        tutorialMessage = mContext.getResources().getString(R.string.now_select_discounts);
+                        itemView = itemsRv.getChildAt(ItemsEnum.DISCOUNTS.getId());
+                    }
+
+                    itemsRv.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    textView = (TextView) itemView.findViewById(R.id.nameTv);
+
+                    CommonUtils.displayPopupWindow(textView, mContext, tutorialMessage,
+                    new TutorialPopupCallback() {
+                        @Override
+                        public void OnClosed() {
+                            OnWalkthroughResult(WALK_THROUGH_END);
+                            dismissPopup();
+                        }
+
+                        @Override
+                        public void OnGetPopup(PopupWindow popupWindow) {
+                            btnPopup = popupWindow;
+                        }
+                    });
+                }
+            });
         }
     }
 
     private void setAdapter() {
         ItemsAdapter itemAdapter = new ItemsAdapter();
         itemAdapter.setMenuItemCallback(this);
+        itemAdapter.setHasStableIds(true);
         itemsRv.setAdapter(itemAdapter);
     }
 
@@ -263,6 +320,10 @@ public class ItemListFragment extends BaseFragment implements
             private ItemsEnum itemType;
             private int position;
 
+            public CardView getItemCv() {
+                return itemCv;
+            }
+
             public ItemHolder(View view) {
                 super(view);
                 itemCv = view.findViewById(R.id.itemCv);
@@ -306,7 +367,5 @@ public class ItemListFragment extends BaseFragment implements
     public void OnWalkthroughResult(int result) {
         walkthrough = result;
         walkthroughCallback.OnWalkthroughResult(result);
-        if(result == WALK_THROUGH_END)
-            tutorial.setLayoutVisibility(View.GONE);
     }
 }

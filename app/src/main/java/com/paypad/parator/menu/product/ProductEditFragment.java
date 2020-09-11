@@ -123,7 +123,7 @@ public class ProductEditFragment extends BaseFragment implements
     ScrollView scrollView;
 
     private Realm realm;
-    private Product productXX;
+    private Product mProduct;
     private User user;
     private int deleteButtonStatus = 1;
     private ReturnItemCallback returnCallback;
@@ -152,7 +152,7 @@ public class ProductEditFragment extends BaseFragment implements
     private NumberFormatWatcher numberFormatWatcher;
 
     public ProductEditFragment(@Nullable Product product, int walkthrough, ReturnItemCallback returnItemCallback) {
-        this.productXX = product;
+        this.mProduct = product;
         this.returnCallback = returnItemCallback;
         this.walkthrough = walkthrough;
     }
@@ -336,7 +336,7 @@ public class ProductEditFragment extends BaseFragment implements
                     CommonUtils.setBtnSecondCondition(mContext, btnDelete,
                             mContext.getResources().getString(R.string.confirm_delete));
                 }else if(deleteButtonStatus == 2){
-                    BaseResponse baseResponse = ProductDBHelper.deleteProduct(productXX.getId());
+                    BaseResponse baseResponse = ProductDBHelper.deleteProduct(mProduct.getId());
                     DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
                     if(baseResponse.isSuccess()){
@@ -458,7 +458,7 @@ public class ProductEditFragment extends BaseFragment implements
 
     private void initSelectColorFragment(){
         selectColorFragment = new SelectColorFragment(ProductEditFragment.class.getName(), itemName, mColorId,
-                ((productXX != null && productXX.getProductImage() != null) ? productXX.getProductImage() : null));
+                ((mProduct != null && mProduct.getProductImage() != null) ? mProduct.getProductImage() : null));
         selectColorFragment.setColorReturnCallback(this);
     }
 
@@ -490,39 +490,39 @@ public class ProductEditFragment extends BaseFragment implements
         boolean inserted = false;
         realm.beginTransaction();
 
-        if(productXX.getId() == 0){
-            productXX.setId(ProductDBHelper.getCurrentPrimaryKeyId());
-            productXX.setCreateDate(new Date());
-            productXX.setUserId(user.getId());
-            productXX.setDeleted(false);
+        if(mProduct.getId() == 0){
+            mProduct.setId(ProductDBHelper.getCurrentPrimaryKeyId());
+            mProduct.setCreateDate(new Date());
+            mProduct.setUserId(user.getId());
+            mProduct.setDeleted(false);
             inserted = true;
         }else {
-            productXX.setUpdateDate(new Date());
-            productXX.setUpdateUserId(user.getId());
+            mProduct.setUpdateDate(new Date());
+            mProduct.setUpdateUserId(user.getId());
         }
 
         if(amountRateEt.getText() != null && !amountRateEt.getText().toString().isEmpty()){
             double amount = DataUtils.getDoubleValueFromFormattedString(amountRateEt.getText().toString());
-            productXX.setAmount(amount);
+            mProduct.setAmount(amount);
         }else
-            productXX.setAmount(0);
+            mProduct.setAmount(0);
 
-        productXX.setUnitId(mUnitModel.getId());
+        mProduct.setUnitId(mUnitModel.getId());
 
         if(myTaxModel != null)
-            productXX.setTaxId(myTaxModel.getId());
+            mProduct.setTaxId(myTaxModel.getId());
 
         if(myCategory != null)
-            productXX.setCategoryId(myCategory.getId());
+            mProduct.setCategoryId(myCategory.getId());
 
-        productXX.setName(productNameEt.getText().toString());
-        productXX.setColorId(mColorId);
-        productXX.setProductImage(itemPictureByteArray);
-        productXX.setDescription(productDescriptionEt.getText().toString());
+        mProduct.setName(productNameEt.getText().toString());
+        mProduct.setColorId(mColorId);
+        mProduct.setProductImage(itemPictureByteArray);
+        mProduct.setDescription(productDescriptionEt.getText().toString());
 
         realm.commitTransaction();
 
-        BaseResponse baseResponse = ProductDBHelper.createOrUpdateProduct(productXX);
+        BaseResponse baseResponse = ProductDBHelper.createOrUpdateProduct(mProduct);
         DataUtils.showBaseResponseMessage(mContext, baseResponse);
 
         if(baseResponse.isSuccess()){
@@ -546,7 +546,7 @@ public class ProductEditFragment extends BaseFragment implements
     }
 
     private void clearViews(){
-        productXX = new Product();
+        mProduct = new Product();
         amountRateEt.setText("");
         productNameEt.setText("");
         categoryTv.setText(mContext.getResources().getString(R.string.select_category));
@@ -564,8 +564,9 @@ public class ProductEditFragment extends BaseFragment implements
 
         mColorId = CommonUtils.getItemColors()[0];
 
-        if(productXX == null){
-            productXX = new Product();
+        if(mProduct == null){
+            btnDelete.setVisibility(View.GONE);
+            mProduct = new Product();
             toolbarTitleTv.setText(getResources().getString(R.string.create_item));
             imageRl.setBackgroundColor(getResources().getColor(mColorId, null));
             ProductUnitTypeEnum unitType = ProductUnitTypeEnum.PER_ITEM;
@@ -575,7 +576,7 @@ public class ProductEditFragment extends BaseFragment implements
             mUnitModel.setName(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? unitType.getLabelTr() : unitType.getLabelEn());
 
             unitTypeTv.setText(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? unitType.getLabelTr() : unitType.getLabelEn());
-            productXX.setUnitId(unitType.getId());
+            mProduct.setUnitId(unitType.getId());
         }else {
             toolbarTitleTv.setText(getResources().getString(R.string.edit_item));
             setFilledProductVariables();
@@ -607,15 +608,15 @@ public class ProductEditFragment extends BaseFragment implements
     }
 
     private void setFilledProductVariables() {
-        itemName = productXX.getName();
+        itemName = mProduct.getName();
         productNameEt.setText(itemName);
 
-        if(productXX.getProductImage() != null){
+        if(mProduct.getProductImage() != null){
             photoExist = true;
             editItemImgv.post(new Runnable() {
                 @Override
                 public void run() {
-                    Bitmap bmp = BitmapFactory.decodeByteArray(productXX.getProductImage(), 0, productXX.getProductImage().length);
+                    Bitmap bmp = BitmapFactory.decodeByteArray(mProduct.getProductImage(), 0, mProduct.getProductImage().length);
 
                     try{
                         editItemImgv.setImageBitmap(Bitmap.createScaledBitmap(bmp, editItemImgv.getWidth(),
@@ -631,43 +632,43 @@ public class ProductEditFragment extends BaseFragment implements
             });
         }else {
             photoExist = false;
-            mColorId = productXX.getColorId();
+            mColorId = mProduct.getColorId();
 
             if(mColorId != 0)
                 imageRl.setBackgroundColor(getResources().getColor(mColorId, null));
 
-            itemShortNameTv.setText(DataUtils.getProductShortenName(productXX));
+            itemShortNameTv.setText(DataUtils.getProductShortenName(mProduct));
         }
 
-        if(productXX.getCategoryId() != 0){
-            myCategory = CategoryDBHelper.getCategory(productXX.getCategoryId());
+        if(mProduct.getCategoryId() != 0){
+            myCategory = CategoryDBHelper.getCategory(mProduct.getCategoryId());
 
             if(myCategory != null && myCategory.getName() != null)
                 categoryTv.setText(myCategory.getName());
         }else
             categoryTv.setText(mContext.getResources().getString(R.string.uncategorized));
 
-        if(productXX.getUnitId() != 0){
-            mUnitModel = DataUtils.getUnitModelById(productXX.getUnitId());
+        if(mProduct.getUnitId() != 0){
+            mUnitModel = DataUtils.getUnitModelById(mProduct.getUnitId());
 
             if(mUnitModel != null && mUnitModel.getName() != null)
                 unitTypeTv.setText(mUnitModel.getName());
         }
 
-        if(productXX.getTaxId() != 0){
-            myTaxModel = DataUtils.getTaxModelById(productXX.getTaxId());
+        if(mProduct.getTaxId() != 0){
+            myTaxModel = DataUtils.getTaxModelById(mProduct.getTaxId());
             taxTypeTv.setText(myTaxModel.getName());
         }
 
-        if(productXX.getAmount() != 0){
-            CommonUtils.setAmountToView(productXX.getAmount(), amountRateEt, TYPE_PRICE);
+        if(mProduct.getAmount() != 0){
+            CommonUtils.setAmountToView(mProduct.getAmount(), amountRateEt, TYPE_PRICE);
         }
 
-        if(productXX.getProductImage() != null)
-            itemPictureByteArray = productXX.getProductImage();
+        if(mProduct.getProductImage() != null)
+            itemPictureByteArray = mProduct.getProductImage();
 
-        if(productXX.getDescription() != null)
-            productDescriptionEt.setText(productXX.getDescription());
+        if(mProduct.getDescription() != null)
+            productDescriptionEt.setText(mProduct.getDescription());
     }
 
     private void setProductPhoto() {
@@ -679,7 +680,7 @@ public class ProductEditFragment extends BaseFragment implements
                     .into(editItemImgv);
             itemPictureByteArray = BitmapUtils.getByteArrayFromBitmap(photoSelectUtil.getBitmap());
             itemShortNameTv.setText("");
-        } else if (productXX.getName() != null && !productXX.getName().trim().isEmpty()) {
+        } else if (mProduct.getName() != null && !mProduct.getName().trim().isEmpty()) {
             photoExist = false;
             editItemImgv.setImageDrawable(null);
             itemPictureByteArray = null;

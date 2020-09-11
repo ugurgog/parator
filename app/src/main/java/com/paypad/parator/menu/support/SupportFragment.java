@@ -31,6 +31,9 @@ import com.paypad.parator.menu.discount.interfaces.ReturnDiscountCallback;
 import com.paypad.parator.menu.product.ProductFragment;
 import com.paypad.parator.menu.product.interfaces.ReturnItemCallback;
 import com.paypad.parator.menu.support.about.SupportAboutFragment;
+import com.paypad.parator.menu.support.announcement.AnnouncementFragment;
+import com.paypad.parator.menu.support.help.HelpFragment;
+import com.paypad.parator.menu.support.legal.LegalFragment;
 import com.paypad.parator.menu.support.reportproblem.fragments.NotifyProblemFragment;
 import com.paypad.parator.menu.support.toursandtutorials.ToursAndTutorialsFragment;
 import com.paypad.parator.menu.tax.TaxFragment;
@@ -152,6 +155,12 @@ public class SupportFragment extends BaseFragment implements SupportListItemCall
             }
         }else if(itemType == SupportListEnum.ABOUT){
             mFragmentNavigation.pushFragment(new SupportAboutFragment());
+        }else if(itemType == SupportListEnum.HELP){
+            mFragmentNavigation.pushFragment(new HelpFragment());
+        }else if(itemType == SupportListEnum.ANNOUNCEMENT){
+            mFragmentNavigation.pushFragment(new AnnouncementFragment());
+        }else if(itemType == SupportListEnum.LEGAL){
+            mFragmentNavigation.pushFragment(new LegalFragment());
         }
     }
 

@@ -707,4 +707,32 @@
     <string name="return_text">Return</string>
     <string name="search_by_name_or_code">Search by name or code</string>
 
+    <!-- Support Help messages -->
+    <string name="learn_more_upper">LEARN MORE</string>
+    <string name="visit_our_support_center">Visit our Support Center</string>
+    <string name="visit_our_support_center_desc">Search and browse support articles</string>
+    <string name="system_status">System Status</string>
+    <string name="system_status_desc">Check the status of Paratör services</string>
+    <string name="frequently_asked_questions_upper">FREQUENTLY ASKED QUESTIONS</string>
+    <string name="create_sales_report">Create Sales Report</string>
+    <string name="troubleshot_your_pos">Troubleshoot Your Point of Sale</string>
+    <string name="help">Help</string>
+    <string name="no_announcement">No Announcement</string>
+    <string name="no_announcement_desc">We\'ll send you updates about your account and how to get the most out of Paratör.</string>
+    <string name="announcements">Announcements</string>
+    <string name="seller_aggrement">Seller Agreement</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="legal">Legal</string>
+
+    <!-- Checkout options -->
+    <string name="edit_paym_types_desc">Enable the payment types that your business accepts, and arrange them in the order that suits your business the best.</string>
+    <string name="preview">Preview</string>
+    <string name="main_payment_types">MAIN PAYMENT TYPES</string>
+    <string name="payment_types">Payment Types</string>
+    <string name="preview_payment_types">Preview Payment Types</string>
+    <string name="preview_payment_types_desc">The payment type you want to add is not active. Would you like to activate the relevant payment type?</string>
+    <string name="active">Active</string>
+    <string name="fast_menu">Fast Menu</string>
+    <string name="create_fast_box">Create Fast Box</string>
+
 </resources>

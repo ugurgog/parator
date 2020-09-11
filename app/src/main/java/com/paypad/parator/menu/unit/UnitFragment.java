@@ -252,7 +252,7 @@ public class UnitFragment extends BaseFragment implements WalkthroughCallback, C
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         unitRv.setLayoutManager(linearLayoutManager);
-        unitRv.addItemDecoration(new DividerItemDecoration(mContext, LinearLayoutManager.VERTICAL));
+        //unitRv.addItemDecoration(new DividerItemDecoration(mContext, LinearLayoutManager.VERTICAL));
         updateAdapterWithCurrentList();
         checkTutorialIsActive();
     }

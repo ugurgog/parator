@@ -1,6 +1,7 @@
 package com.paypad.parator.charge.dynamicStruct.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,6 +39,7 @@ import com.paypad.parator.model.TaxModel;
 import com.paypad.parator.model.pojo.SaleModelInstance;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.LogUtil;
+import com.paypad.parator.utils.ShapeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +57,6 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
     private BaseFragment.FragmentNavigation fragmentNavigation;
     private ReturnDynamicBoxListener dynamicBoxListener;
     private boolean maxBoxExceeded= false;
-    private IOrderManager orderManager;
     private ReturnViewCallback returnViewCallback;
 
     public DynamicStructListAdapter(Context context, List<DynamicBoxModel> boxModels,
@@ -64,7 +66,6 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
         this.boxModels.addAll(boxModels);
         this.fragmentNavigation = fragmentNavigation;
         this.dynamicBoxListener = listener;
-        orderManager = new OrderManager();
         setMaxBoxExceeded();
     }
 
@@ -94,11 +95,16 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
         private TextView itemValueTv;
         private ImageView iconImgv;
         private LinearLayout mainll;
-        private FrameLayout content_frame;
+        private RelativeLayout content_frame;
+        private ImageView deleteImgv;
 
-        private DynamicBoxModel dynamicBoxModel;
+        public DynamicBoxModel dynamicBoxModel;
         private int position;
         private long mLastClickTime = 0;
+
+        public DynamicBoxModel getDynamicBoxModel() {
+            return dynamicBoxModel;
+        }
 
         StructListHolder(View view) {
             super(view);
@@ -109,6 +115,10 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
             mainll = view.findViewById(R.id.mainll);
             itemValueTv = view.findViewById(R.id.itemValueTv);
             content_frame = view.findViewById(R.id.content_frame);
+            deleteImgv = view.findViewById(R.id.deleteImgv);
+
+            deleteImgv.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.transparentBlack, null),
+                    context.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 10, 0));
 
             itemCv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -127,7 +137,15 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
                 }
             });
 
-            itemCv.setOnLongClickListener(new View.OnLongClickListener() {
+            deleteImgv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (dynamicBoxModel.getStructId() != 0)
+                        dynamicBoxListener.onReturn(dynamicBoxModel, ItemProcessEnum.DELETED);
+                }
+            });
+
+            /*itemCv.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
 
@@ -141,7 +159,7 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
 
                     return false;
                 }
-            });
+            });*/
         }
 
         void setData(DynamicBoxModel dynamicBoxModel, int position) {
@@ -150,6 +168,11 @@ public class DynamicStructListAdapter extends RecyclerView.Adapter<DynamicStruct
             setItemName();
             setBoxWidth();
             setIcon();
+
+            if (dynamicBoxModel.getStructId() == 0)
+                deleteImgv.setVisibility(View.GONE);
+            else
+                deleteImgv.setVisibility(View.VISIBLE);
         }
 
         private void setIcon() {

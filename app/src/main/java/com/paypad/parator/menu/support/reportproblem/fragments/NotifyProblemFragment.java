@@ -438,9 +438,15 @@ public class NotifyProblemFragment extends BaseFragment {
                     public void okClick() {
                         ((Activity) mContext).onBackPressed();
 
+
                         //TODO - Async calisacak sekilde problem bildirimi yapalim
 
                         if(1 == 1) { // Yukleme save basarili ise
+                            mFragmentNavigation.clearStackWithGivenIndex(FragNavController.TAB1);
+                            mFragmentNavigation.newSaleTriggered();
+                            //((MainActivity) getActivity()).clearStackGivenIndex(FragNavController.TAB1);
+                            //((MainActivity) getActivity()).switchAndUpdateTabSelection(FragNavController.TAB1);
+
 
                         }
 
