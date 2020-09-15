@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.menu.reports.interfaces.ReturnReportDateCallback;
 import com.paypad.parator.model.pojo.ReportDate;
 import com.paypad.parator.square.DayViewAdapter;
@@ -236,7 +237,7 @@ public class CustomizeReportFragment extends BaseFragment implements TimePickerD
         int endTimeInt = Integer.parseInt(endTime.replaceAll(":", ""));
 
         if(endTimeInt <= startTimeInt){
-            CommonUtils.showToastShort(getContext(), getContext().getString(R.string.end_time_must_be_bigger_than_start_time));
+            CommonUtils.showCustomToast(getContext(), getContext().getString(R.string.end_time_must_be_bigger_than_start_time), ToastEnum.TOAST_WARNING);
             return;
         }
 

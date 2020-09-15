@@ -24,6 +24,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.paypad.parator.R;
 import com.paypad.parator.db.UserDBHelper;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.login.utils.LoginUtils;
 import com.paypad.parator.login.utils.Validation;
 import com.paypad.parator.model.User;
@@ -173,13 +174,13 @@ public class LoginActivity extends AppCompatActivity
         //username validation
         if (!Validation.getInstance().isValidEmail(this, email)) {
             progressDialog.dismiss();
-            CommonUtils.showToastShort(LoginActivity.this, Validation.getInstance().getErrorMessage());
+            CommonUtils.showCustomToast(LoginActivity.this, Validation.getInstance().getErrorMessage(), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if (!Validation.getInstance().isValidPassword(LoginActivity.this, password)) {
             progressDialog.dismiss();
-            CommonUtils.showToastShort(LoginActivity.this, Validation.getInstance().getErrorMessage());
+            CommonUtils.showCustomToast(LoginActivity.this, Validation.getInstance().getErrorMessage(), ToastEnum.TOAST_WARNING);
             return false;
         }
 
@@ -201,7 +202,7 @@ public class LoginActivity extends AppCompatActivity
             }
 
         }else
-            CommonUtils.showToastShort(LoginActivity.this, getResources().getString(R.string.invalid_username_or_password));
+            CommonUtils.showCustomToast(LoginActivity.this, getResources().getString(R.string.invalid_username_or_password), ToastEnum.TOAST_WARNING);
     }
 
 

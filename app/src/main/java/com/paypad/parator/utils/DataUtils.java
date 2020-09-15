@@ -17,6 +17,7 @@ import com.paypad.parator.enums.DayEnum;
 import com.paypad.parator.enums.MonthEnum;
 import com.paypad.parator.enums.ProductUnitTypeEnum;
 import com.paypad.parator.enums.TaxRateEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.model.AutoIncrement;
 import com.paypad.parator.model.GlobalSettings;
 import com.paypad.parator.model.Product;
@@ -102,7 +103,7 @@ public class DataUtils {
                     Uri.fromParts("tel", phoneNumber, null)));
 
         } catch (Exception e) {
-            CommonUtils.showToastShort(mContext, "Error while calling customer!");
+            CommonUtils.showCustomToast(mContext, "Error while calling customer!", ToastEnum.TOAST_ERROR);
             e.printStackTrace();
         }
     }
@@ -123,28 +124,14 @@ public class DataUtils {
         try {
             mContext.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
         } catch (android.content.ActivityNotFoundException ex) {
-            CommonUtils.showToastShort(mContext, "There is no email client installed.");
+            CommonUtils.showCustomToast(mContext, "There is no email client installed.", ToastEnum.TOAST_ERROR);
             ex.printStackTrace();
         }
     }
 
-    /*public static String getTotalAmount(double totalAmount, int number){
-        if(totalAmount == 0){
-            totalAmount = (totalAmount  + number) / 100;
-        }else {
-            totalAmount = (totalAmount * 10) + (number / 100.00d);
-        }
-
-        if(totalAmount > MAX_PRICE_VALUE){
-            totalAmount = MAX_PRICE_VALUE;
-        }
-
-        return CommonUtils.getDoubleStrValueForView(totalAmount, TYPE_PRICE).concat(" ").concat(CommonUtils.getCurrency().getSymbol());
-    }*/
-
     public static void showBaseResponseMessage(Context context, BaseResponse baseResponse){
         if(baseResponse.getMessage() != null && !baseResponse.getMessage().isEmpty())
-            CommonUtils.showToastShort(context, baseResponse.getMessage());
+            CommonUtils.showCustomToast(context, baseResponse.getMessage(), ToastEnum.TOAST_WARNING);
     }
 
     public static TaxModel getTaxModelById(long taxId){

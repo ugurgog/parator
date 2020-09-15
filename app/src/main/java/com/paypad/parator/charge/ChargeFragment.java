@@ -45,7 +45,7 @@ import com.paypad.parator.db.StoreDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.DynamicStructEnum;
 import com.paypad.parator.enums.ItemProcessEnum;
-import com.paypad.parator.enums.ItemsEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.enums.TutorialTypeEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CompleteCallback;
@@ -274,7 +274,7 @@ public class ChargeFragment extends BaseFragment implements
 
                 if(orderItem != null ){
                     if(mTaxModel == null){
-                        CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_tax_rate));
+                        CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_tax_rate), ToastEnum.TOAST_WARNING);
                         return ;
                     }else {
                         if(!OrderManager.isSaleItemInSale(
@@ -302,7 +302,7 @@ public class ChargeFragment extends BaseFragment implements
                 if(orderItem != null ){
 
                     if(mTaxModel == null){
-                        CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_tax_rate));
+                        CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_tax_rate), ToastEnum.TOAST_WARNING);
                         return ;
                     }else {
                         if(!OrderManager.isSaleItemInSale(
@@ -313,7 +313,7 @@ public class ChargeFragment extends BaseFragment implements
 
                 //Check transaction amount
                 if(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount() <= 0d){
-                    CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.sale_amount_zero));
+                    CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.sale_amount_zero), ToastEnum.TOAST_WARNING);
                     return;
                 }
 
@@ -600,7 +600,7 @@ public class ChargeFragment extends BaseFragment implements
             OnCustomItemAdd(CUSTOM_ITEM_ADD_FROM_KEYPAD);
 
         }else {
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_custom_amount_first));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_custom_amount_first), ToastEnum.TOAST_WARNING);
         }
     }
 
@@ -629,12 +629,12 @@ public class ChargeFragment extends BaseFragment implements
     public void OnCustomItemAdd(int addFromValue) {
 
         if(orderItem == null){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_type_custom_amount));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_type_custom_amount), ToastEnum.TOAST_WARNING);
             return;
         }
 
         if(mTaxModel == null){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_tax_rate));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_tax_rate), ToastEnum.TOAST_WARNING);
             return;
         }
 

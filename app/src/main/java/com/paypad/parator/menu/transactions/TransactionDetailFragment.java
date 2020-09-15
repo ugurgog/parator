@@ -24,6 +24,7 @@ import com.paypad.parator.charge.order.OrderManager;
 import com.paypad.parator.charge.payment.utils.PrintOrderManager;
 import com.paypad.parator.db.RefundDBHelper;
 import com.paypad.parator.db.UserDBHelper;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.enums.TransactionTypeEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.ReturnAmountCallback;
@@ -428,9 +429,9 @@ public class TransactionDetailFragment extends BaseFragment implements ReturnAmo
                 @Override
                 public void run() {
                     if(res == 0){
-                        CommonUtils.showToastShort(mContext, "Print successful");
+                        CommonUtils.showCustomToast(getContext(), "Print successful", ToastEnum.TOAST_SUCCESS);
                     }else{
-                        CommonUtils.showToastShort(mContext, "Print failed");
+                        CommonUtils.showCustomToast(getContext(), "Print failed", ToastEnum.TOAST_ERROR);
                     }
                 }
             });

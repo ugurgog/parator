@@ -134,6 +134,8 @@
     <color name="tab_selected">@color/Black</color>
     <color name="tab_unselected">@color/Gray</color>
 
+    <color name="custom_switch_color">@color/colorAccent</color>
+
     <integer-array name="gplus_colors">
         <item>@color/gplus_color_1</item>
         <item>@color/gplus_color_2</item>

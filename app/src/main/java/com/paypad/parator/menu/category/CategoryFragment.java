@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -126,7 +127,7 @@ public class CategoryFragment extends BaseFragment implements WalkthroughCallbac
     @Override
     public void onDetach() {
         super.onDetach();
-        dismissPopup();
+        killPopup();
         mContext = null;
         EventBus.getDefault().unregister(this);
     }
@@ -162,7 +163,7 @@ public class CategoryFragment extends BaseFragment implements WalkthroughCallbac
         backImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismissPopup();
+                killPopup();
                 ((Activity) mContext).onBackPressed();
             }
         });
@@ -170,8 +171,7 @@ public class CategoryFragment extends BaseFragment implements WalkthroughCallbac
         createCategoryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(btnPopup != null)
-                    btnPopup.dismiss();
+                dismissPopup();
                 initCategoryEditFragment();
                 mFragmentNavigation.pushFragment(categoryEditFragment);
             }
@@ -235,8 +235,7 @@ public class CategoryFragment extends BaseFragment implements WalkthroughCallbac
 
                     walkthrough = WALK_THROUGH_END;
                     OnWalkthroughResult(walkthrough);
-                    if(btnPopup != null)
-                        btnPopup.dismiss();
+                    dismissPopup();
                 }
             }
         });
@@ -259,19 +258,31 @@ public class CategoryFragment extends BaseFragment implements WalkthroughCallbac
 
     private void checkTutorialIsActive() {
         if(walkthrough == WALK_THROUGH_CONTINUE){
-            CommonUtils.displayPopupWindow(createCategoryBtn, mContext, mContext.getResources().getString(R.string.select_create_category),
-                    new TutorialPopupCallback() {
-                        @Override
-                        public void OnClosed() {
-                            OnWalkthroughResult(WALK_THROUGH_END);
-                            dismissPopup();
-                        }
+            createCategoryBtn.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try{
+                        if(btnPopup != null && btnPopup.isShowing())
+                            return;
+                        CommonUtils.displayPopupWindow(createCategoryBtn, mContext, mContext.getResources().getString(R.string.select_create_category),
+                                new TutorialPopupCallback() {
+                                    @Override
+                                    public void OnClosed() {
+                                        OnWalkthroughResult(WALK_THROUGH_END);
+                                        killPopup();
+                                    }
 
-                        @Override
-                        public void OnGetPopup(PopupWindow popupWindow) {
-                            btnPopup = popupWindow;
-                        }
-                    });
+                                    @Override
+                                    public void OnGetPopup(PopupWindow popupWindow) {
+                                        btnPopup = popupWindow;
+                                    }
+                                });
+                        createCategoryBtn.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }catch (Exception e){
+
+                    }
+                }
+            });
         }
     }
 
@@ -303,11 +314,16 @@ public class CategoryFragment extends BaseFragment implements WalkthroughCallbac
         }
     }
 
-    private void dismissPopup(){
+    private void killPopup(){
         if(btnPopup != null){
             btnPopup.dismiss();
             btnPopup = null;
         }
+    }
+
+    private void dismissPopup(){
+        if(btnPopup != null)
+            btnPopup.dismiss();
     }
 
     @Override
@@ -318,7 +334,6 @@ public class CategoryFragment extends BaseFragment implements WalkthroughCallbac
 
     @Override
     public void OnClicked() {
-        if(btnPopup != null)
-            btnPopup.dismiss();
+        dismissPopup();
     }
 }

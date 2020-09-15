@@ -23,6 +23,7 @@ import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.AnnualTurnoverRangeEnum;
 import com.paypad.parator.enums.CurrencyEnum;
 import com.paypad.parator.enums.NumberOfLocationEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.enums.TypeOfBusinessEnum;
 import com.paypad.parator.interfaces.CountrySelectListener;
 import com.paypad.parator.login.utils.LoginUtils;
@@ -171,39 +172,39 @@ public class RegisterActivity extends AppCompatActivity
         progressDialog.dismiss();
 
         if(user != null){
-            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.email_is_defined_before));
+            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.email_is_defined_before), ToastEnum.TOAST_ERROR);
             return false;
         }
 
         //email validation
         if (!Validation.getInstance().isValidEmail(this, email)) {
-            CommonUtils.showCustomToast(RegisterActivity.this, Validation.getInstance().getErrorMessage());
+            CommonUtils.showCustomToast(RegisterActivity.this, Validation.getInstance().getErrorMessage(), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         //password validation
         if (!Validation.getInstance().isValidPassword(this, userPassword)) {
-            CommonUtils.showCustomToast(RegisterActivity.this, Validation.getInstance().getErrorMessage());
+            CommonUtils.showCustomToast(RegisterActivity.this, Validation.getInstance().getErrorMessage(), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(firstNameEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_type_first_name));
+            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_type_first_name), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(lastNameEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_type_last_name));
+            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_type_last_name), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(phoneNumberEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_type_phone_number));
+            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_type_phone_number), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(countryEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_select_country));
+            CommonUtils.showCustomToast(RegisterActivity.this, getResources().getString(R.string.please_select_country), ToastEnum.TOAST_WARNING);
             return false;
         }
 
@@ -243,7 +244,7 @@ public class RegisterActivity extends AppCompatActivity
             intent.putExtras(bundle);
             startActivity(intent);
         }else{
-            CommonUtils.showToastShort(RegisterActivity.this, baseResponse.getMessage());
+            CommonUtils.showCustomToast(RegisterActivity.this, baseResponse.getMessage(), ToastEnum.TOAST_ERROR);
         }
     }
 

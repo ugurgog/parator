@@ -15,10 +15,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 
+import com.github.angads25.toggle.interfaces.OnToggledListener;
+import com.github.angads25.toggle.model.ToggleableView;
+import com.github.angads25.toggle.widget.LabeledSwitch;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.charge.payment.utils.SendMail;
 import com.paypad.parator.db.UserDBHelper;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.login.utils.Validation;
 import com.paypad.parator.model.User;
@@ -52,7 +56,7 @@ public class SaleReportEmailFragment extends BaseFragment implements SendMail.Ma
     @BindView(R.id.emailEt)
     EditText emailEt;
     @BindView(R.id.includeItemsSwitch)
-    Switch includeItemsSwitch;
+    LabeledSwitch includeItemsSwitch;
     @BindView(R.id.btnSend)
     Button btnSend;
     @BindView(R.id.saleReportEmailRl)
@@ -132,16 +136,16 @@ public class SaleReportEmailFragment extends BaseFragment implements SendMail.Ma
             }
         });
 
-        includeItemsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        includeItemsSwitch.setOnToggledListener(new OnToggledListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                isIncludeItems = b;
+            public void onSwitched(ToggleableView toggleableView, boolean isOn) {
+                isIncludeItems = isOn;
             }
         });
     }
 
     private void initVariables() {
-        includeItemsSwitch.setChecked(true);
+        includeItemsSwitch.setOn(true);
         emailList = new ArrayList<>();
         emailFailedList = new ArrayList<>();
         saveBtn.setVisibility(View.GONE);
@@ -152,7 +156,7 @@ public class SaleReportEmailFragment extends BaseFragment implements SendMail.Ma
         String emails = emailEt.getText().toString();
 
         if(emails.isEmpty()){
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.email_empty_error));
+            CommonUtils.showCustomToast(getContext(), getResources().getString(R.string.email_empty_error), ToastEnum.TOAST_WARNING);
             return;
         }
 
@@ -163,7 +167,7 @@ public class SaleReportEmailFragment extends BaseFragment implements SendMail.Ma
             boolean isValid = Validation.getInstance().isValidEmail(getContext(), email.trim());
 
             if(!isValid){
-                CommonUtils.showToastShort(getContext(), Validation.getInstance().getErrorMessage() + " : " + email);
+                CommonUtils.showCustomToast(getContext(), Validation.getInstance().getErrorMessage() + " : " + email, ToastEnum.TOAST_WARNING);
                 return;
             }
             emailList.add(email);

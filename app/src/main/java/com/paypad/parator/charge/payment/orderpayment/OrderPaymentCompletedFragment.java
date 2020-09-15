@@ -31,6 +31,7 @@ import com.paypad.parator.db.TransactionDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.ProcessDirectionEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.menu.customer.CustomerFragment;
 import com.paypad.parator.menu.customer.interfaces.ReturnCustomerCallback;
@@ -465,7 +466,7 @@ public class OrderPaymentCompletedFragment extends BaseFragment
                 @Override
                 public void run() {
                     if(res == 0){
-                        CommonUtils.showToastShort(mContext, "Print successful");
+                        CommonUtils.showCustomToast(mContext, "Print successful", ToastEnum.TOAST_SUCCESS);
 
                         if(receiptType == CUSTOMER_RECEIPT){
                             receiptType = MERCHANT_RECEIPT;
@@ -474,7 +475,7 @@ public class OrderPaymentCompletedFragment extends BaseFragment
                         }else
                             startCounter();
                     }else{
-                        CommonUtils.showToastShort(mContext, "Print failed");
+                        CommonUtils.showCustomToast(mContext, "Print failed", ToastEnum.TOAST_ERROR);
                         //TODO Follow-up after failed, such as reprint
                     }
                 }

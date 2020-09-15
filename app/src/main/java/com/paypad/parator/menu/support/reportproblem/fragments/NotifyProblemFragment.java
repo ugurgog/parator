@@ -28,6 +28,7 @@ import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.FragmentControllers.FragNavController;
 import com.paypad.parator.MainActivity;
 import com.paypad.parator.R;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.interfaces.PhotoChosenForReportCallback;
 import com.paypad.parator.interfaces.ReturnObjectCallback;
 import com.paypad.parator.menu.support.reportproblem.model.ProblemNotifyModel;
@@ -180,7 +181,7 @@ public class NotifyProblemFragment extends BaseFragment {
             public void onClick(View v) {
                 if (noteTextEditText != null && noteTextEditText.getText() != null &&
                         noteTextEditText.getText().toString().isEmpty()) {
-                    CommonUtils.showCustomToast(mContext, getResources().getString(R.string.specify_the_problem_briefly));
+                    CommonUtils.showCustomToast(mContext, getResources().getString(R.string.specify_the_problem_briefly), ToastEnum.TOAST_INFO);
                     return;
                 }
                 saveReport();

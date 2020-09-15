@@ -22,6 +22,7 @@ import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.db.GlobalSettingsDBHelper;
 import com.paypad.parator.db.UserDBHelper;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CountrySelectListener;
 import com.paypad.parator.login.RegisterActivity;
@@ -212,22 +213,22 @@ public class EditProfileFragment extends BaseFragment implements CountrySelectLi
 
     private boolean checkValidation() {
         if(firstNameEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_type_first_name));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_type_first_name), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(lastNameEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_type_last_name));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_type_last_name), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(phoneNumberEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_type_phone_number));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_type_phone_number), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(countryEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_country));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_country), ToastEnum.TOAST_WARNING);
             return false;
         }
         return true;

@@ -27,6 +27,7 @@ import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.FinancialReportsEnum;
 import com.paypad.parator.enums.PrinterStatusEnum;
 import com.paypad.parator.enums.ReportsEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.menu.reports.adapters.ReportAdapter;
 import com.paypad.parator.menu.reports.interfaces.ReturnReportItemCallback;
@@ -164,7 +165,7 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
         refunds = RefundDBHelper.getRefundsByZNum(autoIncrement.getzNum());
 
         if(transactions.size() == 0 && refunds.size() == 0){
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.no_sale_for_eod_process));
+            CommonUtils.showCustomToast(getContext(), getResources().getString(R.string.no_sale_for_eod_process), ToastEnum.TOAST_WARNING);
             return;
         }
 
@@ -193,11 +194,11 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
         }
 
         if(!errorOccurred){
-            CommonUtils.showToastShort(getContext(), getContext().getResources().getString(R.string.eod_success));
+            CommonUtils.showCustomToast(getContext(), getContext().getResources().getString(R.string.eod_success), ToastEnum.TOAST_SUCCESS);
             startPrintProcess();
             updateAutoIncrementBatchNum();
         }else
-            CommonUtils.showToastShort(getContext(), getContext().getResources().getString(R.string.eod_failed));
+            CommonUtils.showCustomToast(getContext(), getContext().getResources().getString(R.string.eod_failed), ToastEnum.TOAST_ERROR);
 
         /*saleModels = SaleDBHelper.getSaleModelsNotProcessedEOD(user.getUuid());
 
@@ -229,8 +230,8 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
         PrinterStatusEnum printerStatus = SunmiPrintHelper.getInstance().getPrinterStatus();
 
         if(!printerStatus.isNormal()){
-            CommonUtils.showToastShort(getContext(),
-                    CommonUtils.getLanguage().equals(LANGUAGE_TR) ? printerStatus.getLabelTr() : printerStatus.getLabelEn());
+            CommonUtils.showCustomToast(getContext(),
+                    CommonUtils.getLanguage().equals(LANGUAGE_TR) ? printerStatus.getLabelTr() : printerStatus.getLabelEn(), ToastEnum.TOAST_ERROR);
             return;
         }
 
@@ -292,7 +293,7 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
                 @Override
                 public void run() {
                     if(res == 0){
-                        CommonUtils.showToastShort(getContext(), "Print successful");
+                        CommonUtils.showCustomToast(getContext(), "Print successful", ToastEnum.TOAST_SUCCESS);
 
                         /*boolean isSuccess = true;
                         for(SaleModel saleModel : saleModels){
@@ -312,7 +313,7 @@ public class ReportsFragment extends BaseFragment  implements ReturnReportItemCa
                         }*/
 
                     }else{
-                        CommonUtils.showToastShort(getContext(), "Print failed");
+                        CommonUtils.showCustomToast(getContext(), "Print failed", ToastEnum.TOAST_ERROR);
                     }
                 }
             });

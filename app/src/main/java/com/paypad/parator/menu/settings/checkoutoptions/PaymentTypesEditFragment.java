@@ -17,6 +17,9 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.angads25.toggle.interfaces.OnToggledListener;
+import com.github.angads25.toggle.model.ToggleableView;
+import com.github.angads25.toggle.widget.LabeledSwitch;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.enums.PaymentTypeEnum;
@@ -140,7 +143,7 @@ public class PaymentTypesEditFragment extends BaseFragment {
         public class ItemHolder extends RecyclerView.ViewHolder {
 
             private TextView paymentTypeNameTv;
-            private Switch paymTypeSwitch;
+            private LabeledSwitch paymTypeSwitch;
             private PaymentTypeEnum itemType;
             private int position;
 
@@ -149,10 +152,9 @@ public class PaymentTypesEditFragment extends BaseFragment {
                 paymentTypeNameTv = view.findViewById(R.id.paymentTypeNameTv);
                 paymTypeSwitch = view.findViewById(R.id.paymTypeSwitch);
 
-                paymTypeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                paymTypeSwitch.setOnToggledListener(new OnToggledListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean enabled) {
-
+                    public void onSwitched(ToggleableView toggleableView, boolean enabled) {
                         if(!enabled){
                             int disabledCount = 0;
                             PaymentTypeEnum[] paymentTypeEnums = PaymentTypeEnum.values();
@@ -163,7 +165,7 @@ public class PaymentTypesEditFragment extends BaseFragment {
                             }
 
                             if(disabledCount == paymentTypeEnums.length - 1){
-                                paymTypeSwitch.setChecked(true);
+                                paymTypeSwitch.setOn(true);
                                 return;
                             }
                         }
@@ -188,13 +190,13 @@ public class PaymentTypesEditFragment extends BaseFragment {
                 paymentTypeNameTv.setText(CommonUtils.getLanguage().equals(LANGUAGE_TR) ? itemType.getLabelTr() : itemType.getLabelEn());
 
                 if(itemType.getId() == PaymentTypeEnum.CASH.getId())
-                    paymTypeSwitch.setChecked(loginPreferences.getBoolean(String.valueOf(PaymentTypeEnum.CASH.getId()), false));
+                    paymTypeSwitch.setOn(loginPreferences.getBoolean(String.valueOf(PaymentTypeEnum.CASH.getId()), false));
                 else if(itemType.getId() == PaymentTypeEnum.CREDIT_CARD.getId())
-                    paymTypeSwitch.setChecked(loginPreferences.getBoolean(String.valueOf(PaymentTypeEnum.CREDIT_CARD.getId()), false));
+                    paymTypeSwitch.setOn(loginPreferences.getBoolean(String.valueOf(PaymentTypeEnum.CREDIT_CARD.getId()), false));
                 else if(itemType.getId() == PaymentTypeEnum.GIFT_CARD.getId())
-                    paymTypeSwitch.setChecked(loginPreferences.getBoolean(String.valueOf(PaymentTypeEnum.GIFT_CARD.getId()), false));
+                    paymTypeSwitch.setOn(loginPreferences.getBoolean(String.valueOf(PaymentTypeEnum.GIFT_CARD.getId()), false));
                 else if(itemType.getId() == PaymentTypeEnum.CHECK.getId())
-                    paymTypeSwitch.setChecked(loginPreferences.getBoolean(String.valueOf(PaymentTypeEnum.CHECK.getId()), false));
+                    paymTypeSwitch.setOn(loginPreferences.getBoolean(String.valueOf(PaymentTypeEnum.CHECK.getId()), false));
             }
         }
 

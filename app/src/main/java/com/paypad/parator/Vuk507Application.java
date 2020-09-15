@@ -2,6 +2,8 @@ package com.paypad.parator;
 
 import android.app.Application;
 
+import androidx.annotation.NonNull;
+
 import com.paypad.parator.utils.sunmiutils.SunmiPrintHelper;
 
 import io.realm.Realm;

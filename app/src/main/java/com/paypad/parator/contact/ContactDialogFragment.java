@@ -2,6 +2,7 @@ package com.paypad.parator.contact;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.text.Editable;
@@ -25,6 +26,7 @@ import com.paypad.parator.R;
 import com.paypad.parator.contact.adapters.ContactListAdapter;
 import com.paypad.parator.contact.interfaces.ReturnContactListener;
 import com.paypad.parator.enums.CountryDataEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.httpprocess.CountryProcess;
 import com.paypad.parator.httpprocess.interfaces.OnEventListener;
 import com.paypad.parator.interfaces.CompleteCallback;
@@ -34,6 +36,8 @@ import com.paypad.parator.model.pojo.Contact;
 import com.paypad.parator.model.pojo.CountryPhoneCode;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +60,19 @@ public class ContactDialogFragment extends BottomSheetDialogFragment {
     private ReturnContactListener returnContactListener;
     private List<CountryPhoneCode> phoneCodes;
     private List<Contact> reformedContactList;
+    private Context mContext;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
+    }
 
     public ContactDialogFragment(ReturnContactListener returnContactListener) {
         this.returnContactListener = returnContactListener;
@@ -80,7 +97,7 @@ public class ContactDialogFragment extends BottomSheetDialogFragment {
     public void setupDialog(Dialog dialog, int style) {
 
         super.setupDialog(dialog, style);
-        contentView = View.inflate(getContext(), R.layout.fragment_contact_list, null);
+        contentView = View.inflate(mContext, R.layout.fragment_contact_list, null);
 
         dialog.setContentView(contentView);
 
@@ -155,7 +172,7 @@ public class ContactDialogFragment extends BottomSheetDialogFragment {
             public void onClick(View v) {
                 searchEdittext.setText("");
                 searchCancelImgv.setVisibility(View.GONE);
-                CommonUtils.showKeyboard(getContext(),false, searchEdittext);
+                CommonUtils.showKeyboard(mContext,false, searchEdittext);
             }
         });
     }
@@ -169,7 +186,7 @@ public class ContactDialogFragment extends BottomSheetDialogFragment {
                     contactList = (List<Contact>) baseResponse.getObject();
                     getCountryDialCodeList();
                 }else {
-                    CommonUtils.showToastShort(getActivity(), baseResponse.getMessage());
+                    CommonUtils.showCustomToast(getActivity(), baseResponse.getMessage(), ToastEnum.TOAST_ERROR);
                 }
             }
         });
@@ -177,10 +194,6 @@ public class ContactDialogFragment extends BottomSheetDialogFragment {
 
     public void clearDuplicateNumbers(List<Contact> tempContactList) {
         for (Contact contact : tempContactList) {
-
-            Log.i("Info", "Contact:------------------" );
-            Log.i("Info", "name   :" + contact.getName());
-            Log.i("Info", "phone  :" + contact.getPhoneNumber());
 
             boolean isExist = false;
 
@@ -199,7 +212,7 @@ public class ContactDialogFragment extends BottomSheetDialogFragment {
     }
 
     private void getCountryDialCodeList() {
-        CountryProcess countryProcess = new CountryProcess(getContext(), CountryDataEnum.PHONE_CODES, new OnEventListener() {
+        CountryProcess countryProcess = new CountryProcess(mContext, CountryDataEnum.PHONE_CODES, new OnEventListener() {
             @Override
             public void onSuccess(Object object) {
                 if (object != null) {
@@ -219,7 +232,8 @@ public class ContactDialogFragment extends BottomSheetDialogFragment {
 
             @Override
             public void onFailure(Exception e) {
-                CommonUtils.showToastShort(getContext(), "There is an error occured while getting country codes!");
+                CommonUtils.showCustomToast(mContext,
+                        mContext.getResources().getString(R.string.error_occured_while_getting_countries), ToastEnum.TOAST_ERROR);
             }
 
             @Override
@@ -231,7 +245,7 @@ public class ContactDialogFragment extends BottomSheetDialogFragment {
     }
 
     public void updateAdapterWithCurrentList(){
-        contactListAdapter = new ContactListAdapter(getContext(), reformedContactList, new ReturnContactListener() {
+        contactListAdapter = new ContactListAdapter(mContext, reformedContactList, new ReturnContactListener() {
             @Override
             public void OnReturn(Contact contact) {
                 returnContactListener.OnReturn(contact);

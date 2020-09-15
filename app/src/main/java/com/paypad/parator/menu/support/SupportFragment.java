@@ -20,6 +20,7 @@ import com.paypad.parator.R;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.ItemsEnum;
 import com.paypad.parator.enums.SupportListEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.enums.TutorialTypeEnum;
 import com.paypad.parator.interfaces.MenuItemCallback;
 import com.paypad.parator.interfaces.SupportListItemCallback;
@@ -148,7 +149,7 @@ public class SupportFragment extends BaseFragment implements SupportListItemCall
         }else if(itemType == SupportListEnum.REPORT_PROBLEM){
 
             if(((MainActivity) mContext).isScreenShotLayoutVisible()){
-                CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.please_first_cancel_screenshot));
+                CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.please_first_cancel_screenshot), ToastEnum.TOAST_INFO);
             }else {
                 MainActivity.notifyProblemFragment = null;
                 mFragmentNavigation.pushFragment(new NotifyProblemFragment());

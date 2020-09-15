@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -34,12 +35,15 @@
 
             </TextView>
 
-            <Switch
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:id="@+id/autoPrintCustomerSwitch">
-            </Switch>
+            <com.github.angads25.toggle.widget.LabeledSwitch
+                android:id="@+id/autoPrintCustomerSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/default_size_13sp"
+                app:on="false"
+                app:colorBorder="@color/custom_switch_color"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"/>
 
         </RelativeLayout>
 
@@ -57,12 +61,15 @@
 
             </TextView>
 
-            <Switch
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:id="@+id/autoPrintMerchantSwitch">
-            </Switch>
+            <com.github.angads25.toggle.widget.LabeledSwitch
+                android:id="@+id/autoPrintMerchantSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/default_size_13sp"
+                app:on="false"
+                app:colorBorder="@color/custom_switch_color"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"/>
 
         </RelativeLayout>
 

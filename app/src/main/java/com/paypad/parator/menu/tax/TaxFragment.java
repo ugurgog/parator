@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -122,7 +123,7 @@ public class TaxFragment extends BaseFragment implements WalkthroughCallback, Cl
     @Override
     public void onDetach() {
         super.onDetach();
-        dismissPopup();
+        killPopup();
         mContext = null;
         EventBus.getDefault().unregister(this);
     }
@@ -158,7 +159,7 @@ public class TaxFragment extends BaseFragment implements WalkthroughCallback, Cl
         backImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismissPopup();
+                killPopup();
                 ((Activity) mContext).onBackPressed();
             }
         });
@@ -166,8 +167,7 @@ public class TaxFragment extends BaseFragment implements WalkthroughCallback, Cl
         createTaxBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(btnPopup != null)
-                    btnPopup.dismiss();
+                dismissPopup();
                 initTaxEditFragment();
                 mFragmentNavigation.pushFragment(taxEditFragment);
             }
@@ -234,8 +234,7 @@ public class TaxFragment extends BaseFragment implements WalkthroughCallback, Cl
 
                     walkthrough = WALK_THROUGH_END;
                     OnWalkthroughResult(walkthrough);
-                    if(btnPopup != null)
-                        btnPopup.dismiss();
+                    dismissPopup();
                 }
             }
         });
@@ -258,19 +257,31 @@ public class TaxFragment extends BaseFragment implements WalkthroughCallback, Cl
 
     private void checkTutorialIsActive() {
         if(walkthrough == WALK_THROUGH_CONTINUE){
-            CommonUtils.displayPopupWindow(createTaxBtn, mContext, mContext.getResources().getString(R.string.select_create_tax),
-                    new TutorialPopupCallback() {
-                        @Override
-                        public void OnClosed() {
-                            OnWalkthroughResult(WALK_THROUGH_END);
-                            dismissPopup();
-                        }
+            createTaxBtn.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try{
+                        if(btnPopup != null && btnPopup.isShowing())
+                            return;
+                        CommonUtils.displayPopupWindow(createTaxBtn, mContext, mContext.getResources().getString(R.string.select_create_tax),
+                                new TutorialPopupCallback() {
+                                    @Override
+                                    public void OnClosed() {
+                                        OnWalkthroughResult(WALK_THROUGH_END);
+                                        killPopup();
+                                    }
 
-                        @Override
-                        public void OnGetPopup(PopupWindow popupWindow) {
-                            btnPopup = popupWindow;
-                        }
-                    });
+                                    @Override
+                                    public void OnGetPopup(PopupWindow popupWindow) {
+                                        btnPopup = popupWindow;
+                                    }
+                                });
+                        createTaxBtn.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }catch (Exception e){
+
+                    }
+                }
+            });
         }
     }
 
@@ -327,11 +338,16 @@ public class TaxFragment extends BaseFragment implements WalkthroughCallback, Cl
         }
     }
 
-    private void dismissPopup(){
+    private void killPopup(){
         if(btnPopup != null){
             btnPopup.dismiss();
             btnPopup = null;
         }
+    }
+
+    private void dismissPopup(){
+        if(btnPopup != null)
+            btnPopup.dismiss();
     }
 
     @Override
@@ -342,7 +358,6 @@ public class TaxFragment extends BaseFragment implements WalkthroughCallback, Cl
 
     @Override
     public void OnClicked() {
-        if(btnPopup != null)
-            btnPopup.dismiss();
+        dismissPopup();
     }
 }

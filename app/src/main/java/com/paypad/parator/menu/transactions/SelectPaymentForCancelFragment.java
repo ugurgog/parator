@@ -24,6 +24,7 @@ import com.paypad.parator.charge.order.OrderManager;
 import com.paypad.parator.charge.payment.cancelpayment.ChargePaymentForCancelFragment;
 import com.paypad.parator.db.TransactionDBHelper;
 import com.paypad.parator.db.UserDBHelper;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.enums.TransactionTypeEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.menu.transactions.adapters.PaymentListForCancelAdapter;
@@ -158,8 +159,7 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
         if(isTrxesAndOrderAmountsEquals)
             mFragmentNavigation.popFragments(1);
         else
-            CommonUtils.showCustomToast(mContext,
-                    mContext.getResources().getString(R.string.cancel_all_trxes_to_continue));
+            CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.cancel_all_trxes_to_continue), ToastEnum.TOAST_WARNING);
     }
 
     private void cancelAllTrxes() {
@@ -175,7 +175,7 @@ public class SelectPaymentForCancelFragment extends BaseFragment implements Retu
         }
 
         if(!success){
-            CommonUtils.showToastShort(mContext, "Unexpected error occured!");
+            CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.unexpected_error), ToastEnum.TOAST_ERROR);
             for(Transaction transaction : cancelableTrxlist)
                 updateTransactionType(transaction, TransactionTypeEnum.SALE.getId());
         }

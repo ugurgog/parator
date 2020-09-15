@@ -25,6 +25,7 @@ import com.paypad.parator.charge.payment.utils.SendMail;
 import com.paypad.parator.db.SaleDBHelper;
 import com.paypad.parator.db.TransactionDBHelper;
 import com.paypad.parator.db.UserDBHelper;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.login.utils.Validation;
 import com.paypad.parator.model.Refund;
@@ -215,7 +216,7 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
         boolean isValid = Validation.getInstance().isValidEmail(getContext(), emailEt.getText().toString());
 
         if(!isValid){
-            CommonUtils.showToastShort(getContext(), Validation.getInstance().getErrorMessage());
+            CommonUtils.showCustomToast(getContext(), Validation.getInstance().getErrorMessage(), ToastEnum.TOAST_WARNING);
             return;
         }
         email = emailEt.getText().toString();
@@ -276,9 +277,9 @@ public class SendNewReceiptFragment extends BaseFragment implements SendMail.Mai
                 @Override
                 public void run() {
                     if(res == 0){
-                        CommonUtils.showToastShort(getContext(), "Print successful");
+                        CommonUtils.showCustomToast(getContext(), "Print successful", ToastEnum.TOAST_SUCCESS);
                     }else{
-                        CommonUtils.showToastShort(getContext(), "Print failed");
+                        CommonUtils.showCustomToast(getContext(), "Print failed", ToastEnum.TOAST_ERROR);
                     }
                 }
             });

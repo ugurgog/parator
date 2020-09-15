@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -121,7 +122,7 @@ public class CategoryEditFragment extends BaseFragment
     @Override
     public void onDetach() {
         super.onDetach();
-        dismissPopup();
+        killPopup();
         mContext = null;
         EventBus.getDefault().unregister(this);
     }
@@ -159,7 +160,7 @@ public class CategoryEditFragment extends BaseFragment
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismissPopup();
+                killPopup();
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
@@ -183,7 +184,7 @@ public class CategoryEditFragment extends BaseFragment
                     itemShortNameTv.setText(DataUtils.getProductNameShortenName(itemName));
 
                     if(btnPopup != null && walkthrough == WALK_THROUGH_CONTINUE){
-                        btnPopup.dismiss();
+                        dismissPopup();
                         tutorial.setLayoutVisibility(View.VISIBLE);
                     }
 
@@ -229,8 +230,7 @@ public class CategoryEditFragment extends BaseFragment
         imageRl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(btnPopup != null)
-                    btnPopup.dismiss();
+                dismissPopup();
                 initSelectColorFragment();
                 mFragmentNavigation.pushFragment(selectColorFragment);
             }
@@ -254,7 +254,7 @@ public class CategoryEditFragment extends BaseFragment
                 .setMessage(deleteMessage)
                 .setNegativeBtnVisibility(View.GONE)
                 .setPositiveBtnVisibility(View.VISIBLE)
-                .setPositiveBtnText(getContext().getResources().getString(R.string.yes))
+                .setPositiveBtnText(getContext().getResources().getString(R.string.close))
                 .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
                 .setDurationTime(0)
                 .isCancellable(true)
@@ -309,20 +309,31 @@ public class CategoryEditFragment extends BaseFragment
         tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_tap_save_button));
 
         if(walkthrough == WALK_THROUGH_CONTINUE){
-            CommonUtils.displayPopupWindow(categoryNameEt, mContext, mContext.getResources().getString(R.string.enter_category_name_message),
-                    new TutorialPopupCallback() {
-                        @Override
-                        public void OnClosed() {
-                            OnWalkthroughResult(WALK_THROUGH_END);
-                            btnPopup.dismiss();
-                            btnPopup = null;
-                        }
+            categoryNameEt.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try{
+                        if(btnPopup != null && btnPopup.isShowing())
+                            return;
+                        CommonUtils.displayPopupWindow(categoryNameEt, mContext, mContext.getResources().getString(R.string.enter_category_name_message),
+                                new TutorialPopupCallback() {
+                                    @Override
+                                    public void OnClosed() {
+                                        OnWalkthroughResult(WALK_THROUGH_END);
+                                        killPopup();
+                                    }
 
-                        @Override
-                        public void OnGetPopup(PopupWindow popupWindow) {
-                            btnPopup = popupWindow;
-                        }
-                    });
+                                    @Override
+                                    public void OnGetPopup(PopupWindow popupWindow) {
+                                        btnPopup = popupWindow;
+                                    }
+                                });
+                        categoryNameEt.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }catch (Exception e){
+
+                    }
+                }
+            });
         }
     }
 
@@ -352,11 +363,7 @@ public class CategoryEditFragment extends BaseFragment
         DataUtils.showBaseResponseMessage(getContext(), baseResponse);
 
         if(baseResponse.isSuccess()){
-            if(btnPopup != null) {
-                btnPopup.dismiss();
-                btnPopup = null;
-            }
-
+            killPopup();
             deleteButtonStatus = 1;
             CommonUtils.setBtnFirstCondition(Objects.requireNonNull(getContext()), btnDelete,
                     getContext().getResources().getString(R.string.delete_category));
@@ -367,6 +374,18 @@ public class CategoryEditFragment extends BaseFragment
             clearViews();
             Objects.requireNonNull(getActivity()).onBackPressed();
         }
+    }
+
+    private void killPopup(){
+        if(btnPopup != null) {
+            btnPopup.dismiss();
+            btnPopup = null;
+        }
+    }
+
+    private void dismissPopup(){
+        if(btnPopup != null)
+            btnPopup.dismiss();
     }
 
     private void clearViews() {
@@ -385,13 +404,6 @@ public class CategoryEditFragment extends BaseFragment
     @Override
     public void OnImageReturn(byte[] itemPictureByteArray, PhotoSelectUtil photoSelectUtil) {
 
-    }
-
-    private void dismissPopup(){
-        if(btnPopup != null){
-            btnPopup.dismiss();
-            btnPopup = null;
-        }
     }
 
     @Override

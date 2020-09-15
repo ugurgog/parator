@@ -12,6 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 
+//import com.bitvale.switcher.SwitcherX;
+import com.github.angads25.toggle.interfaces.OnToggledListener;
+import com.github.angads25.toggle.model.ToggleableView;
+import com.github.angads25.toggle.widget.LabeledSwitch;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.db.GlobalSettingsDBHelper;
@@ -43,9 +47,9 @@ public class PrintOrdersFragment extends BaseFragment {
     @BindView(R.id.toolbarTitleTv)
     AppCompatTextView toolbarTitleTv;
     @BindView(R.id.autoPrintCustomerSwitch)
-    Switch autoPrintCustomerSwitch;
+    LabeledSwitch autoPrintCustomerSwitch;
     @BindView(R.id.autoPrintMerchantSwitch)
-    Switch autoPrintMerchantSwitch;
+    LabeledSwitch autoPrintMerchantSwitch;
 
     private User user;
     private Realm realm;
@@ -109,17 +113,17 @@ public class PrintOrdersFragment extends BaseFragment {
             }
         });
 
-        autoPrintCustomerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        autoPrintCustomerSwitch.setOnToggledListener(new OnToggledListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                updatePrinterSettings(b, null);
+            public void onSwitched(ToggleableView toggleableView, boolean isOn) {
+                updatePrinterSettings(isOn, null);
             }
         });
 
-        autoPrintMerchantSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        autoPrintMerchantSwitch.setOnToggledListener(new OnToggledListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                updatePrinterSettings(null, b);
+            public void onSwitched(ToggleableView toggleableView, boolean isOn) {
+                updatePrinterSettings(null, isOn);
             }
         });
     }
@@ -130,12 +134,12 @@ public class PrintOrdersFragment extends BaseFragment {
         globalSettings = GlobalSettingsDBHelper.getPrinterSetting(user.getId());
 
         if(globalSettings == null){
-            autoPrintCustomerSwitch.setChecked(false);
-            autoPrintMerchantSwitch.setChecked(false);
+            autoPrintCustomerSwitch.setOn(false);
+            autoPrintMerchantSwitch.setOn(false);
             globalSettings = new GlobalSettings();
         } else {
-            autoPrintCustomerSwitch.setChecked(globalSettings.isCustomerAutoPrint());
-            autoPrintMerchantSwitch.setChecked(globalSettings.isMerchantAutoPrint());
+            autoPrintCustomerSwitch.setOn(globalSettings.isCustomerAutoPrint());
+            autoPrintMerchantSwitch.setOn(globalSettings.isMerchantAutoPrint());
         }
     }
 

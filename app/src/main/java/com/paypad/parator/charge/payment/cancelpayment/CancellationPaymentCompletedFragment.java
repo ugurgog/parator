@@ -31,6 +31,7 @@ import com.paypad.parator.db.TransactionDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.ProcessDirectionEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.menu.customer.CustomerFragment;
 import com.paypad.parator.menu.customer.interfaces.ReturnCustomerCallback;
@@ -102,6 +103,7 @@ public class CancellationPaymentCompletedFragment extends BaseFragment implement
     private GlobalSettings globalSettings;
     private Realm realm;
     private Order order;
+    private Context mContext;
 
     private static final int CUSTOMER_RECEIPT = 1;
     private static final int MERCHANT_RECEIPT = 2;
@@ -125,12 +127,14 @@ public class CancellationPaymentCompletedFragment extends BaseFragment implement
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -138,7 +142,7 @@ public class CancellationPaymentCompletedFragment extends BaseFragment implement
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     @Override
@@ -263,7 +267,7 @@ public class CancellationPaymentCompletedFragment extends BaseFragment implement
             receiptInfoll.setVisibility(View.GONE);
         }
 
-        btnPrintReceipt.setText(getContext().getResources().getString(R.string.print_receipt));
+        btnPrintReceipt.setText(mContext.getResources().getString(R.string.print_receipt));
         setChargeAmountTv();
         setPaymentInfoTv();
     }
@@ -368,7 +372,7 @@ public class CancellationPaymentCompletedFragment extends BaseFragment implement
 
             BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getOrder());
 
-            DataUtils.showBaseResponseMessage(getContext(),saleBaseResponse);
+            DataUtils.showBaseResponseMessage(mContext,saleBaseResponse);
 
             if(saleBaseResponse.isSuccess()){
                 mCustomer = customer;
@@ -387,7 +391,7 @@ public class CancellationPaymentCompletedFragment extends BaseFragment implement
 
         BaseResponse saleBaseResponse = SaleDBHelper.createOrUpdateSale(CancelPaymentModelInstance.getInstance().getCancelPaymentModel().getOrder());
 
-        DataUtils.showBaseResponseMessage(getContext(),saleBaseResponse);
+        DataUtils.showBaseResponseMessage(mContext,saleBaseResponse);
 
         if(saleBaseResponse.isSuccess()){
             mCustomer = null;
@@ -425,7 +429,7 @@ public class CancellationPaymentCompletedFragment extends BaseFragment implement
             mTransaction.setMailSend(false);
 
         BaseResponse mailSendresponse = TransactionDBHelper.createOrUpdateTransaction(mTransaction);
-        DataUtils.showBaseResponseMessage(getContext(),mailSendresponse);
+        DataUtils.showBaseResponseMessage(mContext,mailSendresponse);
 
         LogUtil.logTransaction(mTransaction);
 
@@ -455,20 +459,20 @@ public class CancellationPaymentCompletedFragment extends BaseFragment implement
         @Override
         public void onPrintResult(int code, String msg) throws RemoteException {
             final int res = code;
-            ((Activity)getContext()).runOnUiThread(new Runnable() {
+            ((Activity)mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if(res == 0){
-                        CommonUtils.showToastShort(getContext(), "Print successful");
+                        CommonUtils.showCustomToast(mContext, "Print successful", ToastEnum.TOAST_SUCCESS);
 
                         if(receiptType == CUSTOMER_RECEIPT){
                             receiptType = MERCHANT_RECEIPT;
-                            btnPrintReceipt.setText(getContext().getResources().getString(R.string.print_merchant_receipt));
+                            btnPrintReceipt.setText(mContext.getResources().getString(R.string.print_merchant_receipt));
                             checkAutoPrint();
                         }else
                             startCounter();
                     }else{
-                        CommonUtils.showToastShort(getContext(), "Print failed");
+                        CommonUtils.showCustomToast(mContext, "Print failed", ToastEnum.TOAST_ERROR);
                         //TODO Follow-up after failed, such as reprint
                     }
                 }

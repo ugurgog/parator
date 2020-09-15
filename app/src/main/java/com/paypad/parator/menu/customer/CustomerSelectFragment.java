@@ -27,6 +27,7 @@ import com.paypad.parator.R;
 import com.paypad.parator.db.CustomerDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CompleteCallback;
 import com.paypad.parator.interfaces.CustomDialogListener;
@@ -307,10 +308,10 @@ public class CustomerSelectFragment extends BaseFragment {
             @Override
             public void onComplete(BaseResponse baseResponse) {
                 if(baseResponse.isSuccess()){
-                    CommonUtils.showToastShort(getContext(), String.valueOf(selectedCustomerList.size()).concat(" ")
-                            .concat(getContext().getResources().getString(R.string.customers_added_to_group)));
+                    CommonUtils.showCustomToast(getContext(), String.valueOf(selectedCustomerList.size()).concat(" ")
+                            .concat(getContext().getResources().getString(R.string.customers_added_to_group)), ToastEnum.TOAST_INFO);
                 }else {
-                    CommonUtils.showToastShort(getContext(), baseResponse.getMessage());
+                    CommonUtils.showCustomToast(getContext(), baseResponse.getMessage(), ToastEnum.TOAST_WARNING);
                 }
 
                 selectGroupForCustomerAddFragment.getActivity().onBackPressed();

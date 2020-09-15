@@ -18,6 +18,7 @@ import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.FinancialReportsEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.menu.reports.adapters.FinancialReportAdapter;
 import com.paypad.parator.menu.reports.interfaces.ReturnFinancialReportItemCallback;
@@ -175,9 +176,9 @@ public class SalesReportFragment extends BaseFragment implements ReturnFinancial
                 @Override
                 public void run() {
                     if(res == 0){
-                        CommonUtils.showToastShort(getContext(), "Print successful");
+                        CommonUtils.showCustomToast(getContext(), "Print successful", ToastEnum.TOAST_SUCCESS);
                     }else{
-                        CommonUtils.showToastShort(getContext(), "Print failed");
+                        CommonUtils.showCustomToast(getContext(), "Print failed", ToastEnum.TOAST_ERROR);
                     }
                 }
             });

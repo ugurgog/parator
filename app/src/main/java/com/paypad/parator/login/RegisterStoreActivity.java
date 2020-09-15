@@ -24,6 +24,7 @@ import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.AnnualTurnoverRangeEnum;
 import com.paypad.parator.enums.CurrencyEnum;
 import com.paypad.parator.enums.NumberOfLocationEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.enums.TypeOfBusinessEnum;
 import com.paypad.parator.interfaces.CountrySelectListener;
 import com.paypad.parator.login.utils.LoginUtils;
@@ -310,27 +311,27 @@ public class RegisterStoreActivity extends AppCompatActivity {
         progressDialog.dismiss();
 
         if(storeNameEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(RegisterStoreActivity.this, getResources().getString(R.string.please_type_store_name));
+            CommonUtils.showCustomToast(RegisterStoreActivity.this, getResources().getString(R.string.please_type_store_name), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(typeOfBusinessEnum == null){
-            CommonUtils.showCustomToast(RegisterStoreActivity.this, getResources().getString(R.string.please_select_type_of_biusiness));
+            CommonUtils.showCustomToast(RegisterStoreActivity.this, getResources().getString(R.string.please_select_type_of_biusiness), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(annualTurnoverRangeEnum == null){
-            CommonUtils.showCustomToast(RegisterStoreActivity.this, getResources().getString(R.string.please_select_estimated_annual_turnover));
+            CommonUtils.showCustomToast(RegisterStoreActivity.this, getResources().getString(R.string.please_select_estimated_annual_turnover), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(numberOfLocationEnum == null){
-            CommonUtils.showCustomToast(RegisterStoreActivity.this, getResources().getString(R.string.please_select_number_of_locations));
+            CommonUtils.showCustomToast(RegisterStoreActivity.this, getResources().getString(R.string.please_select_number_of_locations), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(currencyEnum == null){
-            CommonUtils.showCustomToast(RegisterStoreActivity.this, getResources().getString(R.string.please_select_trading_currency));
+            CommonUtils.showCustomToast(RegisterStoreActivity.this, getResources().getString(R.string.please_select_trading_currency), ToastEnum.TOAST_WARNING);
             return false;
         }
 
@@ -370,7 +371,7 @@ public class RegisterStoreActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }else{
-            CommonUtils.showToastShort(RegisterStoreActivity.this, baseResponse.getMessage());
+            CommonUtils.showCustomToast(RegisterStoreActivity.this, baseResponse.getMessage(), ToastEnum.TOAST_ERROR);
         }
     }
 

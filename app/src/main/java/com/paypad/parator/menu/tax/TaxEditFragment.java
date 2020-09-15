@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -304,39 +305,63 @@ public class TaxEditFragment extends BaseFragment implements WalkthroughCallback
         tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_tap_save_button));
 
         if(walkthrough == WALK_THROUGH_CONTINUE){
-            CommonUtils.displayPopupWindow(taxNameEt, mContext, mContext.getResources().getString(R.string.enter_tax_name_message),
-                    new TutorialPopupCallback() {
-                        @Override
-                        public void OnClosed() {
-                            OnWalkthroughResult(WALK_THROUGH_END);
-                            namePopup.dismiss();
-                            namePopup = null;
-                        }
+            taxNameEt.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try{
+                        if(namePopup != null && namePopup.isShowing())
+                            return;
+                        CommonUtils.displayPopupWindow(taxNameEt, mContext, mContext.getResources().getString(R.string.enter_tax_name_message),
+                                new TutorialPopupCallback() {
+                                    @Override
+                                    public void OnClosed() {
+                                        OnWalkthroughResult(WALK_THROUGH_END);
+                                        namePopup.dismiss();
+                                        namePopup = null;
+                                    }
 
-                        @Override
-                        public void OnGetPopup(PopupWindow popupWindow) {
-                            namePopup = popupWindow;
-                        }
-                    });
+                                    @Override
+                                    public void OnGetPopup(PopupWindow popupWindow) {
+                                        namePopup = popupWindow;
+                                    }
+                                });
+                        taxNameEt.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }catch (Exception e){
+
+                    }
+                }
+            });
         }
     }
 
     private void displayRatePopup(){
         if(walkthrough == WALK_THROUGH_CONTINUE && ratePopup == null){
-            CommonUtils.displayPopupWindow(amountRateEt, mContext, mContext.getResources().getString(R.string.enter_tax_rate_message),
-                    new TutorialPopupCallback() {
-                        @Override
-                        public void OnClosed() {
-                            OnWalkthroughResult(WALK_THROUGH_END);
-                            ratePopup.dismiss();
-                            ratePopup = null;
-                        }
+            amountRateEt.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try{
+                        if(ratePopup != null && ratePopup.isShowing())
+                            return;
+                        CommonUtils.displayPopupWindow(amountRateEt, mContext, mContext.getResources().getString(R.string.enter_tax_rate_message),
+                                new TutorialPopupCallback() {
+                                    @Override
+                                    public void OnClosed() {
+                                        OnWalkthroughResult(WALK_THROUGH_END);
+                                        ratePopup.dismiss();
+                                        ratePopup = null;
+                                    }
 
-                        @Override
-                        public void OnGetPopup(PopupWindow popupWindow) {
-                            ratePopup = popupWindow;
-                        }
-                    });
+                                    @Override
+                                    public void OnGetPopup(PopupWindow popupWindow) {
+                                        ratePopup = popupWindow;
+                                    }
+                                });
+                        amountRateEt.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }catch (Exception e){
+
+                    }
+                }
+            });
         }
     }
 

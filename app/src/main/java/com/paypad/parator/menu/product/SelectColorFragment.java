@@ -32,6 +32,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.db.UserDBHelper;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.menu.category.CategoryEditFragment;
 import com.paypad.parator.menu.product.adapters.ColorSelectAdapter;
@@ -272,7 +273,7 @@ public class SelectColorFragment extends BaseFragment
 
     private void checkCameraProcess() {
         if (!CommonUtils.checkCameraHardware(getContext())) {
-            CommonUtils.showToastShort(getContext(), getContext().getResources().getString(R.string.device_has_no_camera));
+            CommonUtils.showCustomToast(getContext(), getContext().getResources().getString(R.string.device_has_no_camera), ToastEnum.TOAST_WARNING);
             return;
         }
 

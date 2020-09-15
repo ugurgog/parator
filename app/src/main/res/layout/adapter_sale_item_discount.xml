@@ -48,15 +48,14 @@
                 android:layout_weight="3"
                 android:maxLines="1"/>
 
-            <Switch
+            <com.github.angads25.toggle.widget.LabeledSwitch
                 android:id="@+id/discSwitch"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_weight="3">
-
-            </Switch>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/default_size_13sp"
+                app:on="false"
+                app:colorBorder="@color/custom_switch_color"
+                android:layout_gravity="center"/>
 
         </LinearLayout>
 

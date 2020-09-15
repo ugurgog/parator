@@ -7,11 +7,22 @@
     android:padding="15dp"
     android:background="@color/DodgerBlue">
 
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/ic_check_white_24dp"
+        android:tint="@color/White"
+        android:id="@+id/iconImgv"
+        android:layout_marginEnd="10dp"
+        android:layout_gravity="center">
+    </ImageView>
+
     <TextView android:id="@+id/text"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:textColor="#FFF"
         android:textSize="@dimen/default_size_15sp"
-        android:text="fsdsfsdf"/>
+        android:text="dsdsdsdsd"
+        android:layout_gravity="center"/>
 
 </LinearLayout>

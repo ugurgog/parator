@@ -607,6 +607,7 @@
     <string name="congratulations">Tebrikler!</string>
     <string name="sale_tutorial_finalize_message">İlk ödemenizi yaptınız. Bu işlemi İşlemleriniz bölümünde görüntüleyebilirsiniz.</string>
     <string name="see_transactions">İşlemleri Gör</string>
+    <string name="error_occured_while_getting_countries">Ülke kodları alınırken bir hata oluştu!</string>
 
     <!-- Report Problem messages-->
     <string name="specify_the_problem_briefly">Sorunu kısaca belirtebilir misiniz?</string>
@@ -654,5 +655,6 @@
     <string name="active">Aktif</string>
     <string name="fast_menu">Hızlı Menü</string>
     <string name="create_fast_box">Hızlı Kutu Oluştur</string>
+    <string name="close">Kapat</string>
 
 </resources>

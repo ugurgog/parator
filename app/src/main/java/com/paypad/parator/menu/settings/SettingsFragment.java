@@ -19,6 +19,7 @@ import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.R;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.PaymentTypeEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.login.InitialActivity;
 import com.paypad.parator.login.utils.LoginUtils;
@@ -228,7 +229,7 @@ public class SettingsFragment extends BaseFragment{
                 startActivity(new Intent(getActivity(), InitialActivity.class));
             }
         }else
-            CommonUtils.showToastShort(getContext(), "cache delete error!");
+            CommonUtils.showCustomToast(getContext(), "cache delete error!", ToastEnum.TOAST_ERROR);
     }
 
 }

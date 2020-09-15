@@ -32,9 +32,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.paypad.parator.R;
 import com.paypad.parator.enums.CurrencyEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.TutorialPopupCallback;
 
@@ -59,15 +61,9 @@ import static com.paypad.parator.constants.CustomConstants.WALK_THROUGH_END;
 
 public class CommonUtils {
 
-    public static void showToastShort(Context context, String message) {
-        //Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-
-        showCustomToast(context, message);
-    }
-
-    public static void showToastLong(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-    }
+    /*public static void showToastShort(Context context, String message) {
+        showCustomToast(context, message, ToastEnum.TOAST_NORMAL);
+    }*/
 
     public static void displayPopupWindow(View anchorView, Context mContext, String message, TutorialPopupCallback tutorialPopupCallback) {
         PopupWindow popup = new PopupWindow(mContext);
@@ -129,7 +125,7 @@ public class CommonUtils {
         });
     }
 
-    public static void showCustomToast(Context context, String message) {
+    /*public static void showCustomToast(Context context, String message) {
             if (context == null) return;
             if (message == null || message.isEmpty()) return;
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -138,6 +134,9 @@ public class CommonUtils {
             layout.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.DodgerBlue, null),
                     context.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 15, 0));
             TextView text =  layout.findViewById(R.id.text);
+            ImageView iconImgv = layout.findViewById(R.id.iconImgv);
+            iconImgv.setVisibility(View.GONE);
+
             text.setText(message);
             text.setTextColor(context.getResources().getColor(R.color.White, null));
             Toast toast = new Toast(context);
@@ -145,6 +144,56 @@ public class CommonUtils {
             toast.setDuration(Toast.LENGTH_SHORT);
             toast.setView(layout);
             toast.show();
+    }*/
+
+    public static void showCustomToast(Context context, String message, ToastEnum toastType) {
+        if (context == null) return;
+        if (message == null || message.isEmpty()) return;
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.toast_layout, null);
+        View layout =  view.findViewById(R.id.toast_layout_root);
+
+        TextView text =  layout.findViewById(R.id.text);
+        ImageView iconImgv = layout.findViewById(R.id.iconImgv);
+        iconImgv.setVisibility(View.VISIBLE);
+
+        if(toastType == ToastEnum.TOAST_SUCCESS){
+            layout.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.MediumSeaGreen, null),
+                    context.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 15, 0));
+            Glide.with(context)
+                    .load(R.drawable.ic_check_white_24dp)
+                    .into(iconImgv);
+        }else if(toastType == ToastEnum.TOAST_ERROR){
+            layout.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.red_orange_color_picker, null),
+                    context.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 15, 0));
+            Glide.with(context)
+                    .load(R.drawable.ic_error_white_24dp)
+                    .into(iconImgv);
+        }else if(toastType == ToastEnum.TOAST_INFO){
+            layout.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.DodgerBlue, null),
+                    context.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 15, 0));
+            Glide.with(context)
+                    .load(R.drawable.ic_error_white_24dp)
+                    .into(iconImgv);
+        }else if(toastType == ToastEnum.TOAST_WARNING){
+            layout.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.Orange, null),
+                    context.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 15, 0));
+            Glide.with(context)
+                    .load(R.drawable.ic_warning_white_24dp)
+                    .into(iconImgv);
+        }else if(toastType == ToastEnum.TOAST_NORMAL){
+            layout.setBackground(ShapeUtil.getShape(context.getResources().getColor(R.color.Orange, null),
+                    context.getResources().getColor(R.color.White, null), GradientDrawable.RECTANGLE, 15, 0));
+            iconImgv.setVisibility(View.GONE);
+        }
+
+        text.setText(message);
+        text.setTextColor(context.getResources().getColor(R.color.White, null));
+        Toast toast = new Toast(context);
+        toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.BOTTOM, 0, 200);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
     }
 
     public static int getPaddingInPixels(Context context, float paddingDp) {
@@ -202,7 +251,7 @@ public class CommonUtils {
             marketIntent.setData(Uri.parse(mAddress));
             context.startActivity(marketIntent);
         } catch (Exception e) {
-            CommonUtils.showCustomToast(context, context.getString(R.string.error_upper).concat(" : ").concat(context.getString(R.string.unexpected_error)));
+            showCustomToast(context, context.getString(R.string.error_upper).concat(" : ").concat(context.getString(R.string.unexpected_error)), ToastEnum.TOAST_ERROR);
         }
     }
 

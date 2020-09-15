@@ -687,6 +687,7 @@
     <string name="congratulations">Congratulations!</string>
     <string name="sale_tutorial_finalize_message">You\'ve taken your first payment. You can view this transaction in your Transactions.</string>
     <string name="see_transactions">See Transactions</string>
+    <string name="error_occured_while_getting_countries">There is an error occured while getting country codes!</string>
 
     <!-- Report Problem messages-->
     <string name="specify_the_problem_briefly">Can you specify the problem briefly?</string>
@@ -734,5 +735,6 @@
     <string name="active">Active</string>
     <string name="fast_menu">Fast Menu</string>
     <string name="create_fast_box">Create Fast Box</string>
+    <string name="close">Close</string>
 
 </resources>

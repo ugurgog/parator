@@ -43,6 +43,7 @@ import com.paypad.parator.enums.DynamicStructEnum;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.PaymentTypeEnum;
 import com.paypad.parator.enums.TaxRateEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.ReturnViewCallback;
@@ -515,13 +516,13 @@ public class KeypadFragment extends BaseFragment implements
 
     private void handlePaymentBoxSelection(DynamicBoxModel dynamicBoxModel){
         if(amount > 0d) {
-            CommonUtils.showToastShort(getContext(), getResources().getString(R.string.please_select_tax_rate));
+            CommonUtils.showCustomToast(getContext(), getResources().getString(R.string.please_select_tax_rate), ToastEnum.TOAST_WARNING);
             return;
         }
 
         //Check transaction amount
         if(SaleModelInstance.getInstance().getSaleModel().getOrder().getDiscountedAmount() <= 0d){
-            CommonUtils.showCustomToast(getContext(), getContext().getResources().getString(R.string.sale_amount_zero));
+            CommonUtils.showCustomToast(getContext(), getContext().getResources().getString(R.string.sale_amount_zero), ToastEnum.TOAST_WARNING);
             return;
         }
 

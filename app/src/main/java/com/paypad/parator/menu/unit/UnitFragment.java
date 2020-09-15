@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -123,7 +124,7 @@ public class UnitFragment extends BaseFragment implements WalkthroughCallback, C
     @Override
     public void onDetach() {
         super.onDetach();
-        dismissPopup();
+        killPopup();
         mContext = null;
         EventBus.getDefault().unregister(this);
     }
@@ -159,7 +160,7 @@ public class UnitFragment extends BaseFragment implements WalkthroughCallback, C
         backImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismissPopup();
+                killPopup();
                 ((Activity) mContext).onBackPressed();
             }
         });
@@ -167,8 +168,7 @@ public class UnitFragment extends BaseFragment implements WalkthroughCallback, C
         createUnitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(btnPopup != null)
-                    btnPopup.dismiss();
+                dismissPopup();
                 initUnitEditFragment();
                 mFragmentNavigation.pushFragment(unitEditFragment);
             }
@@ -235,8 +235,7 @@ public class UnitFragment extends BaseFragment implements WalkthroughCallback, C
 
                     walkthrough = WALK_THROUGH_END;
                     OnWalkthroughResult(walkthrough);
-                    if(btnPopup != null)
-                        btnPopup.dismiss();
+                    dismissPopup();
                 }
             }
         });
@@ -259,27 +258,44 @@ public class UnitFragment extends BaseFragment implements WalkthroughCallback, C
 
     private void checkTutorialIsActive() {
         if(walkthrough == WALK_THROUGH_CONTINUE){
-            CommonUtils.displayPopupWindow(createUnitBtn, mContext, mContext.getResources().getString(R.string.select_create_unit),
-                    new TutorialPopupCallback() {
-                        @Override
-                        public void OnClosed() {
-                            OnWalkthroughResult(WALK_THROUGH_END);
-                            dismissPopup();
-                        }
+            createUnitBtn.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try{
+                        if(btnPopup != null && btnPopup.isShowing())
+                            return;
+                        CommonUtils.displayPopupWindow(createUnitBtn, mContext, mContext.getResources().getString(R.string.select_create_unit),
+                                new TutorialPopupCallback() {
+                                    @Override
+                                    public void OnClosed() {
+                                        OnWalkthroughResult(WALK_THROUGH_END);
+                                        killPopup();
+                                    }
 
-                        @Override
-                        public void OnGetPopup(PopupWindow popupWindow) {
-                            btnPopup = popupWindow;
-                        }
-                    });
+                                    @Override
+                                    public void OnGetPopup(PopupWindow popupWindow) {
+                                        btnPopup = popupWindow;
+                                    }
+                                });
+                        createUnitBtn.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }catch (Exception e){
+
+                    }
+                }
+            });
         }
     }
 
-    private void dismissPopup(){
+    private void killPopup(){
         if(btnPopup != null){
             btnPopup.dismiss();
             btnPopup = null;
         }
+    }
+
+    private void dismissPopup(){
+        if(btnPopup != null)
+            btnPopup.dismiss();
     }
 
     public void updateAdapterWithCurrentList(){
@@ -353,7 +369,6 @@ public class UnitFragment extends BaseFragment implements WalkthroughCallback, C
 
     @Override
     public void OnClicked() {
-        if(btnPopup != null)
-            btnPopup.dismiss();
+        dismissPopup();
     }
 }

@@ -11,6 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.angads25.toggle.interfaces.OnToggledListener;
+import com.github.angads25.toggle.model.ToggleableView;
+import com.github.angads25.toggle.widget.LabeledSwitch;
 import com.paypad.parator.R;
 import com.paypad.parator.charge.order.IOrderManager;
 import com.paypad.parator.charge.order.OrderManager;
@@ -50,15 +53,16 @@ public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDi
 
         private TextView discountNameTv;
         private TextView discountRateTv;
-        private Switch discSwitch;
+        private LabeledSwitch discSwitch;
 
         private Discount discount;
         private int position;
 
-        CompoundButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
+
+        OnToggledListener listener1 = new OnToggledListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
+            public void onSwitched(ToggleableView toggleableView, boolean isOn) {
+                if(isOn){
                     if(orderItem.getDiscounts() == null)
                         orderItem.setDiscounts(new RealmList<>());
 
@@ -80,7 +84,7 @@ public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDi
             discountNameTv = view.findViewById(R.id.discountNameTv);
             discountRateTv = view.findViewById(R.id.discountRateTv);
             discSwitch = view.findViewById(R.id.discSwitch);
-            discSwitch.setOnCheckedChangeListener(listener);
+            discSwitch.setOnToggledListener(listener1);
         }
 
         public void setData(Discount discount, int position) {
@@ -89,19 +93,15 @@ public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDi
             discountNameTv.setText(discount.getName());
             discountRateTv.setText(CommonUtils.getDoubleStrValueForView(discount.getRate(), TYPE_RATE).concat(" %"));
 
-            discSwitch.setOnCheckedChangeListener(null);
+            discSwitch.setOnToggledListener(null);
             if(isDiscountExist()){
-                discSwitch.setChecked(true);
+                discSwitch.setOn(true);
             }else
-                discSwitch.setChecked(false);
-            discSwitch.setOnCheckedChangeListener(listener);
+                discSwitch.setOn(false);
+            discSwitch.setOnToggledListener(listener1);
         }
 
         public boolean isDiscountExist(){
-
-            Log.i("Info", "discounts:" + discounts);
-            Log.i("Info", "orderItem.getDiscounts():" + orderItem.getDiscounts());
-
             if(orderItem.getDiscounts() != null && orderItem.getDiscounts().size() > 0){
                 for (OrderItemDiscount discount1 : orderItem.getDiscounts()) {
 
@@ -109,7 +109,6 @@ public class SaleItemDiscountListAdapter extends RecyclerView.Adapter<SaleItemDi
                         return true;
                 }
             }
-
             return false;
         }
     }

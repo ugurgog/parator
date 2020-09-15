@@ -272,7 +272,8 @@
                         android:inputType="textCapSentences"
                         android:textColor="#434343"
                         android:hint="@string/description"
-                        android:textIsSelectable="true" />
+                        android:textIsSelectable="true"
+                        android:layout_marginBottom="30dp"/>
 
 
                     <Button

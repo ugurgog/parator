@@ -24,6 +24,7 @@ import com.paypad.parator.R;
 import com.paypad.parator.charge.payment.utils.SendMail;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ProcessDirectionEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.httpprocess.interfaces.OnEventListener;
 import com.paypad.parator.login.utils.Validation;
@@ -252,13 +253,13 @@ public class SendReceiptEmailFragment extends BaseFragment implements SendMail.M
             if(fillEmailFromCustomer()){
                 isValid = true;
             }else {
-                CommonUtils.showToastShort(getContext(), getResources().getString(R.string.email_empty_error));
+                CommonUtils.showCustomToast(getContext(), getResources().getString(R.string.email_empty_error), ToastEnum.TOAST_WARNING);
                 isValid = false;
             }
         }else{
             isValid = Validation.getInstance().isValidEmail(getContext(), emailEt.getText().toString());
             if(!isValid){
-                CommonUtils.showToastShort(getContext(), Validation.getInstance().getErrorMessage());
+                CommonUtils.showCustomToast(getContext(), Validation.getInstance().getErrorMessage(), ToastEnum.TOAST_WARNING);
             }else
                 email = emailEt.getText().toString();
         }

@@ -19,6 +19,7 @@ import com.paypad.parator.R;
 import com.paypad.parator.db.PasscodeDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.PasscodeTimeoutEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.model.Passcode;
 import com.paypad.parator.model.User;
@@ -152,7 +153,7 @@ public class PasscodeEditFragment extends BaseFragment {
                 passcodeVal = getPasscodeValue();
 
                 if(passcodeVal.trim().length() < 4){
-                    CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.please_enter_four_digit_passcode));
+                    CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.please_enter_four_digit_passcode), ToastEnum.TOAST_WARNING);
                     return;
                 }
                 updatePasscode();

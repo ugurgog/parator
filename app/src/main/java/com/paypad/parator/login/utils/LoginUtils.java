@@ -7,6 +7,7 @@ import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
 
 import com.paypad.parator.R;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.utils.CommonUtils;
 
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class LoginUtils {
         }catch (Exception e){
             CommonUtils.showCustomToast(context, context.getResources().getString(R.string.error_upper)
                     .concat(" : ")
-                    .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)));
+                    .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)), ToastEnum.TOAST_ERROR);
         }
     }
 
@@ -65,7 +66,7 @@ public class LoginUtils {
         }catch (Exception e){
             CommonUtils.showCustomToast(context, context.getResources().getString(R.string.error_upper)
                     .concat(" : ")
-                    .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)));
+                    .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)), ToastEnum.TOAST_ERROR);
         }
         return "";
     }
@@ -77,7 +78,7 @@ public class LoginUtils {
         }catch (Exception e){
             CommonUtils.showCustomToast(context, context.getResources().getString(R.string.error_upper)
                 .concat(" : ")
-                .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)));
+                .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)), ToastEnum.TOAST_ERROR);
         }
         return "";
     }
@@ -89,7 +90,7 @@ public class LoginUtils {
         }catch (Exception e){
             CommonUtils.showCustomToast(context, context.getResources().getString(R.string.error_upper)
                     .concat(" : ")
-                    .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)));
+                    .concat(e.getMessage() != null ? e.getMessage() : context.getResources().getString(R.string.unexpected_error)), ToastEnum.TOAST_ERROR);
         }
         return "";
     }

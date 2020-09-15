@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +26,8 @@ import com.paypad.parator.R;
 import com.paypad.parator.db.ProductDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
+import com.paypad.parator.enums.ItemsEnum;
+import com.paypad.parator.enums.TutorialTypeEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.ClickCallback;
 import com.paypad.parator.interfaces.CustomDialogListener;
@@ -266,19 +269,31 @@ public class ProductFragment extends BaseFragment implements WalkthroughCallback
 
     private void checkTutorialIsActive() {
         if(walkthrough == WALK_THROUGH_CONTINUE){
-            CommonUtils.displayPopupWindow(createProductBtn, mContext, mContext.getResources().getString(R.string.select_create_item),
-                    new TutorialPopupCallback() {
-                        @Override
-                        public void OnClosed() {
-                            OnWalkthroughResult(WALK_THROUGH_END);
-                            dismissPopup();
-                        }
+            createProductBtn.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try{
+                        if(btnPopup != null && btnPopup.isShowing())
+                            return;
+                        CommonUtils.displayPopupWindow(createProductBtn, mContext, mContext.getResources().getString(R.string.select_create_item),
+                                new TutorialPopupCallback() {
+                                    @Override
+                                    public void OnClosed() {
+                                        OnWalkthroughResult(WALK_THROUGH_END);
+                                        dismissPopup();
+                                    }
 
-                        @Override
-                        public void OnGetPopup(PopupWindow popupWindow) {
-                            btnPopup = popupWindow;
-                        }
-                    });
+                                    @Override
+                                    public void OnGetPopup(PopupWindow popupWindow) {
+                                        btnPopup = popupWindow;
+                                    }
+                                });
+                        createProductBtn.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }catch (Exception e){
+
+                    }
+                }
+            });
         }
     }
 

@@ -11,6 +11,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -409,38 +410,62 @@ public class ProductEditFragment extends BaseFragment implements
 
     private void askForSelectTax(){
         taxPopupShowed = true;
-        CommonUtils.displayPopupWindow(taxll, mContext, mContext.getResources().getString(R.string.select_tax),
-                new TutorialPopupCallback() {
-                    @Override
-                    public void OnClosed() {
-                        OnWalkthroughResult(WALK_THROUGH_END);
-                        itemTaxPopup = null;
-                    }
+        taxll.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                try{
+                    if(itemTaxPopup != null && itemTaxPopup.isShowing())
+                        return;
+                    CommonUtils.displayPopupWindow(taxll, mContext, mContext.getResources().getString(R.string.select_tax),
+                            new TutorialPopupCallback() {
+                                @Override
+                                public void OnClosed() {
+                                    OnWalkthroughResult(WALK_THROUGH_END);
+                                    itemTaxPopup = null;
+                                }
 
-                    @Override
-                    public void OnGetPopup(PopupWindow popupWindow) {
-                        itemTaxPopup = popupWindow;
-                    }
-                });
+                                @Override
+                                public void OnGetPopup(PopupWindow popupWindow) {
+                                    itemTaxPopup = popupWindow;
+                                }
+                            });
+                    taxll.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }catch (Exception e){
+
+                }
+            }
+        });
     }
 
     private void askForTypePrice(){
         if(itemTaxPopup != null && itemTaxPopup.isShowing())
             itemTaxPopup.dismiss();
 
-        CommonUtils.displayPopupWindow(amountRateEt, mContext, mContext.getResources().getString(R.string.type_item_amount_message),
-                new TutorialPopupCallback() {
-                    @Override
-                    public void OnClosed() {
-                        OnWalkthroughResult(WALK_THROUGH_END);
-                        itemPricePopup = null;
-                    }
+        amountRateEt.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                try{
+                    if(itemPricePopup != null && itemPricePopup.isShowing())
+                        return;
+                    CommonUtils.displayPopupWindow(amountRateEt, mContext, mContext.getResources().getString(R.string.type_item_amount_message),
+                            new TutorialPopupCallback() {
+                                @Override
+                                public void OnClosed() {
+                                    OnWalkthroughResult(WALK_THROUGH_END);
+                                    itemPricePopup = null;
+                                }
 
-                    @Override
-                    public void OnGetPopup(PopupWindow popupWindow) {
-                        itemPricePopup = popupWindow;
-                    }
-                });
+                                @Override
+                                public void OnGetPopup(PopupWindow popupWindow) {
+                                    itemPricePopup = popupWindow;
+                                }
+                            });
+                    amountRateEt.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }catch (Exception e){
+
+                }
+            }
+        });
     }
 
     private void initCategorySelectFragment(){
@@ -591,19 +616,31 @@ public class ProductEditFragment extends BaseFragment implements
         tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_tap_save_button));
 
         if(walkthrough == WALK_THROUGH_CONTINUE){
-            CommonUtils.displayPopupWindow(productNameEt, mContext, mContext.getResources().getString(R.string.enter_item_name_message),
-                    new TutorialPopupCallback() {
-                        @Override
-                        public void OnClosed() {
-                            OnWalkthroughResult(WALK_THROUGH_END);
-                            itemNamePopup = null;
-                        }
+            productNameEt.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try{
+                        if(itemNamePopup != null && itemNamePopup.isShowing())
+                            return;
+                        CommonUtils.displayPopupWindow(productNameEt, mContext, mContext.getResources().getString(R.string.enter_item_name_message),
+                                new TutorialPopupCallback() {
+                                    @Override
+                                    public void OnClosed() {
+                                        OnWalkthroughResult(WALK_THROUGH_END);
+                                        itemNamePopup = null;
+                                    }
 
-                        @Override
-                        public void OnGetPopup(PopupWindow popupWindow) {
-                            itemNamePopup = popupWindow;
-                        }
-                    });
+                                    @Override
+                                    public void OnGetPopup(PopupWindow popupWindow) {
+                                        itemNamePopup = popupWindow;
+                                    }
+                                });
+                        productNameEt.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }catch (Exception e){
+
+                    }
+                }
+            });
         }
     }
 

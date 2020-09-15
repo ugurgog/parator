@@ -39,6 +39,7 @@ import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.PaymentTypeEnum;
 import com.paypad.parator.enums.ProcessDirectionEnum;
 import com.paypad.parator.enums.TaxRateEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CustomDialogListener;
 import com.paypad.parator.interfaces.ReturnSizeCallback;
@@ -313,12 +314,12 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
         if(dataExist){
             if(productList.size() == 0){
-                CommonUtils.showToastShort(mContext, getResources().getString(R.string.all_products_added_to_dynamic_boxes));
+                CommonUtils.showCustomToast(mContext, getResources().getString(R.string.all_products_added_to_dynamic_boxes), ToastEnum.TOAST_WARNING);
                 dismiss();
                 return;
             }
         }else {
-            CommonUtils.showToastShort(mContext, getResources().getString(R.string.there_is_no_item_defined));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.there_is_no_item_defined), ToastEnum.TOAST_WARNING);
             dismiss();
             return;
         }
@@ -339,7 +340,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         productList = new ArrayList(products);
 
         if(productList.size() == 0){
-            CommonUtils.showToastShort(mContext, getResources().getString(R.string.there_is_no_item_belongs_this_category));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.there_is_no_item_belongs_this_category), ToastEnum.TOAST_INFO);
             dismiss();
             return;
         }
@@ -373,12 +374,12 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
         if(dataExist){
             if(discountList.size() == 0){
-                CommonUtils.showToastShort(mContext, getResources().getString(R.string.all_discounts_added_to_dynamic_boxes));
+                CommonUtils.showCustomToast(mContext, getResources().getString(R.string.all_discounts_added_to_dynamic_boxes), ToastEnum.TOAST_WARNING);
                 dismiss();
                 return;
             }
         }else {
-            CommonUtils.showToastShort(mContext, getResources().getString(R.string.there_is_no_discount_defined));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.there_is_no_discount_defined), ToastEnum.TOAST_WARNING);
             dismiss();
             return;
         }
@@ -409,12 +410,12 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
         if(dataExist){
             if(categoryList.size() == 0){
-                CommonUtils.showToastShort(mContext, getResources().getString(R.string.all_categories_added_to_dynamic_boxes));
+                CommonUtils.showCustomToast(mContext, getResources().getString(R.string.all_categories_added_to_dynamic_boxes), ToastEnum.TOAST_WARNING);
                 dismiss();
                 return;
             }
         }else {
-            CommonUtils.showToastShort(mContext, getResources().getString(R.string.there_is_no_category_defined));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.there_is_no_category_defined), ToastEnum.TOAST_WARNING);
             dismiss();
             return;
         }
@@ -452,12 +453,12 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
 
         if(dataExist){
             if(taxModelList.size() == 0){
-                CommonUtils.showToastShort(mContext, getResources().getString(R.string.all_taxes_added_to_dynamic_boxes));
+                CommonUtils.showCustomToast(mContext, getResources().getString(R.string.all_taxes_added_to_dynamic_boxes), ToastEnum.TOAST_WARNING);
                 dismiss();
                 return;
             }
         }else {
-            CommonUtils.showToastShort(mContext, getResources().getString(R.string.there_is_no_tax_defined));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.there_is_no_tax_defined), ToastEnum.TOAST_WARNING);
             dismiss();
             return;
         }
@@ -485,7 +486,7 @@ public class DynamicItemSelectFragmant extends BottomSheetDialogFragment {
         }
 
         if(paymentTypes.size() == 0){
-            CommonUtils.showToastShort(mContext, getResources().getString(R.string.all_payments_added_to_dynamic_boxes));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.all_payments_added_to_dynamic_boxes), ToastEnum.TOAST_INFO);
             dismiss();
             return;
         }

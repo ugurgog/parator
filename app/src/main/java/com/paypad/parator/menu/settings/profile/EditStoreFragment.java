@@ -25,6 +25,7 @@ import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.AnnualTurnoverRangeEnum;
 import com.paypad.parator.enums.CurrencyEnum;
 import com.paypad.parator.enums.NumberOfLocationEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.enums.TypeOfBusinessEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.CompleteCallback;
@@ -234,27 +235,27 @@ public class EditStoreFragment extends BaseFragment {
 
     private boolean checkValidation() {
         if(storeNameEt.getText().toString().isEmpty()){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_type_store_name));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_type_store_name), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(typeOfBusinessEnum == null){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_type_of_biusiness));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_type_of_biusiness), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(annualTurnoverRangeEnum == null){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_estimated_annual_turnover));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_estimated_annual_turnover), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(numberOfLocationEnum == null){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_number_of_locations));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_number_of_locations), ToastEnum.TOAST_WARNING);
             return false;
         }
 
         if(currencyEnum == null){
-            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_trading_currency));
+            CommonUtils.showCustomToast(mContext, getResources().getString(R.string.please_select_trading_currency), ToastEnum.TOAST_WARNING);
             return false;
         }
         return true;

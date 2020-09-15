@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -48,12 +49,15 @@
                     android:textStyle="bold">
                 </TextView>
 
-                <Switch
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:id="@+id/passcodeEnableSwitch">
-                </Switch>
+                <com.github.angads25.toggle.widget.LabeledSwitch
+                    android:id="@+id/passcodeEnableSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/default_size_13sp"
+                    app:on="false"
+                    app:colorBorder="@color/custom_switch_color"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerInParent="true"/>
 
             </RelativeLayout>
 

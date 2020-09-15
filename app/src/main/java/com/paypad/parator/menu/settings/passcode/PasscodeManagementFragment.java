@@ -18,6 +18,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 
+import com.github.angads25.toggle.interfaces.OnToggledListener;
+import com.github.angads25.toggle.model.ToggleableView;
+import com.github.angads25.toggle.widget.LabeledSwitch;
 import com.paypad.parator.FragmentControllers.BaseFragment;
 import com.paypad.parator.MainActivity;
 import com.paypad.parator.R;
@@ -25,6 +28,7 @@ import com.paypad.parator.db.PasscodeDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ItemProcessEnum;
 import com.paypad.parator.enums.PasscodeTimeoutEnum;
+import com.paypad.parator.enums.ToastEnum;
 import com.paypad.parator.eventBusModel.UserBus;
 import com.paypad.parator.interfaces.PasscodeTimeoutCallback;
 import com.paypad.parator.interfaces.PasscodeTypeCallback;
@@ -61,7 +65,7 @@ public class PasscodeManagementFragment extends BaseFragment implements Passcode
     @BindView(R.id.saveBtn)
     Button saveBtn;
     @BindView(R.id.passcodeEnableSwitch)
-    Switch passcodeEnableSwitch;
+    LabeledSwitch passcodeEnableSwitch;
     @BindView(R.id.backingToSaleCb)
     CheckBox backingToSaleCb;
     @BindView(R.id.afterEachSalecb)
@@ -171,16 +175,16 @@ public class PasscodeManagementFragment extends BaseFragment implements Passcode
             }
         });
 
-        passcodeEnableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        passcodeEnableSwitch.setOnToggledListener(new OnToggledListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            public void onSwitched(ToggleableView toggleableView, boolean isOn) {
                 if(passcode == null){
-                    if(b){
-                        CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.please_first_create_passcode));
-                        passcodeEnableSwitch.setChecked(false);
+                    if(isOn){
+                        CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.please_first_create_passcode), ToastEnum.TOAST_WARNING);
+                        passcodeEnableSwitch.setOn(false);
                     }
                 } else if (passcode.getPasscodeVal() != null && !passcode.getPasscodeVal().isEmpty()) {
-                    if (b) {
+                    if (isOn) {
                         Intent intent = new Intent(mContext, PasscodeTypeActivity.class);
                         Bundle bundle = new Bundle();
                         bundle.putBoolean("toolbarVisible", true);
@@ -243,9 +247,9 @@ public class PasscodeManagementFragment extends BaseFragment implements Passcode
                 if(passcodeTypeSucceed){
                     updatePasscodeEnabled(true);
                 }else
-                    passcodeEnableSwitch.setChecked(false);
+                    passcodeEnableSwitch.setOn(false);
             }else if(resultCode == Activity.RESULT_CANCELED){
-                passcodeEnableSwitch.setChecked(false);
+                passcodeEnableSwitch.setOn(false);
             }
 
         }
@@ -313,10 +317,10 @@ public class PasscodeManagementFragment extends BaseFragment implements Passcode
 
             if(passcode.isEnabled()){
                 passcodeEnabledll.setVisibility(View.VISIBLE);
-                passcodeEnableSwitch.setChecked(true);
+                passcodeEnableSwitch.setOn(true);
             } else{
                 passcodeEnabledll.setVisibility(View.GONE);
-                passcodeEnableSwitch.setChecked(false);
+                passcodeEnableSwitch.setOn(false);
             }
 
             afterEachSalecb.setChecked(passcode.isAfterEachSaleEnabled());

@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -110,7 +111,7 @@ public class UnitEditFragment extends BaseFragment implements WalkthroughCallbac
     @Override
     public void onDetach() {
         super.onDetach();
-        dismissPopup();
+        killPopup();
         mContext = null;
         EventBus.getDefault().unregister(this);
     }
@@ -146,7 +147,7 @@ public class UnitEditFragment extends BaseFragment implements WalkthroughCallbac
         cancelImgv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismissPopup();
+                killPopup();
                 ((Activity) mContext).onBackPressed();
             }
         });
@@ -168,7 +169,7 @@ public class UnitEditFragment extends BaseFragment implements WalkthroughCallbac
                     CommonUtils.setSaveBtnEnability(true, saveBtn, mContext);
 
                     if(btnPopup != null && walkthrough == WALK_THROUGH_CONTINUE){
-                        btnPopup.dismiss();
+                        dismissPopup();
                         tutorial.setLayoutVisibility(View.VISIBLE);
                     }
                 } else {
@@ -272,20 +273,31 @@ public class UnitEditFragment extends BaseFragment implements WalkthroughCallbac
         tutorial.setTutorialMessage(mContext.getResources().getString(R.string.now_tap_save_button));
 
         if(walkthrough == WALK_THROUGH_CONTINUE){
-            CommonUtils.displayPopupWindow(unitNameEt, mContext, mContext.getResources().getString(R.string.enter_unit_name_message),
-                    new TutorialPopupCallback() {
-                        @Override
-                        public void OnClosed() {
-                            OnWalkthroughResult(WALK_THROUGH_END);
-                            btnPopup.dismiss();
-                            btnPopup = null;
-                        }
+            unitNameEt.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try{
+                        if(btnPopup != null && btnPopup.isShowing())
+                            return;
+                        CommonUtils.displayPopupWindow(unitNameEt, mContext, mContext.getResources().getString(R.string.enter_unit_name_message),
+                                new TutorialPopupCallback() {
+                                    @Override
+                                    public void OnClosed() {
+                                        OnWalkthroughResult(WALK_THROUGH_END);
+                                        killPopup();
+                                    }
 
-                        @Override
-                        public void OnGetPopup(PopupWindow popupWindow) {
-                            btnPopup = popupWindow;
-                        }
-                    });
+                                    @Override
+                                    public void OnGetPopup(PopupWindow popupWindow) {
+                                        btnPopup = popupWindow;
+                                    }
+                                });
+                        unitNameEt.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }catch (Exception e){
+
+                    }
+                }
+            });
         }
     }
 
@@ -347,11 +359,16 @@ public class UnitEditFragment extends BaseFragment implements WalkthroughCallbac
         CommonUtils.hideKeyBoard(mContext);
     }
 
-    private void dismissPopup(){
+    private void killPopup(){
         if(btnPopup != null){
             btnPopup.dismiss();
             btnPopup = null;
         }
+    }
+
+    private void dismissPopup(){
+        if(btnPopup != null)
+            btnPopup.dismiss();
     }
 
     @Override
