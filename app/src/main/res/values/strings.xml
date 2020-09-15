@@ -736,5 +736,9 @@
     <string name="fast_menu">Fast Menu</string>
     <string name="create_fast_box">Create Fast Box</string>
     <string name="close">Close</string>
+    <string name="unsaved_changes">Unsaved Changes</string>
+    <string name="unsaved_changes_desc">Do you want to resume editing or discard these changes?</string>
+    <string name="resume">Resume</string>
+    <string name="discard">Discard</string>
 
 </resources>

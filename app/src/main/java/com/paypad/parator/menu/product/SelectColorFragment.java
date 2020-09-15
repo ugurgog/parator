@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.paypad.parator.FragmentControllers.BaseFragment;
+import com.paypad.parator.MainActivity;
 import com.paypad.parator.R;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.ToastEnum;
@@ -98,11 +99,10 @@ public class SelectColorFragment extends BaseFragment
     private Uri photoUri;
     private byte[] itemPictureByteArray = null;
     private boolean photoExist = false;
-
+    private Context mContext;
 
     private static final int ACTIVITY_REQUEST_CODE_OPEN_GALLERY = 385;
     private static final int ACTIVITY_REQUEST_CODE_OPEN_CAMERA = 85;
-
 
     public SelectColorFragment(String classTag, String itemName, int colorId, byte[] itemPictureByteArray) {
         this.mClassTag = classTag;
@@ -123,12 +123,14 @@ public class SelectColorFragment extends BaseFragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        mContext = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -136,7 +138,7 @@ public class SelectColorFragment extends BaseFragment
     public void accountHolderUserReceived(UserBus userBus){
         user = userBus.getUser();
         if(user == null)
-            user = UserDBHelper.getUserFromCache(getContext());
+            user = UserDBHelper.getUserFromCache(mContext);
     }
 
     @Override
@@ -184,11 +186,19 @@ public class SelectColorFragment extends BaseFragment
                 checkCameraProcess();
             }
         });
+
+        imageRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(itemPictureByteArray != null)
+                    mFragmentNavigation.pushFragment(new PhotoViewFragment(itemPictureByteArray));
+            }
+        });
     }
 
     private void initVariables() {
         setToolbarTitleTv();
-        permissionModule = new PermissionModule(getContext());
+        permissionModule = new PermissionModule(mContext);
         setAdapter();
 
         if(mClassTag.equals(CategoryEditFragment.class.getName()))
@@ -212,8 +222,8 @@ public class SelectColorFragment extends BaseFragment
 
                     }catch (IllegalArgumentException e){
                         int size = Math.round(TypedValue.applyDimension(
-                                TypedValue.COMPLEX_UNIT_DIP, Objects.requireNonNull(getContext()).getResources().getDimension(R.dimen.product_imageview_default_size),
-                                getContext().getResources().getDisplayMetrics()));
+                                TypedValue.COMPLEX_UNIT_DIP, mContext.getResources().getDimension(R.dimen.product_imageview_default_size),
+                                mContext.getResources().getDisplayMetrics()));
                         editItemImgv.setImageBitmap(Bitmap.createScaledBitmap(bmp, size, size, false));
                     }
                 }
@@ -231,7 +241,7 @@ public class SelectColorFragment extends BaseFragment
     }
 
     private void setAdapter(){
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, 3, GridLayoutManager.VERTICAL, false);
         colorRv.setLayoutManager(gridLayoutManager);
 
         int[] colorList = CommonUtils.getItemColors();
@@ -239,7 +249,7 @@ public class SelectColorFragment extends BaseFragment
         if(itemPictureByteArray != null)
             mColorId = 0;
 
-        ColorSelectAdapter colorSelectAdapter = new ColorSelectAdapter(getContext(), colorList, mColorId);
+        ColorSelectAdapter colorSelectAdapter = new ColorSelectAdapter(mContext, colorList, mColorId);
         colorSelectAdapter.setColorReturnCallback(this);
         colorRv.setAdapter(colorSelectAdapter);
     }
@@ -248,6 +258,7 @@ public class SelectColorFragment extends BaseFragment
     public void OnColorReturn(int colorId) {
         mColorId = colorId;
         setColor();
+        itemPictureByteArray = null;
         colorReturnCallback.OnImageReturn(null, null);
     }
 
@@ -272,8 +283,8 @@ public class SelectColorFragment extends BaseFragment
     }
 
     private void checkCameraProcess() {
-        if (!CommonUtils.checkCameraHardware(getContext())) {
-            CommonUtils.showCustomToast(getContext(), getContext().getResources().getString(R.string.device_has_no_camera), ToastEnum.TOAST_WARNING);
+        if (!CommonUtils.checkCameraHardware(mContext)) {
+            CommonUtils.showCustomToast(mContext, mContext.getResources().getString(R.string.device_has_no_camera), ToastEnum.TOAST_WARNING);
             return;
         }
 
@@ -304,7 +315,7 @@ public class SelectColorFragment extends BaseFragment
                                 PermissionModule.PERMISSION_CAMERA);
                 } else if (galleryOrCameraSelect.equals(GALLERY_TEXT)) {
                     startActivityForResult(Intent.createChooser(IntentSelectUtil.getGalleryIntent(),
-                            Objects.requireNonNull(getContext()).getResources().getString(R.string.select_picture)), ACTIVITY_REQUEST_CODE_OPEN_GALLERY);
+                            mContext.getResources().getString(R.string.select_picture)), ACTIVITY_REQUEST_CODE_OPEN_GALLERY);
                 }
             }
         } else if (requestCode == PermissionModule.PERMISSION_CAMERA) {
@@ -324,17 +335,16 @@ public class SelectColorFragment extends BaseFragment
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == ACTIVITY_REQUEST_CODE_OPEN_GALLERY) {
-                photoSelectUtil = new PhotoSelectUtil(getContext(), data, GALLERY_TEXT);
+                photoSelectUtil = new PhotoSelectUtil(mContext, data, GALLERY_TEXT);
                 setPhoto();
             } else if (requestCode == ACTIVITY_REQUEST_CODE_OPEN_CAMERA) {
-                photoSelectUtil = new PhotoSelectUtil(getContext(), photoUri, FROM_FILE_TEXT);
+                photoSelectUtil = new PhotoSelectUtil(mContext, photoUri, FROM_FILE_TEXT);
                 setPhoto();
             }
         }
     }
 
     private void setPhoto() {
-
         if (photoSelectUtil != null && photoSelectUtil.getBitmap() != null) {
 
             photoExist = true;
@@ -364,19 +374,19 @@ public class SelectColorFragment extends BaseFragment
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        if (takePictureIntent.resolveActivity(Objects.requireNonNull(getContext()).getPackageManager()) != null) {
+        if (takePictureIntent.resolveActivity(mContext.getPackageManager()) != null) {
 
             File photoFile = null;
             try {
-                photoFile = BitmapUtils.createTempImageFile(getContext());
+                photoFile = BitmapUtils.createTempImageFile(mContext);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
             if (photoFile != null) {
 
-                String authority = Objects.requireNonNull(getContext()).getPackageName() + ".provider";
+                String authority = mContext.getPackageName() + ".provider";
 
-                photoUri = FileProvider.getUriForFile(getContext(), authority, photoFile);
+                photoUri = FileProvider.getUriForFile(mContext, authority, photoFile);
 
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(takePictureIntent, ACTIVITY_REQUEST_CODE_OPEN_CAMERA);

@@ -48,6 +48,7 @@ import com.paypad.parator.uiUtils.tutorial.WalkthroughCallback;
 import com.paypad.parator.utils.ClickableImage.ClickableImageView;
 import com.paypad.parator.utils.CommonUtils;
 import com.paypad.parator.utils.CustomDialogBox;
+import com.paypad.parator.utils.CustomDialogBoxVert;
 import com.paypad.parator.utils.DataUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -356,15 +357,17 @@ public class OrderChargePaymentFragment extends BaseFragment implements PaymentS
                     .concat(" Transaction");
         }
 
-        new CustomDialogBox.Builder((Activity) getContext())
+        new CustomDialogBoxVert.Builder((Activity) getContext())
                 .setTitle(title)
                 .setMessage(getContext().getResources().getString(R.string.cancel_transaction_description))
                 .setNegativeBtnVisibility(View.VISIBLE)
                 .setNegativeBtnText(getContext().getResources().getString(R.string.keep))
-                .setNegativeBtnBackground(getContext().getResources().getColor(R.color.Silver, null))
+                .setNegativeBtnBackground(getContext().getResources().getColor(R.color.custom_btn_bg_color, null))
                 .setPositiveBtnVisibility(View.VISIBLE)
-                .setPositiveBtnText(getContext().getResources().getString(R.string.cancel))
-                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.bg_screen1, null))
+                .setPositiveBtnText(getContext().getResources().getString(R.string.cancel_transaction))
+                .setPositiveBtnBackground(getContext().getResources().getColor(R.color.DodgerBlue, null))
+                .setpBtnTextColor(mContext.getResources().getColor(R.color.White, null))
+                .setnBtnTextColor(mContext.getResources().getColor(R.color.DodgerBlue, null))
                 .setDurationTime(0)
                 .isCancellable(true)
                 .setEdittextVisibility(View.GONE)

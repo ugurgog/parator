@@ -656,5 +656,9 @@
     <string name="fast_menu">Hızlı Menü</string>
     <string name="create_fast_box">Hızlı Kutu Oluştur</string>
     <string name="close">Kapat</string>
+    <string name="unsaved_changes">Kaydedilmemiş Değişiklikler</string>
+    <string name="unsaved_changes_desc">Düzenlemeye devam etmek mi yoksa bu değişiklikleri silmek mi istiyorsunuz?</string>
+    <string name="resume">Devam Et</string>
+    <string name="discard">Sil</string>
 
 </resources>

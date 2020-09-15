@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -26,10 +27,19 @@ import com.paypad.parator.db.PasscodeDBHelper;
 import com.paypad.parator.db.UserDBHelper;
 import com.paypad.parator.enums.PasscodeTimeoutEnum;
 import com.paypad.parator.eventBusModel.UserBus;
+import com.paypad.parator.interfaces.CustomDialogListener;
+import com.paypad.parator.menu.category.CategoryEditFragment;
+import com.paypad.parator.menu.customer.CustomerEditFragment;
+import com.paypad.parator.menu.discount.DiscountEditFragment;
+import com.paypad.parator.menu.group.GroupCreateFragment;
+import com.paypad.parator.menu.product.ProductEditFragment;
 import com.paypad.parator.menu.settings.passcode.PasscodeTypeActivity;
 import com.paypad.parator.menu.support.reportproblem.fragments.NotifyProblemFragment;
+import com.paypad.parator.menu.tax.TaxEditFragment;
+import com.paypad.parator.menu.unit.UnitEditFragment;
 import com.paypad.parator.model.Passcode;
 import com.paypad.parator.model.User;
+import com.paypad.parator.utils.CustomDialogBoxVert;
 import com.paypad.parator.utils.ShapeUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -275,7 +285,7 @@ public class MainActivity extends FragmentActivity implements
 
         if (!mNavController.isRootFragment()) {
             setTransactionOption();
-            mNavController.popFragment(transactionOptions);
+            checkItemUpdateDiscard();
         } else {
 
             if (fragmentHistory.isEmpty()) {
@@ -292,6 +302,46 @@ public class MainActivity extends FragmentActivity implements
                 }
             }
         }
+    }
+
+    private void checkItemUpdateDiscard(){
+        if(mNavController.getCurrentFrag() instanceof ProductEditFragment ||
+                mNavController.getCurrentFrag() instanceof CategoryEditFragment ||
+                mNavController.getCurrentFrag() instanceof UnitEditFragment ||
+                mNavController.getCurrentFrag() instanceof TaxEditFragment ||
+                mNavController.getCurrentFrag() instanceof DiscountEditFragment ||
+                mNavController.getCurrentFrag() instanceof CustomerEditFragment ||
+                mNavController.getCurrentFrag() instanceof GroupCreateFragment){
+
+            new CustomDialogBoxVert.Builder(MainActivity.this)
+                    .setTitle(getResources().getString(R.string.unsaved_changes))
+                    .setMessage(getResources().getString(R.string.unsaved_changes_desc))
+                    .setNegativeBtnVisibility(View.VISIBLE)
+                    .setNegativeBtnText(getResources().getString(R.string.resume))
+                    .setNegativeBtnBackground(getResources().getColor(R.color.custom_btn_bg_color, null))
+                    .setPositiveBtnVisibility(View.VISIBLE)
+                    .setPositiveBtnText(getResources().getString(R.string.discard))
+                    .setPositiveBtnBackground(getResources().getColor(R.color.DodgerBlue, null))
+                    .setpBtnTextColor(getResources().getColor(R.color.White, null))
+                    .setnBtnTextColor(getResources().getColor(R.color.DodgerBlue, null))
+                    .setDurationTime(0)
+                    .isCancellable(true)
+                    .setEdittextVisibility(View.GONE)
+                    .OnPositiveClicked(new CustomDialogListener() {
+                        @Override
+                        public void OnClick() {
+                            mNavController.popFragment(transactionOptions);
+                        }
+                    })
+                    .OnNegativeClicked(new CustomDialogListener() {
+                        @Override
+                        public void OnClick() {
+
+                        }
+                    }).build();
+
+        }else
+            mNavController.popFragment(transactionOptions);
     }
 
     public void switchAndUpdateTabSelection(int position) {
